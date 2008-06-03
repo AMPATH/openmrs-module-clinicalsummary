@@ -6,7 +6,7 @@
 	<!-- Base Module Properties -->
 	<id>clinicalsummary</id>
 	<name>Clinical Summary Module</name>
-	<version>2.3</version>
+	<version>3.0</version>
 	<package>org.openmrs.module.@MODULE_ID@</package>
 	<author>Brian McKown</author>
 	<description>
