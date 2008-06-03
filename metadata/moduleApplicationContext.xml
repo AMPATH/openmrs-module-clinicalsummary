@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<!-- Beans to add to the current Application context definition -->
+  
+<beans>
+	
+    <bean id="summaryUrlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    	<property name="mappings">
+            <props>
+	            <prop key="module/@MODULE_ID@/summary.list">summaryList</prop>
+	            <prop key="module/@MODULE_ID@/queue.list">queueList</prop>
+				<prop key="module/@MODULE_ID@/summary.form">summaryForm</prop>
+				<prop key="module/@MODULE_ID@/generateSummaries.form">generateSummariesForm</prop>
+				<prop key="module/@MODULE_ID@/queueDirectory.list">queueDirectory</prop>
+			</props>
+		</property>
+	</bean>
+	
+	<bean parent="serviceContext">
+		<property name="moduleService">
+			<list>
+				<value>org.openmrs.module.clinicalsummary.ClinicalSummaryService</value> 
+				<bean class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+					<property name="transactionManager"><ref bean="transactionManager"/></property>
+					<property name="target">
+						<bean class="org.openmrs.module.clinicalsummary.impl.ClinicalSummaryServiceImpl">
+							<property name="summaryDAO">
+								<bean class="org.openmrs.module.clinicalsummary.db.hibernate.HibernateClinicalSummaryDAO">
+									<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
+								</bean>
+							</property>	
+						</bean>
+					</property>
+					<property name="preInterceptors">
+						<list>
+							<ref bean="authorizationInterceptor"/>
+						</list>
+					</property>
+					<property name="transactionAttributeSource">
+						<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
+					</property>
+				</bean>
+			</list>
+		</property>
+	</bean>
+	
+	
+	<!-- Controllers -->
+	
+	<bean id="summaryList" class="org.openmrs.module.clinicalsummary.web.controller.SummaryListController">
+		<property name="commandName"><value>summaries</value></property>
+		<property name="formView"><value>/module/@MODULE_ID@/summaryList</value></property>
+		<property name="successView"><value>summary.list</value></property>
+	</bean>
+	<bean id="summaryForm" class="org.openmrs.module.clinicalsummary.web.controller.SummaryFormController">
+		<property name="commandName"><value>summary</value></property>
+		<property name="formView"><value>/module/@MODULE_ID@/summaryForm</value></property>
+		<property name="successView"><value>summary.form</value></property>
+	</bean>
+	<bean id="generateSummariesForm" class="org.openmrs.module.clinicalsummary.web.controller.GenerateSummariesFormController">
+		<property name="commandName"><value>summaries</value></property>
+		<property name="formView"><value>/module/@MODULE_ID@/generateSummariesForm</value></property>
+		<property name="successView"><value>generateSummaries.list</value></property>
+	</bean>
+	<bean id="queueList" class="org.openmrs.module.clinicalsummary.web.controller.QueueListController">
+		<property name="commandName"><value>queueItems</value></property>
+		<property name="formView"><value>/module/@MODULE_ID@/queueList</value></property>
+		<property name="successView"><value>queue.list</value></property>
+	</bean>
+	<bean id="queueDirectory" class="org.openmrs.module.clinicalsummary.web.controller.QueueDirectoryController">
+		<property name="commandName"><value>queueItems</value></property>
+		<property name="formView"><value>/module/@MODULE_ID@/queueDirectoryList</value></property>
+		<property name="successView"><value>queueDirectory.list</value></property>
+	</bean>
+	
+	<!-- /Controllers -->
+	
+	
+</beans>

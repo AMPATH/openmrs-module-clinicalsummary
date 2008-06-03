@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqldiff PUBLIC "-//OpenMRS//DTD OpenMRS SQL Diff Config 1.0//EN" "http://resources.openmrs.org/doctype/sqldiff-1.0.dtd">
+
+<sqldiff version="1.0">
+	<help>
+		USE:
+			The diffs are ordered by datamodel version number.
+			The script can be run in a top down fashion and is
+			expected to not failor overwrite old data
+		
+		EXPECT:
+			- "use business-database-name;" was called prior to
+			   calling this script
+	</help>
+	
+	<diff>
+		<version>1.0.0</version>
+		<author>Ben Wolfe</author>
+		<date>Mar 16th 2007</date>
+		<description>
+			Create the clinical summary table
+		</description>
+		<sql>
+			CREATE TABLE IF NOT EXISTS `clinical_summary` (
+				  `clinical_summary_id` int(11) NOT NULL auto_increment,
+				  `name` varchar(255) NOT NULL,
+				  `description` text NOT NULL,
+				  `template` text NOT NULL,
+				  `xslt` text NOT NULL,
+				  `preferred` int(1) NOT NULL default '0',
+				  `creator` int(11) NOT NULL default '0',
+				  `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
+				  `changed_by` int(11) default NULL,
+				  `date_changed` datetime default '0000-00-00 00:00:00',
+				  PRIMARY KEY (`clinical_summary_id`),
+				  KEY `clinical_summary_creator` (`creator`),
+				  KEY `clinical_summary_changer` (`changed_by`),
+				  CONSTRAINT `clinical_summary_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
+				  CONSTRAINT `user_who_changed_clinical_summary` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`)
+				) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+		</sql>
+	</diff>
+
+	<diff>
+		<version>1.1.0</version>
+		<author>Ben Wolfe</author>
+		<date>Mar 19th 2007</date>
+		<description>
+			Create an example clinical summary 
+		</description>
+		<sql>
+			<![CDATA[
+			INSERT INTO `clinical_summary` VALUES ('1', 'Basic Clinical Summary', 'Defines a basic clinical summary based mostly on concepts in the base concept dataset.', '<?xml version=\"1.0\"?>\r\n<clinicalSummaryList>\r\n\r\n#foreach($patientId in $patientSet.patientIds)\r\n$!{fn.setPatientId($patientId)}\r\n<clinicalSummary>\r\n	<id>$!{fn.getPatientAttr(\'PatientIdentifier\', \'identifier\')}</id>\r\n	<name>\r\n		$!{fn.getPatientAttr(\'PatientName\', \'givenName\')} \r\n		$!{fn.getPatientAttr(\'PatientName\', \'middleName\')} \r\n		$!{fn.getPatientAttr(\'PatientName\', \'familyName\')}\r\n	</name>\r\n	#set($age = $!{fn.getAge($fn.getPatientAttr(\'Patient\', \'birthdate\'))})\r\n	<age units=\"${age.get(1)}\">\r\n		${age.get(0)}\r\n	</age>\r\n	<firstEncounterDate>\r\n		$!{fn.formatDate(\'dd-MMM-yyyy\', ${fn.getFirstEncounter(\'\').getEncounterDatetime()})}\r\n	</firstEncounterDate>\r\n	<healthCenter>${fn.getValueAsString($!{fn.getPatientAttr(\'Patient\', \'healthCenter\')})}</healthCenter>\r\n	<whoStage>${fn.getValueAsString(${fn.getLastObs(\'5356\')})}</whoStage>\r\n	<perfectAdherence>\r\n		#set($obsValues = $fn.getObsTimeframe(\'1164\', 12))\r\n		#if (${obsValues.size()} < 1)\r\n			unknown\r\n		#else\r\n			#set($all = true)\r\n			#foreach($val in $obsValues)\r\n				#if (!(${val.getConceptId()} == 1163))#set($all = false)#end\r\n			#end\r\n			#if ($all == true)\r\n				true\r\n			#else\r\n				false\r\n			#end\r\n		#end\r\n	</perfectAdherence>\r\n	<problemList>\r\n		<!-- Make a list of all PROBLEM ADDED without a subsequent matching PROBLEM RESOLVED -->\r\n		#set($arr = [\'obsDatetime\'])\r\n		#set($obsValues = $fn.getIntersectedObs(\'6042\', \'6097\', $arr))\r\n		#foreach($vals in $obsValues)\r\n			<problem date=\"${fn.formatDate(\'dd-MMM-yyyy\', ${vals.get(1)})}\">\r\n				${fn.getValueAsString(${vals.get(0).getName()})}\r\n			</problem>\r\n		#end\r\n	</problemList>\r\n	<flowsheet>\r\n  	<!--\r\n  		List all known values for\r\n  			WEIGHT (KG),\r\n  			HGB (concept HEMOGLOBIN),\r\n  			SAO2 (concept BLOOD OXYGEN SATURATION),\r\n  			CD4 (CD4, BY FACS),\r\n  			SGPT\r\n  		All dates should be in MM-DD-YYYY format\r\n  		For CD4: if CD4% exists on same day, repeat as CD4 (%), e.g. <value date=\"...\">252 (16%)</value>\r\n  	-->\r\n	<results name=\"WEIGHT (KG)\">\r\n		#set($arr = [\'obsDatetime\'])\r\n		#set($obsValues = $fn.getLastNObsWithValues(-1, \'5089\', $arr))\r\n		#foreach($vals in $obsValues)\r\n			<value date=\"${fn.formatDate(\'dd-MMM-yyyy\', ${vals.get(1)})}\">\r\n				${fn.getValueAsString(${vals.get(0)})}\r\n			</value>\r\n		#end\r\n	</results>\r\n	<results name=\"HGB\">\r\n		#set($arr = [\'obsDatetime\'])\r\n		#set($obsValues = $fn.getLastNObsWithValues(-1, \'21\', $arr))\r\n		#foreach($vals in $obsValues)\r\n			<value date=\"${fn.formatDate(\'dd-MMM-yyyy\', ${vals.get(1)})}\">\r\n				${fn.getValueAsString(${vals.get(0)})}\r\n			</value>\r\n		#end\r\n	</results>\r\n	<results name=\"SA02\">\r\n		#set($arr = [\'obsDatetime\'])\r\n		#set($obsValues = $fn.getLastNObsWithValues(-1, \'5092\', $arr))\r\n		#foreach($vals in $obsValues)\r\n			<value date=\"${fn.formatDate(\'dd-MMM-yyyy\', ${vals.get(1)})}\">\r\n				${fn.getValueAsString(${vals.get(0)})}\r\n			</value>\r\n		#end\r\n	</results>\r\n	<results name=\"CD4\">\r\n		#set($arr = [\'obsDatetime\'])\r\n		#set($obsValues = $fn.getLastNObsWithValues(-1, \'5497\', $arr))\r\n		#foreach($vals in $obsValues)\r\n			<value date=\"${fn.formatDate(\'dd-MMM-yyyy\', ${vals.get(1)})}\">\r\n				${fn.getValueAsString(${vals.get(0)})}\r\n			</value>\r\n		#end\r\n	</results>\r\n	<results name=\"SGPT\">\r\n		#set($arr = [\'obsDatetime\'])\r\n		#set($obsValues = $fn.getLastNObsWithValues(-1, \'654\', $arr))\r\n		#foreach($vals in $obsValues)\r\n			<value date=\"${fn.formatDate(\'dd-MMM-yyyy\', ${vals.get(1)})}\">\r\n				${fn.getValueAsString(${vals.get(0)})}\r\n			</value>\r\n		#end\r\n	</results>\r\n	</flowsheet>\r\n\r\n	#set($arr = [\'obsDatetime\'])\r\n	#set($obsValues = $fn.getLastNObsWithValues(-1, \'12\', $arr))\r\n	#foreach($vals in $obsValues)\r\n		#if($velocityCount == 1)<cxr date=\"${fn.formatDate(\'short\', ${vals.get(1)})}\">#end\r\n			${fn.getValueAsString(${vals.get(0)})}\r\n			#if($velocityCount > 1) , #end\r\n		#if($velocityCount == ${obsValues.size()})</cxr>#end\r\n	#end\r\n\r\n</clinicalSummary>\r\n#end <!-- ending patient loop -->\r\n\r\n</clinicalSummaryList>', 'xslt string', '1', '1', '2007-03-16 14:20:22', '1', '2007-03-19 10:12:34');
+			]]>
+		</sql>
+	</diff>
+	
+	
+	<diff>
+		<version>1.1.1</version>
+		<author>Ben Wolfe</author>
+		<date>Mar 21st 2007</date>
+		<description>
+			Updating the default summary to include meds
+		</description>
+		<sql>
+			<![CDATA[
+				INSERT INTO `clinical_summary` VALUES ('2', 'AMPATH Clinical Summary', 'Defines a clinical summary very similar to the basic summary except with the addition of the AMPATH medication list.', '<?xml version=\"1.0\"?>\r\n<clinicalSummaryList>\r\n\r\n#foreach($patientId in $patientSet.patientIds)\r\n$!{fn.setPatientId($patientId)}\r\n<clinicalSummary>\r\n	<id>$!{fn.getPatientAttr(\'PatientIdentifier\', \'identifier\')}</id>\r\n	<name>\r\n		$!{fn.getPatientAttr(\'PatientName\', \'givenName\')} \r\n		$!{fn.getPatientAttr(\'PatientName\', \'middleName\')} \r\n		$!{fn.getPatientAttr(\'PatientName\', \'familyName\')}\r\n	</name>\r\n	#set($age = $!{fn.getAge($fn.getPatientAttr(\'Patient\', \'birthdate\'))})\r\n	<age units=\"${age.get(1)}\">\r\n		${age.get(0)}\r\n	</age>\r\n	<firstEncounterDate>\r\n		$!{fn.formatDate(\'dd-MMM-yyyy\', ${fn.getFirstEncounter(\'\').getEncounterDatetime()})}\r\n	</firstEncounterDate>\r\n	<healthCenter>${fn.getValueAsString($!{fn.getPatientAttr(\'Patient\', \'healthCenter\')})}</healthCenter>\r\n	<whoStage>${fn.getValueAsString(${fn.getLastObs(\'5356\')})}</whoStage>\r\n	<perfectAdherence>\r\n		#set($obsValues = $fn.getObsTimeframe(\'1164\', 12))\r\n		#if (${obsValues.size()} < 1)\r\n			unknown\r\n		#else\r\n			#set($all = true)\r\n			#foreach($val in $obsValues)\r\n				#if (!(${val.getConceptId()} == 1163))#set($all = false)#end\r\n			#end\r\n			#if ($all == true)\r\n				true\r\n			#else\r\n				false\r\n			#end\r\n		#end\r\n	</perfectAdherence>\r\n	<problemList>\r\n		<!-- Make a list of all PROBLEM ADDED without a subsequent matching PROBLEM RESOLVED -->\r\n		#set($arr = [\'obsDatetime\'])\r\n		#set($obsValues = $fn.getIntersectedObs(\'6042\', \'6097\', $arr))\r\n		#foreach($vals in $obsValues)\r\n			<problem date=\"${fn.formatDate(\'dd-MMM-yyyy\', ${vals.get(1)})}\">\r\n				${fn.getValueAsString(${vals.get(0).getName()})}\r\n			</problem>\r\n		#end\r\n	</problemList>\r\n	<flowsheet>\r\n  	<!--\r\n  		List all known values for\r\n  			WEIGHT (KG),\r\n  			HGB (concept HEMOGLOBIN),\r\n  			SAO2 (concept BLOOD OXYGEN SATURATION),\r\n  			CD4 (CD4, BY FACS),\r\n  			SGPT\r\n  		All dates should be in MM-DD-YYYY format\r\n  		For CD4: if CD4% exists on same day, repeat as CD4 (%), e.g. <value date=\"...\">252 (16%)</value>\r\n  	-->\r\n	<results name=\"WEIGHT (KG)\">\r\n		#set($arr = [\'obsDatetime\'])\r\n		#set($obsValues = $fn.getLastNObsWithValues(-1, \'5089\', $arr))\r\n		#foreach($vals in $obsValues)\r\n			<value date=\"${fn.formatDate(\'dd-MMM-yyyy\', ${vals.get(1)})}\">\r\n				${fn.getValueAsString(${vals.get(0)})}\r\n			</value>\r\n		#end\r\n	</results>\r\n	<results name=\"HGB\">\r\n		#set($arr = [\'obsDatetime\'])\r\n		#set($obsValues = $fn.getLastNObsWithValues(-1, \'21\', $arr))\r\n		#foreach($vals in $obsValues)\r\n			<value date=\"${fn.formatDate(\'dd-MMM-yyyy\', ${vals.get(1)})}\">\r\n				${fn.getValueAsString(${vals.get(0)})}\r\n			</value>\r\n		#end\r\n	</results>\r\n	<results name=\"SA02\">\r\n		#set($arr = [\'obsDatetime\'])\r\n		#set($obsValues = $fn.getLastNObsWithValues(-1, \'5092\', $arr))\r\n		#foreach($vals in $obsValues)\r\n			<value date=\"${fn.formatDate(\'dd-MMM-yyyy\', ${vals.get(1)})}\">\r\n				${fn.getValueAsString(${vals.get(0)})}\r\n			</value>\r\n		#end\r\n	</results>\r\n	<results name=\"CD4\">\r\n		#set($arr = [\'obsDatetime\'])\r\n		#set($obsValues = $fn.getLastNObsWithValues(-1, \'5497\', $arr))\r\n		#foreach($vals in $obsValues)\r\n			<value date=\"${fn.formatDate(\'dd-MMM-yyyy\', ${vals.get(1)})}\">\r\n				${fn.getValueAsString(${vals.get(0)})}\r\n			</value>\r\n		#end\r\n	</results>\r\n	<results name=\"SGPT\">\r\n		#set($arr = [\'obsDatetime\'])\r\n		#set($obsValues = $fn.getLastNObsWithValues(-1, \'654\', $arr))\r\n		#foreach($vals in $obsValues)\r\n			<value date=\"${fn.formatDate(\'dd-MMM-yyyy\', ${vals.get(1)})}\">\r\n				${fn.getValueAsString(${vals.get(0)})}\r\n			</value>\r\n		#end\r\n	</results>\r\n	</flowsheet>\r\n\r\n	#set($arr = [\'obsDatetime\'])\r\n	#set($obsValues = $fn.getLastNObsWithValues(-1, \'12\', $arr))\r\n	#foreach($vals in $obsValues)\r\n		#if($velocityCount == 1)<cxr date=\"${fn.formatDate(\'short\', ${vals.get(1)})}\">#end\r\n			${fn.getValueAsString(${vals.get(0)})}\r\n			#if($velocityCount > 1) , #end\r\n		#if($velocityCount == ${obsValues.size()})</cxr>#end\r\n	#end\r\n\r\n	#set($medValues = ${fn.getAmpathActiveMedications()})\r\n	#foreach($vals in $medValues)\r\n		#if($velocityCount == 1)<medications>#end\r\n		<medication date=\"${fn.formatDate(\'short\', ${vals.get(1)})}\">\r\n			${fn.getValueAsString(${vals.get(0)})}\r\n		</medication>\r\n		#if($velocityCount == ${medValues.size()})</medications>#end\r\n	#end\r\n\r\n</clinicalSummary>\r\n#end <!-- ending patient loop -->\r\n\r\n</clinicalSummaryList>', 'xslt string', '0', '1', '2007-03-20 14:20:22', '1', '2007-03-21 10:12:34');
+			]]>
+		</sql>
+	</diff>
+
+	<diff>
+		<version>1.1.2</version>
+		<author>Ben Wolfe</author>
+		<date>Mar 28th 2007</date>
+		<description>
+			Updating the AMPATH template and xslt
+		</description>
+		<sql>
+			<![CDATA[
+				UPDATE `clinical_summary` SET template = '<?xml version=\"1.0\"?>\r\n<clinicalSummaryList>\r\n\r\n#foreach($patientId in $patientSet.patientIds)\r\n$!{fn.setPatientId($patientId)}\r\n<clinicalSummary>\r\n	<id>$!{fn.getPatientAttr(\'PatientIdentifier\', \'identifier\')}</id>\r\n	<name>\r\n		$!{fn.getPatientAttr(\'PatientName\', \'givenName\')} \r\n		$!{fn.getPatientAttr(\'PatientName\', \'middleName\')} \r\n		$!{fn.getPatientAttr(\'PatientName\', \'familyName\')}\r\n	</name>\r\n	<gender>$!{fn.getPatientAttr(\'Patient\', \'gender\')}</gender>\r\n	#set($birthdate = $!{fn.getPatientAttr(\'Patient\', \'birthdate\')})\r\n	#set($birthdate_estimated = $!{fn.getPatientAttr(\'Patient\', \'birthdateEstimated\')})\r\n	#set($age = $!{fn.getAge(${birthdate})})\r\n	#if ($!{age.get(1)} == \"days\") #set($age_text = \"$!{age.get(0)} day-old\")\r\n	#else\r\n		#if ($!{age.get(1)} == \"months\") #set($age_text = \"$!{age.get(0)} month-old\")\r\n		#else #set($age_text = \"$!{age.get(0)} year-old\")\r\n		#end\r\n	#end\r\n	<birthdate estimate=\"${birthdate_estimated}\" age=\"$!{age_text}\">\r\n		$!{fn.formatDate(\'dd-MMM-yyyy\',${birthdate})}\r\n	</birthdate>\r\n	<firstEncounterDate>\r\n		$!{fn.formatDate(\'dd-MMM-yyyy\', ${fn.getFirstEncounter(\'\').getEncounterDatetime()})}\r\n	</firstEncounterDate>\r\n	<healthCenter>${fn.getValueAsString($!{fn.getPatientAttr(\'Patient\', \'healthCenter\')})}</healthCenter>\r\n	<whoStage>${fn.getValueAsString(${fn.getLastObs(\'5356\')})}</whoStage>\r\n	<perfectAdherence>\r\n		#set($obsValues = $fn.getObsTimeframe(\'1164\', 12))\r\n		#if (${obsValues.size()} < 1)\r\n			unknown\r\n		#else\r\n			#set($all = true)\r\n			#foreach($val in $obsValues)\r\n				#if (!(${val.getConceptId()} == 1163))#set($all = false)#end\r\n			#end\r\n			#if ($all == true)\r\n				yes\r\n			#else\r\n				no\r\n			#end\r\n		#end\r\n	</perfectAdherence>\r\n	<problemList>\r\n		<!-- Make a list of all PROBLEM ADDED without a subsequent matching PROBLEM RESOLVED -->\r\n		#set($arr = [\'obsDatetime\'])\r\n		#set($obsValues = $fn.getIntersectedObs(\'6042\', \'6097\', $arr))\r\n		#foreach($vals in $obsValues)\r\n			<problem date=\"${fn.formatDate(\'dd-MMM-yyyy\', ${vals.get(1)})}\">\r\n				${fn.getValueAsString(${vals.get(0).getName()})}\r\n			</problem>\r\n		#end\r\n	</problemList>\r\n	<flowsheet>\r\n  	<!--\r\n  		List all known values for\r\n  			WEIGHT (KG),\r\n  			HGB (concept HEMOGLOBIN),\r\n  			SAO2 (concept BLOOD OXYGEN SATURATION),\r\n  			CD4 (CD4, BY FACS),\r\n  			SGPT\r\n  		All dates should be in MM-DD-YYYY format\r\n  		For CD4: if CD4% exists on same day, repeat as CD4 (%), e.g. <value date=\"...\">252 (16%)</value>\r\n  	-->\r\n	<results name=\"WEIGHT (KG)\">\r\n		#set($arr = [\'obsDatetime\'])\r\n		#set($obsValues = $fn.getLastNObsWithValues(-1, \'5089\', $arr))\r\n		#foreach($vals in $obsValues)\r\n			<value date=\"${fn.formatDate(\'dd-MMM-yyyy\', ${vals.get(1)})}\">\r\n				${fn.getValueAsString(${vals.get(0)})}\r\n			</value>\r\n		#end\r\n	</results>\r\n	<results name=\"HGB\">\r\n		#set($arr = [\'obsDatetime\'])\r\n		#set($obsValues = $fn.getLastNObsWithValues(-1, \'21\', $arr))\r\n		#foreach($vals in $obsValues)\r\n			<value date=\"${fn.formatDate(\'dd-MMM-yyyy\', ${vals.get(1)})}\">\r\n				${fn.getValueAsString(${vals.get(0)})}\r\n			</value>\r\n		#end\r\n	</results>\r\n	<results name=\"SA02\">\r\n		#set($arr = [\'obsDatetime\'])\r\n		#set($obsValues = $fn.getLastNObsWithValues(-1, \'5092\', $arr))\r\n		#foreach($vals in $obsValues)\r\n			<value date=\"${fn.formatDate(\'dd-MMM-yyyy\', ${vals.get(1)})}\">\r\n				${fn.getValueAsString(${vals.get(0)})}\r\n			</value>\r\n		#end\r\n	</results>\r\n	<results name=\"CD4\">\r\n		#set($arr = [\'obsDatetime\'])\r\n		#set($obsValues = $fn.getLastNObsWithValues(-1, \'5497\', $arr))\r\n		#foreach($vals in $obsValues)\r\n			<value date=\"${fn.formatDate(\'dd-MMM-yyyy\', ${vals.get(1)})}\">\r\n				${fn.getValueAsString(${vals.get(0)})}\r\n			</value>\r\n		#end\r\n	</results>\r\n	<results name=\"SGPT\">\r\n		#set($arr = [\'obsDatetime\'])\r\n		#set($obsValues = $fn.getLastNObsWithValues(-1, \'654\', $arr))\r\n		#foreach($vals in $obsValues)\r\n			<value date=\"${fn.formatDate(\'dd-MMM-yyyy\', ${vals.get(1)})}\">\r\n				${fn.getValueAsString(${vals.get(0)})}\r\n			</value>\r\n		#end\r\n	</results>\r\n	</flowsheet>\r\n	<cd4_percent>\r\n		#set($arr = [\'obsDatetime\'])\r\n		#set($obsValues = $fn.getLastNObsWithValues(-1, \'730\', $arr))\r\n		#foreach($vals in $obsValues)\r\n			<value date=\"${fn.formatDate(\'dd-MMM-yyyy\', ${vals.get(1)})}\">\r\n				${fn.getValueAsString(${vals.get(0)})}\r\n			</value>\r\n		#end\r\n	</cd4_percent>\r\n\r\n	#set($arr = [\'obsDatetime\'])\r\n	#set($obsValues = $fn.getLastNObsWithValues(-1, \'12\', $arr))\r\n	#foreach($vals in $obsValues)\r\n		#if($velocityCount == 1)<cxr date=\"${fn.formatDate(\'short\', ${vals.get(1)})}\">#end\r\n			${fn.getValueAsString(${vals.get(0)})}\r\n			#if($velocityCount > 1) , #end\r\n		#if($velocityCount == ${obsValues.size()})</cxr>#end\r\n	#end\r\n\r\n	#set($medValues = ${fn.getAmpathActiveMedications()})\r\n	#foreach($vals in $medValues)\r\n		#if($velocityCount == 1)<medications>#end\r\n		<medication date=\"${fn.formatDate(\'short\', ${vals.get(1)})}\">\r\n			${fn.getValueAsString(${vals.get(0)})}\r\n		</medication>\r\n		#if($velocityCount == ${medValues.size()})</medications>#end\r\n	#end\r\n\r\n</clinicalSummary>\r\n#end <!-- ending patient loop -->\r\n\r\n</clinicalSummaryList>\r\n' where clinical_summary_id = 2;
+				UPDATE `clinical_summary` SET xslt = '<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<xsl:stylesheet version=\"2.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" \r\n	xmlns:fo=\"http://www.w3.org/1999/XSL/Format\" xmlns:fn=\"http://www.w3.org/2005/02/xpath-functions\"\r\n	exclude-result-prefixes=\"fo\">\r\n<xsl:output method=\"xml\" version=\"1.0\" omit-xml-declaration=\"no\" indent=\"yes\"/>\r\n\r\n<xsl:template match=\"clinicalSummaryList\">\r\n<fo:root xmlns:fo=\"http://www.w3.org/1999/XSL/Format\">\r\n	<fo:layout-master-set>\r\n		<fo:simple-page-master master-name=\"simpleA4\" page-height=\"29.7cm\" page-width=\"21cm\"\r\n			margin-top=\"1cm\" margin-left=\"1cm\" margin-right=\"1cm\" margin-bottom=\"1cm\">\r\n			<fo:region-body margin-top=\"1.2cm\" margin-bottom=\"1.2cm\" />\r\n			<fo:region-before extent=\"3cm\"  />\r\n			<fo:region-after extent=\"1cm\" />\r\n		</fo:simple-page-master>\r\n	</fo:layout-master-set>\r\n	\r\n	<!-- Begin Summary -->\r\n	<xsl:for-each select=\"clinicalSummary\">\r\n	<fo:page-sequence master-reference=\"simpleA4\">\r\n		<!-- Header -->\r\n		<fo:static-content flow-name=\"xsl-region-before\" font-family=\"Helvetica\">\r\n			<fo:block text-align=\"center\"\r\n				border-top=\"thin solid grey\"\r\n				border-left=\"thin solid grey\"\r\n				border-right=\"thin solid black\"\r\n				border-bottom=\"thin solid black\"\r\n				background-color=\"#e0e0e0\"\r\n				padding=\"0.2cm\"\r\n				space-after=\"12pt\"\r\n				font-weight=\"bold\">AMPATH Medical Record System Clinical Summary</fo:block>\r\n		</fo:static-content>\r\n		<!-- Footer -->\r\n		<fo:static-content flow-name=\"xsl-region-after\" font-family=\"Helvetica\">\r\n			<fo:table table-layout=\"fixed\" width=\"100%\">\r\n				<fo:table-column column-width=\"60%\" />\r\n				<fo:table-column column-width=\"40%\" />\r\n				<fo:table-body>\r\n					<fo:table-row height=\"1cm\">\r\n						<fo:table-cell display-align=\"center\">\r\n							<fo:block text-align=\"left\" font-size=\"8pt\">Printed on <xsl:value-of select=\"format-dateTime(current-dateTime(),\'[Y0001]-[M01]-[D01] at [H01]:[m01]:[s01]\')\" /></fo:block>\r\n						</fo:table-cell>\r\n						<fo:table-cell display-align=\"center\">\r\n							<fo:block text-align=\"right\" font-size=\"20pt\" font-weight=\"bold\">\r\n								<xsl:value-of select=\"id\" />\r\n							</fo:block>\r\n						</fo:table-cell>\r\n					</fo:table-row>\r\n				</fo:table-body>\r\n			</fo:table>		\r\n			<fo:block>\r\n			</fo:block>\r\n		</fo:static-content>\r\n		\r\n		<!-- Begin Page Content -->\r\n		<fo:flow flow-name=\"xsl-region-body\" font-family=\"Helvetica\" font-size=\"14pt\">\r\n			<fo:table table-layout=\"fixed\" width=\"100%\">\r\n				<fo:table-column column-width=\"60%\" />\r\n				<fo:table-column column-width=\"40%\" />\r\n				<fo:table-body font-size=\"20pt\">\r\n					<fo:table-row height=\"1cm\">\r\n						<fo:table-cell>\r\n							<fo:block font-weight=\"bold\" font-style=\"italic\"><xsl:value-of select=\"name\" /></fo:block>\r\n						</fo:table-cell>\r\n						<fo:table-cell text-align=\"right\">\r\n							<fo:block font-weight=\"bold\"><xsl:value-of select=\"id\" /></fo:block>\r\n						</fo:table-cell>\r\n					</fo:table-row>\r\n				</fo:table-body>\r\n			</fo:table>\r\n			<fo:block font-size=\"14pt\" space-after=\"6pt\">\r\n				<fo:inline><xsl:value-of select=\"birthdate/@age\" /></fo:inline>\r\n				<xsl:choose>\r\n					<xsl:when test=\"gender = \'M\'\">\r\n						<fo:inline> male</fo:inline>\r\n					</xsl:when>\r\n					<xsl:when test=\"gender = \'F\'\">\r\n						<fo:inline> female</fo:inline>\r\n					</xsl:when>\r\n				</xsl:choose>\r\n			</fo:block>\r\n			<fo:block>\r\n				<fo:inline>First Encounter on <xsl:value-of select=\"firstEncounterDate\" /></fo:inline>\r\n			</fo:block>\r\n			<fo:block>\r\n				<fo:inline>WHO Stage: <xsl:value-of select=\"whoStage\" /></fo:inline>\r\n			</fo:block>\r\n			<fo:block>Perfect HIV Rx Adherence (past year): <xsl:value-of select=\"perfectAdherence\" /></fo:block>\r\n			<!-- <fo:block text-align=\"center\" space-before=\"12pt\" space-after=\"12pt\">\r\n				<fo:leader leader-pattern=\"rule\" leader-length=\"80%\" color=\"#808080\" />\r\n			</fo:block> -->\r\n			\r\n			<fo:table table-layout=\"fixed\"\r\n				width=\"100%\"\r\n				border-spacing=\"0.25in\" space-before=\"6pt\"\r\n				space-after=\"6pt\">\r\n				<fo:table-column column-width=\"50%\" />\r\n				<fo:table-column column-width=\"50%\" />\r\n				<fo:table-body font-size=\"20pt\">\r\n					<fo:table-row height=\"7cm\">\r\n						<fo:table-cell>\r\n\r\n			<!-- Problem list -->\r\n			<fo:block font-size=\"18pt\"\r\n				space-before=\"8pt\"\r\n				space-after=\"8pt\"><fo:inline text-decoration=\"underline\">Problem List</fo:inline>:</fo:block>\r\n			<xsl:if test=\"problemList/problem\">\r\n				<fo:list-block font-size=\"14pt\" space-after=\"12pt\"\r\n					provisional-label-separation=\"4mm\" provisional-distance-between-starts=\"10mm\">\r\n					<xsl:for-each select=\"problemList/problem\">\r\n					<fo:list-item>\r\n						<fo:list-item-label end-indent=\"label-end()\">\r\n							<fo:block><xsl:value-of select=\"position()\" />.</fo:block>\r\n						</fo:list-item-label>\r\n						<fo:list-item-body start-indent=\"body-start()\">\r\n							<fo:block>\r\n								<xsl:value-of select=\".\" />\r\n								<xsl:if test=\"@date\">\r\n									<xsl:text> (</xsl:text>\r\n									<xsl:value-of select=\"@date\" />\r\n									<xsl:text>)</xsl:text>\r\n								</xsl:if>\r\n							</fo:block>\r\n						</fo:list-item-body>\r\n					</fo:list-item>\r\n					</xsl:for-each>\r\n				</fo:list-block>\r\n			</xsl:if>\r\n\r\n						</fo:table-cell>\r\n						<fo:table-cell>\r\n						\r\n			<!-- Medications -->\r\n			<fo:block font-size=\"18pt\"\r\n				space-before=\"8pt\"\r\n				space-after=\"8pt\"><fo:inline text-decoration=\"underline\">Medications</fo:inline>:</fo:block>\r\n			<xsl:if test=\"medications/medication\">\r\n				<fo:list-block font-size=\"14pt\" space-after=\"12pt\"\r\n					provisional-label-separation=\"4mm\" provisional-distance-between-starts=\"10mm\">\r\n					<xsl:for-each select=\"medications/medication\">\r\n					<fo:list-item>\r\n						<fo:list-item-label end-indent=\"label-end()\">\r\n							<fo:block><xsl:value-of select=\"position()\" />.</fo:block>\r\n						</fo:list-item-label>\r\n						<fo:list-item-body start-indent=\"body-start()\">\r\n							<fo:block>\r\n								<xsl:value-of select=\".\" />\r\n								<!--\r\n								<xsl:if test=\"@date\">\r\n									<xsl:text> (</xsl:text>\r\n									<xsl:value-of select=\"@date\" />\r\n									<xsl:text>)</xsl:text>\r\n								</xsl:if>\r\n								-->\r\n							</fo:block>\r\n						</fo:list-item-body>\r\n					</fo:list-item>\r\n					</xsl:for-each>\r\n				</fo:list-block>\r\n			</xsl:if>\r\n\r\n						</fo:table-cell>\r\n					</fo:table-row>\r\n				</fo:table-body>\r\n			</fo:table>\r\n\r\n			<!-- Flowsheet -->\r\n			<fo:block font-size=\"18pt\"><fo:inline text-decoration=\"underline\">Flowsheet</fo:inline>:</fo:block>\r\n			<fo:table space-after=\"12pt\" table-layout=\"fixed\" width=\"100%\" border-collapse=\"collapse\">\r\n				<xsl:for-each select=\"flowsheet/results\">\r\n				<fo:table-column width=\"16%\" />\r\n				</xsl:for-each>\r\n				<fo:table-body>\r\n					<fo:table-row>\r\n						<xsl:for-each select=\"flowsheet/results\">\r\n							<xsl:element name=\"fo:table-cell\">\r\n								<xsl:attribute name=\"text-align\">center</xsl:attribute>\r\n								<xsl:attribute name=\"padding\">2pt</xsl:attribute>\r\n								<xsl:attribute name=\"border-bottom\">thin solid black</xsl:attribute>\r\n								<xsl:if test=\"not(position()=last())\">\r\n									<xsl:attribute name=\"border-right\">thin solid black</xsl:attribute>\r\n								</xsl:if>\r\n								<fo:block><xsl:value-of select=\"@name\" /></fo:block>\r\n							</xsl:element>\r\n						</xsl:for-each>\r\n					</fo:table-row>\r\n					<xsl:variable name=\"results\" select=\"flowsheet/results\" />\r\n					<xsl:variable name=\"cd4_percent\" select=\"cd4_percent\" />\r\n					<xsl:for-each select=\"(1,2,3,4,5)\">\r\n						<xsl:variable name=\"i\" select=\"position()\" />\r\n						<xsl:element name=\"fo:table-row\">\r\n							<xsl:attribute name=\"background-color\">\r\n								<xsl:if test=\"$i mod 2\">#F8F8F8</xsl:if>\r\n								<xsl:if test=\"not($i mod 2)\">#FFFFFF</xsl:if>\r\n							</xsl:attribute>\r\n							<xsl:attribute name=\"height\">1cm</xsl:attribute>\r\n							<xsl:for-each select=\"$results\">\r\n								<xsl:variable name=\"result_name\" select=\"@name\" />\r\n								<xsl:element name=\"fo:table-cell\">\r\n									<xsl:attribute name=\"text-align\">center</xsl:attribute>\r\n									<xsl:attribute name=\"display-align\">center</xsl:attribute>\r\n									<xsl:attribute name=\"padding\">2pt</xsl:attribute>\r\n									<xsl:if test=\"not(position()=last())\">\r\n										<xsl:attribute name=\"border-right\">thin solid black</xsl:attribute>\r\n									</xsl:if>\r\n									<xsl:choose>\r\n										<xsl:when test=\"($i=5) and (count(value) > 5)\">\r\n											<xsl:variable name=\"result_date\" select=\"value[position()=last()]/@date\" />\r\n											<fo:block>\r\n												<xsl:value-of select=\"value[position()=last()]\" />\r\n												<xsl:if test=\"$result_name=\'CD4\'\">\r\n													<xsl:variable name=\"p\" select=\"$cd4_percent/value[@date=$result_date]\" />\r\n													<xsl:if test=\"$p\">\r\n														<xsl:text> (</xsl:text>\r\n														<xsl:value-of select=\"normalize-space($p[position()=1])\" />\r\n														<xsl:text>%)</xsl:text>\r\n													</xsl:if>\r\n												</xsl:if>\r\n											</fo:block>\r\n											<xsl:if test=\"$result_date\">\r\n												<fo:block font-size=\"6pt\" font-style=\"italic\" color=\"#808080\">on <xsl:value-of select=\"substring($result_date,0,12)\" /></fo:block>\r\n											</xsl:if>\r\n										</xsl:when>\r\n										<xsl:when test=\"value[$i]\">\r\n											<xsl:variable name=\"result_date\" select=\"value[$i]/@date\" />\r\n											<fo:block>\r\n												<xsl:value-of select=\"value[$i]\" />\r\n												<xsl:if test=\"$result_name=\'CD4\'\">\r\n													<xsl:variable name=\"p\" select=\"$cd4_percent/value[@date=$result_date]\" />\r\n													<xsl:if test=\"$p\">\r\n														<xsl:text> (</xsl:text>\r\n														<xsl:value-of select=\"normalize-space($p[position()=1])\" />\r\n														<xsl:text>%)</xsl:text>\r\n													</xsl:if>\r\n												</xsl:if>\r\n											</fo:block>\r\n											<xsl:if test=\"$result_date\">\r\n												<fo:block font-size=\"6pt\" font-style=\"italic\" color=\"#808080\">on <xsl:value-of select=\"substring($result_date,0,12)\" /></fo:block>\r\n											</xsl:if>\r\n										</xsl:when>\r\n										<xsl:otherwise>\r\n											<fo:block></fo:block>\r\n										</xsl:otherwise>\r\n									</xsl:choose>\r\n								</xsl:element>\r\n							</xsl:for-each>\r\n						</xsl:element>\r\n					</xsl:for-each>\r\n				</fo:table-body>\r\n			</fo:table>\r\n			\r\n			<!-- Chest X-ray -->\r\n			<fo:block font-size=\"18pt\" text-decoration=\"underline\" space-after=\"6pt\">\r\n				Chest X-ray\r\n			</fo:block>\r\n			<xsl:choose>\r\n				<xsl:when test=\"cxr\">\r\n					<fo:block><xsl:value-of select=\"cxr/@date\" />: <xsl:value-of select=\"cxr\" /></fo:block>\r\n				</xsl:when>\r\n				<xsl:otherwise>\r\n					<fo:block>No chest x-ray results available.</fo:block>\r\n				</xsl:otherwise>\r\n			</xsl:choose>\r\n			\r\n			<!-- Reminders -->\r\n			<xsl:if test=\"reminderList\">\r\n				<fo:block font-size=\"18pt\" text-decoration=\"underline\" space-before=\"6pt\">\r\n					Reminders\r\n				</fo:block>\r\n				<xsl:for-each select=\"reminderList/reminder\">\r\n					<fo:block space-before=\"6pt\"><xsl:value-of select=\".\" /></fo:block>\r\n				</xsl:for-each>\r\n			</xsl:if>\r\n		</fo:flow>\r\n	</fo:page-sequence>\r\n	</xsl:for-each>\r\n</fo:root>\r\n</xsl:template>\r\n\r\n</xsl:stylesheet>\r\n' where clinical_summary_id = 2;
+			]]>
+		</sql>
+	</diff>
+	
+	<diff>
+		<version>1.3.0</version>
+		<author>Ben Wolfe</author>
+		<date>April 2nd 2007</date>
+		<description>
+			Change encounter attrs in template
+		</description>
+		<sql>
+			UPDATE 
+				`clinical_summary`
+			SET
+				`template` = REPLACE(`template`, "getFirstEncounter('').getEncounterDatetime()", "getFirstEncounterAttrsByType([''], 'encounterDatetime')");
+		</sql>
+	</diff>
+	
+	<diff>
+		<version>1.8.0</version>
+		<author>Ben Wolfe</author>
+		<date>April 2nd 2007</date>
+		<description>
+			Change summaries to match person branch updates
+		</description>
+		<sql>
+			UPDATE
+				`clinical_summary`
+			SET
+				`template` = REPLACE(`template`, "getPatientAttr('PatientName'", "getPatientAttr('PersonName'");
+			UPDATE
+				`clinical_summary`
+			SET
+				`template` = REPLACE(`template`, "getPatientAttr('PatientAddress'", "getPatientAttr('PersonAddress'");
+			UPDATE
+				`clinical_summary`
+			SET
+				`template` = REPLACE(`template`, "('Patient', 'gender')", "('Person', 'gender')");
+			UPDATE
+				`clinical_summary`
+			SET
+				`template` = REPLACE(`template`, "('Patient', 'birthdate')", "('Person', 'birthdate')");
+			UPDATE
+				`clinical_summary`
+			SET
+				`template` = REPLACE(`template`, "('Patient', 'birthdateEstimated')", "('Person', 'birthdateEstimated')");
+			UPDATE
+				`clinical_summary`
+			SET
+				`template` = REPLACE(`template`, "('Patient', 'causeOfDeath')", "('Person', 'causeOfDeath')");
+			UPDATE
+				`clinical_summary`
+			SET
+				`template` = REPLACE(`template`, "('Patient', 'deathDate')", "('Person', 'deathDate')");
+			UPDATE
+				`clinical_summary`
+			SET
+				`template` = REPLACE(`template`, "fn.getPatientAttr('Patient', 'healthCenter')", "fn.getPersonAttribute('Health Center', 'Location', 'locationId', 'name', false)");
+			UPDATE
+				`clinical_summary`
+			SET
+				`template` = REPLACE(`template`, "fn.getPatientAttribute('Patient', 'race')", "fn.getPersonAttribute('Race')");
+		</sql>
+	</diff>
+	
+	
+	<diff>
+		<version>1.9.0</version>
+		<author>Ben Wolfe</author>
+		<date>April 2nd 2007</date>
+		<description>
+			Change basic summary's "xslt string" to AMPATH xslt
+		</description>
+		<sql>
+			<![CDATA[
+				UPDATE clinical_summary set xslt = '<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<xsl:stylesheet version=\"2.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" \r\n	xmlns:fo=\"http://www.w3.org/1999/XSL/Format\" xmlns:fn=\"http://www.w3.org/2005/02/xpath-functions\"\r\n	exclude-result-prefixes=\"fo\">\r\n<xsl:output method=\"xml\" version=\"1.0\" omit-xml-declaration=\"no\" indent=\"yes\"/>\r\n\r\n<xsl:template match=\"clinicalSummaryList\">\r\n<fo:root xmlns:fo=\"http://www.w3.org/1999/XSL/Format\">\r\n	<fo:layout-master-set>\r\n		<fo:simple-page-master master-name=\"simpleA4\" page-height=\"29.7cm\" page-width=\"21cm\"\r\n			margin-top=\"1cm\" margin-left=\"1cm\" margin-right=\"1cm\" margin-bottom=\"1cm\">\r\n			<fo:region-body margin-top=\"1.2cm\" margin-bottom=\"1.2cm\" />\r\n			<fo:region-before extent=\"3cm\"  />\r\n			<fo:region-after extent=\"1cm\" />\r\n		</fo:simple-page-master>\r\n	</fo:layout-master-set>\r\n	\r\n	<!-- Begin Summary -->\r\n	<xsl:for-each select=\"clinicalSummary\">\r\n	<fo:page-sequence master-reference=\"simpleA4\">\r\n		<!-- Header -->\r\n		<fo:static-content flow-name=\"xsl-region-before\" font-family=\"Helvetica\">\r\n			<fo:block text-align=\"center\"\r\n				border-top=\"thin solid grey\"\r\n				border-left=\"thin solid grey\"\r\n				border-right=\"thin solid black\"\r\n				border-bottom=\"thin solid black\"\r\n				background-color=\"#e0e0e0\"\r\n				padding=\"0.2cm\"\r\n				space-after=\"12pt\"\r\n				font-weight=\"bold\">AMPATH Medical Record System Clinical Summary</fo:block>\r\n		</fo:static-content>\r\n		<!-- Footer -->\r\n		<fo:static-content flow-name=\"xsl-region-after\" font-family=\"Helvetica\">\r\n			<fo:table table-layout=\"fixed\" width=\"100%\">\r\n				<fo:table-column column-width=\"60%\" />\r\n				<fo:table-column column-width=\"40%\" />\r\n				<fo:table-body>\r\n					<fo:table-row height=\"1cm\">\r\n						<fo:table-cell display-align=\"center\">\r\n							<fo:block text-align=\"left\" font-size=\"8pt\">Printed on <xsl:value-of select=\"format-dateTime(current-dateTime(),\'[Y0001]-[M01]-[D01] at [H01]:[m01]:[s01]\')\" /></fo:block>\r\n						</fo:table-cell>\r\n						<fo:table-cell display-align=\"center\">\r\n							<fo:block text-align=\"right\" font-size=\"20pt\" font-weight=\"bold\">\r\n								<xsl:value-of select=\"id\" />\r\n							</fo:block>\r\n						</fo:table-cell>\r\n					</fo:table-row>\r\n				</fo:table-body>\r\n			</fo:table>		\r\n			<fo:block>\r\n			</fo:block>\r\n		</fo:static-content>\r\n		\r\n		<!-- Begin Page Content -->\r\n		<fo:flow flow-name=\"xsl-region-body\" font-family=\"Helvetica\" font-size=\"14pt\">\r\n			<fo:table table-layout=\"fixed\" width=\"100%\">\r\n				<fo:table-column column-width=\"60%\" />\r\n				<fo:table-column column-width=\"40%\" />\r\n				<fo:table-body font-size=\"20pt\">\r\n					<fo:table-row height=\"1cm\">\r\n						<fo:table-cell>\r\n							<fo:block font-weight=\"bold\" font-style=\"italic\"><xsl:value-of select=\"name\" /></fo:block>\r\n						</fo:table-cell>\r\n						<fo:table-cell text-align=\"right\">\r\n							<fo:block font-weight=\"bold\"><xsl:value-of select=\"id\" /></fo:block>\r\n						</fo:table-cell>\r\n					</fo:table-row>\r\n				</fo:table-body>\r\n			</fo:table>\r\n			<fo:block font-size=\"14pt\" space-after=\"6pt\">\r\n				<fo:inline><xsl:value-of select=\"birthdate/@age\" /></fo:inline>\r\n				<xsl:choose>\r\n					<xsl:when test=\"gender = \'M\'\">\r\n						<fo:inline> male</fo:inline>\r\n					</xsl:when>\r\n					<xsl:when test=\"gender = \'F\'\">\r\n						<fo:inline> female</fo:inline>\r\n					</xsl:when>\r\n				</xsl:choose>\r\n			</fo:block>\r\n			<fo:block>\r\n				<fo:inline>First Encounter on <xsl:value-of select=\"firstEncounterDate\" /></fo:inline>\r\n			</fo:block>\r\n			<fo:block>\r\n				<fo:inline>WHO Stage: <xsl:value-of select=\"whoStage\" /></fo:inline>\r\n			</fo:block>\r\n			<fo:block>Perfect HIV Rx Adherence (past year): <xsl:value-of select=\"perfectAdherence\" /></fo:block>\r\n			<!-- <fo:block text-align=\"center\" space-before=\"12pt\" space-after=\"12pt\">\r\n				<fo:leader leader-pattern=\"rule\" leader-length=\"80%\" color=\"#808080\" />\r\n			</fo:block> -->\r\n			\r\n			<fo:table table-layout=\"fixed\"\r\n				width=\"100%\"\r\n				border-spacing=\"0.25in\" space-before=\"6pt\"\r\n				space-after=\"6pt\">\r\n				<fo:table-column column-width=\"50%\" />\r\n				<fo:table-column column-width=\"50%\" />\r\n				<fo:table-body font-size=\"20pt\">\r\n					<fo:table-row height=\"7cm\">\r\n						<fo:table-cell>\r\n\r\n			<!-- Problem list -->\r\n			<fo:block font-size=\"18pt\"\r\n				space-before=\"8pt\"\r\n				space-after=\"8pt\"><fo:inline text-decoration=\"underline\">Problem List</fo:inline>:</fo:block>\r\n			<xsl:if test=\"problemList/problem\">\r\n				<fo:list-block font-size=\"14pt\" space-after=\"12pt\"\r\n					provisional-label-separation=\"4mm\" provisional-distance-between-starts=\"10mm\">\r\n					<xsl:for-each select=\"problemList/problem\">\r\n					<fo:list-item>\r\n						<fo:list-item-label end-indent=\"label-end()\">\r\n							<fo:block><xsl:value-of select=\"position()\" />.</fo:block>\r\n						</fo:list-item-label>\r\n						<fo:list-item-body start-indent=\"body-start()\">\r\n							<fo:block>\r\n								<xsl:value-of select=\".\" />\r\n								<xsl:if test=\"@date\">\r\n									<xsl:text> (</xsl:text>\r\n									<xsl:value-of select=\"@date\" />\r\n									<xsl:text>)</xsl:text>\r\n								</xsl:if>\r\n							</fo:block>\r\n						</fo:list-item-body>\r\n					</fo:list-item>\r\n					</xsl:for-each>\r\n				</fo:list-block>\r\n			</xsl:if>\r\n\r\n						</fo:table-cell>\r\n						<fo:table-cell>\r\n						\r\n			<!-- Medications -->\r\n			<fo:block font-size=\"18pt\"\r\n				space-before=\"8pt\"\r\n				space-after=\"8pt\"><fo:inline text-decoration=\"underline\">Medications</fo:inline>:</fo:block>\r\n			<xsl:if test=\"medications/medication\">\r\n				<fo:list-block font-size=\"14pt\" space-after=\"12pt\"\r\n					provisional-label-separation=\"4mm\" provisional-distance-between-starts=\"10mm\">\r\n					<xsl:for-each select=\"medications/medication\">\r\n					<fo:list-item>\r\n						<fo:list-item-label end-indent=\"label-end()\">\r\n							<fo:block><xsl:value-of select=\"position()\" />.</fo:block>\r\n						</fo:list-item-label>\r\n						<fo:list-item-body start-indent=\"body-start()\">\r\n							<fo:block>\r\n								<xsl:value-of select=\".\" />\r\n								<!--\r\n								<xsl:if test=\"@date\">\r\n									<xsl:text> (</xsl:text>\r\n									<xsl:value-of select=\"@date\" />\r\n									<xsl:text>)</xsl:text>\r\n								</xsl:if>\r\n								-->\r\n							</fo:block>\r\n						</fo:list-item-body>\r\n					</fo:list-item>\r\n					</xsl:for-each>\r\n				</fo:list-block>\r\n			</xsl:if>\r\n\r\n						</fo:table-cell>\r\n					</fo:table-row>\r\n				</fo:table-body>\r\n			</fo:table>\r\n\r\n			<!-- Flowsheet -->\r\n			<fo:block font-size=\"18pt\"><fo:inline text-decoration=\"underline\">Flowsheet</fo:inline>:</fo:block>\r\n			<fo:table space-after=\"12pt\" table-layout=\"fixed\" width=\"100%\" border-collapse=\"collapse\">\r\n				<xsl:for-each select=\"flowsheet/results\">\r\n				<fo:table-column width=\"16%\" />\r\n				</xsl:for-each>\r\n				<fo:table-body>\r\n					<fo:table-row>\r\n						<xsl:for-each select=\"flowsheet/results\">\r\n							<xsl:element name=\"fo:table-cell\">\r\n								<xsl:attribute name=\"text-align\">center</xsl:attribute>\r\n								<xsl:attribute name=\"padding\">2pt</xsl:attribute>\r\n								<xsl:attribute name=\"border-bottom\">thin solid black</xsl:attribute>\r\n								<xsl:if test=\"not(position()=last())\">\r\n									<xsl:attribute name=\"border-right\">thin solid black</xsl:attribute>\r\n								</xsl:if>\r\n								<fo:block><xsl:value-of select=\"@name\" /></fo:block>\r\n							</xsl:element>\r\n						</xsl:for-each>\r\n					</fo:table-row>\r\n					<xsl:variable name=\"results\" select=\"flowsheet/results\" />\r\n					<xsl:variable name=\"cd4_percent\" select=\"cd4_percent\" />\r\n					<xsl:for-each select=\"(1,2,3,4,5)\">\r\n						<xsl:variable name=\"i\" select=\"position()\" />\r\n						<xsl:element name=\"fo:table-row\">\r\n							<xsl:attribute name=\"background-color\">\r\n								<xsl:if test=\"$i mod 2\">#F8F8F8</xsl:if>\r\n								<xsl:if test=\"not($i mod 2)\">#FFFFFF</xsl:if>\r\n							</xsl:attribute>\r\n							<xsl:attribute name=\"height\">1cm</xsl:attribute>\r\n							<xsl:for-each select=\"$results\">\r\n								<xsl:variable name=\"result_name\" select=\"@name\" />\r\n								<xsl:element name=\"fo:table-cell\">\r\n									<xsl:attribute name=\"text-align\">center</xsl:attribute>\r\n									<xsl:attribute name=\"display-align\">center</xsl:attribute>\r\n									<xsl:attribute name=\"padding\">2pt</xsl:attribute>\r\n									<xsl:if test=\"not(position()=last())\">\r\n										<xsl:attribute name=\"border-right\">thin solid black</xsl:attribute>\r\n									</xsl:if>\r\n									<xsl:choose>\r\n										<xsl:when test=\"($i=5) and (count(value) > 5)\">\r\n											<xsl:variable name=\"result_date\" select=\"value[position()=last()]/@date\" />\r\n											<fo:block>\r\n												<xsl:value-of select=\"value[position()=last()]\" />\r\n												<xsl:if test=\"$result_name=\'CD4\'\">\r\n													<xsl:variable name=\"p\" select=\"$cd4_percent/value[@date=$result_date]\" />\r\n													<xsl:if test=\"$p\">\r\n														<xsl:text> (</xsl:text>\r\n														<xsl:value-of select=\"normalize-space($p[position()=1])\" />\r\n														<xsl:text>%)</xsl:text>\r\n													</xsl:if>\r\n												</xsl:if>\r\n											</fo:block>\r\n											<xsl:if test=\"$result_date\">\r\n												<fo:block font-size=\"6pt\" font-style=\"italic\" color=\"#808080\">on <xsl:value-of select=\"substring($result_date,0,12)\" /></fo:block>\r\n											</xsl:if>\r\n										</xsl:when>\r\n										<xsl:when test=\"value[$i]\">\r\n											<xsl:variable name=\"result_date\" select=\"value[$i]/@date\" />\r\n											<fo:block>\r\n												<xsl:value-of select=\"value[$i]\" />\r\n												<xsl:if test=\"$result_name=\'CD4\'\">\r\n													<xsl:variable name=\"p\" select=\"$cd4_percent/value[@date=$result_date]\" />\r\n													<xsl:if test=\"$p\">\r\n														<xsl:text> (</xsl:text>\r\n														<xsl:value-of select=\"normalize-space($p[position()=1])\" />\r\n														<xsl:text>%)</xsl:text>\r\n													</xsl:if>\r\n												</xsl:if>\r\n											</fo:block>\r\n											<xsl:if test=\"$result_date\">\r\n												<fo:block font-size=\"6pt\" font-style=\"italic\" color=\"#808080\">on <xsl:value-of select=\"substring($result_date,0,12)\" /></fo:block>\r\n											</xsl:if>\r\n										</xsl:when>\r\n										<xsl:otherwise>\r\n											<fo:block></fo:block>\r\n										</xsl:otherwise>\r\n									</xsl:choose>\r\n								</xsl:element>\r\n							</xsl:for-each>\r\n						</xsl:element>\r\n					</xsl:for-each>\r\n				</fo:table-body>\r\n			</fo:table>\r\n			\r\n			<!-- Chest X-ray -->\r\n			<fo:block font-size=\"18pt\" text-decoration=\"underline\" space-after=\"6pt\">\r\n				Chest X-ray\r\n			</fo:block>\r\n			<xsl:choose>\r\n				<xsl:when test=\"cxr\">\r\n					<fo:block><xsl:value-of select=\"cxr/@date\" />: <xsl:value-of select=\"cxr\" /></fo:block>\r\n				</xsl:when>\r\n				<xsl:otherwise>\r\n					<fo:block>No chest x-ray results available.</fo:block>\r\n				</xsl:otherwise>\r\n			</xsl:choose>\r\n			\r\n			<!-- Reminders -->\r\n			<xsl:if test=\"reminderList\">\r\n				<fo:block font-size=\"18pt\" text-decoration=\"underline\" space-before=\"6pt\">\r\n					Reminders\r\n				</fo:block>\r\n				<xsl:for-each select=\"reminderList/reminder\">\r\n					<fo:block space-before=\"6pt\"><xsl:value-of select=\".\" /></fo:block>\r\n				</xsl:for-each>\r\n			</xsl:if>\r\n		</fo:flow>\r\n	</fo:page-sequence>\r\n	</xsl:for-each>\r\n</fo:root>\r\n</xsl:template>\r\n\r\n</xsl:stylesheet>\r\n' where xslt = 'xslt string';
+			]]>
+		</sql>
+	</diff>
+	
+	<diff>
+		<version>2.0.0</version>
+		<author>Ben Wolfe</author>
+		<date>May 18th 2007</date>
+		<description>
+			Adding summary printing queue
+		</description>
+		<sql>
+			<![CDATA[
+				CREATE TABLE `clinical_summary_print_queue` (
+				  `clinicalsummary_queue_id` int(11) NOT NULL auto_increment,
+				  `patient_id` int(11) NOT NULL default '0',
+				  `encounter_datetime` datetime NOT NULL default '0000-00-00 00:00:00',
+				  `date_printed` datetime default NULL,
+				  `status` varchar(255) NOT NULL default '0' COMMENT 'QUEUED, PRINTING, PRINTED, ERROR, CANCELLED',
+				  `error_message` text,
+				  `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
+				  PRIMARY KEY  (`clinicalsummary_queue_id`),
+				  KEY `clinical_summary_queue_patient` (`patient_id`),
+				  CONSTRAINT `clinical_summary_queue_patient` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`)
+				) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+			]]>
+		</sql>
+	</diff>
+
+	<diff>
+		<version>2.1.0</version>
+		<author>Brian McKown</author>
+		<date>July 10th 2007</date>
+		<description>
+			Adding location_id to summary printing queue
+		</description>
+		<sql>
+			<![CDATA[
+				ALTER TABLE `clinical_summary_print_queue` 
+					ADD COLUMN `location_id` int(11) NOT NULL default '-1' AFTER `patient_id`;
+
+				UPDATE 
+					`clinical_summary_print_queue` q, `encounter` e
+				SET 
+					q.location_id = e.location_id 
+				WHERE  
+					q.encounter_datetime = e.encounter_datetime AND q.patient_id = e.patient_id;
+					
+				UPDATE
+					`clinical_summary_print_queue` q
+				SET
+					q.location_id = (select l.location_id from location l limit 1)
+				WHERE
+					q.location_id = '-1';
+
+				ALTER TABLE `clinical_summary_print_queue` 
+					ADD CONSTRAINT `clinical_summary_queue_location` FOREIGN KEY `clinical_summary_queue_location` (`location_id`) REFERENCES `location` (`location_id`);
+
+				ALTER TABLE `clinical_summary_print_queue` 
+					ADD INDEX `clinical_summary_queue_location_id`(`location_id`);
+			]]>
+		</sql>
+	</diff>
+
+	<diff>
+		<version>2.1.1</version>
+		<author>Brian McKown</author>
+		<date>July 17th 2007</date>
+		<description>
+			Adding WAITING_ON_LABS to `status` attribute.  Data previously given status QUEUED changed to WAITING_ON_LABS. 
+		</description>
+		<sql>
+			<![CDATA[
+			ALTER TABLE `clinical_summary_print_queue` 
+				MODIFY COLUMN `status` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci 
+					NOT NULL DEFAULT 0 COMMENT 'WAITING_ON_LABS, QUEUED, PRINTING, PRINTED, ERROR, CANCELLED';
+			
+			UPDATE `clinical_summary_print_queue` SET status='WAITING_ON_LABS' WHERE status='QUEUED';
+			]]>
+		</sql>
+	</diff>
+	
+	<diff>
+		<version>2.1.2</version>
+		<author>Brian McKown</author>
+		<date>July 18th 2007</date>
+		<description>
+			Changing QUEUED status to PENDING. 
+		</description>
+		<sql>
+			<![CDATA[
+			ALTER TABLE `clinical_summary_print_queue` 
+				MODIFY COLUMN `status` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci 
+					NOT NULL DEFAULT 0 COMMENT 'WAITING_ON_LABS, PENDING, PRINTING, PRINTED, ERROR, CANCELLED';
+			
+			UPDATE `clinical_summary_print_queue` SET status='PENDING' WHERE status='QUEUED';
+			]]>
+		</sql>
+	</diff>
+	
+	<diff>
+		<version>2.1.3</version>
+		<author>Brian McKown</author>
+		<date>Sept 19th 2007</date>
+		<description>
+			Alter clinical_summary_print_queue.status to include status GENERATED. 
+		</description>
+		<sql>
+			<![CDATA[
+			ALTER TABLE `clinical_summary_print_queue` 
+				MODIFY COLUMN `status` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci 
+					NOT NULL DEFAULT 0 COMMENT 'WAITING_ON_LABS, GENERATED, PENDING, PRINTING, PRINTED, ERROR, CANCELLED';			
+			]]>
+		</sql>
+	</diff>
+
+	<diff>
+		<version>2.1.4</version>
+		<author>Brian McKown</author>
+		<date>Sept 20th 2007</date>
+		<description>
+			Adding filename to summary printing queue
+		</description>
+		<sql>
+			<![CDATA[
+					ALTER TABLE `clinical_summary_print_queue` 
+						ADD COLUMN `file_name` VARCHAR(255) DEFAULT NULL AFTER `status`;
+			]]>
+		</sql>
+	</diff>
+	
+</sqldiff>
