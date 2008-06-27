@@ -4,12 +4,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -50,6 +52,7 @@ import org.openmrs.module.clinicalsummary.ClinicalSummaryService;
 import org.openmrs.module.clinicalsummary.ClinicalSummaryUtil;
 import org.openmrs.module.clinicalsummary.SummaryExportFunctions;
 import org.openmrs.module.clinicalsummary.ClinicalSummaryQueueItem.CLINICAL_SUMMARY_QUEUE_STATUS;
+import org.openmrs.module.clinicalsummary.ReminderLog;
 import org.openmrs.module.clinicalsummary.db.ClinicalSummaryDAO;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -60,7 +63,8 @@ public class ClinicalSummaryServiceImpl implements ClinicalSummaryService {
 	private ClinicalSummaryDAO summaryDAO; 
 	private FopFactory fopFactory = FopFactory.newInstance();
 	private TransformerFactory tFactory = TransformerFactory.newInstance();
-		
+	private ReminderLog reminder = new ReminderLog();
+    
 	/**
 	 * @return the summaryDAO
 	 */
@@ -188,14 +192,14 @@ public class ClinicalSummaryServiceImpl implements ClinicalSummaryService {
 	 * @see org.openmrs.module.clinicalsummary.ClinicalSummaryService#getQueueItems(java.util.Date, java.util.List, ClinicalSummaryUtil.ORDER)
 	 */
 	public List<ClinicalSummaryQueueItem> getQueueItems(Date beginDate, Date endDate, List<String> locations, List<String> statuses, ClinicalSummaryUtil.ORDER order, int offset, int limit) {
-		return summaryDAO.getQueueItems(beginDate, endDate, locations, statuses, order, offset, limit);
+        return summaryDAO.getQueueItems(beginDate, endDate, locations, statuses, order, offset, limit);
 	}
 	
 	/**
 	 * @see org.openmrs.module.clinicalsummary.ClinicalSummaryService#getQueueItem(Integer)
 	 */
 	public ClinicalSummaryQueueItem getQueueItem(Integer queueId) {
-		return summaryDAO.getQueueItem(queueId);
+        return summaryDAO.getQueueItem(queueId);
 	}
 
 	/**
@@ -227,12 +231,29 @@ public class ClinicalSummaryServiceImpl implements ClinicalSummaryService {
 		
 		summaryDAO.setQueueStatus(queueIds, statusToSet);
 	}
+    
+    /**
+	 * Generates a clinical summary .pdf to a "generated" directory of the file system.  
+     * 
+     * @param queueItem
+     * @param interactive
+     * @return
+     */
+    public Boolean generatePatientSummary(ClinicalSummaryQueueItem queueItem, boolean interactive) {
+        //TODO: logReminder is set to 'true' only for testing.  This should be set to 'false'.
+        return generatePatientSummary(queueItem, interactive, false);
+    }
 	
 	/**
 	 * Generates a clinical summary .pdf to a "generated" directory of the file system.  
 	 * TODO: Remove code related to printing, since this used to send the clinical summaries to the printer.
+     * 
+     * @param queueItem 
+     * @param interactive
+     * @param logReminder If true, will log the clinical summary patient reminder to the reminder log file.
+     * @return
 	 */
-	public Boolean generatePatientSummary(ClinicalSummaryQueueItem queueItem, boolean interactive) {
+	public Boolean generatePatientSummary(ClinicalSummaryQueueItem queueItem, boolean interactive, boolean logReminder) {
 		//PatientSet patientSet = new PatientSet();
 		Cohort patientSet = new Cohort();
 		patientSet.addMember(queueItem.getPatient().getPatientId());
@@ -252,14 +273,16 @@ public class ClinicalSummaryServiceImpl implements ClinicalSummaryService {
 		VelocityContext velocityContext = new VelocityContext();
 		SummaryExportFunctions functions = new SummaryExportFunctions();
 		functions.setPatientSet(patientSet);
-		
+        
 		velocityContext.put("fn", functions);
 		velocityContext.put("locale", Context.getLocale());
 		velocityContext.put("patientSet", patientSet);
 		
-		Writer writer = new StringWriter();		
-		try {
+		Writer writer = new StringWriter();
+        Writer reminderMsg = new StringWriter();
+        try {
 			Velocity.evaluate(velocityContext, writer, this.getClass().getName(), summary.getTemplate());
+            Velocity.evaluate(velocityContext, reminderMsg, "reminderlog", "$fn.getCD4CountReminder()");
 		}
 		catch (IOException e) {
 			throw new APIException("Error parsing template: " + summary.getTemplate(), e);
@@ -324,12 +347,16 @@ public class ClinicalSummaryServiceImpl implements ClinicalSummaryService {
 				if (delFile.exists())
 					delFile.delete();
 			}
-			
+
 			// Set the queueItem fileName and (if not WAITING_ON_LABS) set status to GENERATED.
 			queueItem.setFileName(file.getName());
 			if ((null == queueItem.getStatus()) || (queueItem.getStatus() != ClinicalSummaryQueueItem.CLINICAL_SUMMARY_QUEUE_STATUS.WAITING_ON_LABS))
 				queueItem.setStatus(ClinicalSummaryQueueItem.CLINICAL_SUMMARY_QUEUE_STATUS.GENERATED);
 			this.getSummaryDAO().updateQueueItem(queueItem);
+
+            if (logReminder) {
+                reminder.logReminder(queueItem, reminderMsg.toString());
+            }
 			
 			try {
 				FileOutputStream outStream = new FileOutputStream(file);

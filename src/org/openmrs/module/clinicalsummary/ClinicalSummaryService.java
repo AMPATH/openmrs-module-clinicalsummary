@@ -100,6 +100,16 @@ public interface ClinicalSummaryService {
 	 * @return
 	 */
 	public Boolean generatePatientSummary(ClinicalSummaryQueueItem queueItem, boolean interactive);
+    
+    /**
+	 * Generates default summaries for the given patient to the file system.
+     * 
+     * @param queueItem
+     * @param interactive
+     * @param logReminder  If true, then logs the clinical summary reminder to the reminder log file.
+     * @return
+     */
+    public Boolean generatePatientSummary(ClinicalSummaryQueueItem queueItem, boolean interactive, boolean logReminder);
 
 	/**
 	 * Moves generated clinical summary .pdf's to the "to_print" directory in the file system

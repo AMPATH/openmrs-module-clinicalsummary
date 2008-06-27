@@ -77,7 +77,8 @@ public abstract class ClinicalSummaryPrintingLogic {
 		queueItem.setStatus(ClinicalSummaryQueueItem.CLINICAL_SUMMARY_QUEUE_STATUS.GENERATED);
 		Integer id = css.createQueueItem(queueItem);
 		ClinicalSummaryQueueItem qItem = css.getQueueItem(id);
-		css.generatePatientSummary(qItem, false);
+        // Generate summary and add any patient reminders to ReminderLog.
+		css.generatePatientSummary(qItem, false, true);
 	}
 	
 	/**

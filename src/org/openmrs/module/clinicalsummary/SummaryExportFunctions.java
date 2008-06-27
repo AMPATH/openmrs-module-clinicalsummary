@@ -32,7 +32,7 @@ public class SummaryExportFunctions extends DataExportFunctions {
     protected Map<Integer, List<List<Object>>> patientIdObsValueMapLeft = null;
 
     protected Map<Integer, List<List<Object>>> patientIdObsValueMapRight = null;
-
+    
     public SummaryExportFunctions() {
         super();
 
@@ -236,7 +236,7 @@ public class SummaryExportFunctions extends DataExportFunctions {
 
         return obsValues;
     }
-
+    
     /**
      * Simple temporary hack method to get Clinical Summary reminder for CD4
      * count. The rules are: 1. If there has never been a CD4 count for this
