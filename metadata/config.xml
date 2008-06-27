@@ -68,7 +68,12 @@
 		<defaultValue>clinicalsummary/to_print</defaultValue>
 		<description>Directory in the file system where clinical summaries will be printed.</description>
 	</globalProperty>
-	
+    <globalProperty>
+		<property>@MODULE_ID@.logDir</property>
+		<defaultValue>clinicalsummary/reminders</defaultValue>
+		<description>Directory in the file system where patient reminder logs are located.</description>
+	</globalProperty>
+
 		
 	<servlet>
 		<servlet-name>generate</servlet-name>
