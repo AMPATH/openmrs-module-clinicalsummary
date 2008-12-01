@@ -2,25 +2,11 @@ package org.openmrs.module.clinicalsummary;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
+import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Concept;
-import org.openmrs.Encounter;
-import org.openmrs.EncounterType;
-import org.openmrs.Obs;
+import org.openmrs.*;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.reporting.export.DataExportFunctions;
@@ -262,13 +248,13 @@ public class SummaryExportFunctions extends DataExportFunctions {
         DateFormat reminderFormat = new SimpleDateFormat("MMMMM yyyy");
         DateFormat obsFormat = new SimpleDateFormat("dd-MMM-yyyy");
         // tomorrow
-        GregorianCalendar tomorrow = new GregorianCalendar();
+        Calendar tomorrow = Calendar.getInstance();
         tomorrow.add(Calendar.DAY_OF_MONTH, 1);
         // five months ago
-        GregorianCalendar fiveMosAgo = new GregorianCalendar();
+        Calendar fiveMosAgo = Calendar.getInstance();
         fiveMosAgo.add(Calendar.MONTH, -5);
         // the time of this obs
-        GregorianCalendar obsDatetime = new GregorianCalendar();
+        Calendar obsDatetime = Calendar.getInstance();
         Concept cd4 = getConcept("5497"); // name='CD4, BY FACS'
         Set<Obs> obs = Context.getObsService().getObservations(getPatient(),
                 cd4, false);
@@ -292,9 +278,14 @@ public class SummaryExportFunctions extends DataExportFunctions {
                     lastCD4.setTime(o.getObsDatetime());
                 }
                 thisCD4.setTime(o.getObsDatetime());
-                firstCD4 = thisCD4.before(firstCD4) ? thisCD4 : firstCD4;
-                lastCD4 = thisCD4.after(lastCD4) ? thisCD4 : lastCD4;
+                if (thisCD4.before(firstCD4)) {
+                    firstCD4.setTime(thisCD4.getTime());
+                }
+                if (thisCD4.after(lastCD4)) {
+                    lastCD4.setTime(thisCD4.getTime());
+                }
             }
+            log.debug("Time of firstCD4: " + firstCD4.getTime() + ", lastCD4: " + lastCD4.getTime());
             if (Math
                     .abs(lastCD4.getTimeInMillis() - firstCD4.getTimeInMillis()) < THREE_DAYS) {
                 // All CD4's taken within this time frame can be considered just one CD4 count taken. 
