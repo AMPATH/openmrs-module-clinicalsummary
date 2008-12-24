@@ -49,7 +49,7 @@ public class ClinicalSummaryQueueItem {
 	 * @return the clinicalSummaryQueueId
 	 */
 	public Integer getClinicalSummaryQueueId() {
-		return clinicalSummaryQueueId;
+		return this.clinicalSummaryQueueId;
 	}
 
 	/**
@@ -63,7 +63,7 @@ public class ClinicalSummaryQueueItem {
 	 * @return the encounterDatetime
 	 */
 	public Date getEncounterDatetime() {
-		return encounterDatetime;
+		return this.encounterDatetime;
 	}
 	
 	/**
@@ -77,7 +77,7 @@ public class ClinicalSummaryQueueItem {
 	 * @return the patient
 	 */
 	public Patient getPatient() {
-		return patient;
+		return this.patient;
 	}
 	
 	/**
@@ -91,7 +91,7 @@ public class ClinicalSummaryQueueItem {
 	 * @return the location
 	 */
 	public Location getLocation() {
-		return location;
+		return this.location;
 	}
 	
 	/**
@@ -123,7 +123,7 @@ public class ClinicalSummaryQueueItem {
 	 * @return the datePrinted
 	 */
 	public Date getDatePrinted() {
-		return datePrinted;
+		return this.datePrinted;
 	}
 
 	/**
@@ -137,7 +137,7 @@ public class ClinicalSummaryQueueItem {
 	 * @return the errorMessage
 	 */
 	public String getErrorMessage() {
-		return errorMessage;
+		return this.errorMessage;
 	}
 
 	/**
@@ -151,7 +151,7 @@ public class ClinicalSummaryQueueItem {
 	 * @return the dateCreated
 	 */
 	public Date getDateCreated() {
-		return dateCreated;
+		return this.dateCreated;
 	}
 
 	/**

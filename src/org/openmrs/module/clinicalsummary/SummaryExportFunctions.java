@@ -124,7 +124,7 @@ public class SummaryExportFunctions extends DataExportFunctions {
     /**
      * Returns a list of [number, (years|months|days)]
      * 
-     * @param d
+     * @param 
      * @return
      */
     public List<Object> getAge(Date birthdate) {
@@ -253,6 +253,9 @@ public class SummaryExportFunctions extends DataExportFunctions {
         // five months ago
         Calendar fiveMosAgo = Calendar.getInstance();
         fiveMosAgo.add(Calendar.MONTH, -5);
+        // eleven months ago
+        Calendar elevenMosAgo = Calendar.getInstance();
+        elevenMosAgo.add(Calendar.MONTH, -11);
         // the time of this obs
         Calendar obsDatetime = Calendar.getInstance();
         Concept cd4 = getConcept("5497"); // name='CD4, BY FACS'
@@ -300,7 +303,11 @@ public class SummaryExportFunctions extends DataExportFunctions {
         if (obs.size() == 1 || duplicateCD4Obs) {
             for (Obs o : obs) {
                 obsDatetime.setTime(o.getObsDatetime());
-                if (obsDatetime.before(fiveMosAgo)) {
+                Double value = 0.0;
+                value = o.getValueNumeric();
+                if (obsDatetime.before(elevenMosAgo) && value > 400) {
+                   return "Please order CD4 count now (last CD4 count over 11 months ago).";
+                } else if (obsDatetime.before(fiveMosAgo)) {
                     // Maybe sometime give a more intelligent message.
                     // int months = tomorrow.get(Calendar.MONTH) - obsDatetime.get(Calendar.MONTH);
                     // int years = tomorrow.get(Calendar.YEAR) - obsDatetime.get(Calendar.YEAR);

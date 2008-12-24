@@ -144,7 +144,7 @@ public class ReminderLog {
         initLogFile();
         String msg = 
             q.getEncounterDatetime() + ", " +
-            q.getPatient().getPatientIdentifier() + ", " + reminder;
+            q.getPatient().getPatientId() + ", " + reminder;
         try {
             writer = null;
             writer = new BufferedWriter(new FileWriter(reminderLog, true));
