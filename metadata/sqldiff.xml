@@ -288,5 +288,29 @@
 			]]>
 		</sql>
 	</diff>
-	
+
+    <diff>
+        <version>2.1.5</version>
+        <author>Brian McKown</author>
+        <date>Dec 29, 2008</date>                                                   
+        <description>
+            Adding encounter_id to clinical_summary_queue_item.
+            Allow NULL for patient_id, encounter_datetime, location.
+            TODO: Remove patient_id, encounter_datetime, location from the table.
+        </description>
+        <sql>
+            <![CDATA[
+                    ALTER TABLE `clinical_summary_print_queue`
+                        MODIFY COLUMN `patient_id` int(11) NULL DEFAULT '0';
+                    ALTER TABLE `clinical_summary_print_queue`
+                        MODIFY COLUMN `location_id` int(11) NULL DEFAULT '-1';
+                    ALTER TABLE `clinical_summary_print_queue`
+                        MODIFY COLUMN `encounter_datetime` datetime NULL DEFAULT '0000-00-00 00:00:00';
+                    ALTER TABLE `clinical_summary_print_queue`
+    		            ADD COLUMN `encounter_id` int(11) default NULL after `clinicalsummary_queue_id`;
+            ]]>
+        </sql>
+    </diff>
+
+
 </sqldiff>

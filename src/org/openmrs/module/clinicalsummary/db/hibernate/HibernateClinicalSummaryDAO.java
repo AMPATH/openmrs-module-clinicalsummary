@@ -359,7 +359,7 @@ public class HibernateClinicalSummaryDAO implements ClinicalSummaryDAO {
 		// SELECT
 		private static String unionBegin = "( SELECT ";	
 		private static String selectItems = 
-			"c.clinicalsummary_queue_id, c.patient_id, pid.identifier, c.location_id, l.name loc_name, c.encounter_datetime, " +
+			"c.clinicalsummary_queue_id, c.patient_id, pid.identifier, c.encounter_id, c.location_id, l.name loc_name, c.encounter_datetime, " +
 			"c.date_printed, c.status, c.file_name, c.error_message, c.date_created, pid.preferred, pid.date_created " +
 			"FROM clinical_summary_print_queue c, patient pt, patient_identifier pid, location l ";	
 		// WHERE

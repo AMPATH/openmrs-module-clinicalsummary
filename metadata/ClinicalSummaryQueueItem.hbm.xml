@@ -11,13 +11,15 @@
 			unsaved-value="0">
 				<generator class="native" />
 		</id>
+
+        <many-to-one name="encounter" class="org.openmrs.Encounter" not-null="false" column="encounter_id" />
+
+		<many-to-one name="patient" class="org.openmrs.Patient" not-null="false" column="patient_id" />
 		
-		<many-to-one name="patient" class="org.openmrs.Patient" not-null="true" column="patient_id" />
-		
-		<many-to-one name="location" class="org.openmrs.Location" not-null="true" column="location_id" />
+		<many-to-one name="location" class="org.openmrs.Location" not-null="false" column="location_id" />
 		
 		<property name="encounterDatetime" column="encounter_datetime" 
-			type="java.util.Date" not-null="true" length="19" />
+			type="java.util.Date" not-null="false" length="19" />
 	
 		<property name="status" type="java.lang.String" length="64" access="field" />
 

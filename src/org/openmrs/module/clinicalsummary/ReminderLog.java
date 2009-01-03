@@ -46,7 +46,7 @@ public class ReminderLog {
     
     public ReminderLog() {
         timestamp = new Date();
-        setColumnHeader("Encounter Date, Patient, Reminder");
+        setColumnHeader("Date Generated, Encounter Date, Patient ID, Patient Identifier, Provider, Reminder");
     }
     
     /**
@@ -142,9 +142,29 @@ public class ReminderLog {
             return false;
         }
         initLogFile();
-        String msg = 
-            q.getEncounterDatetime() + ", " +
-            q.getPatient().getPatientId() + ", " + reminder;
+        Date dateGenerated = new Date();
+        String msg = new String();
+        if (null != dateGenerated) {
+            msg += dateGenerated;
+        }
+        msg += ", ";
+        if (null != q.getEncounterDatetime()) {
+            msg += q.getEncounterDatetime();
+        }
+        msg += ", ";
+        if (null != q.getPatient().getPatientId()) {
+            msg += q.getPatient().getPatientId();
+        }
+        msg += ", ";
+        if (null != q.getPatient().getPatientIdentifier()) {
+            msg += q.getPatient().getPatientIdentifier();
+        }
+        msg += ", ";
+        if (null != q.getEncounter() && null != q.getEncounter().getProvider() && null != q.getEncounter().getProvider().getSystemId()) {
+            msg += q.getEncounter().getProvider().getSystemId();
+        }
+        msg += ", ";
+        msg += reminder;
         try {
             writer = null;
             writer = new BufferedWriter(new FileWriter(reminderLog, true));
@@ -152,9 +172,7 @@ public class ReminderLog {
             writer.newLine();
             writer.close();
         } catch (IOException ioe) {
-            log.error("Error logging reminder for: " + 
-            q.getEncounterDatetime() + ", " +
-            q.getPatient().getPatientIdentifier(), ioe);
+            log.error("Error logging reminder for: " + msg, ioe);
             return false;
         }
         return true;

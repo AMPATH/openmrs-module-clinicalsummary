@@ -7,16 +7,21 @@ import java.util.Date;
 
 import org.openmrs.Patient;
 import org.openmrs.Location;
+import org.openmrs.User;
+import org.openmrs.Encounter;
 
 /**
  * Object representing a "summary" in the queue waiting to be printed or already printed
- * 
+ *
+ * TODO: Remove provider, patient, location, encounterDatetime and use encounter exclusively to obtain these.
+ * TODO: The above will require running an sql query to fill in encounter_id for existing queue items that did not previously have encounter.
  */
 public class ClinicalSummaryQueueItem {
 	
 	public enum CLINICAL_SUMMARY_QUEUE_STATUS {WAITING_ON_LABS, GENERATED, PENDING, PRINTING, PRINTED, ERROR, CANCELLED}
 	
 	private Integer clinicalSummaryQueueId;
+    private Encounter encounter;
 	private Patient patient;
 	private Location location;
 	private Date encounterDatetime;
@@ -33,7 +38,7 @@ public class ClinicalSummaryQueueItem {
 
 	/**
 	 * Convenience constructor taking in all items in this object
-	 * 
+	 * @deprecated Should use ClinicalSummaryQueueItem(Encounter encounter, CLINICAL_SUMMARY_QUEUE_STATUS status)
 	 * @param patient
 	 * @param encounterDatetime
 	 * @param status
@@ -44,6 +49,16 @@ public class ClinicalSummaryQueueItem {
 		this.encounterDatetime = encounterDatetime;
 		this.status = status.name();
 	}
+
+    /**
+     * Constructor with encounter and status.  
+     * @param encounter
+     * @param status
+     */
+    public ClinicalSummaryQueueItem(Encounter encounter, CLINICAL_SUMMARY_QUEUE_STATUS status) {
+        setEncounterData(encounter);
+        this.status = status.name();
+    }
 	
 	/**
 	 * @return the clinicalSummaryQueueId
@@ -59,15 +74,52 @@ public class ClinicalSummaryQueueItem {
 		this.clinicalSummaryQueueId = clinicalSummaryQueueId;
 	}
 
+    /**
+     * Set the encounter.  This method is NOT backwards compatible with
+     * ClinicalSummary Module versions prior to 1.3.1 that did not have
+     * ClinicalSummaryQueueItem.encounter.  For backwards compatibility, use
+     * setEncounterData(Encounter encounter).
+     * @param encounter
+     */
+    public void setEncounter(Encounter encounter) {
+        this.encounter = encounter;
+    }
+
+    /**
+     * Sets the encounter, patient, location, encounterDatetime.
+     * This method allows backward compatibility with ClinicalSummary Module version 3.0.0
+     * and prior - versions that did not have ClinicalSummaryQueueItem.encounter.
+     * @param encounter
+     */
+    public void setEncounterData(Encounter encounter) {
+        setEncounter(encounter);
+        setPatient(encounter.getPatient());
+        setLocation(encounter.getLocation());
+        setEncounterDatetime(encounter.getEncounterDatetime());
+    }
+
+    /**
+     * Get the encounter.
+     * @return
+     */
+    public Encounter getEncounter() {
+        return this.encounter;
+    }
+
 	/**
 	 * @return the encounterDatetime
+     * @deprecated Should use getEncounter().getEncounterDatetime();
 	 */
 	public Date getEncounterDatetime() {
+        if (null != getEncounter() && null != getEncounter().getEncounterDatetime()) {
+            return getEncounter().getEncounterDatetime();
+        }
 		return this.encounterDatetime;
 	}
 	
 	/**
 	 * @param encounterDatetime the encounterDatetime to set
+     * @deprecated Should use getEncounter().setEncounterDatetime(EncounterDatetime encounterDatetime);
 	 */
 	public void setEncounterDatetime(Date encounterDatetime) {
 		this.encounterDatetime = encounterDatetime;
@@ -75,13 +127,18 @@ public class ClinicalSummaryQueueItem {
 	
 	/**
 	 * @return the patient
+     * @deprecated Should use getEncounter().getPatient()
 	 */
 	public Patient getPatient() {
+        if (null != getEncounter() && null != getEncounter().getPatient()) {
+            return getEncounter().getPatient();
+        }
 		return this.patient;
 	}
 	
 	/**
 	 * @param patient the patient to set
+     * @deprecated Should use getEncounter().setPatient();
 	 */
 	public void setPatient(Patient patient) {
 		this.patient = patient;
@@ -89,13 +146,18 @@ public class ClinicalSummaryQueueItem {
 	
 	/**
 	 * @return the location
+     * @deprecated Should use getEncounter().getLocation();
 	 */
 	public Location getLocation() {
+        if (null != getEncounter() && null != getEncounter().getLocation()) {
+            return getEncounter().getLocation();
+        }
 		return this.location;
 	}
 	
 	/**
 	 * @param location the location to set
+     * @deprecated Should use getEncounter().setLocation();
 	 */
 	public void setLocation(Location location) {
 		this.location = location;

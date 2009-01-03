@@ -36,8 +36,9 @@ public class AMPATHClinicalSummaryPrintingLogic extends
         // Handle only encounters from MTRH Module 2
 		Location location = e.getLocation();
 		Integer locationId = location.getLocationId();
-		
-		return (printableFormNames.contains(formName) && locationId == 13);
+
+        Boolean printableLocation = (locationId == 13 || locationId == 1);
+		return (printableFormNames.contains(formName) && printableLocation);
 	}
 
 	/**

@@ -69,12 +69,7 @@ public abstract class ClinicalSummaryPrintingLogic {
 		ps.addMember(p.getPatientId());
 		ClinicalSummaryService css = (ClinicalSummaryService)Context.getService(ClinicalSummaryService.class);
 		// Queue up summaries to be printed manually.  Set status to GENERATED.
-		ClinicalSummaryQueueItem queueItem = new ClinicalSummaryQueueItem();
-		queueItem.setPatient(encounter.getPatient());
-		queueItem.setEncounterDatetime(encounter.getEncounterDatetime());
-		queueItem.setLocation(encounter.getLocation());
-		//queueItem.setStatus(ClinicalSummaryQueueItem.CLINICAL_SUMMARY_QUEUE_STATUS.PENDING);
-		queueItem.setStatus(ClinicalSummaryQueueItem.CLINICAL_SUMMARY_QUEUE_STATUS.GENERATED);
+		ClinicalSummaryQueueItem queueItem = new ClinicalSummaryQueueItem(encounter, ClinicalSummaryQueueItem.CLINICAL_SUMMARY_QUEUE_STATUS.GENERATED);
 		Integer id = css.createQueueItem(queueItem);
 		ClinicalSummaryQueueItem qItem = css.getQueueItem(id);
         // Generate summary and add any patient reminders to ReminderLog.
@@ -87,9 +82,7 @@ public abstract class ClinicalSummaryPrintingLogic {
 	 */
 	protected final void createQueueItem(Encounter encounter) {
 		ClinicalSummaryQueueItem queueItem = new ClinicalSummaryQueueItem();
-		queueItem.setPatient(encounter.getPatient());
-		queueItem.setEncounterDatetime(encounter.getEncounterDatetime());
-		queueItem.setLocation(encounter.getLocation());
+        queueItem.setEncounterData(encounter);
 		ClinicalSummaryService css = (ClinicalSummaryService)Context.getService(ClinicalSummaryService.class);
 		css.createQueueItem(queueItem);
 	}
@@ -100,11 +93,7 @@ public abstract class ClinicalSummaryPrintingLogic {
 	 * @param status WAITING_ON_LABS, PENDING, PRINTING, PRINTED, ERROR, CANCELLED
 	 */
 	protected final void createQueueItem(Encounter encounter, ClinicalSummaryQueueItem.CLINICAL_SUMMARY_QUEUE_STATUS status) {
-		ClinicalSummaryQueueItem queueItem = new ClinicalSummaryQueueItem();
-		queueItem.setPatient(encounter.getPatient());
-		queueItem.setEncounterDatetime(encounter.getEncounterDatetime());
-		queueItem.setLocation(encounter.getLocation());
-		queueItem.setStatus(status);
+		ClinicalSummaryQueueItem queueItem = new ClinicalSummaryQueueItem(encounter, status);
 		ClinicalSummaryService css = (ClinicalSummaryService)Context.getService(ClinicalSummaryService.class);
 		css.createQueueItem(queueItem);
 	}
