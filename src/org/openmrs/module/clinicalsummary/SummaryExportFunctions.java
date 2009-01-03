@@ -307,7 +307,7 @@ public class SummaryExportFunctions extends DataExportFunctions {
                 value = o.getValueNumeric();
                 if (obsDatetime.before(elevenMosAgo) && value > 400) {
                    return "Please order CD4 count now (last CD4 count over 11 months ago).";
-                } else if (obsDatetime.before(fiveMosAgo)) {
+                } else if (obsDatetime.before(fiveMosAgo) && value <= 400) {
                     // Maybe sometime give a more intelligent message.
                     // int months = tomorrow.get(Calendar.MONTH) - obsDatetime.get(Calendar.MONTH);
                     // int years = tomorrow.get(Calendar.YEAR) - obsDatetime.get(Calendar.YEAR);
