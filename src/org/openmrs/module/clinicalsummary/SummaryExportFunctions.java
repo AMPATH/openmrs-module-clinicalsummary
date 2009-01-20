@@ -332,6 +332,119 @@ public class SummaryExportFunctions extends DataExportFunctions {
         }
         return " ";
     }
+
+
+    /**
+     * Returns Map<Concept, Obs> of tests that were ordered and are still pending results.
+     *
+     * @return
+     */
+    public Map<Concept, Obs> getPendingTestsOrdered() {
+        // Get the Concept for "TEST ORDERED"
+        Concept testOrdered = conceptService.getConcept(Integer.valueOf(1271));
+        // Create a Concept set from the answer Concepts of all possible tests that could be ordered.
+        Set<Concept> tests = new HashSet<Concept>(testOrdered.getAnswers().size());
+        for (ConceptAnswer test : testOrdered.getAnswers()) {
+            tests.add(test.getAnswerConcept());
+        }
+        // This patient
+        List<Person> whom = new ArrayList<Person>();
+        whom.add(super.getPatient());
+        // The only question is the "TEST ORDERED" Concept
+        List<Concept> questions = new ArrayList<Concept>();
+        questions.add(testOrdered);
+        // Each answer will be searched individually for the last "TEST ORDERED" for this test.
+        List<Concept> answers = new ArrayList<Concept>();
+        // Collect each last test ordered into a set of orders.
+        Set<Obs> latestTestsOrdered = new HashSet<Obs>(tests.size());
+        // Collect each last test result into a set of results.
+        Map<Concept, Obs> latestTestResults = new HashMap<Concept, Obs>(tests.size());
+        for (Concept test : tests) {
+            try {
+                answers.add(test);
+                // Get each latest test ordered.
+                List<Obs> order = Context.getObsService().getObservations(whom, null, questions, answers,
+                        null, null, null, 1, null, null, null, false);
+                // get each latest test result
+                List<Obs> result = Context.getObsService().getObservations(whom, null, answers, null,
+                        null, null, null, 1, null, null, null, false);
+                if (order != null && order.get(0) != null) {
+                    latestTestsOrdered.add(order.get(0));
+                }
+                if (result != null && result.get(0) != null) {
+                    latestTestResults.put(test, result.get(0));
+                }
+                answers.clear();
+            } catch (Exception e) {
+                log.error("Obs for test " + test.getName().getName()
+                        + " and patient " + patient.getPatientId()
+                        + " could not be retrieved.", e);
+                answers.clear();
+            }
+        }
+        // Pending tests indicate that there is no latestTestResult for a latestTestOrdered
+        // or that the date of the latestTestResult comes before the latestTestOrdered.
+        Map<Concept, Obs> pendingTests = new HashMap<Concept, Obs>(tests.size());
+        for (Obs obs : latestTestsOrdered) {
+            if (obs.getValueCoded() != null) {
+                if (!latestTestResults.containsKey(obs.getValueCoded())) {
+                    pendingTests.put(obs.getValueCoded(), obs);
+                }
+                else if (obs.getObsDatetime().after(latestTestResults.get(obs.getValueCoded()).getObsDatetime())) {
+                    pendingTests.put(obs.getValueCoded(), obs);
+                }
+                else {
+                    continue;
+                }
+            }
+        }
+        return pendingTests;
+
+    }
+
+    /**
+     * Returns Set<Obs> of the latest tests that were ordered.
+     *
+     * @return
+     */
+    public Set<Obs> getLatestTestsOrdered() {
+        // Get the Concept for "TEST ORDERED"
+        Concept testOrdered = conceptService.getConcept(Integer.valueOf(1271));
+        // Create a Concept set from the answer Concepts of all possible tests that could be ordered.
+        Set<Concept> tests = new HashSet<Concept>(testOrdered.getAnswers().size());
+        for (ConceptAnswer test : testOrdered.getAnswers()) {
+            tests.add(test.getAnswerConcept());
+        }
+        // This patient
+        List<Person> whom = new ArrayList<Person>();
+        whom.add(super.getPatient());
+        // The only question is the "TEST ORDERED" Concept
+        List<Concept> questions = new ArrayList<Concept>();
+        questions.add(testOrdered);
+        // Each answer will be searched individually for the last "TEST ORDERED" for this test.
+        List<Concept> answers = new ArrayList<Concept>();
+        // Collect each last test ordered into a set of orders.
+        Set<Obs> latestTestsOrdered = new HashSet<Obs>(tests.size());
+        // Collect each last test result into a set of results.
+        for (Concept test : tests) {
+            try {
+                answers.add(test);
+                // Get each latest test ordered.
+                List<Obs> order = Context.getObsService().getObservations(whom, null, questions, answers,
+                        null, null, null, 1, null, null, null, false);
+                if (order != null && order.get(0) != null) {
+                    latestTestsOrdered.add(order.get(0));
+                }
+                answers.clear();
+            } catch (Exception e) {
+                log.error("Obs for test " + test.getName().getName()
+                        + " and patient " + patient.getPatientId()
+                        + " could not be retrieved.", e);
+                answers.clear();
+            }
+        }
+        return latestTestsOrdered;
+    }
     
     /**
      * Returns a patient property as a list
