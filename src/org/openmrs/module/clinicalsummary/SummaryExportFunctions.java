@@ -403,6 +403,19 @@ public class SummaryExportFunctions extends DataExportFunctions {
     }
 
     /**
+     * Get the Obs for a pending Test Ordered for the given test.
+     * @param conceptIdOrName Test Ordered.
+     * @return
+     */
+    public Obs getPendingTestOrdered(String conceptIdOrName) {
+        Concept concept = Context.getConceptService().getConcept(conceptIdOrName);
+        if (concept != null) {
+            return getPendingTestsOrdered().get(concept);
+        }
+        return null;
+    }
+
+    /**
      * Returns Set<Obs> of the latest tests that were ordered.
      *
      * @return
@@ -444,6 +457,51 @@ public class SummaryExportFunctions extends DataExportFunctions {
             }
         }
         return latestTestsOrdered;
+    }
+
+    /**
+     * Returns Set<Obs> of the latest tests that were ordered.
+     *
+     * @return
+     */
+    public Obs getLatestTestOrdered(Concept test) {
+        // Get the Concept for "TEST ORDERED"
+        Concept testOrdered = conceptService.getConcept(Integer.valueOf(1271));
+        // Create a Concept set from the answer Concepts of all possible tests that could be ordered.
+        Set<Concept> availableTests = new HashSet<Concept>(testOrdered.getAnswers().size());
+        for (ConceptAnswer answer : testOrdered.getAnswers()) {
+            availableTests.add(answer.getAnswerConcept());
+        }
+        if (!availableTests.contains(test)) {
+            log.debug("Concept " + test.getConceptId()
+                    + " is not a valid Test to Order, not an answer for Concept 1271.");
+            return null;
+        }
+        // This patient
+        List<Person> whom = new ArrayList<Person>();
+        whom.add(super.getPatient());
+        // The only question is the "TEST ORDERED" Concept
+        List<Concept> questions = new ArrayList<Concept>();
+        questions.add(testOrdered);
+        // Each answer will be searched individually for the last "TEST ORDERED" for this test.
+        List<Concept> answers = new ArrayList<Concept>();
+        answers.add(test);
+        // Collect each last test ordered into a set of orders.
+        Obs latestTestOrdered = null;
+        // Collect each last test result into a set of results.
+        try {
+            // Get each latest test ordered.
+            List<Obs> order = Context.getObsService().getObservations(whom, null, questions, answers,
+                    null, null, null, 1, null, null, null, false);
+            if (order != null && order.get(0) != null) {
+                latestTestOrdered = order.get(0);
+            }
+        } catch (Exception e) {
+            log.error("Obs for test " + test.getName().getName()
+                    + " and patient " + patient.getPatientId()
+                    + " could not be retrieved.", e);
+        }
+        return latestTestOrdered;
     }
     
     /**
@@ -527,6 +585,7 @@ public class SummaryExportFunctions extends DataExportFunctions {
         Concept STOP_ALL = new Concept(1260);
         Concept START_DRUGS = new Concept(1256);
         Concept DOSING_CHANGE = new Concept(981);
+        Concept REFILLED = new Concept(1406);
 
         addAll(meds, conceptMap.get(1193).get(pId)); // CURRENT MEDICATIONS
         addAll(meds, conceptMap.get(1112).get(pId)); // PATIENT REPORTED
@@ -547,7 +606,8 @@ public class SummaryExportFunctions extends DataExportFunctions {
             addAll(meds, ARVS_STARTED);
         else {
             List<Object> ARV_PLAN = conceptMap.get(1255).get(pId);
-            if (ARV_PLAN == null || ARV_PLAN.contains(CONTINUE_REGIMEN)) {
+            if (ARV_PLAN == null || ARV_PLAN.contains(CONTINUE_REGIMEN)
+                    || ARV_PLAN.contains(DOSING_CHANGE) || ARV_PLAN.contains(REFILLED)) {
                 addAll(meds, conceptMap.get(966).get(pId)); // CURRENT
                 // ANTIRETROVIRAL
                 // DRUGS USED FOR
