@@ -37,7 +37,7 @@ public class SummaryExportFunctions extends DataExportFunctions {
      * 
      * @param conceptNameLeft
      * @param conceptNameRight
-     * @param attrObj
+     * @param attrListObj
      * @return
      * @throws Exception
      */
@@ -261,7 +261,7 @@ public class SummaryExportFunctions extends DataExportFunctions {
         Concept cd4 = getConcept("5497"); // name='CD4, BY FACS'
         Set<Obs> obs = Context.getObsService().getObservations(getPatient(),
                 cd4, false);
-        /* 
+        /*
          * No CD4 count.
          */
         if (obs.isEmpty()) {
@@ -291,7 +291,7 @@ public class SummaryExportFunctions extends DataExportFunctions {
             log.debug("Time of firstCD4: " + firstCD4.getTime() + ", lastCD4: " + lastCD4.getTime());
             if (Math
                     .abs(lastCD4.getTimeInMillis() - firstCD4.getTimeInMillis()) < THREE_DAYS) {
-                // All CD4's taken within this time frame can be considered just one CD4 count taken. 
+                // All CD4's taken within this time frame can be considered just one CD4 count taken.
                 duplicateCD4Obs = true;
             } else {
                 return " ";
@@ -339,13 +339,27 @@ public class SummaryExportFunctions extends DataExportFunctions {
      *
      * @return
      */
-    public Map<Concept, Obs> getPendingTestsOrdered() {
+    public Map<Concept, Obs> getPendingTestsOrdered(List<String> testIdsOrNames) {
         // Get the Concept for "TEST ORDERED"
         Concept testOrdered = conceptService.getConcept(Integer.valueOf(1271));
         // Create a Concept set from the answer Concepts of all possible tests that could be ordered.
         Set<Concept> tests = new HashSet<Concept>(testOrdered.getAnswers().size());
+        Set<Concept> availableTests = new HashSet<Concept>(testOrdered.getAnswers().size());
         for (ConceptAnswer test : testOrdered.getAnswers()) {
-            tests.add(test.getAnswerConcept());
+            availableTests.add(test.getAnswerConcept());
+        }
+        // Get pending tests from the parameter list of tests that are answers to concept 1271.
+        if (null != testIdsOrNames && testIdsOrNames.size() > 0) {
+            for (String test : testIdsOrNames) {
+                Concept concept = Context.getConceptService().getConcept(test);
+                if (null != concept && availableTests.contains(concept)) {
+                    tests.add(concept);
+                }
+            }
+        }
+        // Otherwise get all pending tests for all answers to concept 1271
+        else {
+            tests.addAll(availableTests);
         }
         // This patient
         List<Person> whom = new ArrayList<Person>();
@@ -368,11 +382,13 @@ public class SummaryExportFunctions extends DataExportFunctions {
                 // get each latest test result
                 List<Obs> result = Context.getObsService().getObservations(whom, null, answers, null,
                         null, null, null, 1, null, null, null, false);
-                if (order != null && order.get(0) != null) {
+                if (order != null && order.size() > 0 && order.get(0) != null) {
                     latestTestsOrdered.add(order.get(0));
+                    log.debug("Latest test ordered: " + order.get(0).getValueCoded().getConceptId() + ", " + order.get(0).getObsDatetime());
                 }
-                if (result != null && result.get(0) != null) {
+                if (result != null && result.size() > 0 && result.get(0) != null) {
                     latestTestResults.put(test, result.get(0));
+                    log.debug("Latest test result: " + test.getConceptId() + ", " + result.get(0).getConcept().getConceptId() + ", " + result.get(0).getObsDatetime());
                 }
                 answers.clear();
             } catch (Exception e) {
@@ -389,9 +405,11 @@ public class SummaryExportFunctions extends DataExportFunctions {
             if (obs.getValueCoded() != null) {
                 if (!latestTestResults.containsKey(obs.getValueCoded())) {
                     pendingTests.put(obs.getValueCoded(), obs);
+                    log.debug("Pending Test (no prior Obs): " + obs.getValueCoded().getConceptId() + ", " + obs.getObsDatetime());
                 }
                 else if (obs.getObsDatetime().after(latestTestResults.get(obs.getValueCoded()).getObsDatetime())) {
                     pendingTests.put(obs.getValueCoded(), obs);
+                    log.debug("Pending Test (no Obs since order): " + obs.getValueCoded().getConceptId() + ", " + obs.getObsDatetime());
                 }
                 else {
                     continue;
@@ -403,6 +421,18 @@ public class SummaryExportFunctions extends DataExportFunctions {
     }
 
     /**
+     * Convenience method to see if any tests listed in Concept 1271 are on order and pending results.
+     * @return  true if there are tests pending with no Obs as result yet.
+     */
+    public Boolean hasPendingTestsOrdered() {
+        Map<Concept, Obs> pending = getPendingTestsOrdered();
+        if (pending.isEmpty()) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * Get the Obs for a pending Test Ordered for the given test.
      * @param conceptIdOrName Test Ordered.
      * @return
@@ -410,9 +440,20 @@ public class SummaryExportFunctions extends DataExportFunctions {
     public Obs getPendingTestOrdered(String conceptIdOrName) {
         Concept concept = Context.getConceptService().getConcept(conceptIdOrName);
         if (concept != null) {
-            return getPendingTestsOrdered().get(concept);
+            List<String> conceptIds = new ArrayList<String>();
+            conceptIds.add(concept.getConceptId().toString());
+            return getPendingTestsOrdered(conceptIds).get(concept);
         }
         return null;
+    }
+
+    /**
+     * Convenience no-parameter method to get pending tests ordered.
+     * Returns Map<Concept, Obs> of any outstanding test orders from tests listed in concept 1271
+     * @return
+     */
+    public Map<Concept, Obs> getPendingTestsOrdered() {
+        return getPendingTestsOrdered(null);
     }
 
     /**
@@ -445,7 +486,7 @@ public class SummaryExportFunctions extends DataExportFunctions {
                 // Get each latest test ordered.
                 List<Obs> order = Context.getObsService().getObservations(whom, null, questions, answers,
                         null, null, null, 1, null, null, null, false);
-                if (order != null && order.get(0) != null) {
+                if (order != null && order.size() > 0 && order.get(0) != null) {
                     latestTestsOrdered.add(order.get(0));
                 }
                 answers.clear();
@@ -493,7 +534,7 @@ public class SummaryExportFunctions extends DataExportFunctions {
             // Get each latest test ordered.
             List<Obs> order = Context.getObsService().getObservations(whom, null, questions, answers,
                     null, null, null, 1, null, null, null, false);
-            if (order != null && order.get(0) != null) {
+            if (order != null && order.size() > 0 && order.get(0) != null) {
                 latestTestOrdered = order.get(0);
             }
         } catch (Exception e) {

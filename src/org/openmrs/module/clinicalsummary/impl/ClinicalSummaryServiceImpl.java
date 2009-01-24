@@ -377,7 +377,10 @@ public class ClinicalSummaryServiceImpl implements ClinicalSummaryService {
 			throw new APIException("Error generating report", e);
 		} catch (TransformerException e) {
 			throw new APIException("Error generating report", e);
-		}
+		} finally {
+            functions.clear();
+            System.gc();
+        }
 		
 	}
 	
