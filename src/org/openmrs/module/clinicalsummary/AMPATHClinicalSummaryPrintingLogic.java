@@ -32,13 +32,20 @@ public class AMPATHClinicalSummaryPrintingLogic extends
 		
 		Form form = e.getForm();
 		String formName = form.getName();
-		
+		Boolean printableForm = false;
+        for (String printableName : printableFormNames) {
+            if (formName.contains(printableName)) {
+                printableForm = true;
+                break;
+            }
+        }
+
         // Handle only encounters from MTRH Module 2
 		Location location = e.getLocation();
 		Integer locationId = location.getLocationId();
 
         Boolean printableLocation = (locationId == 13 || locationId == 1);
-		return (printableFormNames.contains(formName) && printableLocation);
+		return (printableForm && printableLocation);
 	}
 
 	/**

@@ -223,6 +223,7 @@ public class SummaryExportFunctions extends DataExportFunctions {
         return obsValues;
     }
     
+
     /**
      * Simple temporary hack method to get Clinical Summary reminder for CD4
      * count. The rules are: 1. If there has never been a CD4 count for this
@@ -234,7 +235,7 @@ public class SummaryExportFunctions extends DataExportFunctions {
      * year. 4. If there have been more than one CD4 count and all CD4 counts
      * occurred within the same 24-hour period, then treat it as if there were
      * exactly one CD4 count.
-     * 
+     *
      * @return String reminder
      * @throws Exception
      */
@@ -243,56 +244,95 @@ public class SummaryExportFunctions extends DataExportFunctions {
         long ONE_DAY = 86400000;
         long THREE_DAYS = ONE_DAY * 3;
         // duplicate cd4 count flag.
-        boolean duplicateCD4Obs = false;
+        boolean sameAsOneCD4 = false;
         // output format for date
         DateFormat reminderFormat = new SimpleDateFormat("MMMMM yyyy");
         DateFormat obsFormat = new SimpleDateFormat("dd-MMM-yyyy");
         // tomorrow
         Calendar tomorrow = Calendar.getInstance();
         tomorrow.add(Calendar.DAY_OF_MONTH, 1);
+        // twoMosAgo
+        Calendar twoMosAgo = Calendar.getInstance();
+        twoMosAgo.add(Calendar.DAY_OF_YEAR, -60);
         // five months ago
-        Calendar fiveMosAgo = Calendar.getInstance();
-        fiveMosAgo.add(Calendar.MONTH, -5);
+        Calendar sixMosAgo = Calendar.getInstance();
+        sixMosAgo.add(Calendar.DAY_OF_YEAR, -180);
         // eleven months ago
-        Calendar elevenMosAgo = Calendar.getInstance();
-        elevenMosAgo.add(Calendar.MONTH, -11);
+        Calendar twelveMosAgo = Calendar.getInstance();
+        twelveMosAgo.add(Calendar.DAY_OF_YEAR, -360);
         // the time of this obs
         Calendar obsDatetime = Calendar.getInstance();
         Concept cd4 = getConcept("5497"); // name='CD4, BY FACS'
         Set<Obs> obs = Context.getObsService().getObservations(getPatient(),
                 cd4, false);
+        Obs pendingCD4 = getPendingTestOrdered("5497");
+        Boolean recentOrderForCD4 = false;
+        if (pendingCD4 != null && pendingCD4.getObsDatetime() != null
+                && pendingCD4.getObsDatetime().after(twoMosAgo.getTime())) {
+           recentOrderForCD4 = true;
+        }
+        log.error("Recent Order for CD4?: " + recentOrderForCD4);
+
         /*
          * No CD4 count.
          */
-        if (obs.isEmpty()) {
+        if (obs.isEmpty() && !recentOrderForCD4) {
             return "Please order CD4 count now (no prior CD4 count on record).";
         }
         /*
          * More than one CD4 count
          */
         else if (obs.size() > 1) {
-            GregorianCalendar firstCD4 = new GregorianCalendar();
-            GregorianCalendar lastCD4 = new GregorianCalendar();
-            GregorianCalendar thisCD4 = new GregorianCalendar();
+            Calendar firstCD4 = Calendar.getInstance();
+            Calendar lastCD4 = Calendar.getInstance();
+            Calendar thisCD4 = Calendar.getInstance();
+            Double firstCD4val = 0.0;
+            Double lastCD4val = 0.0;
             int cnt = 0;
             for (Obs o : obs) {
                 if (++cnt == 1) {
                     firstCD4.setTime(o.getObsDatetime());
                     lastCD4.setTime(o.getObsDatetime());
+                    firstCD4val = o.getValueNumeric();
+                    lastCD4val = o.getValueNumeric();
                 }
                 thisCD4.setTime(o.getObsDatetime());
                 if (thisCD4.before(firstCD4)) {
                     firstCD4.setTime(thisCD4.getTime());
+                    firstCD4val = o.getValueNumeric();
                 }
                 if (thisCD4.after(lastCD4)) {
                     lastCD4.setTime(thisCD4.getTime());
+                    lastCD4val = o.getValueNumeric();
                 }
             }
             log.debug("Time of firstCD4: " + firstCD4.getTime() + ", lastCD4: " + lastCD4.getTime());
-            if (Math
-                    .abs(lastCD4.getTimeInMillis() - firstCD4.getTimeInMillis()) < THREE_DAYS) {
-                // All CD4's taken within this time frame can be considered just one CD4 count taken.
-                duplicateCD4Obs = true;
+            // All CD4's taken within this time frame can be considered just one CD4 count taken.
+            if (Math.abs(lastCD4.getTimeInMillis() - firstCD4.getTimeInMillis()) < THREE_DAYS) {
+                sameAsOneCD4 = true;
+            // Two CD4's, one less than 400, last taken 6 mos ago, no recent order.
+            } else if (obs.size() == 2 && (firstCD4val < 400 || lastCD4val < 400)
+                    && lastCD4.before(sixMosAgo) && !recentOrderForCD4) {
+                Calendar order = Calendar.getInstance();
+                order.setTime(lastCD4.getTime());
+                order.add(Calendar.DAY_OF_YEAR, 180);
+                // ... order cd4 on max(today, lastCD4 + 6mos).
+                if (order.before(Calendar.getInstance())) {
+                    order.setTime(new Date());
+                }
+                return new String("Please order CD4 count in "
+                        + reminderFormat.format(order.getTime())
+                        //+ " (last CD4 count was " + lastCD4val
+                        + " (last CD4 count was " + lastCD4val
+                        + " on "
+                        + obsFormat.format(lastCD4.getTime())
+                        + ").");
+            // More than two CD4's and no recent order.
+            } else if (lastCD4.before(sixMosAgo) && lastCD4val < 400 && !recentOrderForCD4) {
+                return new String("Please order CD4 count now (last CD4 count was " + lastCD4val + " over 6 months ago).");
+            } else if (lastCD4.before(twelveMosAgo) && !recentOrderForCD4) {
+                return new String("Please order CD4 count now (last CD4 count over 12 months ago).");
+            // Otherwise no need to order now.
             } else {
                 return " ";
             }
@@ -300,32 +340,12 @@ public class SummaryExportFunctions extends DataExportFunctions {
         /*
          * Exactly one CD4 count
          */
-        if (obs.size() == 1 || duplicateCD4Obs) {
+        if (obs.size() == 1 || sameAsOneCD4) {
             for (Obs o : obs) {
                 obsDatetime.setTime(o.getObsDatetime());
-                Double value = 0.0;
-                value = o.getValueNumeric();
-                if (obsDatetime.before(elevenMosAgo) && value > 400) {
-                   return "Please order CD4 count now (last CD4 count over 11 months ago).";
-                } else if (obsDatetime.before(fiveMosAgo) && value <= 400) {
-                    // Maybe sometime give a more intelligent message.
-                    // int months = tomorrow.get(Calendar.MONTH) - obsDatetime.get(Calendar.MONTH);
-                    // int years = tomorrow.get(Calendar.YEAR) - obsDatetime.get(Calendar.YEAR);
-                    // String mosAgo = (months > 1) ? months + " months" : months + " month";
-                    // String yrsAgo = (years > 1) ? years + " years" : years + " year";
-                    // Right now this will suffice:
-                    return "Please order CD4 count now (last CD4 count over 5 months ago).";
-                } else if (obsDatetime.after(fiveMosAgo)
-                        && obsDatetime.before(tomorrow)) {
-                    Calendar nextCD4 = (Calendar) obsDatetime.clone();
-                    nextCD4.add(Calendar.MONTH, 6);
-                    return new String("Next CD4 count due in "
-                            + reminderFormat.format(nextCD4.getTime())
-                            + " (last CD4 count was " + o.getValueNumeric()
-                            + " on "
-                            + obsFormat.format(obsDatetime.getTime())
-                            + ").");
-                } else {
+                if (obsDatetime.before(sixMosAgo) && !recentOrderForCD4) {
+                    return "Please order CD4 count now (last CD4 count over 6 months ago).";
+                } else { // Else no need to order at this time.
                     return " ";
                 }
             }
