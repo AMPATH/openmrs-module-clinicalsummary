@@ -18,7 +18,9 @@ public class SummaryExportFunctions extends DataExportFunctions {
     protected Map<Integer, List<List<Object>>> patientIdObsValueMapLeft = null;
 
     protected Map<Integer, List<List<Object>>> patientIdObsValueMapRight = null;
-    
+
+    protected Set<Concept> testOrderConcepts = null;
+        
     public SummaryExportFunctions() {
         super();
 
@@ -265,19 +267,29 @@ public class SummaryExportFunctions extends DataExportFunctions {
         Concept cd4 = getConcept("5497"); // name='CD4, BY FACS'
         Set<Obs> obs = Context.getObsService().getObservations(getPatient(),
                 cd4, false);
-        Obs pendingCD4 = getPendingTestOrdered("5497");
-        Boolean recentOrderForCD4 = false;
-        if (pendingCD4 != null && pendingCD4.getObsDatetime() != null
-                && pendingCD4.getObsDatetime().after(twoMosAgo.getTime())) {
-           recentOrderForCD4 = true;
+
+        List<String> cd4Concepts = new ArrayList<String>(3);
+        cd4Concepts.add("5497");
+        cd4Concepts.add("1871");
+        cd4Concepts.add("657");
+        Obs pendingCD4 = getLatestPendingTest(cd4Concepts);
+        // Get the latest of the pending cd4 count orders.
+        Boolean pendingOrderForCD4 = false;
+        if (pendingCD4 != null) {
+            pendingOrderForCD4 = true;
+            log.debug("pendingCD4: " + pendingCD4.getConcept() + ", " + pendingCD4.getObsDatetime());
         }
-        log.error("Recent Order for CD4?: " + recentOrderForCD4);
+        log.debug("Pending Order for CD4?: " + pendingOrderForCD4);
 
         /*
          * No CD4 count.
          */
-        if (obs.isEmpty() && !recentOrderForCD4) {
-            return "Please order CD4 count now (no prior CD4 count on record).";
+        if (obs.isEmpty()) {
+            if (!pendingOrderForCD4) {
+                return "Please order CD4 count now (no prior CD4 count on record).";
+            } else if (pendingCD4.getObsDatetime().before(sixMosAgo.getTime())) {
+                return "Please order CD4 count now (last CD4 ordered over 6 months ago).";
+            }
         }
         /*
          * More than one CD4 count
@@ -312,7 +324,7 @@ public class SummaryExportFunctions extends DataExportFunctions {
                 sameAsOneCD4 = true;
             // Two CD4's, one less than 400, last taken 6 mos ago, no recent order.
             } else if (obs.size() == 2 && (firstCD4val < 400 || lastCD4val < 400)
-                    && lastCD4.before(sixMosAgo) && !recentOrderForCD4) {
+                    && lastCD4.before(sixMosAgo) && !pendingOrderForCD4) {
                 Calendar order = Calendar.getInstance();
                 order.setTime(lastCD4.getTime());
                 order.add(Calendar.DAY_OF_YEAR, 180);
@@ -320,21 +332,18 @@ public class SummaryExportFunctions extends DataExportFunctions {
                 if (order.before(Calendar.getInstance())) {
                     order.setTime(new Date());
                 }
-                return new String("Please order CD4 count in "
-                        + reminderFormat.format(order.getTime())
-                        //+ " (last CD4 count was " + lastCD4val
-                        + " (last CD4 count was " + lastCD4val
-                        + " on "
-                        + obsFormat.format(lastCD4.getTime())
-                        + ").");
+                return new String("Please Order CD4 count now (one of" +
+                        "first two CD4s was less than 400, repeat should be in 6 months)");
             // More than two CD4's and no recent order.
-            } else if (lastCD4.before(sixMosAgo) && lastCD4val < 400 && !recentOrderForCD4) {
-                return new String("Please order CD4 count now (last CD4 count was " + lastCD4val + " over 6 months ago).");
-            } else if (lastCD4.before(twelveMosAgo) && !recentOrderForCD4) {
+            } else if (lastCD4.before(sixMosAgo) && lastCD4val < 400 && !pendingOrderForCD4) {
+                return new String("Please Order CD4 count now " +
+                        "(last CD4 was less than 400, repeat should be in 6 months)");
+            } else if (lastCD4.before(twelveMosAgo) && lastCD4val >= 400 && !pendingOrderForCD4) {
                 return new String("Please order CD4 count now (last CD4 count over 12 months ago).");
-            // Otherwise no need to order now.
-            } else {
-                return " ";
+            } else if (lastCD4val < 400 && pendingOrderForCD4 && pendingCD4.getObsDatetime().before(sixMosAgo.getTime())) {
+                return new String("Please order CD4 count now (last CD4 &lt; 400 and CD4 ordered over 6 months ago).");
+            } else if (lastCD4val >= 400 && pendingOrderForCD4 && pendingCD4.getObsDatetime().before(twelveMosAgo.getTime())) {
+                return new String("Please order CD4 count now (last CD4 ordered over 12 months ago).");
             }
         }
         /*
@@ -343,43 +352,78 @@ public class SummaryExportFunctions extends DataExportFunctions {
         if (obs.size() == 1 || sameAsOneCD4) {
             for (Obs o : obs) {
                 obsDatetime.setTime(o.getObsDatetime());
-                if (obsDatetime.before(sixMosAgo) && !recentOrderForCD4) {
+                if (obsDatetime.before(sixMosAgo) && !pendingOrderForCD4) {
                     return "Please order CD4 count now (last CD4 count over 6 months ago).";
-                } else { // Else no need to order at this time.
-                    return " ";
+                } else if (pendingOrderForCD4 && pendingCD4.getObsDatetime().before(sixMosAgo.getTime())) {
+                    return "Please order CD4 count now (last CD4 ordered over 6 months ago).";
                 }
             }
         }
         return " ";
     }
 
+    /**
+     * Initialize the set of available testOrderConcepts once.  Call this method
+     * before using testOrderConcepts.
+     * @return  false if already initialized, true otherwise
+     */
+    private Boolean initTestOrderConcepts() {
+        if (testOrderConcepts != null && testOrderConcepts.size() > 0) {
+            return false;
+        }
+        testOrderConcepts = new HashSet<Concept>();
+        // Get the Concept for "TEST ORDERED"
+        Concept testOrdered = conceptService.getConcept(Integer.valueOf(1271));
+        Map<Concept, List<Concept>> exceptions = new HashMap<Concept, List<Concept>>();
+        Concept cd4Panel = conceptService.getConcept(Integer.valueOf(657));
+        // This should not be hard-coded... cd4 panel should be a set that contains these concepts.
+        List<Concept> cd4PanelMembers = new ArrayList<Concept>();
+        cd4PanelMembers.add(conceptService.getConcept(Integer.valueOf(5497))); // CD4, BY FACS
+        cd4PanelMembers.add(conceptService.getConcept(Integer.valueOf(1871))); // LAST CD4, BY FACS
+        exceptions.put(cd4Panel, cd4PanelMembers);
+        for (ConceptAnswer test : testOrdered.getAnswers()) {
+            // Add the test to the list of available tests...
+            testOrderConcepts.add(test.getAnswerConcept());
+            // ... and add set members ...
+            if (test.getAnswerConcept().isSet()) {
+                Collection<ConceptSet> sets = test.getAnswerConcept().getConceptSets();
+                for (ConceptSet set : sets) {
+                    testOrderConcepts.add(set.getConcept());
+                }
+            }
+            // ... and add hard-coded exceptions for special cases
+            if (exceptions.containsKey(test.getAnswerConcept())) {
+                testOrderConcepts.addAll(exceptions.get(test.getAnswerConcept()));
+            }
+        }
+        return true;
+    }
 
+    
     /**
      * Returns Map<Concept, Obs> of tests that were ordered and are still pending results.
      *
      * @return
      */
-    public Map<Concept, Obs> getPendingTestsOrdered(List<String> testIdsOrNames) {
-        // Get the Concept for "TEST ORDERED"
+    public Map<Integer, Obs> getPendingTestsOrdered(List<String> testIdsOrNames) {
+        // This must be called first!
+        Boolean initialize = initTestOrderConcepts();
+         // Get the Concept for "TEST ORDERED"
         Concept testOrdered = conceptService.getConcept(Integer.valueOf(1271));
         // Create a Concept set from the answer Concepts of all possible tests that could be ordered.
         Set<Concept> tests = new HashSet<Concept>(testOrdered.getAnswers().size());
-        Set<Concept> availableTests = new HashSet<Concept>(testOrdered.getAnswers().size());
-        for (ConceptAnswer test : testOrdered.getAnswers()) {
-            availableTests.add(test.getAnswerConcept());
-        }
         // Get pending tests from the parameter list of tests that are answers to concept 1271.
         if (null != testIdsOrNames && testIdsOrNames.size() > 0) {
             for (String test : testIdsOrNames) {
                 Concept concept = Context.getConceptService().getConcept(test);
-                if (null != concept && availableTests.contains(concept)) {
+                if (null != concept && testOrderConcepts.contains(concept)) {
                     tests.add(concept);
                 }
             }
         }
         // Otherwise get all pending tests for all answers to concept 1271
         else {
-            tests.addAll(availableTests);
+            tests.addAll(testOrderConcepts);
         }
         // This patient
         List<Person> whom = new ArrayList<Person>();
@@ -390,26 +434,70 @@ public class SummaryExportFunctions extends DataExportFunctions {
         // Each answer will be searched individually for the last "TEST ORDERED" for this test.
         List<Concept> answers = new ArrayList<Concept>();
         // Collect each last test ordered into a set of orders.
-        Set<Obs> latestTestsOrdered = new HashSet<Obs>(tests.size());
+        Map<Integer, Obs> latestPendingTests = new HashMap<Integer, Obs>(tests.size());
         // Collect each last test result into a set of results.
-        Map<Concept, Obs> latestTestResults = new HashMap<Concept, Obs>(tests.size());
+//        Map<Integer, Obs> latestTestResults = new HashMap<Integer, Obs>(tests.size());
+        List<String> sort = new Vector<String>();
+        sort.add("obsDatetime");
         for (Concept test : tests) {
             try {
                 answers.add(test);
-                // Get each latest test ordered.
+                Integer conceptId = test.getConceptId();
+                if (conceptId == 1019) {  // Complete Blood Count
+                    answers.add(Context.getConceptService().getConcept(Integer.valueOf(21)));
+                }
+                else if (conceptId == 21) { // Hemoglobin
+                    answers.add(Context.getConceptService().getConcept(Integer.valueOf(1019)));
+                }
+                else if (conceptId == 657) { // CD4 Panel
+                    answers.add(Context.getConceptService().getConcept(Integer.valueOf(5497)));
+                    answers.add(Context.getConceptService().getConcept(Integer.valueOf(1871)));
+                }
+                else if (conceptId == 5497) { // CD4, By FACS
+                    answers.add(Context.getConceptService().getConcept(Integer.valueOf(657)));
+                    answers.add(Context.getConceptService().getConcept(Integer.valueOf(1871)));
+                }
+                else if (conceptId == 1871) { // Last CD4, by FACS
+                    answers.add(Context.getConceptService().getConcept(Integer.valueOf(5497)));
+                    answers.add(Context.getConceptService().getConcept(Integer.valueOf(657)));
+                }
+                else if (conceptId == 856) { // HIV Viral Load, Quantitative
+                    answers.add(Context.getConceptService().getConcept(Integer.valueOf(1305)));
+                }
+                else if (conceptId == 1305) { // HIV Viral Load, Qualitative
+                    answers.add(Context.getConceptService().getConcept(Integer.valueOf(856)));
+                }
+                else if (conceptId == 1353) { // Chemistry Lab Tests
+                    answers.add(Context.getConceptService().getConcept(Integer.valueOf(654)));
+                }
+                else if (conceptId == 654) { // SGPT
+                    answers.add(Context.getConceptService().getConcept(Integer.valueOf(1353)));
+                }
+                String answerString = "Answers: ";
+                for (Concept c : answers) {
+                   answerString += c.getConceptId() + " ";
+                }
+                log.debug(answerString);
+                // Get the latest test ordered.
                 List<Obs> order = Context.getObsService().getObservations(whom, null, questions, answers,
-                        null, null, null, 1, null, null, null, false);
-                // get each latest test result
-                List<Obs> result = Context.getObsService().getObservations(whom, null, answers, null,
-                        null, null, null, 1, null, null, null, false);
+                        null, null, sort, 1, null, null, null, false);
+                // If there IS a test on order...
                 if (order != null && order.size() > 0 && order.get(0) != null) {
-                    latestTestsOrdered.add(order.get(0));
                     log.debug("Latest test ordered: " + order.get(0).getValueCoded().getConceptId() + ", " + order.get(0).getObsDatetime());
+                    // ...get the latest test result AFTER the date of the lastest test ordered.
+                    List<Obs> result = Context.getObsService().getObservations(whom, null, answers, null,
+                            null, null, sort, 1, null, order.get(0).getObsDatetime(), null, false);
+                    // ...and if there are NO test results after the test was ordered...
+                    if (result == null || result.size() < 1 || result.get(0) == null) {
+                        // ... then this is a Pending Test Ordered
+                        latestPendingTests.put(test.getConceptId(), order.get(0));
+                        log.debug("Latest pending test: " + order.get(0).getValueCoded().getConceptId() + ", " + order.get(0).getObsDatetime());
+                    }
+                    else {
+                        log.debug("Latest result: " + result.get(0).getConcept().getConceptId() + ", " + result.get(0).getObsDatetime());
+                    }
                 }
-                if (result != null && result.size() > 0 && result.get(0) != null) {
-                    latestTestResults.put(test, result.get(0));
-                    log.debug("Latest test result: " + test.getConceptId() + ", " + result.get(0).getConcept().getConceptId() + ", " + result.get(0).getObsDatetime());
-                }
+                log.debug(answerString);
                 answers.clear();
             } catch (Exception e) {
                 log.error("Obs for test " + test.getName().getName()
@@ -418,26 +506,26 @@ public class SummaryExportFunctions extends DataExportFunctions {
                 answers.clear();
             }
         }
-        // Pending tests indicate that there is no latestTestResult for a latestTestOrdered
-        // or that the date of the latestTestResult comes before the latestTestOrdered.
-        Map<Concept, Obs> pendingTests = new HashMap<Concept, Obs>(tests.size());
-        for (Obs obs : latestTestsOrdered) {
-            if (obs.getValueCoded() != null) {
-                if (!latestTestResults.containsKey(obs.getValueCoded())) {
-                    pendingTests.put(obs.getValueCoded(), obs);
-                    log.debug("Pending Test (no prior Obs): " + obs.getValueCoded().getConceptId() + ", " + obs.getObsDatetime());
-                }
-                else if (obs.getObsDatetime().after(latestTestResults.get(obs.getValueCoded()).getObsDatetime())) {
-                    pendingTests.put(obs.getValueCoded(), obs);
-                    log.debug("Pending Test (no Obs since order): " + obs.getValueCoded().getConceptId() + ", " + obs.getObsDatetime());
-                }
-                else {
-                    continue;
-                }
+        return latestPendingTests;
+    }
+
+
+    /**
+     * Get the latest pending test order from the set of pending tests ordered.
+     * @param testIdsOrNames only search from this list of test orders.
+     * @return null if no tests are pending, the latest test order Obs otherwise
+     */
+    public Obs getLatestPendingTest(List<String> testIdsOrNames) {
+        Map<Integer, Obs> tests = getPendingTestsOrdered(testIdsOrNames);
+        Date tmpDate = null;
+        Obs latestPendingTest = null;
+        for (Integer key : tests.keySet()) {
+            if (tmpDate == null || tests.get(key).getObsDatetime().after(tmpDate)) {
+                tmpDate = tests.get(key).getObsDatetime();
+                latestPendingTest = tests.get(key);
             }
         }
-        return pendingTests;
-
+        return latestPendingTest;
     }
 
     /**
@@ -445,7 +533,7 @@ public class SummaryExportFunctions extends DataExportFunctions {
      * @return  true if there are tests pending with no Obs as result yet.
      */
     public Boolean hasPendingTestsOrdered() {
-        Map<Concept, Obs> pending = getPendingTestsOrdered();
+        Map<Integer, Obs> pending = getPendingTestsOrdered();
         if (pending.isEmpty()) {
             return false;
         }
@@ -469,10 +557,10 @@ public class SummaryExportFunctions extends DataExportFunctions {
 
     /**
      * Convenience no-parameter method to get pending tests ordered.
-     * Returns Map<Concept, Obs> of any outstanding test orders from tests listed in concept 1271
+     * Returns Map<testOrderedConceptId, Obs> of any outstanding test orders from tests listed in concept 1271
      * @return
      */
-    public Map<Concept, Obs> getPendingTestsOrdered() {
+    public Map<Integer, Obs> getPendingTestsOrdered() {
         return getPendingTestsOrdered(null);
     }
 
