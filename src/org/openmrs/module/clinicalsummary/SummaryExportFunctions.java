@@ -437,6 +437,7 @@ public class SummaryExportFunctions extends DataExportFunctions {
         Map<Integer, Obs> latestPendingTests = new HashMap<Integer, Obs>(tests.size());
         // Collect each last test result into a set of results.
 //        Map<Integer, Obs> latestTestResults = new HashMap<Integer, Obs>(tests.size());
+        Calendar onOrAfter = Calendar.getInstance();
         List<String> sort = new Vector<String>();
         sort.add("obsDatetime");
         for (Concept test : tests) {
@@ -484,9 +485,11 @@ public class SummaryExportFunctions extends DataExportFunctions {
                 // If there IS a test on order...
                 if (order != null && order.size() > 0 && order.get(0) != null) {
                     log.debug("Latest test ordered: " + order.get(0).getValueCoded().getConceptId() + ", " + order.get(0).getObsDatetime());
-                    // ...get the latest test result AFTER the date of the lastest test ordered.
+                    // ...get the latest test result ON or AFTER the date of the lastest test ordered.
+                    onOrAfter.setTime(order.get(0).getObsDatetime());
+                    onOrAfter.add(Calendar.DAY_OF_YEAR, -1);
                     List<Obs> result = Context.getObsService().getObservations(whom, null, answers, null,
-                            null, null, sort, 1, null, order.get(0).getObsDatetime(), null, false);
+                            null, null, sort, 1, null, onOrAfter.getTime(), null, false);
                     // ...and if there are NO test results after the test was ordered...
                     if (result == null || result.size() < 1 || result.get(0) == null) {
                         // ... then this is a Pending Test Ordered
