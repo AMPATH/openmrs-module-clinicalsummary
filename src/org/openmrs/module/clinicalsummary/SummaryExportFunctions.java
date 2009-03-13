@@ -318,7 +318,8 @@ public class SummaryExportFunctions extends DataExportFunctions {
                     lastCD4val = o.getValueNumeric();
                 }
             }
-            log.debug("Time of firstCD4: " + firstCD4.getTime() + ", lastCD4: " + lastCD4.getTime());
+            // TODO: after debugging make this "debug" instead of "error"
+            log.error("Time of firstCD4: " + firstCD4.getTime() + ", lastCD4: " + lastCD4.getTime());
             // All CD4's taken within this time frame can be considered just one CD4 count taken.
             if (Math.abs(lastCD4.getTimeInMillis() - firstCD4.getTimeInMillis()) < THREE_DAYS) {
                 sameAsOneCD4 = true;
@@ -332,7 +333,7 @@ public class SummaryExportFunctions extends DataExportFunctions {
                 if (order.before(Calendar.getInstance())) {
                     order.setTime(new Date());
                 }
-                return new String("Please Order CD4 count now (one of" +
+                return new String("Please Order CD4 count now (one of " +
                         "first two CD4s was less than 400, repeat should be in 6 months)");
             // More than two CD4's and no recent order.
             } else if (lastCD4.before(sixMosAgo) && lastCD4val < 400 && !pendingOrderForCD4) {
@@ -738,6 +739,7 @@ public class SummaryExportFunctions extends DataExportFunctions {
         Concept START_DRUGS = new Concept(1256);
         Concept DOSING_CHANGE = new Concept(981);
         Concept REFILLED = new Concept(1406);
+        Concept DRUG_SUBSTITUTION = new Concept(1849);
 
         addAll(meds, conceptMap.get(1193).get(pId)); // CURRENT MEDICATIONS
         addAll(meds, conceptMap.get(1112).get(pId)); // PATIENT REPORTED
@@ -759,7 +761,9 @@ public class SummaryExportFunctions extends DataExportFunctions {
         else {
             List<Object> ARV_PLAN = conceptMap.get(1255).get(pId);
             if (ARV_PLAN == null || ARV_PLAN.contains(CONTINUE_REGIMEN)
-                    || ARV_PLAN.contains(DOSING_CHANGE) || ARV_PLAN.contains(REFILLED)) {
+                    || ARV_PLAN.contains(DOSING_CHANGE)
+                    || ARV_PLAN.contains(REFILLED)
+                    || ARV_PLAN.contains(DRUG_SUBSTITUTION)) {
                 addAll(meds, conceptMap.get(966).get(pId)); // CURRENT
                 // ANTIRETROVIRAL
                 // DRUGS USED FOR
