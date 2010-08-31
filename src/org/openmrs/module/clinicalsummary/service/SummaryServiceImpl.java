@@ -142,6 +142,11 @@ public class SummaryServiceImpl implements SummaryService {
 	    return summaryDAO.getEarliestIndex(location);
     }
 	
+	@Override
+	public Obs getLatestObservation(Patient patient) throws APIException {
+		return summaryDAO.getLatestObservation(patient);
+	}
+	
 	/**
 	 * @see org.openmrs.module.clinicalsummary.SummaryService#updateIndexesInitialDate(org.openmrs.Location, Date)
 	 */

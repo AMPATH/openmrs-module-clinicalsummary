@@ -228,6 +228,24 @@ public class HibernateSummaryDAO implements SummaryDAO {
     }
 
 	/**
+	 * @see org.openmrs.module.clinicalsummary.db.SummaryDAO#getEarliestIndex(org.openmrs.Location)
+	 */
+	@Override
+    public Obs getLatestObservation(Patient patient) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Obs.class);
+		criteria.createAlias("person", "person");
+		
+		criteria.add(Restrictions.eq("person.personId", patient.getPatientId()));
+		criteria.add(Restrictions.eq("voided", false));
+
+		criteria.addOrder(Order.desc("dateCreated"));
+		
+		criteria.setFirstResult(0);
+		criteria.setMaxResults(1);
+		return (Obs) criteria.uniqueResult();
+    }
+
+	/**
 	 * @see org.openmrs.module.clinicalsummary.db.SummaryDAO#updateIndexesInitialDate(org.openmrs.Location, java.util.Date)
 	 */
 	@Override

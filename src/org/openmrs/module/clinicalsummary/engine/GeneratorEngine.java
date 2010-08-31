@@ -185,6 +185,9 @@ public class GeneratorEngine {
 	
 	private void setIndex(Patient patient, SummaryTemplate template) throws Exception {
 		
+		// we need generated date to keep the reference to the date where the pdf supposed to be generated
+		// this way, we can safely regenerate summaries for all patients without have to reprint for everyone again
+		
 		SummaryService summaryService = Context.getService(SummaryService.class);
 		SummaryIndex index = summaryService.getIndex(patient, template);
 		
@@ -198,9 +201,13 @@ public class GeneratorEngine {
 			// initial date of the initial summary will always be 1910-01-01
 			// (this is the default in the sql statement to create the table)
 			index.setInitialDate(calendar.getTime());
-			// initial date of the generated date always will be today
-			index.setGeneratedDate(new Date());
 		}
+		// initial date of the generated date always will be today
+		Obs latestObs = summaryService.getLatestObservation(patient);
+		Date generatedDate = new Date();
+		if (latestObs != null)
+			generatedDate = latestObs.getDateCreated();
+		index.setGeneratedDate(generatedDate);
 		
 		index.setPatient(patient);
 		index.setTemplate(template);
@@ -223,9 +230,6 @@ public class GeneratorEngine {
 				index.setInitialDate(earliestDate);
 			index.setLocation(observation.getLocation());
 			index.setReturnDate(observation.getValueDatetime());
-			// this generated date will prevent us from printing duplicates
-			// generated will be set for current date, but it will be set to latest obs date if we have the obs
-			index.setGeneratedDate(observation.getDateCreated());
 		}
 		
 		summaryService.saveIndex(index);

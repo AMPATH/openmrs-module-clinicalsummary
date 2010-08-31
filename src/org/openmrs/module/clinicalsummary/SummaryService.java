@@ -290,6 +290,20 @@ public interface SummaryService {
 	public Date getEarliestIndex(Location location) throws APIException;
 	
 	/**
+	 * Get the latest observations for a certain patient. This latest observations
+	 * will be used as a reference on what date a summary was generated. All pdfs are generated
+	 * when there's new observation coming to the database. This date will become handy when
+	 * we need to regenerate pdfs for all patients in the system.
+	 * 
+	 * @param patient the patient
+	 * @return the latest observation.
+	 * @throws APIException
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_LOCATIONS, OpenmrsConstants.PRIV_VIEW_PATIENTS, OpenmrsConstants.PRIV_VIEW_OBS })
+	public Obs getLatestObservation(Patient patient) throws APIException;
+	
+	/**
 	 * Implementation of the logic service eval with transactional read only annotation. Currently
 	 * the default annotation of the logic service is transactional read-write. This will makes the
 	 * generation process take a while to finish. With a read only annotation, this will speedup the

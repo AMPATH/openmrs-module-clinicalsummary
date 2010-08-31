@@ -87,6 +87,11 @@ public interface SummaryDAO {
 	public Date getEarliestIndex(Location location);
 	
 	/**
+	 * @see org.openmrs.module.clinicalsummary.SummaryService#getLatestObservation(Patient)
+	 */
+	public Obs getLatestObservation(Patient patient);
+	
+	/**
 	 * @see org.openmrs.module.clinicalsummary.SummaryService#updateIndexesInitialDate(Location,
 	 *      Date)
 	 */
