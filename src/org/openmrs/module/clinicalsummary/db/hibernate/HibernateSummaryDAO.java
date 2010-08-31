@@ -281,7 +281,7 @@ public class HibernateSummaryDAO implements SummaryDAO {
 			criteria.add(Restrictions.le("returnDate", endReturnDate));
 		
 		Date earliestDate = getEarliestIndex(location);
-		criteria.add(Restrictions.ge("dateGenerated", earliestDate));
+		criteria.add(Restrictions.ge("generatedDate", earliestDate));
 		
 		criteria.addOrder(Order.desc("returnDate"));
 		criteria.addOrder(Order.desc("patient.patientId"));
