@@ -1,0 +1,871 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+	xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:fn="http://www.w3.org/2005/02/xpath-functions"
+	exclude-result-prefixes="fo">
+	<xsl:output method="xml" version="1.0" omit-xml-declaration="no" indent="yes" />
+
+	<xsl:template match="clinicalSummary">
+		<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format">
+			<fo:layout-master-set>
+				<fo:simple-page-master master-name="simple" page-height="297mm"
+					page-width="210mm" margin-top="1cm" margin-left="1cm" margin-right="1cm" margin-bottom="1cm">
+					<fo:region-body margin-top="1.5cm" margin-bottom="1.5cm" />
+					<fo:region-before extent="1cm" />
+					<fo:region-after extent="1cm" />
+				</fo:simple-page-master>
+			</fo:layout-master-set>
+
+			<!-- Begin Summary -->
+			<fo:page-sequence master-reference="simple">
+				<!-- Header -->
+				<fo:static-content flow-name="xsl-region-before" font-family="Helvetica">
+					<fo:block text-align="center" border-top="thin solid grey" border-left="thin solid grey"
+						border-right="thin solid black" border-bottom="thin solid black" background-color="#e0e0e0"
+						padding="4pt" space-after="8pt" font-weight="bold">
+						<fo:block>MOI TEACHING AND REFERRAL HOSPITAL</fo:block>
+						<fo:block>MOTHER’S HEALTH CARD (AFYA YA MAMA)</fo:block>
+					</fo:block>
+				</fo:static-content>
+				<!-- Footer -->
+				<fo:static-content flow-name="xsl-region-after" font-family="Helvetica">
+					<fo:table table-layout="fixed" width="100%">
+						<fo:table-column column-width="60%" />
+						<fo:table-column column-width="40%" />
+						<fo:table-body>
+							<fo:table-row height="1cm">
+								<fo:table-cell display-align="center">
+									<fo:block text-align="left" font-size="8pt">
+										<xsl:if test="lastEncounter/location">
+											<fo:block>
+												Last seen
+												<xsl:value-of select="lastEncounter/dateTime" />
+												at
+												<xsl:value-of select="lastEncounter/location" />
+												by
+												<xsl:value-of select="lastEncounter/provider" />
+											</fo:block>
+											<fo:block>
+												Encounter entered by
+												<xsl:value-of select="lastEncounter/creator" />
+												on
+												<xsl:value-of select="lastEncounter/createdDate" />
+											</fo:block>
+										</xsl:if>
+										<fo:block>
+											Next scheduled visit: 
+											<xsl:variable name="returnVisit" select="returnVisit" />
+											<xsl:choose>
+												<xsl:when test="$returnVisit=''">
+													Unknown
+												</xsl:when>
+												<xsl:otherwise>
+													<xsl:value-of select="returnVisit" />
+												</xsl:otherwise>
+											</xsl:choose>
+										</fo:block>
+									</fo:block>
+								</fo:table-cell>
+								<fo:table-cell display-align="center">
+									<fo:block text-align="right" font-size="20pt" font-weight="bold">
+										<xsl:value-of select="id" />
+									</fo:block>
+								</fo:table-cell>
+							</fo:table-row>
+						</fo:table-body>
+					</fo:table>
+					<fo:block>
+					</fo:block>
+				</fo:static-content>
+
+				<!-- Begin Page Content -->
+				<fo:flow flow-name="xsl-region-body" font-family="Helvetica">
+					<fo:table table-layout="fixed" width="100%" >
+					<xsl:attribute name="font-size">8pt</xsl:attribute>
+						<fo:table-column column-width="40%" />
+						<fo:table-column column-width="25%" />
+						<fo:table-column column-width="35%" />
+						<fo:table-body>
+								<fo:table-row>
+									<fo:table-cell>
+										<xsl:attribute name="border">thin solid black</xsl:attribute>
+										<xsl:attribute name="padding-before">4pt</xsl:attribute>
+										<xsl:attribute name="padding-after">4pt</xsl:attribute>
+										<xsl:attribute name="padding-start">4pt</xsl:attribute>
+										<xsl:attribute name="padding-end">4pt</xsl:attribute>
+										<xsl:element name="fo:block-container">
+											<fo:block font-weight="bold" font-size="10pt">
+												<xsl:value-of select="demographic/name" />
+											</fo:block>
+											<fo:block>
+												<xsl:choose>
+													<xsl:when test="demographic/gender = 'M'">
+														<fo:inline> Male </fo:inline>
+													</xsl:when>
+													<xsl:when test="demographic/gender = 'F'">
+														<fo:inline> Female </fo:inline>
+													</xsl:when>
+												</xsl:choose>
+												<fo:inline>
+													<xsl:value-of select="demographic/birthdate/age" /> years
+													(
+													<xsl:variable name="birthdateEstimated" select="demographic/birthdate/estimated" />
+													<xsl:if test="$birthdateEstimated='true'">~</xsl:if>
+													<xsl:value-of select="demographic/birthdate/dob" />
+													)
+												</fo:inline>
+											</fo:block>
+											<fo:block>
+												<fo:inline font-weight="bold">Status: </fo:inline>
+												<xsl:value-of select="demographic/civil-status" />
+											</fo:block> 
+											<fo:block>
+												<fo:inline font-weight="bold">Education: </fo:inline>
+												<xsl:value-of select="demographic/education" />
+											</fo:block>
+											<fo:block>
+												<fo:inline font-weight="bold">Job: </fo:inline>
+												<xsl:value-of select="demographic/occupation" />
+											</fo:block>
+											<fo:block>
+												<fo:inline font-weight="bold">Address: </fo:inline>
+												<xsl:value-of select="demographic/address" />
+											</fo:block>
+										</xsl:element>
+									</fo:table-cell>
+									<fo:table-cell>
+										<xsl:attribute name="padding-before">4pt</xsl:attribute>
+										<xsl:attribute name="padding-after">4pt</xsl:attribute>
+										<xsl:attribute name="padding-start">4pt</xsl:attribute>
+										<xsl:attribute name="padding-end">4pt</xsl:attribute>
+										<xsl:attribute name="border">thin solid black</xsl:attribute>
+										<xsl:element name="fo:block-container">
+											<fo:block>
+												<fo:inline font-weight="bold">G: </fo:inline> <xsl:value-of select="pregnancy-history/gravida" /> 
+												<fo:inline font-weight="bold">P: </fo:inline> <xsl:value-of select="pregnancy-history/parity" />
+											</fo:block>
+											<fo:block>
+												<fo:inline font-weight="bold">LMP: </fo:inline>
+												<xsl:value-of select="pregnancy-history/lmp" />
+											</fo:block>
+											<fo:block>
+												<fo:inline font-weight="bold">EDD: </fo:inline>
+												<xsl:value-of select="pregnancy-history/edd" />
+											</fo:block>
+											<fo:block>
+												<fo:inline font-weight="bold">U/S Done: </fo:inline>
+												<xsl:value-of select="pregnancy-history/usg" />
+											</fo:block>
+											<fo:block> </fo:block>
+											<fo:block-container>
+												<xsl:attribute name="padding-before">4pt</xsl:attribute>
+												<fo:block font-weight="bold">
+													Partner Information:
+												</fo:block>
+												<fo:block margin-left="4pt">
+													<xsl:choose>
+														<xsl:when test="partner/name = ''">
+															<fo:inline>Unknown</fo:inline>
+														</xsl:when>
+														<xsl:otherwise>
+															<xsl:value-of select="partner/name" />
+														</xsl:otherwise>
+													</xsl:choose>
+												</fo:block>
+												<fo:block margin-left="4pt">
+													<xsl:choose>
+														<xsl:when test="partner/age = ''">
+															<fo:inline>X Years</fo:inline>
+														</xsl:when>
+														<xsl:otherwise>
+															<xsl:value-of select="partner/age" /> Years
+														</xsl:otherwise>
+													</xsl:choose>
+												</fo:block>
+												<fo:block margin-left="4pt">
+													<fo:inline font-weight="bold">Job: </fo:inline>
+													<xsl:value-of select="partner/occupation" />
+												</fo:block>
+											</fo:block-container>
+										</xsl:element>
+									</fo:table-cell>
+									<fo:table-cell>
+										<xsl:attribute name="padding-before">4pt</xsl:attribute>
+										<xsl:attribute name="padding-after">4pt</xsl:attribute>
+										<xsl:attribute name="padding-start">4pt</xsl:attribute>
+										<xsl:attribute name="padding-end">4pt</xsl:attribute>
+										<xsl:attribute name="border">thin solid black</xsl:attribute>
+										<xsl:element name="fo:block-container">
+											<fo:block font-weight="bold">
+												ID: <xsl:value-of select="identifiers/id" />
+											</fo:block>
+											<fo:block>
+												<fo:inline font-weight="bold">Health Facility: </fo:inline> MTRH
+											</fo:block>
+											<xsl:if test="identifiers/alternateId">
+												<xsl:variable name="maxIds" select="2" />ID
+												<xsl:for-each select="alternateId">
+													<xsl:choose>
+														<xsl:when test="position() &lt; $maxIds">
+															<fo:block color="#888888">
+																<fo:inline>
+																	Other ID: <xsl:value-of select="." />
+																</fo:inline>
+															</fo:block>
+														</xsl:when>
+														<xsl:when test="position() = ($maxIds + 1)">
+															<fo:block color="#888888">
+																<fo:inline font-style="italic">(not all identifiers shown)</fo:inline>
+															</fo:block>
+														</xsl:when>
+													</xsl:choose>
+												</xsl:for-each>
+											</xsl:if>
+											<fo:block>
+												<fo:inline font-weight="bold">NHIF Insurance: </fo:inline>
+												<xsl:value-of select="information/insurance" />
+											</fo:block>
+											<fo:block>
+												<fo:inline font-weight="bold">Has Emergency Transport: </fo:inline>
+												<xsl:value-of select="information/transport" />												
+											</fo:block>
+											<fo:block>
+												<fo:inline font-weight="bold">Barriers: </fo:inline>
+												<xsl:choose>
+													<xsl:when test="information/barriers = ''">
+														<fo:inline>NONE</fo:inline>
+													</xsl:when>
+													<xsl:otherwise>
+														<fo:inline><xsl:value-of select="information/barriers" /></fo:inline>
+													</xsl:otherwise>
+												</xsl:choose>
+											</fo:block>
+											<fo:block>
+												<fo:inline font-weight="bold">Mosquito Net: </fo:inline>
+												<xsl:choose>
+													<xsl:when test="information/barriers = ''">
+														<fo:inline>NO</fo:inline>
+													</xsl:when>
+													<xsl:otherwise>
+														<fo:inline>YES</fo:inline>
+													</xsl:otherwise>
+												</xsl:choose>
+											</fo:block>
+										</xsl:element>
+									</fo:table-cell>
+								</fo:table-row>
+								<fo:table-row>
+									<fo:table-cell>
+										<xsl:attribute name="padding-before">4pt</xsl:attribute>
+										<xsl:attribute name="padding-after">4pt</xsl:attribute>
+										<xsl:attribute name="padding-start">4pt</xsl:attribute>
+										<xsl:attribute name="padding-end">4pt</xsl:attribute>
+										<xsl:attribute name="border">thin solid black</xsl:attribute>
+										<xsl:element name="fo:block-container">
+											<fo:block><fo:inline font-weight="bold">MEDICAL HISTORY</fo:inline></fo:block>
+											<fo:block>
+												<fo:inline font-weight="bold">HIV Hx: </fo:inline>
+												<xsl:choose>
+													<xsl:when test="medical-history/hiv-status = ''">
+														<fo:inline>NEGATIVE</fo:inline>
+													</xsl:when>
+													<xsl:otherwise>
+														<fo:inline>POSITIVE</fo:inline>
+													</xsl:otherwise>
+												</xsl:choose>
+											</fo:block>
+											<fo:block>
+												<fo:inline font-weight="bold">HIV Test: </fo:inline>
+												<xsl:choose>
+													<xsl:when test="medical-history/hiv/tested/value = 'YES'">
+														<fo:inline>DONE </fo:inline>
+														<fo:inline>(<xsl:value-of select="medical-history/hiv/qualitative" />)</fo:inline>
+														<fo:inline> - <xsl:value-of select="medical-history/hiv/tested/datetime" /></fo:inline>
+													</xsl:when>
+													<xsl:otherwise>
+														<fo:inline>NOT DONE</fo:inline>
+													</xsl:otherwise>
+												</xsl:choose>
+											</fo:block>
+											<fo:block>
+												<fo:inline font-weight="bold">STDs: </fo:inline>
+												<xsl:choose>
+													<xsl:when test="medical-history/stds = ''">
+														<fo:inline>NONE</fo:inline>
+													</xsl:when>
+													<xsl:otherwise>
+														<fo:inline><xsl:value-of select="medical-history/stds" /></fo:inline>
+													</xsl:otherwise>
+												</xsl:choose>
+											</fo:block>
+											<fo:block>
+												<fo:inline font-weight="bold">Post Partum Depression: </fo:inline>
+												<xsl:value-of select="medical-history/depression" />
+											</fo:block>
+											<fo:block>
+												<fo:inline font-weight="bold">Other History: </fo:inline>
+												<xsl:variable name="others" select="medical-history/others" />
+												<xsl:choose>
+													<xsl:when test="medical-history/others = ''">
+														<fo:inline>NONE</fo:inline>
+													</xsl:when>
+													<xsl:otherwise>
+														<fo:inline><xsl:value-of select="medical-history/others" /></fo:inline>
+													</xsl:otherwise>
+												</xsl:choose>
+											</fo:block>
+										</xsl:element>
+									</fo:table-cell>
+									<fo:table-cell>
+										<xsl:attribute name="padding-before">4pt</xsl:attribute>
+										<xsl:attribute name="padding-after">4pt</xsl:attribute>
+										<xsl:attribute name="padding-start">4pt</xsl:attribute>
+										<xsl:attribute name="padding-end">4pt</xsl:attribute>
+										<xsl:attribute name="border">thin solid black</xsl:attribute>
+										<xsl:element name="fo:block-container">
+											<fo:block>
+												<fo:inline font-weight="bold">CURRENT MEDICATIONS </fo:inline>
+												<xsl:choose>
+													<xsl:when test="current-medications/medications/element">
+														<xsl:for-each select="current-medications/medications/element">
+															<fo:inline>
+																<xsl:value-of select="." />
+																<xsl:if test="position() &lt; last()">,</xsl:if>
+															</fo:inline>
+														</xsl:for-each>
+													</xsl:when>
+													<xsl:otherwise>NONE</xsl:otherwise>
+												</xsl:choose>
+											</fo:block>
+											<fo:block>
+												<fo:inline font-weight="bold">TT: </fo:inline>
+												<xsl:choose>
+													<xsl:when test="current-medications/tt/completed = 'YES'">
+														<fo:inline>COMPLETED</fo:inline>
+													</xsl:when>
+													<xsl:otherwise>
+														<fo:inline>
+														<xsl:value-of select="current-medications/tt/received" />
+														<xsl:choose>
+															<xsl:when test="current-medications/tt/total &lt; 5">(TOTAL = <xsl:value-of select="current-medications/tt/total" />)</xsl:when>
+															<xsl:otherwise>(COMPLETED)</xsl:otherwise>
+														</xsl:choose>
+														</fo:inline>
+													</xsl:otherwise>
+												</xsl:choose>
+											</fo:block>
+											<fo:block>
+												<fo:inline font-weight="bold">IPT1: </fo:inline>
+												<xsl:choose>
+													<xsl:when test="current-medications/ipt1 = ''">
+														<fo:inline>NO</fo:inline>
+													</xsl:when>
+													<xsl:otherwise>
+														<fo:inline>YES</fo:inline>
+													</xsl:otherwise>
+												</xsl:choose> 
+												<fo:inline font-weight="bold"> IPT2: </fo:inline>
+												<xsl:choose>
+													<xsl:when test="current-medications/ipt2 = ''">
+														<fo:inline>NO</fo:inline>
+													</xsl:when>
+													<xsl:otherwise>
+														<fo:inline>YES</fo:inline>
+													</xsl:otherwise>
+												</xsl:choose>
+											</fo:block>
+											<fo:block>
+												<fo:inline font-weight="bold">ANTI-D: </fo:inline>
+												<xsl:choose>
+													<xsl:when test="current-medications/anti-d = ''">
+														<fo:inline>NONE</fo:inline>
+													</xsl:when>
+													<xsl:otherwise>
+														<fo:inline><xsl:value-of select="current-medications/anti-d" /></fo:inline>
+													</xsl:otherwise>
+												</xsl:choose>
+											</fo:block>
+										</xsl:element>
+									</fo:table-cell>
+									<fo:table-cell>
+										<xsl:attribute name="padding-before">4pt</xsl:attribute>
+										<xsl:attribute name="padding-after">4pt</xsl:attribute>
+										<xsl:attribute name="padding-start">4pt</xsl:attribute>
+										<xsl:attribute name="padding-end">4pt</xsl:attribute>
+										<xsl:attribute name="border">thin solid black</xsl:attribute>
+										<xsl:element name="fo:block-container">
+											<fo:block><fo:inline font-weight="bold">PREFERENCES</fo:inline></fo:block>
+											<fo:block>
+												<fo:inline font-weight="bold">Delivery Site: </fo:inline>
+												<xsl:choose>
+													<xsl:when test="preferences/delivery-site/health-facility = 'YES'">
+														<fo:inline>HEALTH FACILITY</fo:inline>
+														<xsl:if test="preferences/delivery-site/location">
+															<fo:inline>(<xsl:value-of select="preferences/delivery-site/location" />)</fo:inline>
+														</xsl:if>
+													</xsl:when>
+													<xsl:otherwise>
+														<fo:inline>NOT AT HEALTH FACILITY</fo:inline>
+														<xsl:if test="preferences/delivery-site/reasons">
+															<fo:inline>(<xsl:value-of select="preferences/delivery-site/reasons" />)</fo:inline>
+														</xsl:if>
+													</xsl:otherwise>
+												</xsl:choose>
+											</fo:block>
+											<fo:block>
+												<fo:inline font-weight="bold">Delivery Mode: </fo:inline>
+												<xsl:choose>
+													<xsl:when test="preferences/delivery-mode = ''">
+														<fo:inline>UNKNOWN</fo:inline>
+													</xsl:when>
+													<xsl:otherwise>
+														<fo:inline><xsl:value-of select="preferences/delivery-mode" /></fo:inline>
+													</xsl:otherwise>
+												</xsl:choose>
+											</fo:block>
+											<fo:block>
+												<fo:inline font-weight="bold">Infant Feeding: </fo:inline>
+												<xsl:choose>
+													<xsl:when test="preferences/infant-feeding = ''">
+														<fo:inline>UNKNOWN</fo:inline>
+													</xsl:when>
+													<xsl:otherwise>
+														<fo:inline><xsl:value-of select="preferences/infant-feeding" /></fo:inline>
+													</xsl:otherwise>
+												</xsl:choose>
+											</fo:block>
+											<fo:block>
+												<fo:inline font-weight="bold">Recent Contraception: </fo:inline>
+												<xsl:choose>
+													<xsl:when test="current-medications/contraceptions = ''">
+														<fo:inline>NONE</fo:inline>
+													</xsl:when>
+													<xsl:otherwise>
+														<fo:inline><xsl:value-of select="current-medications/contraceptions" /></fo:inline>
+													</xsl:otherwise>
+												</xsl:choose>
+											</fo:block>
+											<fo:block>
+												<fo:inline font-weight="bold">Substance Use: </fo:inline>
+												<xsl:choose>
+													<xsl:when test="current-medications/substances = ''">
+														<fo:inline>NONE</fo:inline>
+													</xsl:when>
+													<xsl:otherwise>
+														<fo:inline><xsl:value-of select="current-medications/substances" /></fo:inline>
+													</xsl:otherwise>
+												</xsl:choose>
+											</fo:block>
+										</xsl:element>
+									</fo:table-cell>
+								</fo:table-row>
+						</fo:table-body>
+					</fo:table>
+					<fo:table table-layout="fixed" width="100%" space-before="12pt">
+						<xsl:attribute name="font-size">8pt</xsl:attribute>
+						<xsl:attribute name="text-align">center</xsl:attribute>
+						<fo:table-column column-width="3%"/>
+						<fo:table-column column-width="10%"/>
+						<fo:table-column column-width="10%"/>
+						<fo:table-column column-width="10%"/>
+						<fo:table-column column-width="8%"/>
+						<fo:table-column column-width="8%"/>
+						<fo:table-column column-width="20%"/>
+						<fo:table-column column-width="8%"/>
+						<fo:table-column column-width="8%"/>
+						<fo:table-column column-width="15%"/>
+						<fo:table-body>
+							<fo:table-row>
+								<fo:table-cell number-columns-spanned="10">
+									<xsl:attribute name="border">thin solid black</xsl:attribute>
+									<fo:block font-weight="bold">PREVIOUS PREGNANCY</fo:block>
+								</fo:table-cell>
+							</fo:table-row>
+							<fo:table-row>
+							<!-- Header of the previous pregnancy -->
+							<xsl:for-each select="previous-pregnancies/header/element">
+								<fo:table-cell>
+									<xsl:attribute name="border">thin solid black</xsl:attribute>
+									<xsl:element name="fo:block-container">
+										<xsl:attribute name="font-weight">bold</xsl:attribute>
+										<fo:block><xsl:value-of select="." /></fo:block>
+									</xsl:element>
+								</fo:table-cell>
+							</xsl:for-each>
+							</fo:table-row>
+							<xsl:for-each select="previous-pregnancies/previous-pregnancy">
+							<xsl:variable name="i" select="position()" />
+							<fo:table-row>
+								<xsl:for-each select="element">
+								<xsl:variable name="j" select="position()" />
+								<fo:table-cell>
+									<xsl:attribute name="border">thin solid black</xsl:attribute>
+									<xsl:element name="fo:block-container">
+										<fo:block font-size="6pt">
+											<xsl:choose>
+												<xsl:when test="$j = 1"><xsl:value-of select="$i"/></xsl:when>
+												<xsl:otherwise><xsl:value-of select="."/></xsl:otherwise>
+											</xsl:choose>
+										</fo:block>
+									</xsl:element>
+								</fo:table-cell>
+								</xsl:for-each>
+							</fo:table-row>
+							</xsl:for-each>
+						</fo:table-body>
+					</fo:table>
+					<fo:table table-layout="fixed" width="100%" space-before="12pt">
+						<xsl:attribute name="font-size">8pt</xsl:attribute>
+						<xsl:attribute name="text-align">center</xsl:attribute>
+						<fo:table-column column-width="10%"/>
+						<fo:table-column column-width="5%"/>
+						<fo:table-column column-width="5%"/>
+						<fo:table-column column-width="7%"/>
+						<fo:table-column column-width="5%"/>
+						<fo:table-column column-width="7%"/>
+						<fo:table-column column-width="7%"/>
+						<fo:table-column column-width="8%"/>
+						<fo:table-column column-width="10%"/>
+						<fo:table-column column-width="8%"/>
+						<fo:table-column column-width="8%"/>
+						<fo:table-column column-width="10%"/>
+						<fo:table-column column-width="10%"/>
+						<fo:table-body>
+							<fo:table-row>
+								<fo:table-cell number-columns-spanned="13">
+									<xsl:attribute name="border">thin solid black</xsl:attribute>
+									<fo:block font-weight="bold">PRESENT PREGNANCY</fo:block>
+								</fo:table-cell>
+							</fo:table-row>
+							<fo:table-row>
+								<fo:table-cell number-columns-spanned="13">
+									<xsl:attribute name="border">thin solid black</xsl:attribute>
+									<fo:block font-weight="bold">Review of System</fo:block>
+								</fo:table-cell>
+							</fo:table-row>
+							<fo:table-row>
+							<xsl:for-each select="present-pregnancies/header/element">
+								<fo:table-cell>
+									<xsl:attribute name="border">thin solid black</xsl:attribute>
+									<xsl:element name="fo:block-container">
+										<xsl:attribute name="font-weight">bold</xsl:attribute>
+										<fo:block><xsl:value-of select="." /></fo:block>
+									</xsl:element>
+								</fo:table-cell>
+							</xsl:for-each>
+							</fo:table-row>
+							<xsl:for-each select="present-pregnancies/present-pregnancy">
+							<fo:table-row>
+								<xsl:for-each select="element">
+								<fo:table-cell>
+									<xsl:attribute name="border">thin solid black</xsl:attribute>
+									<xsl:element name="fo:block-container">
+										<fo:block font-size="6pt">
+											<xsl:choose>
+												<xsl:when test="position() = 1"><xsl:value-of select="." /></xsl:when>
+												<xsl:when test="position() = last()"><xsl:value-of select="." /></xsl:when>
+												<xsl:otherwise>
+													<xsl:variable name="exist" select="." />
+													<xsl:choose>
+														<xsl:when test="$exist = ''">-</xsl:when>
+														<xsl:otherwise>X</xsl:otherwise>
+													</xsl:choose>
+												</xsl:otherwise>
+											</xsl:choose>
+										</fo:block>
+									</xsl:element>
+								</fo:table-cell>
+								</xsl:for-each>
+							</fo:table-row>
+							</xsl:for-each>
+						</fo:table-body>
+					</fo:table>
+					
+					<fo:table table-layout="fixed" width="100%" space-before="12pt">
+						<xsl:attribute name="font-size">8pt</xsl:attribute>
+						<xsl:attribute name="text-align">center</xsl:attribute>
+						<fo:table-column column-width="8%"/>
+						<fo:table-column column-width="5%"/>
+						<fo:table-column column-width="5%"/>
+						<fo:table-column column-width="5%"/>
+						<fo:table-column column-width="5%"/>
+						<fo:table-column column-width="5%"/>
+						<fo:table-column column-width="10%"/>
+						<fo:table-column column-width="5%"/>
+						<fo:table-column column-width="5%"/>
+						<fo:table-column column-width="5%"/>
+						<fo:table-column column-width="10%"/>
+						<fo:table-column column-width="10%"/>
+						<fo:table-column column-width="7%"/>
+						<fo:table-column column-width="5%"/>
+						<fo:table-column column-width="10%"/>
+						<fo:table-body>
+							<fo:table-row>
+								<fo:table-cell number-columns-spanned="15">
+									<xsl:attribute name="border">thin solid black</xsl:attribute>
+									<fo:block font-weight="bold">PHYSICAL EXAMS</fo:block>
+								</fo:table-cell>
+							</fo:table-row>
+							<fo:table-row>
+							<xsl:for-each select="physical-exams/header/element">
+								<fo:table-cell>
+									<xsl:attribute name="border">thin solid black</xsl:attribute>
+									<xsl:element name="fo:block-container">
+										<xsl:attribute name="font-weight">bold</xsl:attribute>
+										<fo:block><xsl:value-of select="." /></fo:block>
+									</xsl:element>
+								</fo:table-cell>
+							</xsl:for-each>
+							</fo:table-row>
+							<xsl:for-each select="physical-exams/physical-exam">
+							<fo:table-row>
+								<xsl:for-each select="element">
+								<fo:table-cell>
+									<xsl:attribute name="border">thin solid black</xsl:attribute>
+									<xsl:element name="fo:block-container">
+										<fo:block font-size="6pt">
+										<fo:inline vertical-align="middle">
+										<xsl:choose>
+											<xsl:when test=". = ''"></xsl:when>
+											<xsl:when test=". = 'NORMAL'">NL</xsl:when>
+											<xsl:when test=". = 'ABNORMAL'">ABNL</xsl:when>
+											<xsl:otherwise><xsl:value-of select="." /></xsl:otherwise>
+										</xsl:choose>
+										</fo:inline>
+										</fo:block>
+									</xsl:element>
+								</fo:table-cell>
+								</xsl:for-each>
+							</fo:table-row>
+							</xsl:for-each>
+						</fo:table-body>
+					</fo:table>
+					
+					<fo:table table-layout="fixed" width="100%" space-before="12pt">
+						<xsl:attribute name="font-size">8pt</xsl:attribute>
+						<xsl:attribute name="text-align">center</xsl:attribute>
+						<fo:table-column column-width="10%"/>
+						<fo:table-column column-width="10%"/>
+						<fo:table-column column-width="10%"/>
+						<fo:table-column column-width="10%"/>
+						<fo:table-column column-width="10%"/>
+						<fo:table-column column-width="10%"/>
+						<fo:table-column column-width="10%"/>
+						<fo:table-body>
+							<fo:table-row>
+								<fo:table-cell number-columns-spanned="7">
+									<xsl:attribute name="border">thin solid black</xsl:attribute>
+									<fo:block font-weight="bold">LABS / TESTS</fo:block>
+								</fo:table-cell>
+							</fo:table-row>
+							<fo:table-row>
+								<fo:table-cell number-columns-spanned="7">
+									<xsl:attribute name="text-align">left</xsl:attribute>
+									<xsl:attribute name="border">thin solid black</xsl:attribute>
+									<fo:block>
+										<fo:inline font-weight="bold">Blood Group: </fo:inline>
+										<xsl:choose>
+											<xsl:when test="lab-tests/blood-group/value = ''">
+												<fo:inline>NONE</fo:inline>
+											</xsl:when>
+											<xsl:otherwise>
+												<fo:inline><xsl:value-of select="lab-tests/blood-group/value" /></fo:inline>
+												(<fo:inline font-size="6pt"><xsl:value-of select="lab-tests/blood-group/datetime" /></fo:inline>)
+											</xsl:otherwise>
+										</xsl:choose>
+									</fo:block>
+									<fo:block>
+										<fo:inline font-weight="bold">RH: </fo:inline>
+										<xsl:choose>
+											<xsl:when test="lab-tests/rh/value = ''">
+												<fo:inline>NONE</fo:inline>
+											</xsl:when>
+											<xsl:otherwise>
+												<fo:inline><xsl:value-of select="lab-tests/rh/value" /></fo:inline>
+												(<fo:inline font-size="6pt"><xsl:value-of select="lab-tests/rh/datetime" /></fo:inline>)
+											</xsl:otherwise>
+										</xsl:choose>
+									</fo:block>
+									<fo:block>
+										<fo:inline font-weight="bold">Antibody Screen: </fo:inline>
+										<xsl:choose>
+											<xsl:when test="lab-tests/antibody/value = ''">
+												<fo:inline>NONE</fo:inline>
+											</xsl:when>
+											<xsl:otherwise>
+												<fo:inline><xsl:value-of select="lab-tests/antibody/value" /></fo:inline>
+												(<fo:inline font-size="6pt"><xsl:value-of select="lab-tests/antibody/datetime" /></fo:inline>)
+											</xsl:otherwise>
+										</xsl:choose>
+									</fo:block>
+									<fo:block>
+										<fo:inline font-weight="bold">U/S results: </fo:inline>
+										<xsl:choose>
+											<xsl:when test="lab-tests/us/value = ''">
+												<fo:inline>NONE</fo:inline>
+											</xsl:when>
+											<xsl:otherwise>
+												<fo:inline><xsl:value-of select="lab-tests/us/value" /></fo:inline>
+												(<fo:inline font-size="6pt"><xsl:value-of select="lab-tests/us/datetime" /></fo:inline>)
+											</xsl:otherwise>
+										</xsl:choose>
+									</fo:block>
+								</fo:table-cell>
+							</fo:table-row>
+							<fo:table-row>
+								<fo:table-cell>
+									<xsl:attribute name="border">thin solid black</xsl:attribute>
+									<xsl:element name="fo:block-container">
+										<xsl:attribute name="font-weight">bold</xsl:attribute>
+										<fo:block></fo:block>
+									</xsl:element>
+								</fo:table-cell>
+								<fo:table-cell>
+									<xsl:attribute name="border">thin solid black</xsl:attribute>
+									<xsl:element name="fo:block-container">
+										<xsl:attribute name="font-weight">bold</xsl:attribute>
+										<fo:block></fo:block>
+									</xsl:element>
+								</fo:table-cell>
+								<fo:table-cell>
+									<xsl:attribute name="border">thin solid black</xsl:attribute>
+									<xsl:element name="fo:block-container">
+										<xsl:attribute name="font-weight">bold</xsl:attribute>
+										<fo:block></fo:block>
+									</xsl:element>
+								</fo:table-cell>
+								<fo:table-cell>
+									<xsl:attribute name="border">thin solid black</xsl:attribute>
+									<xsl:element name="fo:block-container">
+										<xsl:attribute name="font-weight">bold</xsl:attribute>
+										<fo:block></fo:block>
+									</xsl:element>
+								</fo:table-cell>
+								<fo:table-cell number-columns-spanned="3">
+									<xsl:attribute name="border">thin solid black</xsl:attribute>
+									<fo:block font-weight="bold">Urine</fo:block>
+								</fo:table-cell>
+							</fo:table-row>
+							<fo:table-row>
+							<xsl:for-each select="lab-tests/flowsheets/header/element">
+								<fo:table-cell>
+									<xsl:attribute name="border">thin solid black</xsl:attribute>
+									<xsl:element name="fo:block-container">
+										<xsl:attribute name="font-weight">bold</xsl:attribute>
+										<fo:block><xsl:value-of select="." /></fo:block>
+									</xsl:element>
+								</fo:table-cell>
+							</xsl:for-each>
+							</fo:table-row>
+							<xsl:for-each select="lab-tests/flowsheets/flowsheet">
+							<fo:table-row>
+								<xsl:for-each select="element">
+								<fo:table-cell>
+									<xsl:attribute name="border">thin solid black</xsl:attribute>
+									<xsl:element name="fo:block-container">
+										<xsl:choose>
+											<xsl:when test="value = ''">
+												<fo:block>NONE</fo:block>
+											</xsl:when>
+											<xsl:otherwise>
+												<fo:block>
+													<xsl:choose>
+														<xsl:when test="position() > 4">
+															<xsl:choose>
+																<xsl:when test="value = 'POSITIVE'">+</xsl:when>
+																<xsl:when test="value = 'STRONG POSITIVE'">++</xsl:when>
+																<xsl:when test="value = 'STRONGER POSITIVE'">+++</xsl:when>
+																<xsl:otherwise><xsl:value-of select="value" /></xsl:otherwise>
+															</xsl:choose>
+														</xsl:when>
+														<xsl:otherwise><xsl:value-of select="value" /></xsl:otherwise>
+													</xsl:choose>
+												</fo:block>
+												<fo:block font-size="6pt">(<xsl:value-of select="datetime" />)</fo:block>
+											</xsl:otherwise>
+										</xsl:choose>
+									</xsl:element>
+								</fo:table-cell>
+								</xsl:for-each>
+							</fo:table-row>
+							</xsl:for-each>
+						</fo:table-body>
+					</fo:table>
+					
+					<fo:table table-layout="fixed" width="100%" space-before="12pt">
+						<xsl:attribute name="font-size">8pt</xsl:attribute>
+						<xsl:attribute name="text-align">center</xsl:attribute>
+						<fo:table-column column-width="8%"/>
+						<fo:table-column column-width="8%"/>
+						<fo:table-column column-width="8%"/>
+						<fo:table-column column-width="11%"/>
+						<fo:table-column column-width="9%"/>
+						<fo:table-column column-width="8%"/>
+						<fo:table-column column-width="7%"/>
+						<fo:table-column column-width="7%"/>
+						<fo:table-column column-width="7%"/>
+						<fo:table-column column-width="8%"/>
+						<fo:table-column column-width="5%"/>
+						<fo:table-column column-width="7%"/>
+						<fo:table-column column-width="7%"/>
+						<fo:table-body>
+							<fo:table-row>
+								<fo:table-cell number-columns-spanned="13">
+									<xsl:attribute name="border">thin solid black</xsl:attribute>
+									<fo:block font-weight="bold">Education / Counseling</fo:block>
+								</fo:table-cell>
+							</fo:table-row>
+							<fo:table-row>
+							<xsl:for-each select="education-counselings/header/element">
+								<fo:table-cell>
+									<xsl:attribute name="border">thin solid black</xsl:attribute>
+									<xsl:element name="fo:block-container">
+										<xsl:attribute name="font-weight">bold</xsl:attribute>
+										<fo:block><xsl:value-of select="." /></fo:block>
+									</xsl:element>
+								</fo:table-cell>
+							</xsl:for-each>
+							</fo:table-row>
+							<xsl:for-each select="education-counselings/education-counseling">
+							<fo:table-row>
+								<xsl:for-each select="element">
+								<xsl:variable name="j" select="position()" />
+								<fo:table-cell>
+									<xsl:attribute name="border">thin solid black</xsl:attribute>
+									<xsl:element name="fo:block-container">
+										<fo:block font-size="6pt">
+											<xsl:choose>
+												<xsl:when test="$j = 1"><xsl:value-of select="." /></xsl:when>
+												<xsl:otherwise>
+													<xsl:variable name="exist" select="." />
+													<xsl:choose>
+														<xsl:when test="$exist = ''">-</xsl:when>
+														<xsl:otherwise>X</xsl:otherwise>
+													</xsl:choose>
+												</xsl:otherwise>
+											</xsl:choose>
+										</fo:block>
+									</xsl:element>
+								</fo:table-cell>
+								</xsl:for-each>
+							</fo:table-row>
+							</xsl:for-each>
+						</fo:table-body>
+					</fo:table>
+					<fo:block font-weight="bold" space-before="8pt" font-size="8pt">
+						<fo:inline font-weight="bold">Referrals: </fo:inline>
+						<xsl:choose>
+							<xsl:when test="referrals/value = ''">
+								<fo:inline>NONE</fo:inline>
+							</xsl:when>
+							<xsl:otherwise>
+								<fo:inline><xsl:value-of select="referrals/value" /></fo:inline>
+								(<fo:inline font-size="6pt"><xsl:value-of select="referrals/datetime" /></fo:inline>)
+							</xsl:otherwise>
+						</xsl:choose>
+					</fo:block>
+				</fo:flow>
+			</fo:page-sequence>
+		</fo:root>
+	</xsl:template>
+
+</xsl:stylesheet>

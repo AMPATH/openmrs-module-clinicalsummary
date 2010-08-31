@@ -1,80 +1,81 @@
 package org.openmrs.module.clinicalsummary.web.controller;
 
-import javax.servlet.ServletException;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.EncounterType;
+import org.openmrs.api.EncounterService;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.clinicalsummary.ClinicalSummary;
-import org.openmrs.module.clinicalsummary.ClinicalSummaryService;
+import org.openmrs.module.clinicalsummary.MappingPosition;
+import org.openmrs.module.clinicalsummary.SummaryService;
+import org.openmrs.module.clinicalsummary.SummaryTemplate;
 import org.openmrs.web.WebConstants;
-import org.springframework.beans.propertyeditors.CustomNumberEditor;
-import org.springframework.validation.BindException;
-import org.springframework.web.bind.ServletRequestDataBinder;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.SimpleFormController;
-import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
-public class SummaryFormController extends SimpleFormController {
+@Controller
+@RequestMapping("/module/clinicalsummary/summaryForm")
+public class SummaryFormController {
 	
-    /** Logger for this class and subclasses */
-    protected final Log log = LogFactory.getLog(getClass());
-    
-	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
-		super.initBinder(request, binder);
-	    binder.registerCustomEditor(java.lang.Integer.class,
-                new CustomNumberEditor(java.lang.Integer.class, true));
-	}
-    
-	/** 
-	 * 
-	 * The onSubmit function receives the form/command object that was modified
-	 *   by the input form and saves it to the db
-	 * 
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
-	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
-		
-		HttpSession httpSession = request.getSession();
-		
-		String view = getFormView();
+	/** Logger for this class and subclasses */
+	private static final Log log = LogFactory.getLog(SummaryFormController.class);
+	
+	@RequestMapping(method = RequestMethod.POST)
+	public String saveTemplate(
+	                           @ModelAttribute("summary") SummaryTemplate summaryTemplate,
+	                           @RequestParam(required = false, value = "encounterTypeNames") List<String> encounterTypeNames,
+	                           HttpServletRequest request) {
 		
 		if (Context.isAuthenticated()) {
-			ClinicalSummary summary = (ClinicalSummary)obj;
-			ClinicalSummaryService css = (ClinicalSummaryService)Context.getService(ClinicalSummaryService.class);
-			css.updateClinicalSummary(summary);
-			view = getSuccessView();
+			
+			HttpSession httpSession = request.getSession();
+			
+			SummaryService css = Context.getService(SummaryService.class);
+			
+			EncounterService encounterService = Context.getEncounterService();
+			for (String name : encounterTypeNames) {
+				EncounterType encounterType = encounterService.getEncounterType(name);
+				
+				if (log.isDebugEnabled())
+					log.debug("Searching for encounter type with name: " + name + ", with result: " + encounterType);
+				
+				if (encounterType != null)
+					summaryTemplate.addEncounterType(encounterType);
+			}
+			
+			css.saveTemplate(summaryTemplate);
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "clinicalsummary.saved");
+			
+			if (log.isDebugEnabled())
+				log.debug("Saving summary template: " + summaryTemplate.getName());
 		}
 		
-		return new ModelAndView(new RedirectView(view));
+		return "redirect:summaryList.list";
 	}
-
-	/**
-	 * 
-	 * This is called prior to displaying a form for the first time.  It tells Spring
-	 *   the form/command object to load into the request
-	 * 
-	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
-	 */
-    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-
-		ClinicalSummary summary = null;
-		
+	
+	@RequestMapping(method = RequestMethod.GET)
+	public void preparePage(@RequestParam(required = false, value = "templateId") Integer templateId, ModelMap map) {
 		if (Context.isAuthenticated()) {
-			ClinicalSummaryService css = (ClinicalSummaryService)Context.getService(ClinicalSummaryService.class);
-			String summaryId = request.getParameter("clinicalSummaryId");
-	    	if (summaryId != null)
-	    		summary = css.getClinicalSummary(Integer.valueOf(summaryId));
+			SummaryTemplate summary = null;
+			
+			if (templateId != null) {
+				SummaryService css = Context.getService(SummaryService.class);
+				summary = css.getTemplate(templateId);
+			}
+			
+			if (summary == null)
+				summary = new SummaryTemplate();
+			
+			map.addAttribute("summary", summary);
+			map.addAttribute("positions", MappingPosition.values());
 		}
-		
-		if (summary == null)
-			summary = new ClinicalSummary();
-    	
-        return summary;
-    }
-    
+	}
 }

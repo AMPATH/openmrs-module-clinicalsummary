@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="@MODULE_PACKAGE@">
+
+	<class name="SummaryIndex" table="clinical_summary_index">
+
+		<id name="indexId" type="java.lang.Integer" column="index_id" unsaved-value="0">
+			<generator class="org.openmrs.api.db.hibernate.NativeIfNotAssignedIdentityGenerator" />
+		</id>
+		
+        <many-to-one name="template" column="template_id" class="SummaryTemplate"/>
+		
+        <many-to-one name="patient" column="patient_id"	class="org.openmrs.Patient"/>
+		
+        <many-to-one name="location" column="location_id" class="org.openmrs.Location"/>
+
+		<property name="returnDate" type="java.util.Date" column="return_date" length="19" />
+
+		<property name="generatedDate" type="java.util.Date" column="generated_date" length="19" />
+
+		<property name="initialDate" type="java.util.Date" column="initial_date" length="19" />
+
+		<many-to-one name="creator" class="org.openmrs.User" not-null="true">
+			<column name="creator" />
+		</many-to-one>
+
+		<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" length="19" />
+
+		<many-to-one name="changedBy" class="org.openmrs.User">
+			<column name="changed_by" />
+		</many-to-one>
+
+		<property name="dateChanged" type="java.util.Date" column="date_changed" length="19" />
+		
+		<property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" />
+
+	</class>
+</hibernate-mapping>

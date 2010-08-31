@@ -1,28 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE module PUBLIC "-//OpenMRS//DTD OpenMRS Config 1.0//EN" "http://resources.openmrs.org/doctype/config-1.0.dtd">
-
 <module configVersion="1.0">
 	
 	<!-- Base Module Properties -->
 	<id>clinicalsummary</id>
-	<name>Clinical Summary Module</name>
-	<version>3.0.2</version>
+	<name>Summary Module</name>
+	<version>3.7.r@MODULE_REVISION@</version>
 	<package>org.openmrs.module.@MODULE_ID@</package>
 	<author>Brian McKown</author>
 	<description>
-			Very Basic OpenMRS patient clinical summary.<br/>
-			Adds a link to the patient's dashboard as well as an administration section 
-			to handle mulitple summaries at once.
-			
-			See <a href="http://openmrs.org/wiki/Clinical_Summary_Module">http://openmrs.org/wiki/Clinical_Summary_Module</a> for more information
+			Display and print patient clinical summary
 	</description>
+	
+	<require_modules>
+		<require_module version="0.1">org.openmrs.logic</require_module>
+	</require_modules>
 
-	<activator>@MODULE_PACKAGE@.ClinicalSummaryActivator</activator>
+	<activator>@MODULE_PACKAGE@.SummaryActivator</activator>
 	
-	<updateURL>https://dev.openmrs.org/modules/download/clinicalsummary/update.rdf</updateURL>
-	<!-- /Base Module Properties -->
-	
-	<require_version>1.1.10.2290</require_version>
+	<require_version>1.6.0.11808</require_version>
 	
 	<extension>
 		<point>org.openmrs.patientDashboard.Header</point>
@@ -34,56 +30,56 @@
 	</extension>
 	
 	<advice>
-		<point>org.openmrs.hl7.HL7Service</point>
+		<point>org.openmrs.api.EncounterService</point>
 		<class>@MODULE_PACKAGE@.advice.EncounterCreatedAdvice</class>
 	</advice>
-	
 	<privilege>
-		<name>Manage Clinical Summaries</name>
-		<description>Able to add/edit/delete a clinical summary</description>
+		<name>Manage Summaries</name>
+		<description>Able to add/edit summary templates</description>
 	</privilege>
-	
 	<privilege>
-		<name>View Clinical Summary</name>
-		<description>Able to view/generate clinical summaries</description>
+		<name>View Summaries</name>
+		<description>Able to view clinical summaries</description>
 	</privilege>
-	
 	<privilege>
-		<name>Print Clinical Summary</name>
-		<description>Able to print clinical summaries from the queue</description>
+		<name>Generate Summaries</name>
+		<description>Able to generate clinical summaries</description>
+	</privilege>
+	<privilege>
+		<name>Print Summaries</name>
+		<description>Able to print clinical summaries</description>
 	</privilege>
 	
 	<globalProperty>
-		<property>@MODULE_ID@.printingLogicClass</property>
-		<defaultValue>org.openmrs.module.clinicalsummary.AMPATHClinicalSummaryPrintingLogic</defaultValue>
-		<description>The full class name of the class that will determine whether to print an encounter or not. Example: org.openmrs.module.clinicalsummary.AMPATHClinicalSummaryPrintingLogic</description>
-	</globalProperty>
-	<globalProperty>
-		<property>@MODULE_ID@.queueItemGenerateDir</property>
+		<property>@MODULE_ID@.generated</property>
 		<defaultValue>clinicalsummary/generated</defaultValue>
 		<description>Directory in the file system where clinical summaries are generated.</description>
 	</globalProperty>
 	<globalProperty>
-		<property>@MODULE_ID@.queueItemPrintDir</property>
-		<defaultValue>clinicalsummary/to_print</defaultValue>
-		<description>Directory in the file system where clinical summaries will be printed.</description>
+		<property>@MODULE_ID@.encryption</property>
+		<defaultValue>clinicalsummary/encryption</defaultValue>
+		<description>Directory in the file system where clinical summaries secret file are generated.</description>
 	</globalProperty>
     <globalProperty>
-		<property>@MODULE_ID@.logDir</property>
-		<defaultValue>clinicalsummary/reminders</defaultValue>
+		<property>@MODULE_ID@.zipped</property>
+		<defaultValue>clinicalsummary/zipped</defaultValue>
 		<description>Directory in the file system where patient reminder logs are located.</description>
 	</globalProperty>
-
-		
-	<servlet>
-		<servlet-name>generate</servlet-name>
-		<servlet-class>@MODULE_PACKAGE@.web.GenerateSummariesServlet</servlet-class>
-	</servlet>
-	<servlet>
-		<servlet-name>processPrintingQueue</servlet-name>
-		<servlet-class>@MODULE_PACKAGE@.web.servlet.ProcessPrintingQueueServlet</servlet-class>
-	</servlet>
-	
+    <globalProperty>
+		<property>@MODULE_ID@.batch.counter</property>
+		<defaultValue>0</defaultValue>
+		<description>Batch cluster offset to rotate the batch generation of summary</description>
+	</globalProperty>
+    <globalProperty>
+		<property>@MODULE_ID@.batch.initialized</property>
+		<defaultValue/>
+		<description>Flag to decided whether all location cluster have been initialized with default summary</description>
+	</globalProperty>
+    <globalProperty>
+		<property>@MODULE_ID@.generator.delay</property>
+		<defaultValue/>
+		<description>Delay before generator fallback to grab pre-generated summary</description>
+	</globalProperty>
 	
 	<!-- Internationalization -->
 	<!-- All message codes should start with moduleId.* -->
@@ -94,9 +90,9 @@
 	<!-- /Internationalization -->
 	
 	<mappingFiles>
-		ClinicalSummary.hbm.xml
-		ClinicalSummaryQueueItem.hbm.xml
+		SummaryTemplate.hbm.xml
+		SummaryError.hbm.xml
+		SummaryIndex.hbm.xml
 	</mappingFiles>
 	
 </module>
-

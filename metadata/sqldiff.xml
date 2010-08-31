@@ -311,6 +311,249 @@
             ]]>
         </sql>
     </diff>
-
+	
+	<diff>
+		<version>2.1.6</version>
+		<author>Nyoman Ribeka</author>
+		<date>Feb 16th 2010</date>
+		<description>
+			Create the summary error table to record all failing summary
+		</description>
+		<sql>
+			CREATE TABLE IF NOT EXISTS clinical_summary_error (
+				  summary_error_id int(11) NOT NULL auto_increment,
+				  patient_id int(11) NOT NULL,
+				  template_id int(11) NOT NULL,
+				  type varchar(255) NOT NULL,
+				  error varchar(255) NOT NULL,
+				  error_details text ,
+				  creator int(11) NOT NULL default '0',
+				  date_created datetime NOT NULL default '0000-00-00 00:00:00',
+				  changed_by int(11) default NULL,
+				  date_changed datetime default '0000-00-00 00:00:00',
+				  PRIMARY KEY (summary_error_id),
+				  KEY clinical_summary_error_creator (creator),
+				  KEY clinical_summary_error_changer (changed_by),
+				  CONSTRAINT clinical_summary_error_creator FOREIGN KEY (creator) REFERENCES users (user_id),
+				  CONSTRAINT user_who_changed_clinical_summary_error FOREIGN KEY (changed_by) REFERENCES users (user_id)
+				) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+		</sql>
+	</diff>
+	
+	<diff>
+		<version>2.1.7</version>
+		<author>Nyoman Ribeka</author>
+		<date>Feb 16th 2010</date>
+		<description>
+			Create the summary index table to record all summary
+		</description>
+		<sql>
+			CREATE TABLE IF NOT EXISTS clinical_summary_index (
+				  index_id int(11) NOT NULL auto_increment,
+				  patient_id int(11),
+				  location_id int(11),
+				  return_date datetime default '0000-00-00 00:00:00',
+				  creator int(11) NOT NULL default '0',
+				  date_created datetime NOT NULL default '0000-00-00 00:00:00',
+				  changed_by int(11) default NULL,
+				  date_changed datetime default '0000-00-00 00:00:00',
+				  PRIMARY KEY (index_id),
+				  KEY clinical_index_creator (creator),
+				  KEY clinical_index_changer (changed_by),
+				  CONSTRAINT clinical_index_creator FOREIGN KEY (creator) REFERENCES users (user_id),
+				  CONSTRAINT user_who_changed_clinical_index FOREIGN KEY (changed_by) REFERENCES users (user_id)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+		</sql>
+	</diff>
+	
+	<diff>
+		<version>2.1.8</version>
+		<author>Nyoman Ribeka</author>
+		<date>Feb 16th 2010</date>
+		<description>
+			Create the summary mapping table
+		</description>
+		<sql>
+			CREATE TABLE IF NOT EXISTS clinical_summary_mapping (
+				  clinical_summary_id int(11) NOT NULL,
+				  encounter_type_id int(11) NOT NULL,
+				  PRIMARY KEY (clinical_summary_id, encounter_type_id),
+				  CONSTRAINT clinical_mapping_template FOREIGN KEY (clinical_summary_id) REFERENCES clinical_summary (clinical_summary_id),
+				  CONSTRAINT clinical_mapping_encounter_type FOREIGN KEY (encounter_type_id) REFERENCES encounter_type (encounter_type_id)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+		</sql>
+	</diff>
+	
+	<diff>
+		<version>2.1.9</version>
+		<author>Nyoman Ribeka</author>
+		<date>July 01 2010</date>
+		<description>
+			Drop not needed column on clinical_summary_error table
+		</description>
+		<sql>
+			ALTER TABLE clinical_summary_error DROP COLUMN template_id;
+			ALTER TABLE clinical_summary_error DROP COLUMN type;
+			ALTER TABLE clinical_summary_error DROP COLUMN error;
+		</sql>
+	</diff>
+	
+	<diff>
+		<version>2.2.1</version>
+		<author>Nyoman Ribeka</author>
+		<date>July 03 2010</date>
+		<description>
+			Add template column clinical_summary_index table
+		</description>
+		<sql>
+			ALTER TABLE clinical_summary_index ADD COLUMN template_id INT(11) AFTER patient_id;
+		</sql>
+	</diff>
+	
+	<diff>
+		<version>2.2.2</version>
+		<author>Nyoman Ribeka</author>
+		<date>July 03 2010</date>
+		<description>
+			Add retired column clinical_summary table
+		</description>
+		<sql>
+			ALTER TABLE clinical_summary ADD COLUMN retired INT(1) NOT NULL DEFAULT 0;
+		</sql>
+	</diff>
+	
+	<diff>
+		<version>2.2.3</version>
+		<author>Nyoman Ribeka</author>
+		<date>July 14 2010</date>
+		<description>
+			Add index on clinical_summary_index table
+		</description>
+		<sql>
+			CREATE INDEX patient_summary_index ON clinical_summary_index (patient_id);
+			CREATE INDEX location_summary_index ON clinical_summary_index (location_id);
+			CREATE INDEX template_summary_index ON clinical_summary_index (template_id);
+		</sql>
+	</diff>
+	
+	<diff>
+		<version>2.2.4</version>
+		<author>Nyoman Ribeka</author>
+		<date>July 03 2010</date>
+		<description>
+			Add UUID column clinical_summary and clinical_summary_index table
+		</description>
+		<sql>
+			ALTER TABLE clinical_summary ADD COLUMN uuid VARCHAR(38) DEFAULT NULL;
+			UPDATE clinical_summary SET uuid = UUID();
+			ALTER TABLE clinical_summary MODIFY COLUMN uuid VARCHAR(38) NOT NULL;
+			CREATE UNIQUE INDEX uuid_clinical_summary ON clinical_summary (uuid);
+			
+			ALTER TABLE clinical_summary_index ADD COLUMN uuid VARCHAR(38) DEFAULT NULL;
+			UPDATE clinical_summary_index SET uuid = UUID();
+			ALTER TABLE clinical_summary_index MODIFY COLUMN uuid VARCHAR(38) NOT NULL;
+			CREATE UNIQUE INDEX uuid_clinical_summary_index ON clinical_summary_index(uuid);
+		</sql>
+	</diff>
+	
+	<diff>
+		<version>2.2.5</version>
+		<author>Nyoman Ribeka</author>
+		<date>July 14 2010</date>
+		<description>
+			Add logging tables
+		</description>
+		<sql>
+			CREATE TABLE IF NOT EXISTS clinical_summary_loggable (
+				  loggable_id int(11) NOT NULL auto_increment,
+				  patient_id int(11),
+				  previous_encounter_id int(11),
+				  log_source varchar(255) NOT NULL,
+				  log_type varchar(255) NOT NULL,
+				  log_datetime datetime NOT NULL DEFAULT '1900-00-00 00:00:00',
+				  creator int(11) NOT NULL DEFAULT '0',
+				  date_created datetime NOT NULL DEFAULT '1900-00-00 00:00:00',
+				  changed_by int(11) default NULL,
+				  date_changed datetime DEFAULT '1900-00-00 00:00:00',
+				  voided smallint(6) NOT NULL DEFAULT '0',
+				  voided_by int(11) DEFAULT NULL,
+				  date_voided datetime DEFAULT '1900-00-00 00:00:00',
+				  void_reason varchar(255) DEFAULT NULL,
+				  uuid varchar(38) NOT NULL,
+				  PRIMARY KEY (loggable_id),
+				  KEY clinnical_summary_loggable_creator (creator),
+				  KEY clinnical_summary_loggable_changer (changed_by),
+				  KEY clinnical_summary_loggable_voider (voided_by),
+				  CONSTRAINT clinnical_summary_loggable_creator_fk FOREIGN KEY (creator) REFERENCES users (user_id),
+				  CONSTRAINT clinnical_summary_loggable_voider_fk FOREIGN KEY (voided_by) REFERENCES users (user_id),
+				  CONSTRAINT user_who_changed_clinnical_summary_loggable FOREIGN KEY (changed_by) REFERENCES users (user_id)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+			
+			CREATE TABLE IF NOT EXISTS clinical_summary_loggable_initial (
+				  loggable_id int(11) NOT NULL auto_increment,
+				  reminder varchar(255),
+				  token varchar(255) NOT NULL,
+				  PRIMARY KEY (loggable_id),
+				  CONSTRAINT initial_loggable FOREIGN KEY (loggable_id) REFERENCES clinical_summary_loggable (loggable_id)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+			
+			CREATE TABLE IF NOT EXISTS clinical_summary_loggable_final (
+				  loggable_id int(11) NOT NULL auto_increment,
+				  current_encounter_id int(11),
+				  PRIMARY KEY (loggable_id),
+				  CONSTRAINT final_loggable FOREIGN KEY (loggable_id) REFERENCES clinical_summary_loggable (loggable_id)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+		</sql>
+	</diff>
+	
+	<diff>
+		<version>2.2.6</version>
+		<author>Nyoman Ribeka</author>
+		<date>July 26 2010</date>
+		<description>
+			Add mapping position clinical_summary table
+		</description>
+		<sql>
+			ALTER TABLE clinical_summary ADD COLUMN position VARCHAR(255) NOT NULL AFTER xslt;
+		</sql>
+	</diff>
+	
+	<diff>
+		<version>2.2.7</version>
+		<author>Nyoman Ribeka</author>
+		<date>July 26 2010</date>
+		<description>
+			Add mapping initial_date clinical_summary_index table. This is the first date the patient gets summary
+		</description>
+		<sql>
+			ALTER TABLE clinical_summary_index ADD COLUMN initial_date datetime NOT NULL DEFAULT '1910-01-01 00:00:00' AFTER return_date;
+		</sql>
+	</diff>
+	
+	<diff>
+		<version>2.2.8</version>
+		<author>Nyoman Ribeka</author>
+		<date>July 26 2010</date>
+		<description>
+			Dropping the logging table as we move the logging to a separate module
+		</description>
+		<sql>
+			DROP TABLE IF EXISTS clinical_summary_loggable_final;
+			DROP TABLE IF EXISTS clinical_summary_loggable_initial;
+			DROP TABLE IF EXISTS clinical_summary_loggable;
+		</sql>
+	</diff>
+	
+	<diff>
+		<version>2.2.9</version>
+		<author>Nyoman Ribeka</author>
+		<date>August 26 2010</date>
+		<description>
+			Add generated_date clinical_summary_index table. This is the generated date the summary
+		</description>
+		<sql>
+			ALTER TABLE clinical_summary_index ADD COLUMN generated_date datetime NOT NULL DEFAULT '1910-01-01 00:00:00' AFTER return_date;
+		</sql>
+	</diff>
 
 </sqldiff>
