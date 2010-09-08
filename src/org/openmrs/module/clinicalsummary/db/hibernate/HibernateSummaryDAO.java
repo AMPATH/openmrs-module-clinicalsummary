@@ -283,6 +283,7 @@ public class HibernateSummaryDAO implements SummaryDAO {
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(SummaryIndex.class);
 		criteria.createAlias("patient", "patient");
+	
 		
 		if (location != null)
 			criteria.add(Restrictions.eq("location", location));
@@ -302,7 +303,6 @@ public class HibernateSummaryDAO implements SummaryDAO {
 		criteria.add(Restrictions.ge("generatedDate", earliestDate));
 		
 		criteria.addOrder(Order.desc("returnDate"));
-		criteria.addOrder(Order.desc("patient.patientId"));
 		
 		return criteria.list();
 	}
