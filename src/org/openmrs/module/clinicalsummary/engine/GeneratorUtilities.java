@@ -50,10 +50,20 @@ import org.openmrs.module.clinicalsummary.rule.peds.ImmunizationRecordRule;
 import org.openmrs.module.clinicalsummary.rule.peds.LastVisitARVPlanRule;
 import org.openmrs.module.clinicalsummary.rule.peds.PMTCTRule;
 import org.openmrs.module.clinicalsummary.rule.peds.PedsWHOStageRule;
+import org.openmrs.module.clinicalsummary.rule.reminder.AntiRetroviralCD4BasedReminder;
 import org.openmrs.module.clinicalsummary.rule.reminder.BaseCD4ReminderRule;
 import org.openmrs.module.clinicalsummary.rule.reminder.CXRReminderRule;
 import org.openmrs.module.clinicalsummary.rule.reminder.CreatinineReminderRule;
 import org.openmrs.module.clinicalsummary.rule.reminder.HGBReminderRule;
+import org.openmrs.module.clinicalsummary.rule.reminder.PedsOver18moStartSeptrinReminder;
+import org.openmrs.module.clinicalsummary.rule.reminder.PedsBaselineDNAPCRReminder;
+import org.openmrs.module.clinicalsummary.rule.reminder.PedsCD4CheckPositivePCRELISAReminder;
+import org.openmrs.module.clinicalsummary.rule.reminder.PedsFirstElisaRemider;
+import org.openmrs.module.clinicalsummary.rule.reminder.Peds6wk18moStartSeptrinReminder;
+import org.openmrs.module.clinicalsummary.rule.reminder.PedsOver5StartARVReminder;
+import org.openmrs.module.clinicalsummary.rule.reminder.PedsRepeatDNAPCRReminder;
+import org.openmrs.module.clinicalsummary.rule.reminder.PedsStartARVPositivePCRELISAReminder;
+import org.openmrs.module.clinicalsummary.rule.reminder.PedsUnder18moStartARTReminder;
 import org.openmrs.module.clinicalsummary.rule.reminder.SGPTReminderRule;
 import org.openmrs.module.clinicalsummary.rule.reminder.WHOStageReminderRule;
 
@@ -115,5 +125,16 @@ public class GeneratorUtilities {
 
 		service.addRule("Datetime Latest Obs", new DatetimeLatestSingleObsRule());
 		service.addRule("Complete Encounter", new CompleteEncounterRule());
+
+		service.addRule("AntiRetroviralCD4BasedReminder", new AntiRetroviralCD4BasedReminder());
+		service.addRule("PedsBaselineDNAPCRReminder", new PedsBaselineDNAPCRReminder());
+		service.addRule("PedsCD4CheckPositivePCRELISAReminder", new PedsCD4CheckPositivePCRELISAReminder());
+		service.addRule("PedsFirstElisaRemider", new PedsFirstElisaRemider());
+		service.addRule("PedsRepeatDNAPCRReminder", new PedsRepeatDNAPCRReminder());
+		service.addRule("PedsUnder18moStartARTReminder", new PedsUnder18moStartARTReminder());
+		service.addRule("PedsStartARVPositivePCRELISAReminder", new PedsStartARVPositivePCRELISAReminder());
+		service.addRule("PedsOver5StartARVReminder", new PedsOver5StartARVReminder());
+		service.addRule("Peds6wk18moStartSeptrinReminder", new PedsOver18moStartSeptrinReminder());
+		service.addRule("PedsOver18moStartSeptrinReminder", new Peds6wk18moStartSeptrinReminder());
 	}
 }

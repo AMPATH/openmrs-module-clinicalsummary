@@ -93,8 +93,11 @@ public class PedsWHOStageRule implements Rule {
 			if (log.isDebugEnabled())
 				log.debug("Stage " + i + ": " + (stages[i] ? "FOUND" : "NOT FOUND"));
 			
-			if (stages[i])
-				result = new Result("WHO STAGE " + (i + 1));
+			if (stages[i]) {
+				result.setDatatype(Datatype.TEXT);
+				result.setValueText("WHO STAGE " + (i + 1));
+				result.setValueNumeric(i + 1);
+			}
 		}
 		
 		return result;
@@ -104,7 +107,7 @@ public class PedsWHOStageRule implements Rule {
 	 * @see org.openmrs.logic.Rule#getDefaultDatatype()
 	 */
 	public Datatype getDefaultDatatype() {
-		return Datatype.CODED;
+		return Datatype.TEXT;
 	}
 	
 	/**

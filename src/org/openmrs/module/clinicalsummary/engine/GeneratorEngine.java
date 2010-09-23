@@ -50,20 +50,16 @@ import org.openmrs.EncounterType;
 import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
-import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.clinicalsummary.MappingPosition;
-import org.openmrs.module.clinicalsummary.SummaryConstants;
 import org.openmrs.module.clinicalsummary.SummaryError;
 import org.openmrs.module.clinicalsummary.SummaryIndex;
 import org.openmrs.module.clinicalsummary.SummaryService;
 import org.openmrs.module.clinicalsummary.SummaryTemplate;
-import org.openmrs.module.clinicalsummary.cache.DataProvider;
 import org.openmrs.module.clinicalsummary.cache.SummaryDataSource;
 import org.openmrs.module.clinicalsummary.concept.StandardConceptConstants;
 import org.openmrs.module.clinicalsummary.deprecated.SummaryExportFunctions;
 import org.openmrs.module.clinicalsummary.rule.RuleConstants;
-import org.openmrs.util.OpenmrsUtil;
 
 /**
  *
@@ -74,12 +70,9 @@ public class GeneratorEngine {
 	
 	private final File outputLocation;
 	
-	private final VelocityContextUtils functions;
-	
-	public GeneratorEngine(DataProvider provider, File outputLocation) {
+	public GeneratorEngine(SummaryDataSource summaryDataSource, File outputLocation) {
 		this.outputLocation = outputLocation;
-		this.functions = new VelocityContextUtils();
-		Context.getService(SummaryService.class).setLogicDataSource("summary", new SummaryDataSource(provider));
+		Context.getService(SummaryService.class).setLogicDataSource("summary", summaryDataSource);
 	}
 	
 	private Collection<SummaryTemplate> prepareTemplate(Patient patient) {
@@ -95,6 +88,7 @@ public class GeneratorEngine {
 		parameters.put(RuleConstants.INCLUDED_ENCOUNTER_TYPES, typeNames);
 		parameters.put(RuleConstants.EVALUATED_ENCOUNTER, SummaryDataSource.ENCOUNTER_TYPE);
 		
+		VelocityContextUtils functions = new VelocityContextUtils();
 		org.openmrs.logic.result.Result encounterResults = functions.eval(patient, "Complete Encounter", parameters);
 		org.openmrs.logic.result.Result latestResult = encounterResults.latest();
 		Encounter latestEncounter = (Encounter) latestResult.getResultObject();
@@ -121,7 +115,7 @@ public class GeneratorEngine {
 	}
 	
 	@SuppressWarnings("deprecation")
-    private void generateSummary(Patient patient) {
+    public void generateSummary(Patient patient) {
 		
 		if (log.isDebugEnabled())
 			log.debug("Generating summary file for patient " + patient.getPatientId() + "...");
@@ -132,6 +126,8 @@ public class GeneratorEngine {
 			Velocity.setProperty(RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS, "org.apache.velocity.runtime.log.Log4JLogChute");
 			Velocity.setProperty("runtime.log.logsystem.log4j.logger", GeneratorEngine.class.getName());
 			Velocity.init();
+			
+			VelocityContextUtils functions = new VelocityContextUtils();
 			
 			VelocityContext context = new VelocityContext();
 			context.put("patient", patient);
@@ -220,6 +216,8 @@ public class GeneratorEngine {
 			typeNames.add(encounterType.getName());
 		parameters.put(RuleConstants.INCLUDED_ENCOUNTER_TYPES, typeNames);
 		
+		VelocityContextUtils functions = new VelocityContextUtils();
+		
 		org.openmrs.logic.result.Result obsResult = functions.eval(patient, "Datetime Latest Obs", parameters);
 		Obs observation = (Obs) obsResult.getResultObject();
 		if (observation != null) {
@@ -245,35 +243,4 @@ public class GeneratorEngine {
 		
 		summaryService.saveError(error);
 	}
-	
-	public static void generateSummary(Cohort cohort) {
-		
-		PatientService patientService = Context.getPatientService();
-		File folder = OpenmrsUtil.getDirectoryInApplicationDataDirectory(SummaryConstants.GENERATED_PDF_LOCATION);
-		
-		// need to slice the cohort to minimize the memory footprint of
-		// the encounter buffer here. if the logic service is fast enough,
-		// we wouldn't need to do this actually
-		
-		int counter = 0;
-		Cohort subCohort = new Cohort();
-		for (Integer patientId : cohort.getMemberIds()) {
-			subCohort.addMember(patientId);
-			
-			counter++;
-			
-			if (subCohort.size() >= SummaryConstants.MAX_COHORT_SIZE || counter >= cohort.getSize()) {
-				
-				DataProvider provider = new DataProvider(subCohort);
-				GeneratorEngine generatorEngine = new GeneratorEngine(provider, folder);
-				
-				for (Integer processedId : subCohort.getMemberIds())
-					generatorEngine.generateSummary(patientService.getPatient(processedId));
-				
-				subCohort = new Cohort();
-				Context.clearSession();
-			}
-		}
-	}
-	
 }

@@ -291,10 +291,18 @@ public interface StandardConceptConstants {
 	String ARV_PLAN_LAST_VISIT_NAME = "ANTIRETROVIRAL PLAN";
 	
 	@RegisterConcept
+	@BufferObservations
 	String ELISA_NAME = "HIV ENZYME IMMUNOASSAY, QUALITATIVE";
 	
 	@RegisterConcept
+	@BufferObservations
 	String DNA_PCR_NAME = "HIV DNA POLYMERASE CHAIN REACTION, QUALITATIVE";
+	
+	@RegisterConcept
+	String NEGATIVE = "NEGATIVE";
+	
+	@RegisterConcept
+	String POSITIVE = "POSITIVE";
 	
 	@RegisterConcept
 	@BufferObservations(type = { TypeConstants.ADULT_INITIAL, TypeConstants.ADULT_RETURN, TypeConstants.ADULT_NONCLINICAL,

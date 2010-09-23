@@ -14,6 +14,8 @@
 package org.openmrs.module.clinicalsummary.task;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -22,7 +24,7 @@ import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.clinicalsummary.SummaryError;
 import org.openmrs.module.clinicalsummary.SummaryService;
-import org.openmrs.module.clinicalsummary.engine.GeneratorEngine;
+import org.openmrs.module.clinicalsummary.engine.GeneratorThread;
 
 /**
  *
@@ -52,6 +54,8 @@ public class FailedSummaryGeneratorProcessor {
 		if (log.isDebugEnabled())
 			log.debug("Generating " + cohort.size() + " summaries from failed list ...");
 		
-		GeneratorEngine.generateSummary(cohort);
+		GeneratorThread generatorThread = new GeneratorThread(cohort);
+		ExecutorService executorService = Executors.newFixedThreadPool(1);
+		executorService.execute(generatorThread);
 	}
 }

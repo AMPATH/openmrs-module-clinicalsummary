@@ -16,6 +16,7 @@ package org.openmrs.module.clinicalsummary.engine;
 import java.util.Date;
 import java.util.Map;
 
+import org.openmrs.Concept;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.logic.LogicCriteria;
@@ -39,6 +40,15 @@ public class VelocityContextUtils {
 			return "";
 		
 		return Context.getDateFormat().format(date);
+	}
+	
+	public String printConceptName(Concept concept) {
+		
+		if (concept == null)
+			return "";
+		
+		String name = concept.getBestName(Context.getLocale()).getName();
+		return name;
 	}
 	
 	public Result eval(Patient patient, LogicCriteria criteria) {

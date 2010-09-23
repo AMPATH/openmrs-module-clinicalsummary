@@ -13,6 +13,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.clinicalsummary.MappingPosition;
 import org.openmrs.module.clinicalsummary.SummaryService;
 import org.openmrs.module.clinicalsummary.SummaryTemplate;
+import org.openmrs.module.clinicalsummary.engine.TemplateRegistry;
 import org.openmrs.web.WebConstants;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -52,6 +53,10 @@ public class SummaryFormController {
 			}
 			
 			css.saveTemplate(summaryTemplate);
+			
+			// destroy the template cache when we save a new template
+			TemplateRegistry.destroyInstance();
+			
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "clinicalsummary.saved");
 			
 			if (log.isDebugEnabled())

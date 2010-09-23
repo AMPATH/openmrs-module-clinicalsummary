@@ -105,7 +105,7 @@ public class PrintSummariesFormController {
 				if (StringUtils.isNotBlank(patientIdentifiers)) {
 					
 					String[] patientIdentifier = StringUtils.split(patientIdentifiers);
-					String template = StringUtils.defaultString(templateId[1], "*");
+					String template = StringUtils.defaultString(templateId[0], "*");
 					PatientSetService patientSetService = Context.getPatientSetService();
 					// TODO: buggy code from openmrs
 					Cohort cohort = patientSetService.convertPatientIdentifier(Arrays.asList(patientIdentifier));

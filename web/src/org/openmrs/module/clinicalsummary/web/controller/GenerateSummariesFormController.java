@@ -15,6 +15,8 @@ package org.openmrs.module.clinicalsummary.web.controller;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -30,7 +32,7 @@ import org.openmrs.Patient;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.clinicalsummary.SummaryService;
-import org.openmrs.module.clinicalsummary.engine.GeneratorEngine;
+import org.openmrs.module.clinicalsummary.engine.GeneratorThread;
 import org.openmrs.web.WebConstants;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -90,7 +92,11 @@ public class GenerateSummariesFormController {
 					cohort = summaryService.getCohortByLocation(location, startDate, endDate);
 				}
 				
-				GeneratorEngine.generateSummary(cohort);
+				if (log.isDebugEnabled())
+					log.debug("Generating summary for: " + cohort.getCommaSeparatedPatientIds());
+				GeneratorThread generatorThread = new GeneratorThread(cohort);
+				ExecutorService executorService = Executors.newFixedThreadPool(1);
+				executorService.execute(generatorThread);
 			}
 		}
 	}

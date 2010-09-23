@@ -51,21 +51,20 @@ public class CXRReminderRule implements Rule {
 	 *      java.util.Map)
 	 */
 	public Result eval(LogicContext context, Patient patient, Map<String, Object> parameters) throws LogicException {
-		Result result = new Result();
+		Result reminder = new Result();
 		
 		Concept cxrConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.CXR_NAME);
 		
 		SummaryService service = Context.getService(SummaryService.class);
 		
-		LogicCriteria conceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(
-		    StandardConceptConstants.CXR_NAME);
+		LogicCriteria conceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.CXR_NAME);
 		LogicCriteria encounterCriteria = service.parseToken(SummaryDataSource.ENCOUNTER_TYPE).in(Collections.emptyList());
 		LogicCriteria criteria = conceptCriteria.and(encounterCriteria);
 		
 		Result obsResult = context.read(patient, service.getLogicDataSource("summary"), criteria);
 		
 		if (log.isDebugEnabled())
-			log.debug("Patient: " + patient.getPatientId() + ", cd4 results " + obsResult);
+			log.debug("Patient: " + patient.getPatientId() + ", cxr results " + obsResult);
 		
 		// if there's no result, then check if they already order one
 		if (obsResult.isEmpty()) {
@@ -74,38 +73,30 @@ public class CXRReminderRule implements Rule {
 			calendar.add(Calendar.MONTH, -6);
 			Date sixMonths = calendar.getTime();
 			
-			LogicCriteria testedConceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(
-			    StandardConceptConstants.TESTS_ORDERED);
+			LogicCriteria testedConceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.TESTS_ORDERED);
 			LogicCriteria testedCriteria = testedConceptCriteria.and(encounterCriteria);
 			
 			Result testedResult = context.read(patient, service.getLogicDataSource("summary"), testedCriteria);
 			
-			// flag for showing the reminder
-			boolean showReminder = false;
-			// flag for found observation
-			boolean foundObs = false;
-			int counter = 0;
-			while (foundObs && counter < testedResult.size()) {
-				Result testedObsResult = testedResult.get(counter);
-				Concept valueCoded = testedObsResult.toConcept();
-				// we need to search for the first obs that match our coded values for test ordered
-				if (OpenmrsUtil.nullSafeEquals(valueCoded, cxrConcept)) {
-					foundObs = true;
-					// if it's after 6 months ago, then don't show reminder
-					if (testedObsResult.getResultDate().before(sixMonths))
-						showReminder = true;
-				}
-				counter++;
+			boolean testExist = false;
+			
+			for (Result result : testedResult) {
+				// only process the date after the reference date
+				if (result.getResultDate().after(sixMonths))
+					if (OpenmrsUtil.nullSafeEquals(result.toConcept(), cxrConcept)) {
+						testExist = true;
+						break;
+					}
 			}
-
-			if (!foundObs || showReminder)
-				result = new Result(CRX_REMINDER);
+			
+			if (!testExist)
+				reminder = new Result(CRX_REMINDER);
 		}
 		
 		if (log.isDebugEnabled())
-			log.debug("Patient: " + patient.getPatientId() + ", cd4 reminder " + result);
+			log.debug("Patient: " + patient.getPatientId() + ", cxr reminder " + reminder);
 		
-		return result;
+		return reminder;
 	}
 	
 	/**

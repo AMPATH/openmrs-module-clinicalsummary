@@ -179,21 +179,25 @@
         #end
     </results>
     <results name="DNA PCR">
-        #set($dnaResult = $functions.eval($patient, "DNA PCR", $summaryCache))
+        #set($dnaMap = {"evaluated.concept" : "HIV DNA POLYMERASE CHAIN REACTION, QUALITATIVE",
+        				 "included.coded.values" : "HIV DNA POLYMERASE CHAIN REACTION, QUALITATIVE"})
+        #set($dnaResult = $functions.eval($patient, "Test Ordered", $dnaMap))
         #foreach($element in $dnaResult)
         	<element>
         		<datetime>$!{functions.formatDate($element.getResultDate())}</datetime>
-                <value>$!{element.toNumber()}</value>
-            	<status>$!{element.toString()}</status>4Map
+                <value>$!{functions.printConceptName($!{element.toConcept()})}</value>
+            	<status>$!{element.toString()}</status>
         	</element>
         #end
     </results>
     <results name="ELISA">
-        #set($elisaResult = $functions.eval($patient, "Elisa", $summaryCache))
+        #set($elisaMap = {"evaluated.concept" : "HIV ENZYME IMMUNOASSAY, QUALITATIVE",
+        				 "included.coded.values" : "HIV ENZYME IMMUNOASSAY, QUALITATIVE"})
+        #set($elisaResult = $functions.eval($patient, "Test Ordered", $elisaMap))
         #foreach($element in $elisaResult)
         	<element>
         		<datetime>$!{functions.formatDate($element.getResultDate())}</datetime>
-                <value>$!{element.toNumber()}</value>
+                <value>$!{functions.printConceptName($!{element.toConcept()})}</value>
             	<status>$!{element.toString()}</status>
         	</element>
         #end
@@ -308,6 +312,61 @@
         #end
     </cxrs>
 
-    <reminders />
+    <reminders>
+        #set($baseDNAPCRReminder = $!{functions.eval($patient, "PedsBaselineDNAPCRReminder", $summaryCache)})
+        #if(${baseDNAPCRReminder} && "$!{baseDNAPCRReminder}" != "")
+    	    <reminder>
+    	        $!{baseDNAPCRReminder}
+    	    </reminder>
+        #end
+        #set($positiveElisaReminder = $!{functions.eval($patient, "PedsCD4CheckPositivePCRELISAReminder", $summaryCache)})
+        #if(${positiveElisaReminder} && "$!{positiveElisaReminder}" != "")
+    	    <reminder>
+    	        $!{positiveElisaReminder}
+    	    </reminder>
+        #end
+        #set($pedsFirstElisaRemider = $!{functions.eval($patient, "PedsFirstElisaRemider", $summaryCache)})
+        #if(${pedsFirstElisaRemider} && "$!{pedsFirstElisaRemider}" != "")
+    	    <reminder>
+    	        $!{pedsFirstElisaRemider}
+    	    </reminder>
+        #end
+        #set($pedsRepeatDNAPCRReminder = $!{functions.eval($patient, "PedsRepeatDNAPCRReminder", $summaryCache)})
+        #if(${pedsRepeatDNAPCRReminder} && "$!{pedsRepeatDNAPCRReminder}" != "")
+    	    <reminder>
+    	        $!{pedsRepeatDNAPCRReminder}
+    	    </reminder>
+        #end
+        #set($pedsUnder18moStartARTReminder = $!{functions.eval($patient, "PedsUnder18moStartARTReminder", $summaryCache)})
+        #if(${pedsUnder18moStartARTReminder} && "$!{pedsUnder18moStartARTReminder}" != "")
+    	    <reminder>
+    	        $!{pedsUnder18moStartARTReminder}
+    	    </reminder>
+        #end
+        #set($pedsStartARVPositivePCRELISAReminder = $!{functions.eval($patient, "PedsStartARVPositivePCRELISAReminder", $summaryCache)})
+        #if(${pedsStartARVPositivePCRELISAReminder} && "$!{pedsStartARVPositivePCRELISAReminder}" != "")
+    	    <reminder>
+    	        $!{pedsStartARVPositivePCRELISAReminder}
+    	    </reminder>
+        #end
+        #set($pedsOver5StartARVReminder = $!{functions.eval($patient, "PedsOver5StartARVReminder", $summaryCache)})
+        #if(${pedsOver5StartARVReminder} && "$!{pedsOver5StartARVReminder}" != "")
+    	    <reminder>
+    	        $!{pedsOver5StartARVReminder}
+    	    </reminder>
+        #end
+        #set($peds6wk18moStartSeptrinReminder = $!{functions.eval($patient, "Peds6wk18moStartSeptrinReminder", $summaryCache)})
+        #if(${peds6wk18moStartSeptrinReminder} && "$!{peds6wk18moStartSeptrinReminder}" != "")
+    	    <reminder>
+    	        $!{peds6wk18moStartSeptrinReminder}
+    	    </reminder>
+        #end
+        #set($pedsOver18moStartSeptrinReminder = $!{functions.eval($patient, "PedsOver18moStartSeptrinReminder", $summaryCache)})
+        #if(${pedsOver18moStartSeptrinReminder} && "$!{pedsOver18moStartSeptrinReminder}" != "")
+    	    <reminder>
+    	        $!{pedsOver18moStartSeptrinReminder}
+    	    </reminder>
+        #end
+    </reminders>
 
 </clinicalSummary>

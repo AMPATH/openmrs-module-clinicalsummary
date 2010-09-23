@@ -13,7 +13,6 @@
  */
 package org.openmrs.module.clinicalsummary.rule;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -21,7 +20,6 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Concept;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.logic.LogicContext;
@@ -61,7 +59,7 @@ public class NumericFlowsheetRule implements Rule {
 		if (log.isDebugEnabled())
 			log.debug("Started arv side effect observations for patient: " + patient.getPatientId() + " is: " + obsResults);
 		
-		Result numericObsResults = RuleUtils.sliceResult(obsResults, new ArrayList<Concept>(), 5);
+		Result numericObsResults = RuleUtils.sliceResult(obsResults, 5);
 		
 		for (Result numericObsResult : numericObsResults) {
 			Result numericResult = new Result();

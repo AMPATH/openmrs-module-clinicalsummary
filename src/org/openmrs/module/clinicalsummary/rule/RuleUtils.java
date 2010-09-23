@@ -13,10 +13,8 @@
  */
 package org.openmrs.module.clinicalsummary.rule;
 
-import java.util.List;
-
-import org.openmrs.Concept;
 import org.openmrs.logic.result.Result;
+import org.openmrs.util.OpenmrsUtil;
 
 /**
  *
@@ -39,7 +37,7 @@ public class RuleUtils {
 	 * @return sliced result. Slicing will happen in the middle. So, the element are: first ...
 	 *         E(maxElement - 2), E(maxElement - 1)
 	 */
-	public static Result sliceResult(Result obsResults, List<Concept> codedValues, int maxElement) {
+	public static Result sliceResult(Result obsResults, int maxElement) {
 		
 		Result slicedObservations = new Result();
 		
@@ -47,8 +45,7 @@ public class RuleUtils {
 		int descCounter = 0;
 		while (descCounter < obsResults.size() && slicedObservations.size() < maxElement - 1) {
 			Result obsResult = obsResults.get(descCounter++);
-			if (codedValues.isEmpty() || codedValues.contains(obsResult.toConcept()))
-				slicedObservations.add(obsResult);
+			slicedObservations.add(obsResult);
 		}
 		
 		if (!obsResults.isEmpty()) {
@@ -56,13 +53,18 @@ public class RuleUtils {
 			int ascCounter = obsResults.size();
 			while (ascCounter > 0 && slicedObservations.size() < maxElement) {
 				Result obsResult = obsResults.get(--ascCounter);
-				// remove if we already have the earliest
-				if (codedValues.isEmpty() || codedValues.contains(obsResult.toConcept())) {
-					slicedObservations.remove(obsResult);
-					slicedObservations.add(obsResult);
-					// if we found the earliest obs that we needed than we should stop and get out
-					break;
+				if (!slicedObservations.isEmpty()) {
+					Result lastResult = slicedObservations.get(slicedObservations.size() - 1);
+					// remove if we already have the earliest
+					if (OpenmrsUtil.nullSafeEquals(obsResult.toNumber(), lastResult.toNumber())
+					        && OpenmrsUtil.nullSafeEquals(obsResult.getResultDate(), lastResult.getResultDate())
+					        && OpenmrsUtil.nullSafeEquals(obsResult.toString(), lastResult.toString())
+					        && OpenmrsUtil.nullSafeEquals(obsResult.toConcept(), lastResult.toConcept()))
+						slicedObservations.remove(slicedObservations.size() - 1);
 				}
+				slicedObservations.add(obsResult);
+				// if we found the earliest obs that we needed than we should stop and get out
+				break;
 			}
 		}
 		

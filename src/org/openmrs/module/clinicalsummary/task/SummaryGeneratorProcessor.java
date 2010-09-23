@@ -15,6 +15,8 @@ package org.openmrs.module.clinicalsummary.task;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -27,7 +29,7 @@ import org.openmrs.Location;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.clinicalsummary.SummaryService;
-import org.openmrs.module.clinicalsummary.engine.GeneratorEngine;
+import org.openmrs.module.clinicalsummary.engine.GeneratorThread;
 import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.scheduler.TaskDefinition;
 
@@ -95,6 +97,8 @@ public class SummaryGeneratorProcessor {
 				String currentCluster = clusterName[clusterOffset];
 				String locations = taskDefinition.getProperty(currentCluster);
 				
+				ExecutorService executorService = Executors.newFixedThreadPool(1);
+				
 				String[] locationIds = StringUtils.split(locations);
 				for (int i = 0; i < ArrayUtils.getLength(locationIds); i++) {
 					
@@ -107,7 +111,8 @@ public class SummaryGeneratorProcessor {
 					
 					if (!initialized) {
 						Cohort cohort = summaryService.getCohortByLocation(location);
-						GeneratorEngine.generateSummary(cohort);
+						GeneratorThread generatorThread = new GeneratorThread(cohort);
+						executorService.execute(generatorThread);
 					} else {
 						// index date for the observations checking :)
 						Calendar calendar = Calendar.getInstance();
@@ -115,7 +120,8 @@ public class SummaryGeneratorProcessor {
 						Date date = calendar.getTime();
 						
 						Cohort cohort = summaryService.getCohortByLocation(location, date, new Date());
-						GeneratorEngine.generateSummary(cohort);
+						GeneratorThread generatorThread = new GeneratorThread(cohort);
+						executorService.execute(generatorThread);
 					}
 				}
 				

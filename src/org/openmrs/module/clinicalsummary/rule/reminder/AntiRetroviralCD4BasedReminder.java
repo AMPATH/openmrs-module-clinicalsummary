@@ -13,15 +13,10 @@
  */
 package org.openmrs.module.clinicalsummary.rule.reminder;
 
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.openmrs.Concept;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.logic.LogicContext;
@@ -33,70 +28,42 @@ import org.openmrs.logic.result.Result.Datatype;
 import org.openmrs.logic.rule.RuleParameterInfo;
 import org.openmrs.module.clinicalsummary.SummaryService;
 import org.openmrs.module.clinicalsummary.cache.SummaryDataSource;
-import org.openmrs.module.clinicalsummary.concept.ConceptRegistry;
 import org.openmrs.module.clinicalsummary.concept.StandardConceptConstants;
-import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.module.clinicalsummary.rule.ARVMedicationsRule;
 
 /**
- * 
+ *
  */
-public class SGPTReminderRule implements Rule {
+public class AntiRetroviralCD4BasedReminder implements Rule {
 	
-	private static final Log log = LogFactory.getLog(CXRReminderRule.class);
-	
-	private static final String SGPT_REMINDER = "Please check SGPT. No SGPT result in system";
+	private static final String REMINDER_TEXT = "Consider starting ARV Medications. CD4 count &lt; 250";
 	
 	/**
 	 * @see org.openmrs.logic.Rule#eval(org.openmrs.logic.LogicContext, org.openmrs.Patient,
 	 *      java.util.Map)
 	 */
+	@Override
 	public Result eval(LogicContext context, Patient patient, Map<String, Object> parameters) throws LogicException {
 		Result reminder = new Result();
 		
-		Concept sgptConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.SGPT_NAME);
-		Concept chemistryLabConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.CHEMISTRY_LAB_TESTS_NAME);
-		
 		SummaryService service = Context.getService(SummaryService.class);
 		
-		LogicCriteria conceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.SGPT_NAME);
+		LogicCriteria conceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.CD4_NAME);
 		LogicCriteria encounterCriteria = service.parseToken(SummaryDataSource.ENCOUNTER_TYPE).in(Collections.emptyList());
 		LogicCriteria criteria = conceptCriteria.and(encounterCriteria);
 		
 		Result obsResult = context.read(patient, service.getLogicDataSource("summary"), criteria);
 		
-		if (log.isDebugEnabled())
-			log.debug("Patient: " + patient.getPatientId() + ", creatinine results " + obsResult);
-		
-		// if there's no result, then check if they already order one
-		if (obsResult.isEmpty()) {
-			
-			Calendar calendar = Calendar.getInstance();
-			calendar.add(Calendar.MONTH, -6);
-			Date sixMonths = calendar.getTime();
-			
-			LogicCriteria testedConceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.TESTS_ORDERED);
-			LogicCriteria testedCriteria = testedConceptCriteria.and(encounterCriteria);
-			
-			Result testedResult = context.read(patient, service.getLogicDataSource("summary"), testedCriteria);
-			
-			boolean testExist = false;
-			
-			for (Result result : testedResult) {
-				// only process the date after the reference date
-				if (result.getResultDate().after(sixMonths))
-					if (OpenmrsUtil.nullSafeEquals(result.toConcept(), sgptConcept)
-					        || OpenmrsUtil.nullSafeEquals(result.toConcept(), chemistryLabConcept)) {
-						testExist = true;
-						break;
-					}
+		if (!obsResult.isEmpty()) {
+			Result latestResult = obsResult.latest();
+			Double cd4CountValue = latestResult.toNumber();
+			if (cd4CountValue < 250) {
+				ARVMedicationsRule arvMedicationsRule = new ARVMedicationsRule();
+				Result result = arvMedicationsRule.eval(context, patient, parameters);
+				if (result.isEmpty())
+					reminder = new Result(REMINDER_TEXT);
 			}
-			
-			if (!testExist)
-				reminder = new Result(SGPT_REMINDER);
 		}
-		
-		if (log.isDebugEnabled())
-			log.debug("Patient: " + patient.getPatientId() + ", creatinine reminder " + reminder);
 		
 		return reminder;
 	}
@@ -104,6 +71,7 @@ public class SGPTReminderRule implements Rule {
 	/**
 	 * @see org.openmrs.logic.Rule#getDefaultDatatype()
 	 */
+	@Override
 	public Datatype getDefaultDatatype() {
 		return Datatype.TEXT;
 	}
@@ -111,6 +79,7 @@ public class SGPTReminderRule implements Rule {
 	/**
 	 * @see org.openmrs.logic.Rule#getDependencies()
 	 */
+	@Override
 	public String[] getDependencies() {
 		return null;
 	}
@@ -118,6 +87,7 @@ public class SGPTReminderRule implements Rule {
 	/**
 	 * @see org.openmrs.logic.Rule#getParameterList()
 	 */
+	@Override
 	public Set<RuleParameterInfo> getParameterList() {
 		return null;
 	}
@@ -125,6 +95,7 @@ public class SGPTReminderRule implements Rule {
 	/**
 	 * @see org.openmrs.logic.Rule#getTTL()
 	 */
+	@Override
 	public int getTTL() {
 		return 0;
 	}

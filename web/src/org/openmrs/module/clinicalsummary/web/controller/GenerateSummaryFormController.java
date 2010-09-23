@@ -37,6 +37,8 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.clinicalsummary.SummaryConstants;
+import org.openmrs.module.clinicalsummary.cache.DataProvider;
+import org.openmrs.module.clinicalsummary.cache.SummaryDataSource;
 import org.openmrs.module.clinicalsummary.engine.GeneratorEngine;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.stereotype.Controller;
@@ -62,42 +64,60 @@ public class GenerateSummaryFormController {
 	
 	private static final String MIME_TYPE = "application/pdf";
 	
-	private static final File folder = OpenmrsUtil
-	        .getDirectoryInApplicationDataDirectory(SummaryConstants.GENERATED_PDF_LOCATION);
+	private boolean generating;
 	
 	@RequestMapping("/module/clinicalsummary/generate")
-	public void generate(final @RequestParam(required = true, value = "patientId") int patientId,
-	                     final HttpServletRequest request, final HttpServletResponse response) {
+	public String generate(final @RequestParam(required = true, value = "patientId") int patientId,
+	                       final HttpServletRequest request, final HttpServletResponse response) {
 		if (Context.isAuthenticated()) {
+			
+			generating = false;
+			
 			Cohort cohort = new Cohort();
 			cohort.addMember(patientId);
 			
 			String delayString = Context.getAdministrationService().getGlobalProperty(GENERATOR_DELAY);
 			Integer delay = NumberUtils.toInt(delayString, 3000);
+			boolean delayed = (delay != 0);
 			
-			if (log.isDebugEnabled())
-				log.debug("Delay for the times is: " + delay);
-			
-			// let the timer to prepare the attachement if the generation process is not done within the delay
-			final Timer timer = new Timer();
-			timer.schedule(new TimerTask() {
+			if (delayed) {
 				
-				@Override
-				public void run() {
-					prepareAttachment(response, patientId);
-				}
+				// after x seconds try to get the summary
+				final Timer timer = new Timer();
+				timer.schedule(new TimerTask() {
+					
+					@Override
+					public void run() {
+						prepareAttachment(response, patientId);
+					}
+					
+				}, delay);
 				
-			}, delay);
-			
-			GeneratorEngine.generateSummary(cohort);
-			
-			// if the timer here doesn't kick in yet, then we need to cancel it and create attachment
-			timer.cancel();
+				generating = true;
+				
+				DataProvider provider = new DataProvider(cohort);
+				SummaryDataSource summaryDataSource = new SummaryDataSource(provider);
+				
+				File folder = OpenmrsUtil.getDirectoryInApplicationDataDirectory(SummaryConstants.GENERATED_PDF_LOCATION);
+				GeneratorEngine generatorEngine = new GeneratorEngine(summaryDataSource, folder);
+				
+				for (Integer processedId : cohort.getMemberIds())
+					generatorEngine.generateSummary(Context.getPatientService().getPatient(processedId));
+				
+				timer.cancel();
+				
+				generating = false;
+			}
 			prepareAttachment(response, patientId);
 		}
+		
+		String referer = request.getHeader("Referer");
+		return "redirect:" + referer;
 	}
 	
 	private void prepareAttachment(HttpServletResponse response, Integer patientId) {
+		
+		if (!generating)
 		
 		try {
 			//Prepare response
@@ -118,6 +138,7 @@ public class GenerateSummaryFormController {
 			// use file filter to get the patient's files and then iterate.
 			// instead of using the applicable templates
 			
+			File folder = OpenmrsUtil.getDirectoryInApplicationDataDirectory(SummaryConstants.GENERATED_PDF_LOCATION);
 			FileFilter fileFilter = new WildcardFileFilter(patientId + "_*.pdf");
 			
 			for (File summaryFile : folder.listFiles(fileFilter)) {

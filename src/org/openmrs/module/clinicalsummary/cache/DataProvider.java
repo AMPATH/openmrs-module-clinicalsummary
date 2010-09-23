@@ -111,7 +111,7 @@ public class DataProvider {
 					for (Obs obs : observations) {
 						// if numeric but no numeric value, then skip it
 						// TODO: this is a hack because Result.java (799) will throw NPE because if we keep data like this
-						if (concept.isNumeric() && obs.getValueNumeric() == null)
+						if (obs.getConcept().isNumeric() && obs.getValueNumeric() == null)
 							continue;
 						entry.add(obs);
 					}

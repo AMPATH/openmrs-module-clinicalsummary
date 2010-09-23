@@ -51,7 +51,7 @@ public class CreatinineReminderRule implements Rule {
 	 *      java.util.Map)
 	 */
 	public Result eval(LogicContext context, Patient patient, Map<String, Object> parameters) throws LogicException {
-		Result result = new Result();
+		Result reminder = new Result();
 		
 		Concept chemistryLabConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.CHEMISTRY_LAB_TESTS_NAME);
 		Concept serumElectrolytesConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.SERUM_ELECTROLYTES_NAME);
@@ -81,33 +81,26 @@ public class CreatinineReminderRule implements Rule {
 			
 			Result testedResult = context.read(patient, service.getLogicDataSource("summary"), testedCriteria);
 			
-			// flag for showing the reminder
-			boolean showReminder = false;
-			// flag for found observation
-			boolean foundObs = false;
-			int counter = 0;
-			while (foundObs && counter < testedResult.size()) {
-				Result testedObsResult = testedResult.get(counter);
-				Concept valueCoded = testedObsResult.toConcept();
-				// we need to search for the first obs that match our coded values for test ordered
-				if (OpenmrsUtil.nullSafeEquals(valueCoded, chemistryLabConcept)
-				        || OpenmrsUtil.nullSafeEquals(valueCoded, serumElectrolytesConcept)) {
-					foundObs = true;
-					// if it's after 6 months ago, then don't show reminder
-					if (testedObsResult.getResultDate().before(sixMonths))
-						showReminder = true;
-				}
-				counter++;
+			boolean testExist = false;
+			
+			for (Result result : testedResult) {
+				// only process the date after the reference date
+				if (result.getResultDate().after(sixMonths))
+					if (OpenmrsUtil.nullSafeEquals(result.toConcept(), chemistryLabConcept)
+					        || OpenmrsUtil.nullSafeEquals(result.toConcept(), serumElectrolytesConcept)) {
+						testExist = true;
+						break;
+					}
 			}
-
-			if (!foundObs || showReminder)
-				result = new Result(CREATININE_REMINDER);
+			
+			if (!testExist)
+				reminder = new Result(CREATININE_REMINDER);
 		}
 		
 		if (log.isDebugEnabled())
-			log.debug("Patient: " + patient.getPatientId() + ", creatinine reminder " + result);
+			log.debug("Patient: " + patient.getPatientId() + ", creatinine reminder " + reminder);
 		
-		return result;
+		return reminder;
 	}
 	
 	/**

@@ -51,6 +51,11 @@ public class TemplateRegistry {
 	private Map<EncounterType, Collection<SummaryTemplate>> templateMappings;
 	
 	/**
+	 * The default template that will be given to a patient when the patient doesn't have any encounter
+	 */
+	private SummaryTemplate defaultTemplate;
+	
+	/**
 	 * Initialize the class
 	 */
 	private TemplateRegistry() {
@@ -62,6 +67,8 @@ public class TemplateRegistry {
 	 */
 	private void initialize() {
 		SummaryService summaryService = Context.getService(SummaryService.class);
+		
+		defaultTemplate = summaryService.getPreferredTemplate();
 		
 		Collection<SummaryTemplate> templates = summaryService.getAllTemplates();
 		for (SummaryTemplate template : templates) {
@@ -157,5 +164,35 @@ public class TemplateRegistry {
 	 */
 	public static Collection<SummaryTemplate> getCachedTemplates(Encounter encounter) {
 		return getInstance().getTemplates(encounter);
+	}
+	
+	/**
+	 * Get the default template that will be given to the patient when the patient doesn't have any encounters
+	 * 
+	 * @return the default template
+	 */
+	private SummaryTemplate getDefault() {
+		return defaultTemplate;
+	}
+	
+	/**
+	 * @see org.openmrs.module.clinicalsummary.engine.TemplateRegistry#getDefault()
+	 */
+	public static SummaryTemplate getDefaultTemplate() {
+		return getInstance().getDefault();
+	}
+	
+	/**
+	 * Destroy the template registry instances
+	 */
+	private synchronized void destroy() {
+		instance = null;
+	}
+	
+	/**
+	 * @see org.openmrs.module.clinicalsummary.engine.TemplateRegistry#destroy()
+	 */
+	public static void destroyInstance() {
+		getInstance().destroy();
 	}
 }

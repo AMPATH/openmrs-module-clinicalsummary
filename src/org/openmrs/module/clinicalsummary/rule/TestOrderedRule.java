@@ -73,12 +73,17 @@ public class TestOrderedRule implements Rule {
 		LogicCriteria encounterCriteria = service.parseToken(SummaryDataSource.ENCOUNTER_TYPE).in(Collections.emptyList());
 
 		LogicCriteria conceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(conceptName);
-		Result obsResults = context.read(patient, service.getLogicDataSource("summary"), conceptCriteria.and(encounterCriteria));
-		Result resultObservations = RuleUtils.sliceResult(obsResults, new ArrayList<Concept>(), 5);
+		Result resultObservations = context.read(patient, service.getLogicDataSource("summary"), conceptCriteria.and(encounterCriteria));
 
 		LogicCriteria testedCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.TESTS_ORDERED);
 		Result testedResult = context.read(patient, service.getLogicDataSource("summary"), testedCriteria.and(encounterCriteria));
-		Result testedObservations = RuleUtils.sliceResult(testedResult, includedConcept, 5);
+		
+		Result testedObservations = new Result();
+		for (Result result : testedResult) {
+			Concept codedValue = result.toConcept();
+			if (includedConcept.contains(codedValue))
+				testedObservations.add(result);
+        }
 		
 		Result flowsheet = new Result();
 		
@@ -98,13 +103,6 @@ public class TestOrderedRule implements Rule {
 			oneDayAfterTest.setTime(testDate);
 			oneDayAfterTest.add(Calendar.DATE, 1);
 			
-			if(log.isDebugEnabled()) {
-				log.debug("Comparing: ");
-				String valueCodedName = testOrder.toConcept().getBestName(Context.getLocale()).getName();
-				log.debug("Test Order: " + Context.getDateFormat().format(testDate) + ", Result: " + valueCodedName);
-				log.debug("Test Result: " + Context.getDateFormat().format(resultDate) + ", Result: " + testResult.toNumber());
-			}
-			
 			// The assumption is:
 			// - test will always ordered before the result coming to the system
 			// - test and the coresponding result will have to be 24h apart max to be considered pair
@@ -114,6 +112,7 @@ public class TestOrderedRule implements Rule {
 				if (resultDate.after(oneDayAfterTest.getTime())) {
 					Result result = new Result();
 					result.setValueNumeric(testResult.toNumber());
+					result.setValueCoded(testResult.toConcept());
 					result.setValueText("No Order");
 					result.setResultDate(resultDate);
 					flowsheet.add(result);
@@ -125,6 +124,7 @@ public class TestOrderedRule implements Rule {
 					// show: value numeric and the date
 					Result result = new Result();
 					result.setValueNumeric(testResult.toNumber());
+					result.setValueCoded(testResult.toConcept());
 					result.setResultDate(resultDate);
 					flowsheet.add(result);
 					
@@ -153,6 +153,7 @@ public class TestOrderedRule implements Rule {
 				// show: value numeric and the date
 				Result result = new Result();
 				result.setValueNumeric(testResult.toNumber());
+				result.setValueCoded(testResult.toConcept());
 				result.setResultDate(resultDate);
 				flowsheet.add(result);
 				
@@ -176,6 +177,7 @@ public class TestOrderedRule implements Rule {
 			Result testResult = resultObservations.remove(0);
 			Result result = new Result();
 			result.setValueNumeric(testResult.toNumber());
+			result.setValueCoded(testResult.toConcept());
 			result.setValueText("No Order");
 			result.setResultDate(testResult.getResultDate());
 			flowsheet.add(result);
@@ -189,9 +191,11 @@ public class TestOrderedRule implements Rule {
 			flowsheet.add(result);
 		}
 		
-		Collections.reverse(flowsheet);
+		Result slicedResult = RuleUtils.sliceResult(flowsheet, 5);
 		
-		return flowsheet;
+		Collections.reverse(slicedResult);
+		
+		return slicedResult;
 	}
 	
 	/**

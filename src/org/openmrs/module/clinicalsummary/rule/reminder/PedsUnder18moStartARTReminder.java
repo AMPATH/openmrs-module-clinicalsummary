@@ -35,68 +35,75 @@ import org.openmrs.module.clinicalsummary.SummaryService;
 import org.openmrs.module.clinicalsummary.cache.SummaryDataSource;
 import org.openmrs.module.clinicalsummary.concept.ConceptRegistry;
 import org.openmrs.module.clinicalsummary.concept.StandardConceptConstants;
+import org.openmrs.module.clinicalsummary.rule.ARVMedicationsRule;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
- * 
+ *
  */
-public class SGPTReminderRule implements Rule {
+public class PedsUnder18moStartARTReminder implements Rule {
 	
-	private static final Log log = LogFactory.getLog(CXRReminderRule.class);
+	private static final Log log = LogFactory.getLog(PedsUnder18moStartARTReminder.class);
 	
-	private static final String SGPT_REMINDER = "Please check SGPT. No SGPT result in system";
+	private static final String REMINDER_TEXT = "Consider starting ARV Medications. Pt with positive HIV PCR";
 	
 	/**
 	 * @see org.openmrs.logic.Rule#eval(org.openmrs.logic.LogicContext, org.openmrs.Patient,
 	 *      java.util.Map)
 	 */
+	@Override
 	public Result eval(LogicContext context, Patient patient, Map<String, Object> parameters) throws LogicException {
+		
 		Result reminder = new Result();
 		
-		Concept sgptConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.SGPT_NAME);
-		Concept chemistryLabConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.CHEMISTRY_LAB_TESTS_NAME);
+		Date birthdate = patient.getBirthdate();
+		Calendar birthdateCalendar = Calendar.getInstance();
+		birthdateCalendar.setTime(birthdate);
+		// 18 months after birthdate
+		birthdateCalendar.add(Calendar.MONTH, 18);
+		Date referenceDate = birthdateCalendar.getTime();
 		
-		SummaryService service = Context.getService(SummaryService.class);
-		
-		LogicCriteria conceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.SGPT_NAME);
-		LogicCriteria encounterCriteria = service.parseToken(SummaryDataSource.ENCOUNTER_TYPE).in(Collections.emptyList());
-		LogicCriteria criteria = conceptCriteria.and(encounterCriteria);
-		
-		Result obsResult = context.read(patient, service.getLogicDataSource("summary"), criteria);
-		
-		if (log.isDebugEnabled())
-			log.debug("Patient: " + patient.getPatientId() + ", creatinine results " + obsResult);
-		
-		// if there's no result, then check if they already order one
-		if (obsResult.isEmpty()) {
+		Date now = new Date();
+		if (referenceDate.after(now)) {
+			// 4 weeks after birthdate
+			birthdateCalendar.setTime(birthdate);
+			birthdateCalendar.add(Calendar.WEEK_OF_YEAR, 4);
+			referenceDate = birthdateCalendar.getTime();
 			
-			Calendar calendar = Calendar.getInstance();
-			calendar.add(Calendar.MONTH, -6);
-			Date sixMonths = calendar.getTime();
+			Concept positiveConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.POSITIVE);
 			
-			LogicCriteria testedConceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.TESTS_ORDERED);
-			LogicCriteria testedCriteria = testedConceptCriteria.and(encounterCriteria);
+			SummaryService service = Context.getService(SummaryService.class);
 			
-			Result testedResult = context.read(patient, service.getLogicDataSource("summary"), testedCriteria);
+			LogicCriteria conceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.DNA_PCR_NAME);
+			LogicCriteria encounterCriteria = service.parseToken(SummaryDataSource.ENCOUNTER_TYPE).in(Collections.emptyList());
+			LogicCriteria criteria = conceptCriteria.and(encounterCriteria);
 			
-			boolean testExist = false;
+			Result obsResult = context.read(patient, service.getLogicDataSource("summary"), criteria);
 			
-			for (Result result : testedResult) {
-				// only process the date after the reference date
-				if (result.getResultDate().after(sixMonths))
-					if (OpenmrsUtil.nullSafeEquals(result.toConcept(), sgptConcept)
-					        || OpenmrsUtil.nullSafeEquals(result.toConcept(), chemistryLabConcept)) {
-						testExist = true;
+			if (log.isDebugEnabled())
+				log.debug("Patient: " + patient.getPatientId() + ", elisa result: " + obsResult);
+			
+			// check if we have negative or positive
+			boolean dnaExist = false;
+			for (Result result : obsResult) {
+				if (result.getResultDate().after(referenceDate))
+					if (OpenmrsUtil.nullSafeEquals(positiveConcept, result.toConcept())) {
+						dnaExist = true;
 						break;
 					}
 			}
 			
-			if (!testExist)
-				reminder = new Result(SGPT_REMINDER);
+			if (dnaExist) {
+				ARVMedicationsRule arvMedicationsRule = new ARVMedicationsRule();
+				Result result = arvMedicationsRule.eval(context, patient, parameters);
+				
+				if (log.isDebugEnabled())
+					log.debug("Patient: " + patient.getPatientId() + ", arv result: " + result);
+				
+				if (result.isEmpty())
+					reminder = new Result(REMINDER_TEXT);
+			}
 		}
-		
-		if (log.isDebugEnabled())
-			log.debug("Patient: " + patient.getPatientId() + ", creatinine reminder " + reminder);
 		
 		return reminder;
 	}
@@ -104,6 +111,7 @@ public class SGPTReminderRule implements Rule {
 	/**
 	 * @see org.openmrs.logic.Rule#getDefaultDatatype()
 	 */
+	@Override
 	public Datatype getDefaultDatatype() {
 		return Datatype.TEXT;
 	}
@@ -111,6 +119,7 @@ public class SGPTReminderRule implements Rule {
 	/**
 	 * @see org.openmrs.logic.Rule#getDependencies()
 	 */
+	@Override
 	public String[] getDependencies() {
 		return null;
 	}
@@ -118,6 +127,7 @@ public class SGPTReminderRule implements Rule {
 	/**
 	 * @see org.openmrs.logic.Rule#getParameterList()
 	 */
+	@Override
 	public Set<RuleParameterInfo> getParameterList() {
 		return null;
 	}
@@ -125,6 +135,7 @@ public class SGPTReminderRule implements Rule {
 	/**
 	 * @see org.openmrs.logic.Rule#getTTL()
 	 */
+	@Override
 	public int getTTL() {
 		return 0;
 	}

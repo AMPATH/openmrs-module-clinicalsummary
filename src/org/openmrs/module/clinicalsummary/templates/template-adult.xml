@@ -243,12 +243,6 @@
     	        $!{cd4Reminder}
     	    </reminder>
         #end
-        #set($whoReminder = $!{functions.eval($patient, "WHO Reminder", $summaryCache)})
-        #if(${whoReminder} && "$!{whoReminder}" != "")
-    	    <reminder>
-    	        $!{whoReminder}
-    	    </reminder>
-        #end
         #set($creatinineReminder = $!{functions.eval($patient, "Creatinine Reminder", $summaryCache)})
         #if(${creatinineReminder} && "$!{creatinineReminder}" != "")
     	    <reminder>
