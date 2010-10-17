@@ -120,7 +120,7 @@
         #end
     </results>
     <results name="HT (CM)">
-        #set($heightMap = {"evaluated.concept" : "WEIGHT (KG)"})
+        #set($heightMap = {"evaluated.concept" : "HEIGHT (CM)"})
         #set($height = $functions.eval($patient, "Numeric Flowsheet", $heightMap))
         #foreach($element in $height)
             <element>
