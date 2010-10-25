@@ -398,10 +398,12 @@
 												<fo:inline font-weight="bold">Delivery Site: </fo:inline>
 												<xsl:choose>
 													<xsl:when test="preferences/delivery-site/health-facility = 'YES'">
-														<fo:inline>HEALTH FACILITY</fo:inline>
-														<xsl:if test="preferences/delivery-site/location">
-															<fo:inline>(<xsl:value-of select="preferences/delivery-site/location" />)</fo:inline>
-														</xsl:if>
+														<xsl:choose>
+															<xsl:when test="preferences/delivery-site/location = 'MOI TEACHING AND REFERRAL HOSPITAL'">
+																<fo:inline>MTRH</fo:inline>
+															</xsl:when>
+															<xsl:otherwise>HEALTH FACILITY, NOT MTRH</xsl:otherwise>
+														</xsl:choose>
 													</xsl:when>
 													<xsl:otherwise>
 														<fo:inline>NOT AT HEALTH FACILITY</fo:inline>
