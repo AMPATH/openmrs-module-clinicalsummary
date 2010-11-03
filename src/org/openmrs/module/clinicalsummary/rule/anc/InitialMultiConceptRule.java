@@ -59,8 +59,7 @@ public class InitialMultiConceptRule implements Rule {
 		SummaryService service = Context.getService(SummaryService.class);
 		
 		LogicCriteria conceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(conceptName);
-		LogicCriteria encounterCriteria = service.parseToken(SummaryDataSource.ENCOUNTER_TYPE).equalTo(
-		    TypeConstants.ANC_INITIAL).last();
+		LogicCriteria encounterCriteria = service.parseToken(SummaryDataSource.ENCOUNTER_TYPE).equalTo(TypeConstants.ANC_INITIAL).last();
 		LogicCriteria criteria = conceptCriteria.and(encounterCriteria);
 		Result groupedResults = context.read(patient, service.getLogicDataSource("summary"), criteria);
 

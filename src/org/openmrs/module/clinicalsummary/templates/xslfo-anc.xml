@@ -242,7 +242,7 @@
 											<fo:block>
 												<fo:inline font-weight="bold">Mosquito Net: </fo:inline>
 												<xsl:choose>
-													<xsl:when test="information/barriers = ''">
+													<xsl:when test="information/net = ''">
 														<fo:inline>NO</fo:inline>
 													</xsl:when>
 													<xsl:otherwise>
