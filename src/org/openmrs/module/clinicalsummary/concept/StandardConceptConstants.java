@@ -413,4 +413,11 @@ public interface StandardConceptConstants {
 	@RegisterConcept
 	String MORE_THAN_OR_EQUAL_TO_TWO_DOSES_NAME = "MORE THAN OR EQUAL TO TWO DOSES";
 	
+	@RegisterConcept
+	@BufferObservations
+	String REFERRALS_ORDERED = "REFERRALS ORDERED";
+	
+	@RegisterConcept
+	String NUTRITIONAL_SUPPORT = "NUTRITIONAL SUPPORT";
+	
 }

@@ -93,6 +93,7 @@
 		SummaryTemplate.hbm.xml
 		SummaryError.hbm.xml
 		SummaryIndex.hbm.xml
+		WeightAgeStandard.hbm.xml
 	</mappingFiles>
 	
 </module>

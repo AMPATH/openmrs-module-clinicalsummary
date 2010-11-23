@@ -34,7 +34,7 @@ import org.openmrs.module.clinicalsummary.rule.ARVMedicationsRule;
 /**
  *
  */
-public class AntiRetroviralCD4BasedReminder implements Rule {
+public class CD4BasedARVReminderRule implements Rule {
 	
 	private static final String REMINDER_TEXT = "Consider starting ARV Medications. CD4 count &lt; 250";
 	

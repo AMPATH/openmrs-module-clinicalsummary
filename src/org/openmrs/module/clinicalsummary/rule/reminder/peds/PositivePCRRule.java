@@ -11,7 +11,7 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.module.clinicalsummary.rule.reminder;
+package org.openmrs.module.clinicalsummary.rule.reminder.peds;
 
 import java.util.Calendar;
 import java.util.Collections;
@@ -35,17 +35,14 @@ import org.openmrs.module.clinicalsummary.SummaryService;
 import org.openmrs.module.clinicalsummary.cache.SummaryDataSource;
 import org.openmrs.module.clinicalsummary.concept.ConceptRegistry;
 import org.openmrs.module.clinicalsummary.concept.StandardConceptConstants;
-import org.openmrs.module.clinicalsummary.rule.ARVMedicationsRule;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
  *
  */
-public class PedsUnder18moStartARTReminder implements Rule {
+public class PositivePCRRule implements Rule {
 	
-	private static final Log log = LogFactory.getLog(PedsUnder18moStartARTReminder.class);
-	
-	private static final String REMINDER_TEXT = "Consider starting ARV Medications. Pt with positive HIV PCR";
+	private static final Log log = LogFactory.getLog(PositivePCRRule.class);
 	
 	/**
 	 * @see org.openmrs.logic.Rule#eval(org.openmrs.logic.LogicContext, org.openmrs.Patient,
@@ -54,21 +51,24 @@ public class PedsUnder18moStartARTReminder implements Rule {
 	@Override
 	public Result eval(LogicContext context, Patient patient, Map<String, Object> parameters) throws LogicException {
 		
-		Result reminder = new Result();
-		
 		Date birthdate = patient.getBirthdate();
 		Calendar birthdateCalendar = Calendar.getInstance();
 		birthdateCalendar.setTime(birthdate);
 		// 18 months after birthdate
 		birthdateCalendar.add(Calendar.MONTH, 18);
-		Date referenceDate = birthdateCalendar.getTime();
+		Date eighteenMonths = birthdateCalendar.getTime();
+		// 6 weeks after birthdate
+		birthdateCalendar.setTime(birthdate);
+		birthdateCalendar.add(Calendar.WEEK_OF_YEAR, 6);
+		Date sixWeeks = birthdateCalendar.getTime();
 		
 		Date now = new Date();
-		if (referenceDate.after(now)) {
+		// only process if the patient is at least 18 months 
+		if (now.after(sixWeeks) && now.before(eighteenMonths)) {
 			// 4 weeks after birthdate
 			birthdateCalendar.setTime(birthdate);
 			birthdateCalendar.add(Calendar.WEEK_OF_YEAR, 4);
-			referenceDate = birthdateCalendar.getTime();
+			Date referenceDate = birthdateCalendar.getTime();
 			
 			Concept positiveConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.POSITIVE);
 			
@@ -81,31 +81,16 @@ public class PedsUnder18moStartARTReminder implements Rule {
 			Result obsResult = context.read(patient, service.getLogicDataSource("summary"), criteria);
 			
 			if (log.isDebugEnabled())
-				log.debug("Patient: " + patient.getPatientId() + ", elisa result: " + obsResult);
+				log.debug("Patient: " + patient.getPatientId() + ", dna pcr result: " + obsResult);
 			
 			// check if we have negative or positive
-			boolean dnaExist = false;
-			for (Result result : obsResult) {
-				if (result.getResultDate().after(referenceDate))
-					if (OpenmrsUtil.nullSafeEquals(positiveConcept, result.toConcept())) {
-						dnaExist = true;
-						break;
-					}
-			}
-			
-			if (dnaExist) {
-				ARVMedicationsRule arvMedicationsRule = new ARVMedicationsRule();
-				Result result = arvMedicationsRule.eval(context, patient, parameters);
-				
-				if (log.isDebugEnabled())
-					log.debug("Patient: " + patient.getPatientId() + ", arv result: " + result);
-				
-				if (result.isEmpty())
-					reminder = new Result(REMINDER_TEXT);
-			}
+			for (Result result : obsResult)
+				if (result.getResultDate().after(referenceDate)
+				        && (OpenmrsUtil.nullSafeEquals(positiveConcept, result.toConcept())))
+					return new Result(true);
 		}
 		
-		return reminder;
+		return new Result(false);
 	}
 	
 	/**
@@ -113,7 +98,7 @@ public class PedsUnder18moStartARTReminder implements Rule {
 	 */
 	@Override
 	public Datatype getDefaultDatatype() {
-		return Datatype.TEXT;
+		return Datatype.BOOLEAN;
 	}
 	
 	/**

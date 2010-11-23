@@ -77,15 +77,28 @@
 				<!-- Begin Page Content -->
 				<fo:flow flow-name="xsl-region-body" font-family="Helvetica" font-size="10pt">
 					<fo:table table-layout="fixed" width="100%">
-						<fo:table-column column-width="25%" />
-						<fo:table-column column-width="25%" />
-						<fo:table-column column-width="25%" />
-						<fo:table-column column-width="25%" />
+						<fo:table-column column-width="20%" />
+						<fo:table-column column-width="20%" />
+						<fo:table-column column-width="20%" />
+						<fo:table-column column-width="20%" />
+						<fo:table-column column-width="20%" />
 						<fo:table-body>
 							<fo:table-row>
 								<fo:table-cell number-columns-spanned="2">
 									<fo:block font-weight="bold" font-style="italic" font-size="20pt">
 										<xsl:value-of select="name" />
+									</fo:block>
+								</fo:table-cell>
+								<fo:table-cell text-align="center">
+									<fo:block font-weight="bold" font-style="italic" font-size="8pt">
+										<xsl:variable name="sequence" select="sequences/source" />
+										<xsl:for-each select="reminders/reminder">
+											<xsl:variable name="source" select="@source" />
+											<xsl:value-of select="$sequence[@name=$source]" />
+											<xsl:if test="count($sequence[@name=$source]) > position()">
+												<xsl:text>, </xsl:text>
+											</xsl:if>
+										</xsl:for-each>
 									</fo:block>
 								</fo:table-cell>
 								<fo:table-cell number-columns-spanned="2" text-align="right">

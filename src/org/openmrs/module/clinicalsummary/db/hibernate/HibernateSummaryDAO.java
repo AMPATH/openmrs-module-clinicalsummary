@@ -34,6 +34,7 @@ import org.openmrs.api.db.DAOException;
 import org.openmrs.module.clinicalsummary.SummaryError;
 import org.openmrs.module.clinicalsummary.SummaryIndex;
 import org.openmrs.module.clinicalsummary.SummaryTemplate;
+import org.openmrs.module.clinicalsummary.WeightAgeStandard;
 import org.openmrs.module.clinicalsummary.db.SummaryDAO;
 
 /**
@@ -41,8 +42,11 @@ import org.openmrs.module.clinicalsummary.db.SummaryDAO;
  */
 public class HibernateSummaryDAO implements SummaryDAO {
 	
-	public SessionFactory sessionFactory;
+	private SessionFactory sessionFactory;
 	
+	/**
+	 * @param sessionFactory
+	 */
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
@@ -50,6 +54,7 @@ public class HibernateSummaryDAO implements SummaryDAO {
 	/**
 	 * @see org.openmrs.module.clinicalsummary.db.SummaryDAO#saveTemplate(org.openmrs.module.clinicalsummary.SummaryTemplate)
 	 */
+	@Override
 	public SummaryTemplate saveTemplate(SummaryTemplate summary) throws DAOException {
 		if (summary.isPreferred()) {
 			String stringQuery = "UPDATE SummaryTemplate s SET s.preferred = :preferred";
@@ -62,6 +67,7 @@ public class HibernateSummaryDAO implements SummaryDAO {
 	/**
 	 * @see org.openmrs.module.clinicalsummary.db.SummaryDAO#saveTemplate(org.openmrs.module.clinicalsummary.SummaryTemplate)
 	 */
+	@Override
 	public SummaryTemplate retireTemplate(SummaryTemplate summary) throws DAOException {
 		sessionFactory.getCurrentSession().saveOrUpdate(summary);
 		return summary;
@@ -70,6 +76,7 @@ public class HibernateSummaryDAO implements SummaryDAO {
 	/**
 	 * @see org.openmrs.module.clinicalsummary.db.SummaryDAO#getTemplate(java.lang.Integer)
 	 */
+	@Override
 	public SummaryTemplate getTemplate(Integer id) throws DAOException {
 		return (SummaryTemplate) sessionFactory.getCurrentSession().get(SummaryTemplate.class, id);
 	}
@@ -77,6 +84,7 @@ public class HibernateSummaryDAO implements SummaryDAO {
 	/**
 	 * @see org.openmrs.module.clinicalsummary.db.SummaryDAO#getClinicalSummaries()
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<SummaryTemplate> getAllTemplates(boolean includeRetired) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(SummaryTemplate.class);
@@ -101,6 +109,7 @@ public class HibernateSummaryDAO implements SummaryDAO {
 	/**
 	 * @see org.openmrs.module.clinicalsummary.db.SummaryDAO#getPatientsEncountersByTypes(org.openmrs.Cohort, java.util.List)
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<Encounter> getEncounters(Cohort cohort, Collection<EncounterType> encounterTypes) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Encounter.class);
@@ -121,6 +130,7 @@ public class HibernateSummaryDAO implements SummaryDAO {
 	/**
 	 * @see org.openmrs.module.clinicalsummary.db.SummaryDAO#getObservationsByEncounterType(org.openmrs.Cohort, org.openmrs.Concept, List)
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<Obs> getObservations(Cohort cohort, Concept concept, Collection<EncounterType> encounterTypes) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Obs.class);
@@ -144,6 +154,7 @@ public class HibernateSummaryDAO implements SummaryDAO {
 	/**
 	 * @see org.openmrs.module.clinicalsummary.db.SummaryDAO#getPatientsByLocation(org.openmrs.Location, java.util.Date, java.util.Date)
 	 */
+	@Override
 	public Cohort getPatientsByLocation(Location location, Date startDate, Date endDate) {
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Obs.class);
@@ -171,6 +182,7 @@ public class HibernateSummaryDAO implements SummaryDAO {
 	/**
 	 * @see org.openmrs.module.clinicalsummary.db.SummaryDAO#saveError(org.openmrs.module.clinicalsummary.SummaryError)
 	 */
+	@Override
 	public SummaryError saveError(SummaryError summaryError) throws DAOException {
 		sessionFactory.getCurrentSession().saveOrUpdate(summaryError);
 		return summaryError;
@@ -179,6 +191,7 @@ public class HibernateSummaryDAO implements SummaryDAO {
 	/**
 	 * @see org.openmrs.module.clinicalsummary.db.SummaryDAO#getAllErrors()
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<SummaryError> getAllErrors() {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(SummaryError.class);
@@ -188,6 +201,7 @@ public class HibernateSummaryDAO implements SummaryDAO {
 	/**
 	 * @see org.openmrs.module.clinicalsummary.db.SummaryDAO#deleteError(org.openmrs.module.clinicalsummary.SummaryError)
 	 */
+	@Override
 	public void deleteError(SummaryError summaryError) {
 		Query query = sessionFactory.getCurrentSession().createQuery("delete from SummaryError where summaryErrorId = :id");
 		query.setInteger("id", summaryError.getSummaryErrorId());
@@ -197,6 +211,7 @@ public class HibernateSummaryDAO implements SummaryDAO {
 	/**
 	 * @see org.openmrs.module.clinicalsummary.db.SummaryDAO#saveSummaryIndex(org.openmrs.module.clinicalsummary.SummaryIndex)
 	 */
+	@Override
 	public SummaryIndex saveSummaryIndex(SummaryIndex summaryIndex) throws DAOException {
 		sessionFactory.getCurrentSession().saveOrUpdate(summaryIndex);
 		return summaryIndex;
@@ -205,6 +220,7 @@ public class HibernateSummaryDAO implements SummaryDAO {
 	/**
 	 * @see org.openmrs.module.clinicalsummary.db.SummaryDAO#getAllIndexes()
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<SummaryIndex> getAllIndexes() {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(SummaryIndex.class);
@@ -259,6 +275,7 @@ public class HibernateSummaryDAO implements SummaryDAO {
 	/**
 	 * @see org.openmrs.module.clinicalsummary.db.SummaryDAO#getIndexByPatient(org.openmrs.Patient)
 	 */
+	@Override
 	public SummaryIndex getIndex(Patient patient, SummaryTemplate template) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(SummaryIndex.class);
 		criteria.add(Restrictions.eq("patient", patient));
@@ -267,8 +284,20 @@ public class HibernateSummaryDAO implements SummaryDAO {
 	}
 	
 	/**
+	 * @see org.openmrs.module.clinicalsummary.db.SummaryDAO#getIndexes(org.openmrs.Patient)
+	 */
+	@Override
+	@SuppressWarnings("unchecked")
+    public List<SummaryIndex> getIndexes(List<Patient> patients) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(SummaryIndex.class);
+		criteria.add(Restrictions.in("patient", patients));
+		return criteria.list();
+	}
+	
+	/**
 	 * @see org.openmrs.module.clinicalsummary.db.SummaryDAO#getIndexByPatient(org.openmrs.Patient)
 	 */
+	@Override
 	public SummaryIndex getIndex(Integer indexId) {
 		return (SummaryIndex) sessionFactory.getCurrentSession().get(SummaryIndex.class, indexId);
 	}
@@ -278,6 +307,7 @@ public class HibernateSummaryDAO implements SummaryDAO {
 	 *      org.openmrs.module.clinicalsummary.SummaryTemplate, java.util.Date, java.util.Date,
 	 *      java.util.Date, java.util.Date)
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<SummaryIndex> getIndexes(Location location, SummaryTemplate template, Date startReturnDate, Date endReturnDate) throws DAOException {
 		
@@ -328,11 +358,24 @@ public class HibernateSummaryDAO implements SummaryDAO {
 	/**
 	 * @see org.openmrs.module.clinicalsummary.db.SummaryDAO#countIndexes(java.lang.String, java.lang.String[])
 	 */
+	@Override
 	public Integer countIndexes(String search) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(SummaryIndex.class);
 		IndexFinder finder = new IndexFinder(criteria);
 		finder.setSearch(search);
 		criteria.setProjection(Projections.rowCount());
 	    return (Integer) criteria.uniqueResult();
+    }
+
+	/**
+	 * @see org.openmrs.module.clinicalsummary.db.SummaryDAO#getWeightAgeStandard(java.lang.Integer, java.lang.String, java.lang.String)
+	 */
+	@Override
+    public WeightAgeStandard getWeightAgeStandard(Integer age, String ageUnit, String gender) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(WeightAgeStandard.class);
+		criteria.add(Restrictions.eq("age", age));
+		criteria.add(Restrictions.eq("ageUnit", ageUnit));
+		criteria.add(Restrictions.eq("gender", gender));
+	    return (WeightAgeStandard) criteria.uniqueResult();
     }
 }

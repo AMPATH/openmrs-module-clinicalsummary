@@ -11,7 +11,7 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.module.clinicalsummary.rule.reminder;
+package org.openmrs.module.clinicalsummary.rule.reminder.peds;
 
 import java.util.Calendar;
 import java.util.Collections;
@@ -40,9 +40,9 @@ import org.openmrs.util.OpenmrsUtil;
 /**
  *
  */
-public class PedsCD4CheckPositivePCRELISAReminder implements Rule {
+public class PositivePCRElisaCD4ReminderRule implements Rule {
 	
-	private static final Log log = LogFactory.getLog(PedsCD4CheckPositivePCRELISAReminder.class);
+	private static final Log log = LogFactory.getLog(PositivePCRElisaCD4ReminderRule.class);
 	
 	private static final String REMINDER_TEXT = "Please order CD4 PANEL. Pt with positive PCR or ELISA but no CD4";
 	

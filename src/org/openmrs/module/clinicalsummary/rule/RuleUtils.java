@@ -71,4 +71,26 @@ public class RuleUtils {
 		return slicedObservations;
 	}
 	
+	/**
+	 * @param obsResults
+	 * @return
+	 */
+	public static Result consolidate(Result obsResults) {
+		Result consolidatedResult = new Result();
+		if (!obsResults.isEmpty()) {
+			Result prevResult = obsResults.get(0);
+			for (int i = 1; i < obsResults.size(); i++) {
+				Result currentResult = obsResults.get(i);
+				// skip when they are the same result :)
+				if (prevResult.getResultDate().equals(currentResult.getResultDate()))
+					if (prevResult.toNumber().equals(currentResult.toNumber()))
+						continue;
+				consolidatedResult.add(prevResult);
+				prevResult = currentResult;
+			}
+			consolidatedResult.add(prevResult);
+		}
+		return consolidatedResult;
+	}
+	
 }

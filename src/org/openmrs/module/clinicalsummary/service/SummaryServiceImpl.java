@@ -35,11 +35,12 @@ import org.openmrs.module.clinicalsummary.SummaryError;
 import org.openmrs.module.clinicalsummary.SummaryIndex;
 import org.openmrs.module.clinicalsummary.SummaryService;
 import org.openmrs.module.clinicalsummary.SummaryTemplate;
+import org.openmrs.module.clinicalsummary.WeightAgeStandard;
 import org.openmrs.module.clinicalsummary.db.SummaryDAO;
 
 public class SummaryServiceImpl implements SummaryService {
 	
-	public SummaryDAO summaryDAO;
+	private SummaryDAO summaryDAO;
 	
 	/**
 	 * @param summaryDAO the summaryDAO to set
@@ -163,10 +164,17 @@ public class SummaryServiceImpl implements SummaryService {
 	}
 	
 	/**
-	 * @see org.openmrs.module.clinicalsummary.SummaryService#getIndexes(org.openmrs.Location, java.util.Date, java.util.Date)
+	 * @see org.openmrs.module.clinicalsummary.SummaryService#getIndex(org.openmrs.Patient, org.openmrs.module.clinicalsummary.SummaryTemplate)
 	 */
 	public SummaryIndex getIndex(Patient patient, SummaryTemplate template) throws APIException {
 		return summaryDAO.getIndex(patient, template);
+	}
+	
+	/**
+	 * @see org.openmrs.module.clinicalsummary.SummaryService#getIndexes(List<org.openmrs.Patient>)
+	 */
+	public List<SummaryIndex> getIndexes(List<Patient> patients) throws APIException {
+		return summaryDAO.getIndexes(patients);
 	}
 	
 	/**
@@ -251,4 +259,12 @@ public class SummaryServiceImpl implements SummaryService {
 	public void setLogicDataSource(String hint, LogicDataSource dataSource) throws APIException {
 		Context.getLogicService().registerLogicDataSource(hint, dataSource);
 	}
+
+	/**
+	 * @see org.openmrs.module.clinicalsummary.SummaryService#getWeightAgeStandard(java.lang.Integer, java.lang.String, java.lang.String)
+	 */
+	@Override
+    public WeightAgeStandard getWeightAgeStandard(Integer age, String ageUnit, String gender) {
+	    return summaryDAO.getWeightAgeStandard(age, ageUnit, gender);
+    }
 }

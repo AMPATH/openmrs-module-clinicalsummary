@@ -28,6 +28,7 @@ import org.openmrs.api.db.DAOException;
 import org.openmrs.module.clinicalsummary.SummaryError;
 import org.openmrs.module.clinicalsummary.SummaryIndex;
 import org.openmrs.module.clinicalsummary.SummaryTemplate;
+import org.openmrs.module.clinicalsummary.WeightAgeStandard;
 
 public interface SummaryDAO {
 	
@@ -103,6 +104,11 @@ public interface SummaryDAO {
 	public SummaryIndex getIndex(Patient patient, SummaryTemplate template);
 
 	/**
+	 * @see org.openmrs.module.clinicalsummary.SummaryService#getIndexes(List<Patient>)
+	 */
+	public List<SummaryIndex> getIndexes(List<Patient> patients);
+
+	/**
      * @see org.openmrs.module.clinicalsummary.SummaryService#getIndex(java.lang.Integer)
      */
     public SummaryIndex getIndex(Integer indexId);
@@ -131,4 +137,9 @@ public interface SummaryDAO {
 	 * @see org.openmrs.module.clinicalsummary.SummaryService#countIndexes(String)
 	 */
 	public Integer countIndexes(String search);
+
+	/**
+	 * @see org.openmrs.module.clinicalsummary.SummaryService#getWeightAgeStandard(Integer, String, String)
+	 */
+	public WeightAgeStandard getWeightAgeStandard(Integer age, String ageUnit, String gender);
 }

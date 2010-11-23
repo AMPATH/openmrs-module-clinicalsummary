@@ -11,13 +11,12 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.module.clinicalsummary.rule;
+package org.openmrs.module.clinicalsummary.rule.reminder;
 
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
@@ -31,54 +30,54 @@ import org.openmrs.logic.result.Result.Datatype;
 import org.openmrs.logic.rule.RuleParameterInfo;
 import org.openmrs.module.clinicalsummary.SummaryService;
 import org.openmrs.module.clinicalsummary.cache.SummaryDataSource;
+import org.openmrs.module.clinicalsummary.concept.StandardConceptConstants;
+import org.openmrs.module.clinicalsummary.rule.PCPMedicationsRule;
 
 /**
  * 
  */
-public class NumericFlowsheetRule implements Rule {
+public class PCPCD4ReminderRule implements Rule {
 	
-	private static final Log log = LogFactory.getLog(NumericFlowsheetRule.class);
+	private static final Log log = LogFactory.getLog(CXRReminderRule.class);
+	
+	private static final String PCP_CD4_REMINDER = "Consider PCP prophylaxis - CD4 &lt; 200 and not on Septrin or Dapsone";
 	
 	/**
 	 * @see org.openmrs.logic.Rule#eval(org.openmrs.logic.LogicContext, org.openmrs.Patient,
 	 *      java.util.Map)
 	 */
-	@Override
 	public Result eval(LogicContext context, Patient patient, Map<String, Object> parameters) throws LogicException {
-		Result result = new Result();
+		Result reminder = new Result();
 		
-		String conceptName = String.valueOf(parameters.get(RuleConstants.EVALUATED_CONCEPT));
+		PCPMedicationsRule rule = new PCPMedicationsRule();
+		Result pcpMedicationsResult = rule.eval(context, patient, parameters);
 		
 		SummaryService service = Context.getService(SummaryService.class);
 		
-		LogicCriteria conceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(conceptName);
+		LogicCriteria conceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.CD4_NAME);
 		LogicCriteria encounterCriteria = service.parseToken(SummaryDataSource.ENCOUNTER_TYPE).in(Collections.emptyList());
+		LogicCriteria criteria = conceptCriteria.and(encounterCriteria);
 		
-		Result obsResults = context.read(patient, service.getLogicDataSource("summary"), conceptCriteria.and(encounterCriteria));
-		Result consolidatedResults = RuleUtils.consolidate(obsResults);
+		Result obsResult = context.read(patient, service.getLogicDataSource("summary"), criteria);
 		
 		if (log.isDebugEnabled())
-			log.debug("Started arv side effect observations for patient: " + patient.getPatientId() + " is: " + obsResults);
+			log.debug("Patient: " + patient.getPatientId() + ", cd4 results " + obsResult);
 		
-		Result numericObsResults = RuleUtils.sliceResult(consolidatedResults, 5);
+		if (pcpMedicationsResult.isEmpty() && !obsResult.isEmpty()) {
+			Result r = obsResult.get(0);
+			if (r.toNumber() < 200)
+				reminder = new Result(PCP_CD4_REMINDER);
+		}
 		
-		for (Result numericObsResult : numericObsResults) {
-			Result numericResult = new Result();
-			numericResult.setResultDate(numericObsResult.getResultDate());
-			numericResult.setValueNumeric(numericObsResult.toNumber());
-			numericResult.setValueText(StringUtils.EMPTY);
-			result.add(numericResult);
-        }
-    	
-    	Collections.reverse(result);
+		if (log.isDebugEnabled())
+			log.debug("Patient: " + patient.getPatientId() + ", cd4 reminder " + reminder);
 		
-		return result;
+		return reminder;
 	}
 	
 	/**
 	 * @see org.openmrs.logic.Rule#getDefaultDatatype()
 	 */
-	@Override
 	public Datatype getDefaultDatatype() {
 		return Datatype.TEXT;
 	}
@@ -86,7 +85,6 @@ public class NumericFlowsheetRule implements Rule {
 	/**
 	 * @see org.openmrs.logic.Rule#getDependencies()
 	 */
-	@Override
 	public String[] getDependencies() {
 		return null;
 	}
@@ -94,7 +92,6 @@ public class NumericFlowsheetRule implements Rule {
 	/**
 	 * @see org.openmrs.logic.Rule#getParameterList()
 	 */
-	@Override
 	public Set<RuleParameterInfo> getParameterList() {
 		return null;
 	}
@@ -102,7 +99,6 @@ public class NumericFlowsheetRule implements Rule {
 	/**
 	 * @see org.openmrs.logic.Rule#getTTL()
 	 */
-	@Override
 	public int getTTL() {
 		return 0;
 	}

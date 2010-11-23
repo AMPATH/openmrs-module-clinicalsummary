@@ -73,7 +73,8 @@ public class TestOrderedRule implements Rule {
 		LogicCriteria encounterCriteria = service.parseToken(SummaryDataSource.ENCOUNTER_TYPE).in(Collections.emptyList());
 
 		LogicCriteria conceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(conceptName);
-		Result resultObservations = context.read(patient, service.getLogicDataSource("summary"), conceptCriteria.and(encounterCriteria));
+		Result rawResults = context.read(patient, service.getLogicDataSource("summary"), conceptCriteria.and(encounterCriteria));
+		Result resultObservations = RuleUtils.consolidate(rawResults);
 
 		LogicCriteria testedCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.TESTS_ORDERED);
 		Result testedResult = context.read(patient, service.getLogicDataSource("summary"), testedCriteria.and(encounterCriteria));

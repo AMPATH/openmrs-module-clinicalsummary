@@ -11,15 +11,17 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.module.clinicalsummary.rule;
+package org.openmrs.module.clinicalsummary.rule.reminder.peds;
 
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Concept;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.logic.LogicContext;
@@ -31,13 +33,16 @@ import org.openmrs.logic.result.Result.Datatype;
 import org.openmrs.logic.rule.RuleParameterInfo;
 import org.openmrs.module.clinicalsummary.SummaryService;
 import org.openmrs.module.clinicalsummary.cache.SummaryDataSource;
+import org.openmrs.module.clinicalsummary.concept.ConceptRegistry;
+import org.openmrs.module.clinicalsummary.concept.StandardConceptConstants;
+import org.openmrs.util.OpenmrsUtil;
 
 /**
- * 
+ *
  */
-public class NumericFlowsheetRule implements Rule {
+public class PositiveElisaRule implements Rule {
 	
-	private static final Log log = LogFactory.getLog(NumericFlowsheetRule.class);
+	private static final Log log = LogFactory.getLog(PositiveElisaRule.class);
 	
 	/**
 	 * @see org.openmrs.logic.Rule#eval(org.openmrs.logic.LogicContext, org.openmrs.Patient,
@@ -45,34 +50,38 @@ public class NumericFlowsheetRule implements Rule {
 	 */
 	@Override
 	public Result eval(LogicContext context, Patient patient, Map<String, Object> parameters) throws LogicException {
-		Result result = new Result();
 		
-		String conceptName = String.valueOf(parameters.get(RuleConstants.EVALUATED_CONCEPT));
+		Date birthdate = patient.getBirthdate();
+		Calendar birthdateCalendar = Calendar.getInstance();
+		birthdateCalendar.setTime(birthdate);
+		// 18 months after birthdate
+		birthdateCalendar.add(Calendar.MONTH, 18);
+		Date referenceDate = birthdateCalendar.getTime();
 		
-		SummaryService service = Context.getService(SummaryService.class);
+		Date now = new Date();
+		// only process if the patient is at least 18 months 
+		if (referenceDate.before(now)) {
+			Concept positiveConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.POSITIVE);
+			
+			SummaryService service = Context.getService(SummaryService.class);
+			
+			LogicCriteria conceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.ELISA_NAME);
+			LogicCriteria encounterCriteria = service.parseToken(SummaryDataSource.ENCOUNTER_TYPE).in(Collections.emptyList());
+			LogicCriteria criteria = conceptCriteria.and(encounterCriteria);
+			
+			Result obsResult = context.read(patient, service.getLogicDataSource("summary"), criteria);
+			
+			if (log.isDebugEnabled())
+				log.debug("Patient: " + patient.getPatientId() + ", elisa result: " + obsResult);
+			
+			// check if we have negative or positive
+			for (Result result : obsResult)
+				if (result.getResultDate().after(referenceDate)
+				        && (OpenmrsUtil.nullSafeEquals(positiveConcept, result.toConcept())))
+					return new Result(true);
+		}
 		
-		LogicCriteria conceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(conceptName);
-		LogicCriteria encounterCriteria = service.parseToken(SummaryDataSource.ENCOUNTER_TYPE).in(Collections.emptyList());
-		
-		Result obsResults = context.read(patient, service.getLogicDataSource("summary"), conceptCriteria.and(encounterCriteria));
-		Result consolidatedResults = RuleUtils.consolidate(obsResults);
-		
-		if (log.isDebugEnabled())
-			log.debug("Started arv side effect observations for patient: " + patient.getPatientId() + " is: " + obsResults);
-		
-		Result numericObsResults = RuleUtils.sliceResult(consolidatedResults, 5);
-		
-		for (Result numericObsResult : numericObsResults) {
-			Result numericResult = new Result();
-			numericResult.setResultDate(numericObsResult.getResultDate());
-			numericResult.setValueNumeric(numericObsResult.toNumber());
-			numericResult.setValueText(StringUtils.EMPTY);
-			result.add(numericResult);
-        }
-    	
-    	Collections.reverse(result);
-		
-		return result;
+		return new Result(false);
 	}
 	
 	/**

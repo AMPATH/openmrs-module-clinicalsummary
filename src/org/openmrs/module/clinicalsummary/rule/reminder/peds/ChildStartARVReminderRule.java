@@ -11,7 +11,7 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.module.clinicalsummary.rule.reminder;
+package org.openmrs.module.clinicalsummary.rule.reminder.peds;
 
 import java.util.Calendar;
 import java.util.Collections;
@@ -42,9 +42,9 @@ import org.openmrs.util.OpenmrsUtil;
 /**
  *
  */
-public class PedsOver5StartARVReminder implements Rule {
+public class ChildStartARVReminderRule implements Rule {
 	
-	private static final Log log = LogFactory.getLog(PedsOver5StartARVReminder.class);
+	private static final Log log = LogFactory.getLog(ChildStartARVReminderRule.class);
 	
 	private static final String REMINDER_TEXT = "Consider starting ARV Meds. Pt &gt; 5 yrs with ";
 	
@@ -76,8 +76,6 @@ public class PedsOver5StartARVReminder implements Rule {
 				birthdateCalendar.setTime(birthdate);
 				birthdateCalendar.add(Calendar.MONTH, 18);
 				Date referenceDate = birthdateCalendar.getTime();
-				
-				String dnaElisa = "";
 				
 				Concept positiveConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.POSITIVE);
 				

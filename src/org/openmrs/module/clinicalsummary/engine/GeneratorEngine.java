@@ -20,6 +20,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -150,6 +151,13 @@ public class GeneratorEngine {
 					Writer writer = new StringWriter();
 					Velocity.evaluate(context, writer, GeneratorEngine.class.getName(), template.getTemplate());
 					
+					String xmlFilename = patient.getPatientId() + "_" + template.getTemplateId() + ".xml";
+					File xmlFile = new File(outputLocation, xmlFilename);
+					BufferedOutputStream xmlStream = new BufferedOutputStream(new FileOutputStream(xmlFile));
+					xmlStream.write(writer.toString().getBytes());
+					xmlStream.close();
+					
+					
 					String filename = patient.getPatientId() + "_" + template.getTemplateId() + ".pdf";
 					File file = new File(outputLocation, filename);
 					BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
@@ -185,7 +193,21 @@ public class GeneratorEngine {
 		// this way, we can safely regenerate summaries for all patients without have to reprint for everyone again
 		
 		SummaryService summaryService = Context.getService(SummaryService.class);
-		SummaryIndex index = summaryService.getIndex(patient, template);
+		SummaryIndex index = null;
+		
+		if (template.getPosition() == MappingPosition.ANY_ENCOUNTER)
+			index = summaryService.getIndex(patient, template);
+		else {
+			List<SummaryIndex> indexes = summaryService.getIndexes(Arrays.asList(patient));
+			for (SummaryIndex summaryIndex : indexes) {
+				SummaryTemplate indexTemplate = summaryIndex.getTemplate();
+				if (indexTemplate != null && indexTemplate.getPosition() == MappingPosition.LATEST_ENCOUNTER) {
+					index = summaryIndex;
+					break;
+				}
+            }
+		}
+			
 		
 		if (index == null) {
 			index = new SummaryIndex();

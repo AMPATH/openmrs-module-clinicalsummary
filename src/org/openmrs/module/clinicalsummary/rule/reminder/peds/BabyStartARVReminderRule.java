@@ -11,7 +11,7 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.module.clinicalsummary.rule.reminder;
+package org.openmrs.module.clinicalsummary.rule.reminder.peds;
 
 import java.util.Calendar;
 import java.util.Collections;
@@ -35,16 +35,17 @@ import org.openmrs.module.clinicalsummary.SummaryService;
 import org.openmrs.module.clinicalsummary.cache.SummaryDataSource;
 import org.openmrs.module.clinicalsummary.concept.ConceptRegistry;
 import org.openmrs.module.clinicalsummary.concept.StandardConceptConstants;
+import org.openmrs.module.clinicalsummary.rule.ARVMedicationsRule;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
  *
  */
-public class PedsRepeatDNAPCRReminder implements Rule {
+public class BabyStartARVReminderRule implements Rule {
 	
-	private static final Log log = LogFactory.getLog(PedsRepeatDNAPCRReminder.class);
+	private static final Log log = LogFactory.getLog(BabyStartARVReminderRule.class);
 	
-	private static final String REMINDER_TEXT = "Please order DNA PCR. Pt btn 6 wks &amp; 18 mo with only one DNA PCR";
+	private static final String REMINDER_TEXT = "Consider starting ARV Medications. Pt with positive HIV PCR";
 	
 	/**
 	 * @see org.openmrs.logic.Rule#eval(org.openmrs.logic.LogicContext, org.openmrs.Patient,
@@ -60,23 +61,16 @@ public class PedsRepeatDNAPCRReminder implements Rule {
 		birthdateCalendar.setTime(birthdate);
 		// 18 months after birthdate
 		birthdateCalendar.add(Calendar.MONTH, 18);
-		Date eighteenMonths = birthdateCalendar.getTime();
-		// 6 weeks after birthdate
-		birthdateCalendar.setTime(birthdate);
-		birthdateCalendar.add(Calendar.WEEK_OF_YEAR, 6);
-		Date sixWeeks = birthdateCalendar.getTime();
+		Date referenceDate = birthdateCalendar.getTime();
 		
 		Date now = new Date();
-		// only process if the patient is at least 18 months 
-		if (now.after(sixWeeks) && now.before(eighteenMonths)) {
-			
+		if (referenceDate.after(now)) {
 			// 4 weeks after birthdate
 			birthdateCalendar.setTime(birthdate);
 			birthdateCalendar.add(Calendar.WEEK_OF_YEAR, 4);
-			Date referenceDate = birthdateCalendar.getTime();
+			referenceDate = birthdateCalendar.getTime();
 			
 			Concept positiveConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.POSITIVE);
-			Concept negativeConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.NEGATIVE);
 			
 			SummaryService service = Context.getService(SummaryService.class);
 			
@@ -87,51 +81,26 @@ public class PedsRepeatDNAPCRReminder implements Rule {
 			Result obsResult = context.read(patient, service.getLogicDataSource("summary"), criteria);
 			
 			if (log.isDebugEnabled())
-				log.debug("Patient: " + patient.getPatientId() + ", dna pcr result: " + obsResult);
+				log.debug("Patient: " + patient.getPatientId() + ", elisa result: " + obsResult);
 			
 			// check if we have negative or positive
-			boolean resultExist = false;
+			boolean dnaExist = false;
 			for (Result result : obsResult) {
 				if (result.getResultDate().after(referenceDate))
-					if (OpenmrsUtil.nullSafeEquals(positiveConcept, result.toConcept())
-					        || OpenmrsUtil.nullSafeEquals(negativeConcept, result.toConcept())) {
-						resultExist = true;
+					if (OpenmrsUtil.nullSafeEquals(positiveConcept, result.toConcept())) {
+						dnaExist = true;
 						break;
 					}
 			}
 			
-			// when we see there's 1 result "NEGATIVE" or "POSITIVE", we will search for the test or throw reminder
-			if (resultExist) {
-				
-				Calendar nowCalendar = Calendar.getInstance();
-				nowCalendar.setTime(now);
-				// 6 months before
-				nowCalendar.add(Calendar.MONTH, -6);
-				// reference date is whichever is the latest between dob and 6 months ago
-				Date testReferenceDate = referenceDate.after(nowCalendar.getTime()) ? referenceDate : nowCalendar.getTime();
-				
-				Concept dnaConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.DNA_PCR_NAME);
-				
-				LogicCriteria testedConceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.TESTS_ORDERED);
-				LogicCriteria testedCriteria = testedConceptCriteria.and(encounterCriteria);
-				
-				Result testedResult = context.read(patient, service.getLogicDataSource("summary"), testedCriteria);
+			if (dnaExist) {
+				ARVMedicationsRule arvMedicationsRule = new ARVMedicationsRule();
+				Result result = arvMedicationsRule.eval(context, patient, parameters);
 				
 				if (log.isDebugEnabled())
-					log.debug("Patient: " + patient.getPatientId() + ", dna pcr test result: " + testedResult);
+					log.debug("Patient: " + patient.getPatientId() + ", arv result: " + result);
 				
-				boolean testExist = false;
-				
-				for (Result result : testedResult) {
-					// only process the date after the reference date
-					if (result.getResultDate().after(testReferenceDate))
-						if (OpenmrsUtil.nullSafeEquals(result.toConcept(), dnaConcept)) {
-							testExist = true;
-							break;
-						}
-				}
-				
-				if (!testExist)
+				if (result.isEmpty())
 					reminder = new Result(REMINDER_TEXT);
 			}
 		}

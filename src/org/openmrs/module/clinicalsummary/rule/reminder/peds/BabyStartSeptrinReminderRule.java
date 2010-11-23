@@ -11,7 +11,7 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.module.clinicalsummary.rule.reminder;
+package org.openmrs.module.clinicalsummary.rule.reminder.peds;
 
 import java.util.Calendar;
 import java.util.Collections;
@@ -41,9 +41,9 @@ import org.openmrs.util.OpenmrsUtil;
 /**
  *
  */
-public class Peds6wk18moStartSeptrinReminder implements Rule {
+public class BabyStartSeptrinReminderRule implements Rule {
 	
-	private static final Log log = LogFactory.getLog(Peds6wk18moStartSeptrinReminder.class);
+	private static final Log log = LogFactory.getLog(BabyStartSeptrinReminderRule.class);
 	
 	private static final String REMINDER_TEXT = "Consider starting Septrin Prophylaxis. Pt with &lt; 2 negative DNA PCR (age 6 wk - 18 mo)";
 	

@@ -11,7 +11,7 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.module.clinicalsummary.rule.reminder;
+package org.openmrs.module.clinicalsummary.rule.reminder.peds;
 
 import java.util.Calendar;
 import java.util.Collections;
@@ -40,11 +40,11 @@ import org.openmrs.util.OpenmrsUtil;
 /**
  *
  */
-public class PedsFirstElisaRemider implements Rule {
+public class BaselinePCRReminderRule implements Rule {
 	
-	private static final Log log = LogFactory.getLog(PedsFirstElisaRemider.class);
+	private static final Log log = LogFactory.getLog(BaselinePCRReminderRule.class);
 	
-	private static final String REMINDER_TEXT = "Please order HIV ELISA. Pt &gt; 18 mo old with no valid ELISA result.";
+	private static final String REMINDER_TEXT = "Please order DNA PCR. Pt btn 6 wks &amp; 18 mo with no DNA PCR";
 	
 	/**
 	 * @see org.openmrs.logic.Rule#eval(org.openmrs.logic.LogicContext, org.openmrs.Patient,
@@ -60,24 +60,34 @@ public class PedsFirstElisaRemider implements Rule {
 		birthdateCalendar.setTime(birthdate);
 		// 18 months after birthdate
 		birthdateCalendar.add(Calendar.MONTH, 18);
-		Date referenceDate = birthdateCalendar.getTime();
+		Date eighteenMonths = birthdateCalendar.getTime();
+		// 6 weeks after birthdate
+		birthdateCalendar.setTime(birthdate);
+		birthdateCalendar.add(Calendar.WEEK_OF_YEAR, 6);
+		Date sixWeeks = birthdateCalendar.getTime();
 		
 		Date now = new Date();
 		// only process if the patient is at least 18 months 
-		if (referenceDate.before(now)) {
+		if (now.after(sixWeeks) && now.before(eighteenMonths)) {
+			
+			// 4 weeks after birthdate
+			birthdateCalendar.setTime(birthdate);
+			birthdateCalendar.add(Calendar.WEEK_OF_YEAR, 4);
+			Date referenceDate = birthdateCalendar.getTime();
+			
 			Concept positiveConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.POSITIVE);
 			Concept negativeConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.NEGATIVE);
 			
 			SummaryService service = Context.getService(SummaryService.class);
 			
-			LogicCriteria conceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.ELISA_NAME);
+			LogicCriteria conceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.DNA_PCR_NAME);
 			LogicCriteria encounterCriteria = service.parseToken(SummaryDataSource.ENCOUNTER_TYPE).in(Collections.emptyList());
 			LogicCriteria criteria = conceptCriteria.and(encounterCriteria);
 			
 			Result obsResult = context.read(patient, service.getLogicDataSource("summary"), criteria);
 			
 			if (log.isDebugEnabled())
-				log.debug("Patient: " + patient.getPatientId() + ", elisa result: " + obsResult);
+				log.debug("Patient: " + patient.getPatientId() + ", dna pcr result: " + obsResult);
 			
 			// check if we have negative or positive
 			boolean resultExist = false;
@@ -99,7 +109,7 @@ public class PedsFirstElisaRemider implements Rule {
 				// reference date is whichever is the latest between dob and 6 months ago
 				Date testReferenceDate = referenceDate.after(nowCalendar.getTime()) ? referenceDate : nowCalendar.getTime();
 				
-				Concept elisaConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.ELISA_NAME);
+				Concept dnaConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.DNA_PCR_NAME);
 				
 				LogicCriteria testedConceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.TESTS_ORDERED);
 				LogicCriteria testedCriteria = testedConceptCriteria.and(encounterCriteria);
@@ -107,14 +117,14 @@ public class PedsFirstElisaRemider implements Rule {
 				Result testedResult = context.read(patient, service.getLogicDataSource("summary"), testedCriteria);
 				
 				if (log.isDebugEnabled())
-					log.debug("Patient: " + patient.getPatientId() + ", elisa ordered result: " + testedResult);
+					log.debug("Patient: " + patient.getPatientId() + ", dna pcr test result: " + testedResult);
 				
 				boolean testExist = false;
 				
 				for (Result result : testedResult) {
 					// only process the date after the reference date
 					if (result.getResultDate().after(testReferenceDate))
-						if (OpenmrsUtil.nullSafeEquals(result.toConcept(), elisaConcept)) {
+						if (OpenmrsUtil.nullSafeEquals(result.toConcept(), dnaConcept)) {
 							testExist = true;
 							break;
 						}

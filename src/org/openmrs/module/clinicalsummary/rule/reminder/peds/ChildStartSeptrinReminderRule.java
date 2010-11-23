@@ -11,7 +11,7 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.module.clinicalsummary.rule.reminder;
+package org.openmrs.module.clinicalsummary.rule.reminder.peds;
 
 import java.util.Calendar;
 import java.util.Collections;
@@ -41,9 +41,9 @@ import org.openmrs.util.OpenmrsUtil;
 /**
  *
  */
-public class PedsOver18moStartSeptrinReminder implements Rule {
+public class ChildStartSeptrinReminderRule implements Rule {
 	
-	private static final Log log = LogFactory.getLog(PedsOver18moStartSeptrinReminder.class);
+	private static final Log log = LogFactory.getLog(ChildStartSeptrinReminderRule.class);
 	
 	private static final String REMINDER_TEXT = "Consider starting Septrin Prophylaxis. Pt with positive ELISA, older than 18 mo.";
 	

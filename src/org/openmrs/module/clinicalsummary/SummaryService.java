@@ -243,6 +243,19 @@ public interface SummaryService {
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_LOCATIONS, OpenmrsConstants.PRIV_VIEW_PATIENTS, OpenmrsConstants.PRIV_VIEW_OBS })
 	public SummaryIndex getIndex(Patient patient, SummaryTemplate template) throws APIException;
 	
+
+	/**
+	 * Get index entry based on the template and the patient
+	 * 
+	 * @param patient the patient
+	 * @param template the template
+	 * @return index with matching template for a certain patient. This will be guaranteed a unique index
+	 * @throws APIException
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_LOCATIONS, OpenmrsConstants.PRIV_VIEW_PATIENTS, OpenmrsConstants.PRIV_VIEW_OBS })
+	public List<SummaryIndex> getIndexes(List<Patient> patients) throws APIException;
+	
 	/**
 	 * Get index entry based on the index primary key
 	 * 
@@ -399,4 +412,13 @@ public interface SummaryService {
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_LOCATIONS, OpenmrsConstants.PRIV_VIEW_PATIENTS, OpenmrsConstants.PRIV_VIEW_OBS })
     public Integer countIndexes(String search) throws APIException;
+
+	/**
+	 * @param age
+	 * @param ageUnit
+	 * @param gender
+	 * @return
+	 */
+	@Transactional(readOnly = true)
+	public WeightAgeStandard getWeightAgeStandard(Integer age, String ageUnit, String gender);
 }

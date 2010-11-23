@@ -11,7 +11,7 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.module.clinicalsummary.rule.reminder;
+package org.openmrs.module.clinicalsummary.rule.reminder.peds;
 
 import java.util.Calendar;
 import java.util.Collections;
@@ -42,9 +42,9 @@ import org.openmrs.util.OpenmrsUtil;
 /**
  *
  */
-public class PedsStartARVPositivePCRELISAReminder implements Rule {
+public class PositivePCRElisaARVReminderRule implements Rule {
 	
-	private static final Log log = LogFactory.getLog(PedsStartARVPositivePCRELISAReminder.class);
+	private static final Log log = LogFactory.getLog(PositivePCRElisaARVReminderRule.class);
 	
 	private static final String REMINDER_TEXT = "Consider starting ARV Meds. Pt 18 mo - 5 yrs with ";
 	

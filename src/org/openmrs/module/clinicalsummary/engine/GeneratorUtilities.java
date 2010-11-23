@@ -43,6 +43,7 @@ import org.openmrs.module.clinicalsummary.rule.anc.LatestSingleDateTimeRule;
 import org.openmrs.module.clinicalsummary.rule.anc.LatestSingleNumericRule;
 import org.openmrs.module.clinicalsummary.rule.peds.ARVSideEffectRule;
 import org.openmrs.module.clinicalsummary.rule.peds.AgeCompleteRule;
+import org.openmrs.module.clinicalsummary.rule.peds.ChildWeightRule;
 import org.openmrs.module.clinicalsummary.rule.peds.DNAPCRRule;
 import org.openmrs.module.clinicalsummary.rule.peds.ELISARule;
 import org.openmrs.module.clinicalsummary.rule.peds.HIVTestStatusRule;
@@ -50,22 +51,28 @@ import org.openmrs.module.clinicalsummary.rule.peds.ImmunizationRecordRule;
 import org.openmrs.module.clinicalsummary.rule.peds.LastVisitARVPlanRule;
 import org.openmrs.module.clinicalsummary.rule.peds.PMTCTRule;
 import org.openmrs.module.clinicalsummary.rule.peds.PedsWHOStageRule;
-import org.openmrs.module.clinicalsummary.rule.reminder.AntiRetroviralCD4BasedReminder;
 import org.openmrs.module.clinicalsummary.rule.reminder.BaseCD4ReminderRule;
+import org.openmrs.module.clinicalsummary.rule.reminder.CD4BasedARVReminderRule;
 import org.openmrs.module.clinicalsummary.rule.reminder.CXRReminderRule;
 import org.openmrs.module.clinicalsummary.rule.reminder.CreatinineReminderRule;
 import org.openmrs.module.clinicalsummary.rule.reminder.HGBReminderRule;
-import org.openmrs.module.clinicalsummary.rule.reminder.PedsOver18moStartSeptrinReminder;
-import org.openmrs.module.clinicalsummary.rule.reminder.PedsBaselineDNAPCRReminder;
-import org.openmrs.module.clinicalsummary.rule.reminder.PedsCD4CheckPositivePCRELISAReminder;
-import org.openmrs.module.clinicalsummary.rule.reminder.PedsFirstElisaRemider;
-import org.openmrs.module.clinicalsummary.rule.reminder.Peds6wk18moStartSeptrinReminder;
-import org.openmrs.module.clinicalsummary.rule.reminder.PedsOver5StartARVReminder;
-import org.openmrs.module.clinicalsummary.rule.reminder.PedsRepeatDNAPCRReminder;
-import org.openmrs.module.clinicalsummary.rule.reminder.PedsStartARVPositivePCRELISAReminder;
-import org.openmrs.module.clinicalsummary.rule.reminder.PedsUnder18moStartARTReminder;
+import org.openmrs.module.clinicalsummary.rule.reminder.PCPCD4ReminderRule;
 import org.openmrs.module.clinicalsummary.rule.reminder.SGPTReminderRule;
 import org.openmrs.module.clinicalsummary.rule.reminder.WHOStageReminderRule;
+import org.openmrs.module.clinicalsummary.rule.reminder.peds.BabyStartARVReminderRule;
+import org.openmrs.module.clinicalsummary.rule.reminder.peds.BabyStartSeptrinReminderRule;
+import org.openmrs.module.clinicalsummary.rule.reminder.peds.BaselineCD4ReminderRule;
+import org.openmrs.module.clinicalsummary.rule.reminder.peds.BaselineCXRReminderRule;
+import org.openmrs.module.clinicalsummary.rule.reminder.peds.BaselineCreatinineReminderRule;
+import org.openmrs.module.clinicalsummary.rule.reminder.peds.BaselineHGBReminderRule;
+import org.openmrs.module.clinicalsummary.rule.reminder.peds.BaselinePCRReminderRule;
+import org.openmrs.module.clinicalsummary.rule.reminder.peds.BaselineSGPTReminderRule;
+import org.openmrs.module.clinicalsummary.rule.reminder.peds.ChildStartARVReminderRule;
+import org.openmrs.module.clinicalsummary.rule.reminder.peds.ChildStartSeptrinReminderRule;
+import org.openmrs.module.clinicalsummary.rule.reminder.peds.FirstElisaRemiderRule;
+import org.openmrs.module.clinicalsummary.rule.reminder.peds.PositivePCRElisaARVReminderRule;
+import org.openmrs.module.clinicalsummary.rule.reminder.peds.PositivePCRElisaCD4ReminderRule;
+import org.openmrs.module.clinicalsummary.rule.reminder.peds.RepeatPCRReminderRule;
 
 /**
  *
@@ -94,6 +101,7 @@ public class GeneratorUtilities {
 		service.addRule("SGPT Reminder", new SGPTReminderRule());
 		service.addRule("Base CD4 Reminder", new BaseCD4ReminderRule());
 		service.addRule("WHO Reminder", new WHOStageReminderRule());
+		service.addRule("PCP Reminder", new PCPCD4ReminderRule());
 		
 		service.addRule("Numeric Flowsheet", new NumericFlowsheetRule());
 		
@@ -126,15 +134,22 @@ public class GeneratorUtilities {
 		service.addRule("Datetime Latest Obs", new DatetimeLatestSingleObsRule());
 		service.addRule("Complete Encounter", new CompleteEncounterRule());
 
-		service.addRule("AntiRetroviralCD4BasedReminder", new AntiRetroviralCD4BasedReminder());
-		service.addRule("PedsBaselineDNAPCRReminder", new PedsBaselineDNAPCRReminder());
-		service.addRule("PedsCD4CheckPositivePCRELISAReminder", new PedsCD4CheckPositivePCRELISAReminder());
-		service.addRule("PedsFirstElisaRemider", new PedsFirstElisaRemider());
-		service.addRule("PedsRepeatDNAPCRReminder", new PedsRepeatDNAPCRReminder());
-		service.addRule("PedsUnder18moStartARTReminder", new PedsUnder18moStartARTReminder());
-		service.addRule("PedsStartARVPositivePCRELISAReminder", new PedsStartARVPositivePCRELISAReminder());
-		service.addRule("PedsOver5StartARVReminder", new PedsOver5StartARVReminder());
-		service.addRule("Peds6wk18moStartSeptrinReminder", new PedsOver18moStartSeptrinReminder());
-		service.addRule("PedsOver18moStartSeptrinReminder", new Peds6wk18moStartSeptrinReminder());
+		service.addRule("Baseline PCR Reminder", new BaselinePCRReminderRule());
+		service.addRule("Baseline CD4 Reminder", new BaselineCD4ReminderRule());
+		service.addRule("Baseline SGPT Reminder", new BaselineSGPTReminderRule());
+		service.addRule("Baseline Creatinine Reminder", new BaselineCreatinineReminderRule());
+		service.addRule("Baseline HGB Reminder", new BaselineHGBReminderRule());
+		service.addRule("Baseline CXR Reminder", new BaselineCXRReminderRule());
+		service.addRule("CD4 Based ARV Reminder", new CD4BasedARVReminderRule());
+		service.addRule("Positive PCR Elisa CD4 Reminder", new PositivePCRElisaCD4ReminderRule());
+		service.addRule("Positive PCR Elisa ARV Reminder", new PositivePCRElisaARVReminderRule());
+		service.addRule("First Elisa Remider", new FirstElisaRemiderRule());
+		service.addRule("Repeat PCR Reminder", new RepeatPCRReminderRule());
+		service.addRule("Child Start ARV Reminder", new ChildStartARVReminderRule());
+		service.addRule("Child Start Septrin Reminder", new ChildStartSeptrinReminderRule());
+		service.addRule("Baby Start ARV Reminder", new BabyStartARVReminderRule());
+		service.addRule("Baby Start Septrin Reminder", new BabyStartSeptrinReminderRule());
+		
+		service.addRule("Child Weight", new ChildWeightRule());
 	}
 }

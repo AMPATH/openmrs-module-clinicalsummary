@@ -73,10 +73,8 @@ public class HIVRxAdherenceRule implements Rule {
 		
 		SummaryService service = Context.getService(SummaryService.class);
 		
-		List<String> typeNames = Arrays.asList(TypeConstants.ADULT_INITIAL,
-		    TypeConstants.ADULT_RETURN, TypeConstants.ADULT_NONCLINICAL,
-		    TypeConstants.PEDS_INITIAL, TypeConstants.PEDS_RETURN,
-		    TypeConstants.PEDS_NONCLINICAL);
+		List<String> typeNames = Arrays.asList(TypeConstants.ADULT_INITIAL, TypeConstants.ADULT_RETURN,
+		    TypeConstants.PEDS_INITIAL, TypeConstants.PEDS_RETURN);
 		LogicCriteria encounterCriteria = service.parseToken(SummaryDataSource.ENCOUNTER_TYPE).in(typeNames);
 		
 		Result encounterResults = context.read(patient, service.getLogicDataSource("summary"), encounterCriteria);

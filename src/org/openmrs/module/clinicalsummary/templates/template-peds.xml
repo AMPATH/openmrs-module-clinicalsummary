@@ -110,7 +110,7 @@
       -->
     <results name="WT (KG)">
         #set($weightMap = {"evaluated.concept" : "WEIGHT (KG)"})
-        #set($weight = $functions.eval($patient, "Numeric Flowsheet", $weightMap))
+        #set($weight = $functions.eval($patient, "Child Weight", $weightMap))
         #foreach($element in $weight)
             <element>
             	<datetime>$!{functions.formatDate($element.getResultDate())}</datetime>
@@ -313,60 +313,114 @@
     </cxrs>
 
     <reminders>
-        #set($baseDNAPCRReminder = $!{functions.eval($patient, "PedsBaselineDNAPCRReminder", $summaryCache)})
-        #if(${baseDNAPCRReminder} && "$!{baseDNAPCRReminder}" != "")
-    	    <reminder>
-    	        $!{baseDNAPCRReminder}
+        #set($baselinePCRReminder = $!{functions.eval($patient, "Baseline PCR Reminder", $summaryCache)})
+        #if(${baselinePCRReminder} && "$!{baselinePCRReminder}" != "")
+    	    <reminder source="Baseline PCR Reminder">
+    	        $!{baselinePCRReminder}
     	    </reminder>
         #end
-        #set($positiveElisaReminder = $!{functions.eval($patient, "PedsCD4CheckPositivePCRELISAReminder", $summaryCache)})
-        #if(${positiveElisaReminder} && "$!{positiveElisaReminder}" != "")
-    	    <reminder>
-    	        $!{positiveElisaReminder}
+        #set($baselineCD4Reminder = $!{functions.eval($patient, "Baseline CD4 Reminder", $summaryCache)})
+        #if(${baselineCD4Reminder} && "$!{baselineCD4Reminder}" != "")
+    	    <reminder source="Baseline CD4 Reminder">
+    	        $!{baselineCD4Reminder}
     	    </reminder>
         #end
-        #set($pedsFirstElisaRemider = $!{functions.eval($patient, "PedsFirstElisaRemider", $summaryCache)})
-        #if(${pedsFirstElisaRemider} && "$!{pedsFirstElisaRemider}" != "")
-    	    <reminder>
-    	        $!{pedsFirstElisaRemider}
+        #set($baselineSGPTReminder = $!{functions.eval($patient, "Baseline SGPT Reminder", $summaryCache)})
+        #if(${baselineSGPTReminder} && "$!{baselineSGPTReminder}" != "")
+    	    <reminder source="Baseline SGPT Reminder">
+    	        $!{baselineSGPTReminder}
     	    </reminder>
         #end
-        #set($pedsRepeatDNAPCRReminder = $!{functions.eval($patient, "PedsRepeatDNAPCRReminder", $summaryCache)})
-        #if(${pedsRepeatDNAPCRReminder} && "$!{pedsRepeatDNAPCRReminder}" != "")
-    	    <reminder>
-    	        $!{pedsRepeatDNAPCRReminder}
+        #set($baselineCreatReminder = $!{functions.eval($patient, "Baseline Creatinine Reminder", $summaryCache)})
+        #if(${baselineCreatReminder} && "$!{baselineCreatReminder}" != "")
+    	    <reminder source="Baseline Creatinine Reminder">
+    	        $!{baselineCreatReminder}
     	    </reminder>
         #end
-        #set($pedsUnder18moStartARTReminder = $!{functions.eval($patient, "PedsUnder18moStartARTReminder", $summaryCache)})
-        #if(${pedsUnder18moStartARTReminder} && "$!{pedsUnder18moStartARTReminder}" != "")
-    	    <reminder>
-    	        $!{pedsUnder18moStartARTReminder}
+        #set($baselineHGBReminder = $!{functions.eval($patient, "Baseline HGB Reminder", $summaryCache)})
+        #if(${baselineHGBReminder} && "$!{baselineHGBReminder}" != "")
+    	    <reminder source="Baseline HGB Reminder">
+    	        $!{baselineHGBReminder}
     	    </reminder>
         #end
-        #set($pedsStartARVPositivePCRELISAReminder = $!{functions.eval($patient, "PedsStartARVPositivePCRELISAReminder", $summaryCache)})
-        #if(${pedsStartARVPositivePCRELISAReminder} && "$!{pedsStartARVPositivePCRELISAReminder}" != "")
-    	    <reminder>
-    	        $!{pedsStartARVPositivePCRELISAReminder}
+        #set($baselineCXRReminder = $!{functions.eval($patient, "Baseline CXR Reminder", $summaryCache)})
+        #if(${baselineCXRReminder} && "$!{baselineCXRReminder}" != "")
+    	    <reminder source="Baseline CXR Reminder">
+    	        $!{baselineCXRReminder}
     	    </reminder>
         #end
-        #set($pedsOver5StartARVReminder = $!{functions.eval($patient, "PedsOver5StartARVReminder", $summaryCache)})
-        #if(${pedsOver5StartARVReminder} && "$!{pedsOver5StartARVReminder}" != "")
-    	    <reminder>
-    	        $!{pedsOver5StartARVReminder}
+        #set($basedCD4ARVReminder = $!{functions.eval($patient, "CD4 Based ARV Reminder", $summaryCache)})
+        #if(${basedCD4ARVReminder} && "$!{basedCD4ARVReminder}" != "")
+    	    <reminder source="CD4 Based ARV Reminder">
+    	        $!{basedCD4ARVReminder}
     	    </reminder>
         #end
-        #set($peds6wk18moStartSeptrinReminder = $!{functions.eval($patient, "Peds6wk18moStartSeptrinReminder", $summaryCache)})
-        #if(${peds6wk18moStartSeptrinReminder} && "$!{peds6wk18moStartSeptrinReminder}" != "")
-    	    <reminder>
-    	        $!{peds6wk18moStartSeptrinReminder}
+        #set($positivePCRElisaCD4Reminder = $!{functions.eval($patient, "Positive PCR Elisa CD4 Reminder", $summaryCache)})
+        #if(${positivePCRElisaCD4Reminder} && "$!{positivePCRElisaCD4Reminder}" != "")
+    	    <reminder source="Positive PCR Elisa CD4 Reminder">
+    	        $!{positivePCRElisaCD4Reminder}
     	    </reminder>
         #end
-        #set($pedsOver18moStartSeptrinReminder = $!{functions.eval($patient, "PedsOver18moStartSeptrinReminder", $summaryCache)})
-        #if(${pedsOver18moStartSeptrinReminder} && "$!{pedsOver18moStartSeptrinReminder}" != "")
-    	    <reminder>
-    	        $!{pedsOver18moStartSeptrinReminder}
+        #set($positivePCRElisaARVReminder = $!{functions.eval($patient, "Positive PCR Elisa ARV Reminder", $summaryCache)})
+        #if(${positivePCRElisaARVReminder} && "$!{positivePCRElisaARVReminder}" != "")
+    	    <reminder source="Positive PCR Elisa ARV Reminder">
+    	        $!{positivePCRElisaARVReminder}
+    	    </reminder>
+        #end
+        #set($firstElisaRemider = $!{functions.eval($patient, "First Elisa Remider", $summaryCache)})
+        #if(${firstElisaRemider} && "$!{firstElisaRemider}" != "")
+    	    <reminder source="First Elisa Remider">
+    	        $!{firstElisaRemider}
+    	    </reminder>
+        #end
+        #set($repeatPCRReminder = $!{functions.eval($patient, "Repeat PCR Reminder", $summaryCache)})
+        #if(${repeatPCRReminder} && "$!{repeatPCRReminder}" != "")
+    	    <reminder source="Repeat PCR Reminder">
+    	        $!{repeatPCRReminder}
+    	    </reminder>
+        #end
+        #set($childStartARVReminder = $!{functions.eval($patient, "Child Start ARV Reminder", $summaryCache)})
+        #if(${childStartARVReminder} && "$!{childStartARVReminder}" != "")
+    	    <reminder source="Child Start ARV Reminder">
+    	        $!{childStartARVReminder}
+    	    </reminder>
+        #end
+        #set($childStartSeptrinReminder = $!{functions.eval($patient, "Child Start Septrin Reminder", $summaryCache)})
+        #if(${childStartSeptrinReminder} && "$!{childStartSeptrinReminder}" != "")
+    	    <reminder source="Child Start Septrin Reminder">
+    	        $!{childStartSeptrinReminder}
+    	    </reminder>
+        #end
+        #set($babyStartARVReminder = $!{functions.eval($patient, "Baby Start ARV Reminder", $summaryCache)})
+        #if(${babyStartARVReminder} && "$!{babyStartARVReminder}" != "")
+    	    <reminder source="Baby Start ARV Reminder">
+    	        $!{babyStartARVReminder}
+    	    </reminder>
+        #end
+        #set($babyStartSeptrinReminder = $!{functions.eval($patient, "Baby Start Septrin Reminder", $summaryCache)})
+        #if(${babyStartSeptrinReminder} && "$!{babyStartSeptrinReminder}" != "")
+    	    <reminder source="Baby Start Septrin Reminder">
+    	        $!{babyStartSeptrinReminder}
     	    </reminder>
         #end
     </reminders>
+    
+    <sequences>
+    	<source name="Baseline PCR Reminder">1</source>
+    	<source name="Baseline CD4 Reminder">2</source>
+    	<source name="Baseline SGPT Reminder">3</source>
+    	<source name="Baseline Creatinine Reminder">4</source>
+    	<source name="Baseline HGB Reminder">5</source>
+    	<source name="Baseline CXR Reminder">6</source>
+    	<source name="CD4 Based ARV Reminder">7</source>
+    	<source name="Positive PCR Elisa CD4 Reminder">8</source>
+    	<source name="Positive PCR Elisa ARV Reminder">9</source>
+    	<source name="First Elisa Remider">10</source>
+    	<source name="Repeat PCR Reminder">11</source>
+    	<source name="Child Start ARV Reminder">12</source>
+    	<source name="Child Start Septrin Reminder">13</source>
+    	<source name="Baby Start ARV Reminder">14</source>
+    	<source name="Baby Start Septrin Reminder">15</source>
+    </sequences>
 
 </clinicalSummary>

@@ -21,6 +21,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -35,6 +36,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
 import org.openmrs.Location;
+import org.openmrs.Patient;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.clinicalsummary.SummaryConstants;
@@ -89,73 +91,51 @@ public class PrintSummariesFormController {
 			try {
 				httpSession.removeAttribute(WebConstants.OPENMRS_ERROR_ATTR);
 				
+				SummaryService summaryService = Context.getService(SummaryService.class);
+				SummaryTemplate template = summaryService.getTemplate(NumberUtils.toInt(templateId[0], -1));
+				
+				List<SummaryIndex> summaryIndexs = new ArrayList<SummaryIndex>();
+				if (StringUtils.isNotBlank(patientIdentifiers)) {
+					String[] patientIdentifier = StringUtils.split(patientIdentifiers);
+					PatientSetService patientSetService = Context.getPatientSetService();
+					// TODO: buggy code from openmrs
+					Cohort cohort = patientSetService.convertPatientIdentifier(Arrays.asList(patientIdentifier));
+					List<Patient> patients = patientSetService.getPatients(cohort.getMemberIds());
+					summaryIndexs = summaryService.getIndexes(patients);
+				} else if (StringUtils.isNotBlank(locationId)) {
+					Location location = Context.getLocationService().getLocation(NumberUtils.toInt(locationId, -1));
+					Date startReturnDate = WebUtils.parse(startReturn, new Date());
+					Date endReturnDate = WebUtils.parse(endReturn, startReturnDate);
+					summaryIndexs = summaryService.getIndexes(location, template, startReturnDate, endReturnDate);
+				}
+				
 				File folder = OpenmrsUtil.getDirectoryInApplicationDataDirectory(SummaryConstants.GENERATED_PDF_LOCATION);
 				
 				// create a temporary file that will hold all copied pdf file
 				File summaryCollectionsFile = File.createTempFile("Summary", PDF_EXTENSION);
 				summaryCollectionsFile.deleteOnExit();
 				
-				SummaryService summaryService = Context.getService(SummaryService.class);
-				
 				FileOutputStream outputStream = new FileOutputStream(summaryCollectionsFile);
 				Document document = new Document();
 				PdfCopy copy = new PdfCopy(document, outputStream);
 				document.open();
 				
-				if (StringUtils.isNotBlank(patientIdentifiers)) {
+				PdfReader reader = null;
+				for (SummaryIndex summaryIndex : summaryIndexs) {
 					
-					String[] patientIdentifier = StringUtils.split(patientIdentifiers);
-					String template = StringUtils.defaultString(templateId[0], "*");
-					PatientSetService patientSetService = Context.getPatientSetService();
-					// TODO: buggy code from openmrs
-					Cohort cohort = patientSetService.convertPatientIdentifier(Arrays.asList(patientIdentifier));
+					Integer patientId = summaryIndex.getPatient().getPatientId();
+					File file = new File(folder, patientId + "_" + template.getTemplateId() + PDF_EXTENSION);
+					// if the patient is not generated yet, then just skip him ...
+					if (!file.exists())
+						continue;
 					
-					PdfReader reader = null;
-					for (Integer patientId : cohort.getMemberIds()) {
-						
-						File file = new File(folder, patientId + "_" + template + PDF_EXTENSION);
-						// if the patient is not generated yet, then just skip him ...
-						if (!file.exists())
-							continue;
-						
-						try {
-							// when one pdf fail, then we just need to skip that file
-							// instead of failing for the whole pdfs collection
-							reader = new PdfReader(file.getAbsolutePath());
-							copy.addPage(copy.getImportedPage(reader, 1));
-						}
-						catch (Exception e) {
-							log.error("Failed to add summary for patient: " + patientId, e);
-						}
-					}
-				} else if (StringUtils.isNotBlank(locationId)) {
-					
-					SummaryTemplate template = summaryService.getTemplate(NumberUtils.toInt(templateId[0], -1));
-					Location location = Context.getLocationService().getLocation(NumberUtils.toInt(locationId, -1));
-					
-					Date startReturnDate = WebUtils.parse(startReturn, new Date());
-					Date endReturnDate = WebUtils.parse(endReturn, startReturnDate);
-					
-					List<SummaryIndex> summaryIndexs = summaryService.getIndexes(location, template, startReturnDate, endReturnDate);
-					
-					PdfReader reader = null;
-					for (SummaryIndex summaryIndex : summaryIndexs) {
-						
-						Integer patientId = summaryIndex.getPatient().getPatientId();
-						File file = new File(folder, patientId + "_" + template.getTemplateId() + PDF_EXTENSION);
-						// if the patient is not generated yet, then just skip him ...
-						if (!file.exists())
-							continue;
-						
-						// when one pdf fail, then we just need to skip that file
-						// instead of failing for the whole pdfs collection
-						try {
-							reader = new PdfReader(file.getAbsolutePath());
-							copy.addPage(copy.getImportedPage(reader, 1));
-						}
-						catch (Exception e) {
-							log.error("Failed to add summary for patient: " + patientId, e);
-						}
+					// when one pdf fail, then we just need to skip that file
+					// instead of failing for the whole pdfs collection
+					try {
+						reader = new PdfReader(file.getAbsolutePath());
+						copy.addPage(copy.getImportedPage(reader, 1));
+					} catch (Exception e) {
+						log.error("Failed to add summary for patient: " + patientId, e);
 					}
 				}
 				
