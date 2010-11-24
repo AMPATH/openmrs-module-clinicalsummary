@@ -13,13 +13,11 @@
  */
 package org.openmrs.module.clinicalsummary.rule.reminder.peds;
 
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
@@ -33,7 +31,6 @@ import org.openmrs.logic.result.Result;
 import org.openmrs.logic.result.Result.Datatype;
 import org.openmrs.logic.rule.RuleParameterInfo;
 import org.openmrs.module.clinicalsummary.SummaryService;
-import org.openmrs.module.clinicalsummary.WeightAgeStandard;
 import org.openmrs.module.clinicalsummary.cache.SummaryDataSource;
 import org.openmrs.module.clinicalsummary.concept.ConceptRegistry;
 import org.openmrs.module.clinicalsummary.concept.StandardConceptConstants;
@@ -65,16 +62,18 @@ public class MalnutritionReferralReminderRule implements Rule {
 		LogicCriteria encounterCriteria = service.parseToken(SummaryDataSource.ENCOUNTER_TYPE).in(Collections.emptyList());
 		
 		Result obsResults = context.read(patient, service.getLogicDataSource("summary"), conceptCriteria.and(encounterCriteria));
-		if (obsResults.isEmpty()) {
+		if (!obsResults.isEmpty()) {
 			Result latestWeightResult = obsResults.get(0);
-			Double weight = latestWeightResult.toNumber();
-			Double zScore = calculateZScore(patient, weight);
-			if (zScore >= -3 && zScore < -1.5) {
+			Double zScore = ScoreUtils.calculateZScore(patient, latestWeightResult.getResultDate(), latestWeightResult.toNumber());
+			
+			if (log.isDebugEnabled())
+				log.debug("Patient: " + patient.getPatientId() + " z score: " + zScore);
+			
+			if (zScore != null && zScore >= -3 && zScore < -1.5) {
 				Result earliestResult = null;
-				for (Result result : latestWeightResult) {
-					weight = result.toNumber();
-					zScore = calculateZScore(patient, weight);
-					if (zScore >= -3 && zScore < -1.5) {
+				for (Result result : obsResults) {
+					zScore = ScoreUtils.calculateZScore(patient, result.getResultDate(), result.toNumber());
+					if (zScore != null && zScore >= -3 && zScore < -1.5) {
 						earliestResult = result;
 						continue;
 					}
@@ -83,6 +82,9 @@ public class MalnutritionReferralReminderRule implements Rule {
 				}
 				
 				if (earliestResult != null) {
+
+					if (log.isDebugEnabled())
+						log.debug("Patient: " + patient.getPatientId() + " earliest low z score on: " + Context.getDateFormat().format(earliestResult.getResultDate()));
 					
 					Date earliestResultDate = earliestResult.getResultDate();
 					
@@ -94,8 +96,14 @@ public class MalnutritionReferralReminderRule implements Rule {
 					boolean referred = false;
 					for (Result result : referralResults) {
 						Concept codedValue = result.toConcept();
+						
 						if (earliestResultDate.before(result.getResultDate()) && OpenmrsUtil.nullSafeEquals(nutritionSupportConcept, codedValue))
 							referred = true;
+
+							if (log.isDebugEnabled()) {
+								log.debug("Patient: " + patient.getPatientId() + " referred date: " + Context.getDateFormat().format(result.getResultDate()));
+								log.debug("Patient: " + patient.getPatientId() + " referred date: " + result.toString());
+							}
 					}
 					
 					if (!referred)
@@ -105,67 +113,6 @@ public class MalnutritionReferralReminderRule implements Rule {
 		}
 		
 		return reminder;
-	}
-	
-	private Double calculateZScore(Patient patient, Double weight) {
-		
-		SummaryService service = Context.getService(SummaryService.class);
-		
-		Date birthDate = patient.getBirthdate();
-		
-		Calendar birthCalendar = Calendar.getInstance();
-		birthCalendar.setTime(birthDate);
-		birthCalendar.add(Calendar.WEEK_OF_YEAR, 13);
-		
-		Calendar todayCalendar = Calendar.getInstance();
-		
-		// today is after week 13, then we need to calculate the age in month
-		Double zScore = 0D;
-		String gender = (StringUtils.equalsIgnoreCase("male", patient.getGender()) || StringUtils.equalsIgnoreCase("M",
-		    patient.getGender())) ? "Male" : "Female";
-		if (todayCalendar.after(birthCalendar)) {
-			birthCalendar.setTime(birthDate);
-			
-			int birthYear = birthCalendar.get(Calendar.YEAR);
-			int todayYear = todayCalendar.get(Calendar.YEAR);
-			
-			int ageInYear = todayYear - birthYear;
-			
-			int birthMonth = birthCalendar.get(Calendar.MONTH);
-			int todayMonth = todayCalendar.get(Calendar.MONTH);
-			
-			int age = todayMonth - birthMonth;
-			if (age < 0) {
-				age = birthMonth + 1;
-				ageInYear--;
-			}
-			age = age + (ageInYear * 12);
-			
-			if (log.isDebugEnabled())
-				log.debug("Patient: " + patient.getPatientId() + ", age in week: " + age);
-			
-			WeightAgeStandard standard = service.getWeightAgeStandard(age, "Month", gender);
-			if (standard != null)
-				zScore = ScoreUtils.zScore(standard.getlValue(), standard.getmValue(), standard.getsValue(), weight);
-		} else {
-			birthCalendar.setTime(birthDate);
-			
-			long diff = todayCalendar.getTimeInMillis() - birthCalendar.getTimeInMillis();
-			
-			long week = 60 * 60 * 24 * 7;
-			int age = (int) (diff / week);
-			// if the mod if more than half of the week, then round it up
-			if (diff % week > week / 2)
-				age++;
-			
-			if (log.isDebugEnabled())
-				log.debug("Patient: " + patient.getPatientId() + ", age in week: " + age);
-			
-			WeightAgeStandard standard = service.getWeightAgeStandard(age, "Week", gender);
-			if (standard != null)
-				zScore = ScoreUtils.zScore(standard.getlValue(), standard.getmValue(), standard.getsValue(), weight);
-		}
-		return zScore;
 	}
 	
 	/**

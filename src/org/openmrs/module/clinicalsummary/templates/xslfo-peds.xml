@@ -92,11 +92,12 @@
 								<fo:table-cell text-align="center">
 									<fo:block font-weight="bold" font-style="italic" font-size="8pt">
 										<xsl:variable name="sequence" select="sequences/source" />
+										<xsl:variable name="total" select="count(reminders/reminder)" />
 										<xsl:for-each select="reminders/reminder">
 											<xsl:variable name="source" select="@source" />
 											<xsl:value-of select="$sequence[@name=$source]" />
-											<xsl:if test="count($sequence[@name=$source]) > position()">
-												<xsl:text>, </xsl:text>
+											<xsl:if test="position() &lt; $total">
+												<xsl:text>,</xsl:text>
 											</xsl:if>
 										</xsl:for-each>
 									</fo:block>

@@ -403,6 +403,18 @@
     	        $!{babyStartSeptrinReminder}
     	    </reminder>
         #end
+        #set($malnutritionHospitalizeReminder = $!{functions.eval($patient, "Malnutrition Hospitalize Reminder", $summaryCache)})
+        #if(${malnutritionHospitalizeReminder} && "$!{malnutritionHospitalizeReminder}" != "")
+    	    <reminder source="Malnutrition Hospitalize Reminder">
+    	        $!{malnutritionHospitalizeReminder}
+    	    </reminder>
+        #end
+        #set($malnutritionReferralReminder = $!{functions.eval($patient, "Malnutrition Referral Reminder", $summaryCache)})
+        #if(${malnutritionReferralReminder} && "$!{malnutritionReferralReminder}" != "")
+    	    <reminder source="Malnutrition Referral Reminder">
+    	        $!{malnutritionReferralReminder}
+    	    </reminder>
+        #end
     </reminders>
     
     <sequences>
@@ -421,6 +433,8 @@
     	<source name="Child Start Septrin Reminder">13</source>
     	<source name="Baby Start ARV Reminder">14</source>
     	<source name="Baby Start Septrin Reminder">15</source>
+    	<source name="Malnutrition Hospitalize Reminder">16</source>
+    	<source name="Malnutrition Referral Reminder">17</source>
     </sequences>
 
 </clinicalSummary>

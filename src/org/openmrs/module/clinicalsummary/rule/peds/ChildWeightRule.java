@@ -14,9 +14,7 @@
 package org.openmrs.module.clinicalsummary.rule.peds;
 
 import java.text.DecimalFormat;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
@@ -33,7 +31,6 @@ import org.openmrs.logic.result.Result;
 import org.openmrs.logic.result.Result.Datatype;
 import org.openmrs.logic.rule.RuleParameterInfo;
 import org.openmrs.module.clinicalsummary.SummaryService;
-import org.openmrs.module.clinicalsummary.WeightAgeStandard;
 import org.openmrs.module.clinicalsummary.cache.SummaryDataSource;
 import org.openmrs.module.clinicalsummary.rule.RuleConstants;
 import org.openmrs.module.clinicalsummary.rule.RuleUtils;
@@ -73,81 +70,20 @@ public class ChildWeightRule implements Rule {
 			Result numericResult = new Result();
 			numericResult.setResultDate(numericObsResult.getResultDate());
 			numericResult.setValueNumeric(numericObsResult.toNumber());
-			DecimalFormat twoDecimal = new DecimalFormat("#.##");
-			numericResult.setValueText(twoDecimal.format(calculatePercentile(patient, numericObsResult.getResultDate(), numericObsResult.toNumber())));
+			
+			String valueText = StringUtils.EMPTY;
+			DecimalFormat twoDecimalFormat = new DecimalFormat("#.##");
+			Double zScore = ScoreUtils.calculateZScore(patient, numericObsResult.getResultDate(), numericObsResult.toNumber());
+			Double percentile = ScoreUtils.calculatePercentile(patient, numericObsResult.getResultDate(), numericObsResult.toNumber());
+			if (zScore != null)
+				valueText = twoDecimalFormat.format(percentile) + " / " + twoDecimalFormat.format(zScore) + " / P" + ScoreUtils.searchZScore(zScore);
+			numericResult.setValueText(valueText);
 			result.add(numericResult);
 		}
 		
 		Collections.reverse(result);
 		
 		return result;
-	}
-	
-	private Double calculatePercentile(Patient patient, Date asOfDate, Double weight) {
-		
-		SummaryService service = Context.getService(SummaryService.class);
-		
-		Date birthDate = patient.getBirthdate();
-		
-		Calendar birthCalendar = Calendar.getInstance();
-		birthCalendar.setTime(birthDate);
-		birthCalendar.add(Calendar.WEEK_OF_YEAR, 13);
-		
-		Calendar todayCalendar = Calendar.getInstance();
-		todayCalendar.setTime(asOfDate);
-		
-		// today is after week 13, then we need to calculate the age in month
-		Double percentile = 0D;
-		String gender = (StringUtils.equalsIgnoreCase("male", patient.getGender()) || StringUtils.equalsIgnoreCase("M",
-		    patient.getGender())) ? "Male" : "Female";
-		if (todayCalendar.after(birthCalendar)) {
-			birthCalendar.setTime(birthDate);
-			
-			int birthYear = birthCalendar.get(Calendar.YEAR);
-			int todayYear = todayCalendar.get(Calendar.YEAR);
-			
-			int ageInYear = todayYear - birthYear;
-			
-			int birthMonth = birthCalendar.get(Calendar.MONTH);
-			int todayMonth = todayCalendar.get(Calendar.MONTH);
-			
-			int ageInMonth = todayMonth - birthMonth;
-			if (ageInMonth < 0) {
-				ageInMonth = birthMonth + 1;
-				ageInYear--;
-			}
-			ageInMonth = ageInMonth + (ageInYear * 12);
-			
-			if (log.isDebugEnabled())
-				log.debug("Patient: " + patient.getPatientId() + ", age in month: " + ageInMonth);
-			
-			WeightAgeStandard standard = service.getWeightAgeStandard(ageInMonth, "Month", gender);
-			if (standard != null) {
-				Double zScore = ScoreUtils.zScore(standard.getlValue(), standard.getmValue(), standard.getsValue(), weight);
-				percentile = ScoreUtils.percentile(standard.getlValue(), standard.getmValue(), standard.getsValue(), zScore);
-			}
-		} else {
-			birthCalendar.setTime(birthDate);
-			
-			long diff = todayCalendar.getTimeInMillis() - birthCalendar.getTimeInMillis();
-			
-			long week = 60 * 60 * 24 * 7;
-			int ageInWeek = (int) (diff / week);
-			// if the mod if more than half of the week, then round it up
-			if (diff % week > week / 2)
-				ageInWeek++;
-			
-			if (log.isDebugEnabled())
-				log.debug("Patient: " + patient.getPatientId() + ", age in week: " + ageInWeek);
-			
-			WeightAgeStandard standard = service.getWeightAgeStandard(ageInWeek, "Week", gender);
-			if (standard != null) {
-				Double zScore = ScoreUtils.zScore(standard.getlValue(), standard.getmValue(), standard.getsValue(), weight);
-				percentile = ScoreUtils.percentile(standard.getlValue(), standard.getmValue(), standard.getsValue(), zScore);
-			}
-		}
-		
-		return percentile;
 	}
 	
 	/**

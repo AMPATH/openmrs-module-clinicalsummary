@@ -70,6 +70,8 @@ import org.openmrs.module.clinicalsummary.rule.reminder.peds.BaselineSGPTReminde
 import org.openmrs.module.clinicalsummary.rule.reminder.peds.ChildStartARVReminderRule;
 import org.openmrs.module.clinicalsummary.rule.reminder.peds.ChildStartSeptrinReminderRule;
 import org.openmrs.module.clinicalsummary.rule.reminder.peds.FirstElisaRemiderRule;
+import org.openmrs.module.clinicalsummary.rule.reminder.peds.MalnutritionHospitalizeReminderRule;
+import org.openmrs.module.clinicalsummary.rule.reminder.peds.MalnutritionReferralReminderRule;
 import org.openmrs.module.clinicalsummary.rule.reminder.peds.PositivePCRElisaARVReminderRule;
 import org.openmrs.module.clinicalsummary.rule.reminder.peds.PositivePCRElisaCD4ReminderRule;
 import org.openmrs.module.clinicalsummary.rule.reminder.peds.RepeatPCRReminderRule;
@@ -149,6 +151,8 @@ public class GeneratorUtilities {
 		service.addRule("Child Start Septrin Reminder", new ChildStartSeptrinReminderRule());
 		service.addRule("Baby Start ARV Reminder", new BabyStartARVReminderRule());
 		service.addRule("Baby Start Septrin Reminder", new BabyStartSeptrinReminderRule());
+		service.addRule("Malnutrition Hospitalize Reminder", new MalnutritionHospitalizeReminderRule());
+		service.addRule("Malnutrition Referral Reminder", new MalnutritionReferralReminderRule());
 		
 		service.addRule("Child Weight", new ChildWeightRule());
 	}

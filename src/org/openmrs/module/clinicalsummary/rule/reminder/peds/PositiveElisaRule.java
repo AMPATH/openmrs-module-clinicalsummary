@@ -58,28 +58,24 @@ public class PositiveElisaRule implements Rule {
 		birthdateCalendar.add(Calendar.MONTH, 18);
 		Date referenceDate = birthdateCalendar.getTime();
 		
-		Date now = new Date();
-		// only process if the patient is at least 18 months 
-		if (referenceDate.before(now)) {
-			Concept positiveConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.POSITIVE);
-			
-			SummaryService service = Context.getService(SummaryService.class);
-			
-			LogicCriteria conceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.ELISA_NAME);
-			LogicCriteria encounterCriteria = service.parseToken(SummaryDataSource.ENCOUNTER_TYPE).in(Collections.emptyList());
-			LogicCriteria criteria = conceptCriteria.and(encounterCriteria);
-			
-			Result obsResult = context.read(patient, service.getLogicDataSource("summary"), criteria);
-			
-			if (log.isDebugEnabled())
-				log.debug("Patient: " + patient.getPatientId() + ", elisa result: " + obsResult);
-			
-			// check if we have negative or positive
-			for (Result result : obsResult)
-				if (result.getResultDate().after(referenceDate)
-				        && (OpenmrsUtil.nullSafeEquals(positiveConcept, result.toConcept())))
-					return new Result(true);
-		}
+		Concept positiveConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.POSITIVE);
+		
+		SummaryService service = Context.getService(SummaryService.class);
+		
+		LogicCriteria conceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.ELISA_NAME);
+		LogicCriteria encounterCriteria = service.parseToken(SummaryDataSource.ENCOUNTER_TYPE).in(Collections.emptyList());
+		LogicCriteria criteria = conceptCriteria.and(encounterCriteria);
+		
+		Result obsResult = context.read(patient, service.getLogicDataSource("summary"), criteria);
+		
+		if (log.isDebugEnabled())
+			log.debug("Patient: " + patient.getPatientId() + ", elisa result: " + obsResult);
+		
+		// check if we have negative or positive
+		for (Result result : obsResult)
+			if (result.getResultDate().after(referenceDate)
+			        && (OpenmrsUtil.nullSafeEquals(positiveConcept, result.toConcept())))
+				return new Result(true);
 		
 		return new Result(false);
 	}
