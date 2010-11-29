@@ -44,8 +44,6 @@ import org.openmrs.module.clinicalsummary.rule.anc.LatestSingleNumericRule;
 import org.openmrs.module.clinicalsummary.rule.peds.ARVSideEffectRule;
 import org.openmrs.module.clinicalsummary.rule.peds.AgeCompleteRule;
 import org.openmrs.module.clinicalsummary.rule.peds.ChildWeightRule;
-import org.openmrs.module.clinicalsummary.rule.peds.DNAPCRRule;
-import org.openmrs.module.clinicalsummary.rule.peds.ELISARule;
 import org.openmrs.module.clinicalsummary.rule.peds.HIVTestStatusRule;
 import org.openmrs.module.clinicalsummary.rule.peds.ImmunizationRecordRule;
 import org.openmrs.module.clinicalsummary.rule.peds.LastVisitARVPlanRule;
@@ -109,8 +107,6 @@ public class GeneratorUtilities {
 		
 		service.addRule("Age Complete", new AgeCompleteRule());
 		service.addRule("ARV Side Effect", new ARVSideEffectRule());
-		service.addRule("DNA PCR", new DNAPCRRule());
-		service.addRule("Elisa", new ELISARule());
 		service.addRule("HIV Test Status", new HIVTestStatusRule());
 		service.addRule("Last Visit ARV Plan", new LastVisitARVPlanRule());
 		service.addRule("Immunization", new ImmunizationRecordRule());

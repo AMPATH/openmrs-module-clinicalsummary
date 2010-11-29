@@ -62,7 +62,7 @@ public class ChildWeightRule implements Rule {
 		Result consolidatedResults = RuleUtils.consolidate(obsResults);
 		
 		if (log.isDebugEnabled())
-			log.debug("Started arv side effect observations for patient: " + patient.getPatientId() + " is: " + obsResults);
+			log.debug("Child weight: " + patient.getPatientId() + " is: " + obsResults);
 		
 		Result numericObsResults = RuleUtils.sliceResult(consolidatedResults, 5);
 		
@@ -74,9 +74,8 @@ public class ChildWeightRule implements Rule {
 			String valueText = StringUtils.EMPTY;
 			DecimalFormat twoDecimalFormat = new DecimalFormat("#.##");
 			Double zScore = ScoreUtils.calculateZScore(patient, numericObsResult.getResultDate(), numericObsResult.toNumber());
-			Double percentile = ScoreUtils.calculatePercentile(patient, numericObsResult.getResultDate(), numericObsResult.toNumber());
 			if (zScore != null)
-				valueText = twoDecimalFormat.format(percentile) + " / " + twoDecimalFormat.format(zScore) + " / P" + ScoreUtils.searchZScore(zScore);
+				valueText = "z = " + twoDecimalFormat.format(zScore) + " / p = " + ScoreUtils.searchZScore(zScore) + "%";
 			numericResult.setValueText(valueText);
 			result.add(numericResult);
 		}

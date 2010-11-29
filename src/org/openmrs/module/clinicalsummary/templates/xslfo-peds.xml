@@ -77,9 +77,9 @@
 				<!-- Begin Page Content -->
 				<fo:flow flow-name="xsl-region-body" font-family="Helvetica" font-size="10pt">
 					<fo:table table-layout="fixed" width="100%">
-						<fo:table-column column-width="20%" />
-						<fo:table-column column-width="20%" />
-						<fo:table-column column-width="20%" />
+						<fo:table-column column-width="25%" />
+						<fo:table-column column-width="25%" />
+						<fo:table-column column-width="10%" />
 						<fo:table-column column-width="20%" />
 						<fo:table-column column-width="20%" />
 						<fo:table-body>
@@ -109,7 +109,7 @@
 								</fo:table-cell>
 							</fo:table-row>
 							<fo:table-row>
-								<fo:table-cell number-columns-spanned="2">
+								<fo:table-cell number-columns-spanned="3">
 									<fo:block font-size="10pt" space-after="6pt">
 										<xsl:choose>
 											<xsl:when test="gender = 'M'">
@@ -157,7 +157,7 @@
 								</fo:table-cell>
 							</fo:table-row>
 							<fo:table-row>
-								<fo:table-cell number-columns-spanned="2">
+								<fo:table-cell number-columns-spanned="3">
 									<fo:block>
 										<fo:inline>
 											<xsl:attribute name="font-weight">bold</xsl:attribute>

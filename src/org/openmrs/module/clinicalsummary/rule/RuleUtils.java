@@ -13,6 +13,10 @@
  */
 package org.openmrs.module.clinicalsummary.rule;
 
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.logic.result.Result;
 import org.openmrs.util.OpenmrsUtil;
 
@@ -20,6 +24,8 @@ import org.openmrs.util.OpenmrsUtil;
  *
  */
 public class RuleUtils {
+	
+	private static final Log log = LogFactory.getLog(RuleUtils.class);
 	
 	/**
 	 * This class will never gets instantiated
@@ -82,9 +88,24 @@ public class RuleUtils {
 			for (int i = 1; i < obsResults.size(); i++) {
 				Result currentResult = obsResults.get(i);
 				// skip when they are the same result :)
-				if (prevResult.getResultDate().equals(currentResult.getResultDate()))
-					if (prevResult.toNumber().equals(currentResult.toNumber()))
+				if (log.isDebugEnabled())
+					log.debug("current: " + currentResult.getResultDate() + " prev: " + prevResult.getResultDate());
+				
+				if (DateUtils.isSameDay(prevResult.getResultDate(), currentResult.getResultDate())
+				        && ObjectUtils.equals(prevResult.getDatatype(), currentResult.getDatatype())) {
+					
+					if (log.isDebugEnabled())
+						log.debug("prev number: " + prevResult.toNumber() + ", current number: " + currentResult.toNumber());
+					
+					if (ObjectUtils.equals(prevResult.toNumber(), currentResult.toNumber()))
 						continue;
+					
+					if (log.isDebugEnabled())
+						log.debug("prev concept: " + prevResult.toConcept() + ", current concept: " + currentResult.toConcept());
+					
+					if (ObjectUtils.equals(prevResult.toConcept(), currentResult.toConcept()))
+						continue;
+				}
 				consolidatedResult.add(prevResult);
 				prevResult = currentResult;
 			}

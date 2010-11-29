@@ -157,6 +157,9 @@ public class ScoreUtils {
 		        || StringUtils.equalsIgnoreCase(FEMALE_SHORT_STRING, patient.getGender()))
 			gender = FEMALE_SHORT_STRING;
 		
+		if (log.isDebugEnabled())
+			log.debug("Patient: " + patient.getPatientId() + ", gender: " + gender);
+		
 		// only do processing for kids younger than 5 years old
 		if (fiveYars.after(todayCalendar.getTime()))
 			
@@ -205,7 +208,7 @@ public class ScoreUtils {
 				
 				long diff = todayCalendar.getTimeInMillis() - birthCalendar.getTimeInMillis();
 				long week = 1000 * 60 * 60 * 24 * 7;
-				int ageInWeek = (int) (diff / week);
+				long ageInWeek = diff / week;
 				// TODO: if the mod if more than half of the week, then round it up
 				// or should we use double casting here and do Math.round()
 				if (diff % week > week / 2)
@@ -214,10 +217,13 @@ public class ScoreUtils {
 				if (log.isDebugEnabled())
 					log.debug("Patient: " + patient.getPatientId() + ", age in week: " + ageInWeek);
 				
-				WeightAgeStandard standard = service.getWeightAgeStandard(ageInWeek, "Week", gender);
+				WeightAgeStandard standard = service.getWeightAgeStandard((int) ageInWeek, "Week", gender);
 				if (standard != null)
 					zScore = ScoreUtils.zScore(standard.getlValue(), standard.getmValue(), standard.getsValue(), weight);
 			}
+		
+		if (log.isDebugEnabled())
+			log.debug("Calculated zscore for patient: " + patient.getPatientId() + ", zscore: " + zScore);
 		
 		return zScore;
 	}
@@ -332,6 +338,9 @@ public class ScoreUtils {
 					    zScore);
 				}
 			}
+		
+		if (log.isDebugEnabled())
+			log.debug("Calculated percentile for patient: " + patient.getPatientId() + ", percentile: " + percentile);
 		
 		return percentile;
 	}

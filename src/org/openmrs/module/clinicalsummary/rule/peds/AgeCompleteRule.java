@@ -28,18 +28,16 @@ import org.openmrs.logic.result.Result;
 import org.openmrs.logic.result.Result.Datatype;
 import org.openmrs.logic.rule.RuleParameterInfo;
 
-
 /**
  *
  */
 public class AgeCompleteRule implements Rule {
 	
-	private static final int EPOCH_YEAR = 1970;
-	
 	private static final Log log = LogFactory.getLog(AgeCompleteRule.class);
 	
 	/**
-	 * @see org.openmrs.logic.Rule#eval(org.openmrs.logic.LogicContext, org.openmrs.Patient, java.util.Map)
+	 * @see org.openmrs.logic.Rule#eval(org.openmrs.logic.LogicContext, org.openmrs.Patient,
+	 *      java.util.Map)
 	 */
 	public Result eval(LogicContext context, Patient patient, Map<String, Object> parameters) throws LogicException {
 		
@@ -52,27 +50,44 @@ public class AgeCompleteRule implements Rule {
 		Result ageResult = new Result();
 		
 		if (birthdate != null) {
-			Calendar today = Calendar.getInstance();
+			Calendar todayCalendar = Calendar.getInstance();
 			
-			Calendar birthday = Calendar.getInstance();
-			birthday.setTime(birthdate);
+			Calendar birthCalendar = Calendar.getInstance();
+			birthCalendar.setTime(birthdate);
 			
-			long todayMillis = today.getTimeInMillis();
-			long birthdayMillis = birthday.getTimeInMillis();
+			int birthYear = birthCalendar.get(Calendar.YEAR);
+			int todayYear = todayCalendar.get(Calendar.YEAR);
 			
-			long diff = todayMillis - birthdayMillis;
-			if (log.isDebugEnabled())
-				log.debug("Time different between birthdate and today: " + diff);
+			int ageInYear = todayYear - birthYear;
 			
-			Calendar different = Calendar.getInstance();
-			different.setTimeInMillis(diff);
+			int birthMonth = birthCalendar.get(Calendar.MONTH);
+			int todayMonth = todayCalendar.get(Calendar.MONTH);
 			
-			int year = different.get(Calendar.YEAR) - EPOCH_YEAR;
-			if (year != 0)
-				ageResult.add(new Result(year + " Years"));
-			int month = different.get(Calendar.MONTH);
-			if (month != 0)
-				ageResult.add(new Result(month + " Months"));
+			int ageInMonth = todayMonth - birthMonth;
+			if (ageInMonth < 0) {
+				// birth month is bigger, the decrease the year
+				ageInYear--;
+				ageInMonth = 12 - birthMonth + todayMonth;
+			}
+			
+			int birthDay = birthCalendar.get(Calendar.DATE);
+			int todayDay = todayCalendar.get(Calendar.DATE);
+			
+			int ageInDay = todayDay - birthDay;
+			if (ageInDay < 0) {
+				ageInMonth--;
+				// decrease the month, this way we get the previous month
+				birthCalendar.add(Calendar.MONTH, -1);
+				ageInDay = birthCalendar.getActualMaximum(Calendar.DATE) - birthDay + todayDay;
+				
+				if (ageInDay > birthCalendar.getActualMaximum(Calendar.DATE) / 2)
+					ageInMonth++;
+			}
+			
+			if (ageInYear != 0)
+				ageResult.add(new Result(ageInYear + " Years"));
+			if (ageInMonth != 0)
+				ageResult.add(new Result(ageInMonth + " Months"));
 			
 		}
 		

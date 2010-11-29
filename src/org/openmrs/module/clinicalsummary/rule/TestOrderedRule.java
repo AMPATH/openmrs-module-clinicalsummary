@@ -57,12 +57,12 @@ public class TestOrderedRule implements Rule {
 		
 		if (!parameters.containsKey(RuleConstants.INCLUDED_CODED_VALUES)
 		        && !parameters.containsKey(RuleConstants.EVALUATED_CONCEPT))
-			new Result();
+			return new Result();
 		
 		String conceptName = String.valueOf(parameters.get(RuleConstants.EVALUATED_CONCEPT));
 		Concept concept = ConceptRegistry.getCachedConcept(conceptName);
 		if (concept == null)
-			new Result();
+			return new Result();
 
 		String included = StringUtils.defaultIfEmpty((String) parameters.get(RuleConstants.INCLUDED_CODED_VALUES), StringUtils.EMPTY);
 		String[] includedConceptNames = StringUtils.split(included, ";");

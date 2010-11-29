@@ -58,7 +58,7 @@ public class NumericFlowsheetRule implements Rule {
 		Result consolidatedResults = RuleUtils.consolidate(obsResults);
 		
 		if (log.isDebugEnabled())
-			log.debug("Started arv side effect observations for patient: " + patient.getPatientId() + " is: " + obsResults);
+			log.debug("consolidated results: " + patient.getPatientId() + " is: " + consolidatedResults);
 		
 		Result numericObsResults = RuleUtils.sliceResult(consolidatedResults, 5);
 		

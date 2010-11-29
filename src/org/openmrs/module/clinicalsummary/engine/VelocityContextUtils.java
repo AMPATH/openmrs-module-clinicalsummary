@@ -14,9 +14,13 @@
 package org.openmrs.module.clinicalsummary.engine;
 
 import java.util.Date;
+import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.openmrs.Concept;
+import org.openmrs.ConceptName;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.logic.LogicCriteria;
@@ -46,8 +50,20 @@ public class VelocityContextUtils {
 		
 		if (concept == null)
 			return "";
-		
+
+		// use the best name as the default name
 		String name = concept.getBestName(Context.getLocale()).getName();
+		Locale locale = Context.getLocale();
+		for (ConceptName conceptName : concept.getNames()) {
+			Locale conceptLocale = conceptName.getLocale();
+			if (!StringUtils.equalsIgnoreCase(conceptLocale.getLanguage(), locale.getLanguage()))
+				continue;
+			
+			// search for a shorter name if available
+			if (StringUtils.length(conceptName.getName()) < 5 && Pattern.matches("(\\s*\\w+\\s*)+", conceptName.getName()))
+				name = conceptName.getName();
+		}
+		
 		return name;
 	}
 	

@@ -90,18 +90,15 @@ public class RepeatPCRReminderRule implements Rule {
 				log.debug("Patient: " + patient.getPatientId() + ", dna pcr result: " + obsResult);
 			
 			// check if we have negative or positive
-			boolean resultExist = false;
-			for (Result result : obsResult) {
+			int resultCount = 0;
+			for (Result result : obsResult)
 				if (result.getResultDate().after(referenceDate))
 					if (OpenmrsUtil.nullSafeEquals(positiveConcept, result.toConcept())
-					        || OpenmrsUtil.nullSafeEquals(negativeConcept, result.toConcept())) {
-						resultExist = true;
-						break;
-					}
-			}
-			
+					        || OpenmrsUtil.nullSafeEquals(negativeConcept, result.toConcept()))
+						resultCount++;
+
 			// when we see there's 1 result "NEGATIVE" or "POSITIVE", we will search for the test or throw reminder
-			if (resultExist) {
+			if (resultCount < 2) {
 				
 				Calendar nowCalendar = Calendar.getInstance();
 				nowCalendar.setTime(now);
@@ -120,18 +117,15 @@ public class RepeatPCRReminderRule implements Rule {
 				if (log.isDebugEnabled())
 					log.debug("Patient: " + patient.getPatientId() + ", dna pcr test result: " + testedResult);
 				
-				boolean testExist = false;
-				
-				for (Result result : testedResult) {
+				int testCount = 0;
+				for (Result result : testedResult)
 					// only process the date after the reference date
 					if (result.getResultDate().after(testReferenceDate))
-						if (OpenmrsUtil.nullSafeEquals(result.toConcept(), dnaConcept)) {
-							testExist = true;
-							break;
-						}
-				}
+						if (OpenmrsUtil.nullSafeEquals(result.toConcept(), dnaConcept))
+							testCount++;
 				
-				if (!testExist)
+				// if total the test and result is less than 2
+				if (testCount + resultCount < 2)
 					reminder = new Result(REMINDER_TEXT);
 			}
 		}
