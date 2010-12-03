@@ -23,6 +23,8 @@ public class ScoreUtils {
 	
 	private static final String FEMALE_SHORT_STRING = "F";
 	
+	// this is the approximation table of z-score to percentile
+	// the method will search the closest double value and return the position of that double value that will correspond to the z-score percentile
 	private static final Double[] zScores = { -2.326, -2.054, -1.881, -1.751, -1.645, -1.555, -1.476, -1.405, -1.341, -1.282,
 	        -1.227, -1.175, -1.126, -1.08, -1.036, -0.994, -0.954, -0.915, -0.878, -0.842, -0.806, -0.772, -0.739, -0.706,
 	        -0.674, -0.643, -0.613, -0.583, -0.553, -0.524, -0.496, -0.468, -0.44, -0.412, -0.385, -0.358, -0.332, -0.305,
@@ -155,7 +157,7 @@ public class ScoreUtils {
 			gender = MALE_LONG_STRING;
 		else if (StringUtils.equalsIgnoreCase(FEMALE_LONG_STRING, patient.getGender())
 		        || StringUtils.equalsIgnoreCase(FEMALE_SHORT_STRING, patient.getGender()))
-			gender = FEMALE_SHORT_STRING;
+			gender = FEMALE_LONG_STRING;
 		
 		if (log.isDebugEnabled())
 			log.debug("Patient: " + patient.getPatientId() + ", gender: " + gender);

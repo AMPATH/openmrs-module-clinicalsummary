@@ -54,7 +54,7 @@ public class SummaryGeneratorProcessor {
 	private static final String PROCESSOR_INITIALIZED = "clinicalsummary.batch.initialized";
 	
 	// task name for the clinical summary batch generation
-	private static final String PROCESSOR_NAME = "Batch Printing Summary";
+	private static final String PROCESSOR_NAME = "Generate Summary Sheet";
 	
 	// separator for the initialization
 	private static final String WHITESPACE = " ";

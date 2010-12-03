@@ -185,7 +185,7 @@ public interface SummaryService {
 	 * @should return empty list when no errors are found for a patient
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_LOCATIONS, OpenmrsConstants.PRIV_VIEW_PATIENTS })
+	@Authorized( { SummaryConstants.PRIV_MANAGE_SUMMARY })
 	public List<SummaryError> getAllErrors() throws APIException;
 	
 	/**
@@ -195,8 +195,7 @@ public interface SummaryService {
 	 * @throws APIException
 	 * @should delete certain error object
 	 */
-	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_LOCATIONS, OpenmrsConstants.PRIV_VIEW_PATIENTS })
+	@Authorized( { SummaryConstants.PRIV_MANAGE_SUMMARY })
 	public void deleteError(SummaryError summaryError) throws APIException;
 	
 	/**

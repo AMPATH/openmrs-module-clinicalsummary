@@ -17,8 +17,8 @@
     </name>
     
     #set($parameters = {"evaluated.concept" : "RETURN VISIT DATE", "included.encounter.types" : ["ADULTINITIAL", "ADULTRETURN", "ADULTNONCLINICALMEDICATION"]})
-    #set($returnVisit = $functions.eval($patient, "Datetime Latest Obs", $parameters))
-    <returnVisit>$!{functions.formatDate($returnVisit.toDatetime())}</returnVisit>
+    #set($returnVisit = $!{functions.eval($patient, "Datetime Latest Obs", $parameters)})
+    <returnVisit>$!{functions.formatDate($!{returnVisit.toDatetime()})}</returnVisit>
     
     <gender>$!{patient.getGender()}</gender>
     
@@ -32,16 +32,16 @@
     </birthdate>
     
     #set($parameters = {"evaluated.encounter" : "encounter.type", "included.encounter.types" : ["ADULTINITIAL", "ADULTRETURN", "ADULTNONCLINICALMEDICATION"]})
-    #set($result = $functions.eval($patient, "Complete Encounter", $parameters))
+    #set($result = $!{functions.eval($patient, "Complete Encounter", $parameters)})
     <firstEncounterDate>
-    	#set($firstEncounter = $result.earliest())
+    	#set($firstEncounter = $!{result.earliest()})
     	$!{functions.formatDate($!{firstEncounter.getResultDate()})}
     </firstEncounterDate>
     
     <lastEncounter>
     	#set($parameters = {"evaluated.encounter" : "encounter.location", "included.encounter.types" : ["ADULTINITIAL", "ADULTRETURN", "ADULTNONCLINICALMEDICATION"]})
-    	#set($result = $functions.eval($patient, "Complete Encounter", $parameters))
-    	#set($latestEncounterLocation = $result.latest())
+    	#set($result = $!{functions.eval($patient, "Complete Encounter", $parameters)})
+    	#set($latestEncounterLocation = $!{result.latest()})
         <dateTime>
     		$!{functions.formatDate($!{latestEncounterLocation.getResultDate()})}
         </dateTime>
@@ -50,13 +50,13 @@
         </location>
         <provider>
     		#set($parameters = {"evaluated.encounter" : "encounter.provider", "included.encounter.types" : ["ADULTINITIAL", "ADULTRETURN", "ADULTNONCLINICALMEDICATION"]})
-    		#set($result = $functions.eval($patient, "Complete Encounter", $parameters))
-    		#set($latestEncounterProvider = $result.latest())
+    		#set($result = $!{functions.eval($patient, "Complete Encounter", $parameters)})
+    		#set($latestEncounterProvider = $!{result.latest()})
         	$!{latestEncounterProvider.toString()}
         </provider>
     	#set($parameters = {"evaluated.encounter" : "encounter.creator", "included.encounter.types" : ["ADULTINITIAL", "ADULTRETURN", "ADULTNONCLINICALMEDICATION"]})
-    	#set($result = $functions.eval($patient, "Complete Encounter", $parameters))
-    	#set($latestEncounterCreator = $result.latest())
+    	#set($result = $!{functions.eval($patient, "Complete Encounter", $parameters)})
+    	#set($latestEncounterCreator = $!{result.latest()})
         <createdDate>
         	$!{functions.formatDate($!{latestEncounterCreator.getResultDate()})}
         </createdDate>
@@ -74,12 +74,12 @@
     </perfectAdherence>
     
     <problemList>
-        #set($problems = $functions.eval($patient, "Problems", $summaryCache))
-        #foreach($problem in $problems)
+        #set($problems = $!{functions.eval($patient, "Problems", $summaryCache)})
+        #foreach(${problem} in ${problems})
         	<problems>
-        	#foreach($element in $problem)
+        	#foreach(${element} in ${problem})
 	            <problem>
-	            	<datetime>$!{functions.formatDate($element.getResultDate())}</datetime>
+	            	<datetime>$!{functions.formatDate($!{element.getResultDate()})}</datetime>
 	                <value>$!{element.toString()}</value>
 	            </problem>
         	#end
@@ -89,10 +89,10 @@
     
     <cd4_percent>
         #set($percentMap = {"evaluated.concept" : "CD4 PERCENT"})
-        #set($percent = $functions.eval($patient, "Numeric Flowsheet", $percentMap))
-        #foreach($vals in $percent)
+        #set($percent = $!{functions.eval($patient, "Numeric Flowsheet", $percentMap)})
+        #foreach(${vals} in ${percent})
             <element>
-            	<datetime>$!{functions.formatDate($vals.getResultDate())}</datetime>
+            	<datetime>$!{functions.formatDate($!{vals.getResultDate()})}</datetime>
                 <value>$!{vals.toNumber()}</value>
             </element>
         #end
@@ -110,10 +110,10 @@
       -->
     <results name="WEIGHT (KG)">
         #set($weightMap = {"evaluated.concept" : "WEIGHT (KG)"})
-        #set($weight = $functions.eval($patient, "Numeric Flowsheet", $weightMap))
-        #foreach($element in $weight)
+        #set($weight = $!{functions.eval($patient, "Numeric Flowsheet", $weightMap)})
+        #foreach(${element} in ${weight})
         	<element>
-        		<datetime>$!{functions.formatDate($element.getResultDate())}</datetime>
+        		<datetime>$!{functions.formatDate($!{element.getResultDate()})}</datetime>
                 <value>$!{element.toNumber()}</value>
             	<status>$!{element.toString()}</status>
         	</element>
@@ -122,10 +122,10 @@
     <results name="HGB">
         #set($hbMap = {"evaluated.concept" : "HEMOGLOBIN",
         			   "included.coded.values" : "HEMOGLOBIN;COMPLETE BLOOD COUNT"})
-        #set($hbResult = $functions.eval($patient, "Test Ordered", $hbMap))
-        #foreach($element in $hbResult)
+        #set($hbResult = $!{functions.eval($patient, "Test Ordered", $hbMap)})
+        #foreach(${element} in ${hbResult})
         	<element>
-        		<datetime>$!{functions.formatDate($element.getResultDate())}</datetime>
+        		<datetime>$!{functions.formatDate($!{element.getResultDate()})}</datetime>
                 <value>$!{element.toNumber()}</value>
             	<status>$!{element.toString()}</status>
         	</element>
@@ -134,10 +134,10 @@
     <results name="CD4">
         #set($cd4Map = {"evaluated.concept" : "CD4 COUNT",
 						"included.coded.values" : "CD4 PANEL"})
-        #set($cd4Result = $functions.eval($patient, "Test Ordered", $cd4Map))
-        #foreach($element in $cd4Result)
+        #set($cd4Result = $!{functions.eval($patient, "Test Ordered", $cd4Map)})
+        #foreach(${element} in ${cd4Result})
         	<element>
-        		<datetime>$!{functions.formatDate($element.getResultDate())}</datetime>
+        		<datetime>$!{functions.formatDate($!{element.getResultDate()})}</datetime>
                 <value>$!{element.toNumber()}</value>
             	<status>$!{element.toString()}</status>
         	</element>
@@ -146,10 +146,10 @@
     <results name="VIRAL-LD">
         #set($viralMap = {"evaluated.concept" : "HIV VIRAL LOAD, QUANTITATIVE",
         				  "included.coded.values" : "HIV VIRAL LOAD, QUANTITATIVE"})
-        #set($viralResult = $functions.eval($patient, "Test Ordered", $viralMap))
-        #foreach($element in $viralResult)
+        #set($viralResult = $!{functions.eval($patient, "Test Ordered", $viralMap)})
+        #foreach(${element} in ${viralResult})
         	<element>
-        		<datetime>$!{functions.formatDate($element.getResultDate())}</datetime>
+        		<datetime>$!{functions.formatDate($!{element.getResultDate()})}</datetime>
                 <value>$!{element.toNumber()}</value>
             	<status>$!{element.toString()}</status>
         	</element>
@@ -158,10 +158,10 @@
     <results name="SGPT">
         #set($sgptMap = {"evaluated.concept" : "SERUM GLUTAMIC-PYRUVIC TRANSAMINASE",
         				 "included.coded.values" : "SERUM GLUTAMIC-PYRUVIC TRANSAMINASE;CHEMISTRY LAB TESTS"})
-        #set($sgptResult = $functions.eval($patient, "Test Ordered", $sgptMap))
-        #foreach($element in $sgptResult)
+        #set($sgptResult = $!{functions.eval($patient, "Test Ordered", $sgptMap)})
+        #foreach(${element} in ${sgptResult})
         	<element>
-        		<datetime>$!{functions.formatDate($element.getResultDate())}</datetime>
+        		<datetime>$!{functions.formatDate($!{element.getResultDate()})}</datetime>
                 <value>$!{element.toNumber()}</value>
             	<status>$!{element.toString()}</status>
         	</element>
@@ -170,10 +170,10 @@
     <results name="CREAT">
         #set($creatinineMap = {"evaluated.concept" : "SERUM CREATININE",
         					   "included.coded.values" : "CHEMISTRY LAB TESTS;SERUM CREATININE;SERUM ELECTROLYTES"})
-        #set($creatinineResult = $functions.eval($patient, "Test Ordered", $creatinineMap))
-        #foreach($element in $creatinineResult)
+        #set($creatinineResult = $!{functions.eval($patient, "Test Ordered", $creatinineMap)})
+        #foreach(${element} in ${creatinineResult})
         	<element>
-        		<datetime>$!{functions.formatDate($element.getResultDate())}</datetime>
+        		<datetime>$!{functions.formatDate($!{element.getResultDate()})}</datetime>
                 <value>$!{element.toNumber()}</value>
             	<status>$!{element.toString()}</status>
         	</element>
@@ -183,53 +183,53 @@
     
     <medications>
 
-        #set($arvMedications = $functions.eval($patient, "ARV Medications", $summaryCache))
-        #foreach($element in $arvMedications)
+        #set($arvMedications = $!{functions.eval($patient, "ARV Medications", $summaryCache)})
+        #foreach(${element} in ${arvMedications})
             <medication>
-            	<datetime>$!{functions.formatDate($element.getResultDate())}</datetime>
+            	<datetime>$!{functions.formatDate($!{element.getResultDate()})}</datetime>
                 <value>$!{element.toString()}</value>
             </medication>
         #end
 
-        #set($pcpMedications = $functions.eval($patient, "PCP Medications", $summaryCache))
-        #foreach($element in $pcpMedications)
+        #set($pcpMedications = $!{functions.eval($patient, "PCP Medications", $summaryCache)})
+        #foreach(${element} in ${pcpMedications})
             <medication>
-            	<datetime>$!{functions.formatDate($element.getResultDate())}</datetime>
+            	<datetime>$!{functions.formatDate($!{element.getResultDate()})}</datetime>
                 <value>$!{element.toString()}</value>
             </medication>
         #end
 
-        #set($cryptoMedications = $functions.eval($patient, "Crypto Medications", $summaryCache))
-        #foreach($element in $cryptoMedications)
+        #set($cryptoMedications = $!{functions.eval($patient, "Crypto Medications", $summaryCache)})
+        #foreach(${element} in ${cryptoMedications})
             <medication>
-            	<datetime>$!{functions.formatDate($element.getResultDate())}</datetime>
+            	<datetime>$!{functions.formatDate($!{element.getResultDate()})}</datetime>
                 <value>$!{element.toString()}</value>
             </medication>
         #end
 
-        #set($tbMedications = $functions.eval($patient, "TB Medications", $summaryCache))
-        #foreach($element in $tbMedications)
+        #set($tbMedications = $!{functions.eval($patient, "TB Medications", $summaryCache)})
+        #foreach(${element} in ${tbMedications})
             <medication>
-            	<datetime>$!{functions.formatDate($element.getResultDate())}</datetime>
+            	<datetime>$!{functions.formatDate($!{element.getResultDate()})}</datetime>
                 <value>$!{element.toString()}</value>
             </medication>
         #end
 
-        #set($tbTreatmentMedications = $functions.eval($patient, "TB Treatments", $summaryCache))
-        #foreach($element in $tbTreatmentMedications)
+        #set($tbTreatmentMedications = $!{functions.eval($patient, "TB Treatments", $summaryCache)})
+        #foreach(${element} in ${tbTreatmentMedications})
             <medication>
-            	<datetime>$!{functions.formatDate($element.getResultDate())}</datetime>
+            	<datetime>$!{functions.formatDate($!{element.getResultDate()})}</datetime>
                 <value>$!{element.toString()}</value>
             </medication>
         #end
     </medications>
     
     <cxrs>
-        #set($cxrResult = $functions.eval($patient, "CXR", $summaryCache))
-        #foreach($element in $cxrResult)
+        #set($cxrResult = $!{functions.eval($patient, "CXR", $summaryCache)})
+        #foreach(${element} in ${cxrResult})
 	        #if(${element} && "$!{element}" != "")
 		    	<cxr>
-		    		<date>$!{functions.formatDate($element.getResultDate())}</date>
+		    		<date>$!{functions.formatDate($!{element.getResultDate()})}</date>
 		    		<findings>$!{element.toString()}</findings>
 		    	</cxr>
 	        #end

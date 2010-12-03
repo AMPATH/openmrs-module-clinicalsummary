@@ -18,7 +18,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Criteria;
-import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
@@ -203,9 +202,7 @@ public class HibernateSummaryDAO implements SummaryDAO {
 	 */
 	@Override
 	public void deleteError(SummaryError summaryError) {
-		Query query = sessionFactory.getCurrentSession().createQuery("delete from SummaryError where summaryErrorId = :id");
-		query.setInteger("id", summaryError.getSummaryErrorId());
-		query.executeUpdate();
+		sessionFactory.getCurrentSession().delete(summaryError);
 	}
 	
 	/**

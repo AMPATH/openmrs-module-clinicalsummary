@@ -151,13 +151,6 @@ public class GeneratorEngine {
 					Writer writer = new StringWriter();
 					Velocity.evaluate(context, writer, GeneratorEngine.class.getName(), template.getTemplate());
 					
-					String xmlFilename = patient.getPatientId() + "_" + template.getTemplateId() + ".xml";
-					File xmlFile = new File(outputLocation, xmlFilename);
-					BufferedOutputStream xmlStream = new BufferedOutputStream(new FileOutputStream(xmlFile));
-					xmlStream.write(writer.toString().getBytes());
-					xmlStream.close();
-					
-					
 					String filename = patient.getPatientId() + "_" + template.getTemplateId() + ".pdf";
 					File file = new File(outputLocation, filename);
 					BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));

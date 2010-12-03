@@ -2,8 +2,8 @@
 <clinicalSummary>
 	<identifiers>
 	<!-- pull the first identifier from all active identifier -->
-    #foreach($id in $!{patient.getActiveIdentifiers()})
-        #if ($velocityCount == 1)
+    #foreach(${id} in $!{patient.getActiveIdentifiers()})
+        #if (${velocityCount} == 1)
            <id>$!{id}</id>
         #else
             <alternateId>$!{id}</alternateId>
@@ -12,13 +12,13 @@
     </identifiers>
     
     #set($parameters = {"evaluated.concept" : "RETURN VISIT DATE", "included.encounter.types" : ["ANCINITIAL", "ANCRETURN"]})
-    #set($returnVisit = $functions.eval($patient, "Datetime Latest Obs", $parameters))
-    <returnVisit>$!{functions.formatDate($returnVisit.toDatetime())}</returnVisit>
+    #set($returnVisit = $!{functions.eval($patient, "Datetime Latest Obs", $parameters)})
+    <returnVisit>$!{functions.formatDate($!{returnVisit.toDatetime()})}</returnVisit>
     
     <lastEncounter>
     	#set($parameters = {"evaluated.encounter" : "encounter.location", "included.encounter.types" : ["ANCINITIAL", "ANCRETURN"]})
-    	#set($result = $functions.eval($patient, "Complete Encounter", $parameters))
-    	#set($latestEncounterLocation = $result.latest())
+    	#set($result = $!{functions.eval($patient, "Complete Encounter", $parameters)})
+    	#set($latestEncounterLocation = $!{result.latest()})
         <dateTime>
     		$!{functions.formatDate($!{latestEncounterLocation.getResultDate()})}
         </dateTime>
@@ -27,13 +27,13 @@
         </location>
         <provider>
     		#set($parameters = {"evaluated.encounter" : "encounter.provider", "included.encounter.types" : ["ANCINITIAL", "ANCRETURN"]})
-    		#set($result = $functions.eval($patient, "Complete Encounter", $parameters))
-    		#set($latestEncounterProvider = $result.latest())
+    		#set($result = $!{functions.eval($patient, "Complete Encounter", $parameters)})
+    		#set($latestEncounterProvider = $!{result.latest()})
         	$!{latestEncounterProvider.toString()}
         </provider>
     	#set($parameters = {"evaluated.encounter" : "encounter.creator", "included.encounter.types" : ["ANCINITIAL", "ANCRETURN"]})
-    	#set($result = $functions.eval($patient, "Complete Encounter", $parameters))
-    	#set($latestEncounterCreator = $result.latest())
+    	#set($result = $!{functions.eval($patient, "Complete Encounter", $parameters)})
+    	#set($latestEncounterCreator = $!{result.latest()})
         <createdDate>
         	$!{functions.formatDate($!{latestEncounterCreator.getResultDate()})}
         </createdDate>
@@ -57,22 +57,22 @@
 	        <dob>$!{functions.formatDate(${birth})}</dob>
 	    </birthdate>
 	    <address>
-	    	#set($address = $patient.getPersonAddress())
+	    	#set($address = $!{patient.getPersonAddress()})
 	    	$!{address.getRegion()} 
 	    </address>
 	    <education>
 			#set($map = {"evaluated.concept" : "HIGHEST EDUCATION"})
-	    	#set($education = $functions.eval($patient, "Initial Single Coded", $map))
+	    	#set($education = $!{functions.eval($patient, "Initial Single Coded", $map)})
 	    	$!{education}
 	    </education>
 	    <civil-status>
 			#set($map = {"evaluated.concept" : "CIVIL STATUS"})
-	    	#set($civilStatus = $functions.eval($patient, "Initial Single Coded", $map))
+	    	#set($civilStatus = $!{functions.eval($patient, "Initial Single Coded", $map)})
 	    	$!{civilStatus}
 	    </civil-status>
 	    <occupation>
 			#set($map = {"evaluated.concept" : "OCCUPATION"})
-	    	#set($occupation = $functions.eval($patient, "Initial Single Coded", $map))
+	    	#set($occupation = $!{functions.eval($patient, "Initial Single Coded", $map)})
 	    	$!{occupation}
 	    </occupation>
     </demographic>
@@ -80,27 +80,27 @@
     <pregnancy-history>
     	<gravida>
 			#set($map = {"evaluated.concept" : "GRAVIDA"})
-	    	#set($gravida = $functions.eval($patient, "Initial Single Numeric", $map))
-	    	$functions.makeInteger($!{gravida.toNumber()})
+	    	#set($gravida = $!{functions.eval($patient, "Initial Single Numeric", $map)})
+	    	$!{functions.makeInteger($!{gravida.toNumber()})}
 	    </gravida>
     	<parity>
 			#set($map = {"evaluated.concept" : "PARITY"})
-	    	#set($parity = $functions.eval($patient, "Initial Single Numeric", $map))
-	    	$functions.makeInteger($!{parity.toNumber()})
+	    	#set($parity = $!{functions.eval($patient, "Initial Single Numeric", $map)})
+	    	$!{functions.makeInteger($!{parity.toNumber()})}
 	    </parity>
     	<lmp>
 			#set($map = {"evaluated.concept" : "LAST MENSTRUAL PERIOD DATE"})
-	    	#set($lmp = $functions.eval($patient, "Initial Single Datetime", $map))
-	    	$functions.formatDate(${lmp.toDatetime()})
+	    	#set($lmp = $!{functions.eval($patient, "Initial Single Datetime", $map)})
+	    	$!{functions.formatDate(${lmp.toDatetime()})}
     	</lmp>
     	<edd>
 			#set($map = {"evaluated.concept" : "ESTIMATED DATE OF CONFINEMENT"})
-	    	#set($edd = $functions.eval($patient, "Initial Single Datetime", $map))
-	    	$functions.formatDate(${edd.toDatetime()})
+	    	#set($edd = $!{functions.eval($patient, "Initial Single Datetime", $map)})
+	    	$!{functions.formatDate(${edd.toDatetime()})}
     	</edd>
     	<usg>
 			#set($map = {"evaluated.concept" : "OBSTETRIC ULTRASOUND DONE"})
-	    	#set($usg = $functions.eval($patient, "Initial Single Coded", $map))
+	    	#set($usg = $!{functions.eval($patient, "Initial Single Coded", $map)})
 	    	$!{usg}
     	</usg>
     </pregnancy-history>
@@ -110,7 +110,7 @@
     	<age>$!{patient.getAttribute("Partner Age")}</age>
     	<occupation>
 			#set($map = {"evaluated.concept" : "PARTNER'S OCCUPATION"})
-	    	#set($occupation = $functions.eval($patient, "Initial Single Coded", $map))
+	    	#set($occupation = $!{functions.eval($patient, "Initial Single Coded", $map)})
 	    	$!{occupation}
     	</occupation>
     </partner>
@@ -118,23 +118,23 @@
     <information>
     	<insurance>
 			#set($map = {"evaluated.concept" : "HEALTH INSURANCE"})
-	    	#set($insurance = $functions.eval($patient, "Initial Single Coded", $map))
+	    	#set($insurance = $!{functions.eval($patient, "Initial Single Coded", $map)})
 	    	$!{insurance}
     	</insurance>
     	<transport>
 			#set($map = {"evaluated.concept" : "EMERGENCY TRANSPORTATION PLAN"})
-	    	#set($transport = $functions.eval($patient, "Initial Single Coded", $map))
+	    	#set($transport = $!{functions.eval($patient, "Initial Single Coded", $map)})
 	    	$!{transport}
     	</transport>
     	<barriers>
     		#set($map = {"evaluated.concept" : "TYPES OF BARRIER TO PROPER HEALTH CARE"})
-	    	#set($barriers = $functions.eval($patient, "Latest Multi Coded", $map))
+	    	#set($barriers = $!{functions.eval($patient, "Latest Multi Coded", $map)})
 	    	$!{barriers}
 	    </barriers>
     	<net>
     		#set($map = {"evaluated.concept" : "RECIEVED ANTENATAL CARE SERVICE THIS VISIT",
 						 "included.coded.values" : "INSECTICIDE-TREATED BEDNET"})
-	    	#set($net = $functions.eval($patient, "Latest Multi Coded", $map))
+	    	#set($net = $!{functions.eval($patient, "Latest Multi Coded", $map)})
 	    	$!{net}
 	    </net>
     </information>
@@ -143,19 +143,19 @@
     	<hiv-status>
 			#set($map = {"evaluated.concept" : "REVIEW OF MEDICAL HISTORY",
 						 "included.coded.values" : "HUMAN IMMUNODEFICIENCY VIRUS"})
-	    	#set($hivStatus = $functions.eval($patient, "Initial Multi Coded", $map))
+	    	#set($hivStatus = $!{functions.eval($patient, "Initial Multi Coded", $map)})
 	    	$!{hivStatus}
 	    </hiv-status>
 	    <hiv>
 	    	<tested>
 				#set($map = {"evaluated.concept" : "HIV TESTED THIS VISIT"})
-	    		#set($tested = $functions.eval($patient, "Initial Single Coded", $map))
+	    		#set($tested = $!{functions.eval($patient, "Initial Single Coded", $map)})
 	    		<value>$!{tested}</value>
-	    		<datetime>$functions.formatDate($tested.getResultDate())</datetime>
+	    		<datetime>$!{functions.formatDate($!{tested.getResultDate()})}</datetime>
 	    	</tested>
 	    	<qualitative>
 				#set($map = {"evaluated.concept" : "HIV RAPID TEST, QUALITATIVE"})
-	    		#set($qualitative = $functions.eval($patient, "Initial Single Coded", $map))
+	    		#set($qualitative = $!{functions.eval($patient, "Initial Single Coded", $map)})
 	    		$!{qualitative}
 	    	</qualitative>
 	    </hiv>
@@ -163,12 +163,12 @@
     		#set($map = {"evaluated.concept" : "REVIEW OF MEDICAL HISTORY",
 						 "included.coded.values" : "CERVICITIS;PELVIC INFLAMMATORY DISEASE;GENITAL SORES;WARTS, GENITAL;
 						 						   GONORRHEA;SYPHILIS;HERPES SIMPLEX, NOS;CHLAMYDIA TRACHOMATIS;TRICHOMONAS"})
-	    	#set($stds = $functions.eval($patient, "Initial Multi Coded", $map))
+	    	#set($stds = $!{functions.eval($patient, "Initial Multi Coded", $map)})
 	    	$!{stds}
 	    </stds>
     	<depression>
 			#set($map = {"evaluated.concept" : "HISTORY OF POSTPARTUM DEPRESSION OR MENTAL HEALTH PROBLEM"})
-	    	#set($depression = $functions.eval($patient, "Initial Single Coded", $map))
+	    	#set($depression = $!{functions.eval($patient, "Initial Single Coded", $map)})
 	    	$!{depression}
     	</depression>
     	<others>
@@ -179,7 +179,7 @@
 												   HISTORY OF MULTIPLE BIRTHS IN MATERNAL FAMILY;
 												   CONGENITAL ANOMALY IN NEWBORN;ANEMIA;BREAST DISORDERS;HISTORY OF HOSPITALIZATION; 
 												   ALLERGY REACTION FROM DRUGS"})
-	    	#set($others = $functions.eval($patient, "Initial Multi Coded", $map))
+	    	#set($others = $!{functions.eval($patient, "Initial Multi Coded", $map)})
 	    	$!{others}
     	</others>
     </medical-history>
@@ -187,67 +187,67 @@
     <current-medications>
     	<medications>
 			#set($map = {"included.evaluated.concepts" : "MEDICATION ADDED"})
-			#set($medicationsAdded = $functions.eval($patient, "Historical Multi Concept", $map))
-			#foreach ($element in $medicationsAdded.get(0))
-				#if ($velocityCount > 1)
+			#set($medicationsAdded = $!{functions.eval($patient, "Historical Multi Concept", $map)})
+			#foreach (${element} in $!{medicationsAdded.get(0)})
+				#if (${velocityCount} > 1)
 					<element>$!{element}</element>
 				#end
 			#end
 			#set($map = {"evaluated.concept" : "RECIEVED ANTENATAL CARE SERVICE THIS VISIT",
 						 "included.coded.values" : "IRON SUPPLEMENT;COTRIMAZOLE;FOLIC ACID"})
-	    	#set($others = $functions.eval($patient, "Latest Multi Coded", $map))
-			#foreach ($other in $others)
+	    	#set($others = $!{functions.eval($patient, "Latest Multi Coded", $map)})
+			#foreach (${other} in ${others})
 				<element>$!{other}</element>
 			#end
     	</medications>
     	<tt>
     		<completed>
 	    		#set($map = {"evaluated.concept" : "TETANUS BOOSTER COMPLETED"})
-		    	#set($ttCompleted = $functions.eval($patient, "Latest Single Coded", $map))
+		    	#set($ttCompleted = $!{functions.eval($patient, "Latest Single Coded", $map)})
 		    	$!{ttCompleted}
 		    </completed>
 			#set($map = {"included.evaluated.concepts" : "TETANUS BOOSTER;
 						 								  QUANTITY"})
-			#set($tt = $functions.eval($patient, "Historical Multi Concept", $map))
-			#set($latestTetanusBooster = $tt.get(0))
-	    		#set($total = $latestTetanusBooster.get(2).toNumber())
-	    		#set($given = "RECEIVED")
+			#set($tt = $!{functions.eval($patient, "Historical Multi Concept", $map)})
+			#set(${latestTetanusBooster} = $!{tt.get(0)})
+	    		#set($total = $!{latestTetanusBooster.get(2).toNumber()})
+	    		#set(${given} = "RECEIVED")
 	    		#if ($!{latestTetanusBooster.get(1)} == '1')
-	    			#set($total = $total + 1)
-	    			#set($received = "RECEIVED")
+	    			#set(${total} = ${total} + 1)
+	    			#set(${received} = "RECEIVED")
 	    		#end
     		<received>
     			$!{received}
 	    	</received>
 	    	<total>
-	    		$functions.makeInteger($!{total})
+	    		$!{functions.makeInteger($!{total})}
 	    	</total>
     	</tt>
     	<ipt1>
     		#set($map = {"evaluated.concept" : "RECIEVED ANTENATAL CARE SERVICE THIS VISIT",
 						 "included.coded.values" : "INTERMITTENT PREVENTIVE TREATMENT 1"})
-	    	#set($ipt1 = $functions.eval($patient, "Latest Multi Coded", $map))
+	    	#set($ipt1 = $!{functions.eval($patient, "Latest Multi Coded", $map)})
 	    	$!{ipt1}
 	    </ipt1>
     	<ipt2>
     		#set($map = {"evaluated.concept" : "RECIEVED ANTENATAL CARE SERVICE THIS VISIT",
 						 "included.coded.values" : "INTERMITTENT PREVENTIVE TREATMENT 2"})
-	    	#set($ipt2 = $functions.eval($patient, "Latest Multi Coded", $map))
+	    	#set($ipt2 = $!{functions.eval($patient, "Latest Multi Coded", $map)})
 	    	$!{ipt2}
 	    </ipt2>
     	<anti-d>
 			#set($map = {"evaluated.concept" : "ANTI-D RH IGG GIVEN AT 28 GESTATION WEEKS "})
-	    	#set($anti = $functions.eval($patient, "Latest Single Coded", $map))
+	    	#set($anti = $!{functions.eval($patient, "Latest Single Coded", $map)})
 	    	$!{anti}
     	</anti-d>
     	<contraceptions>
     		#set($map = {"evaluated.concept" : "METHOD OF FAMILY PLANNING"})
-	    	#set($contraceptions = $functions.eval($patient, "Initial Multi Coded", $map))
+	    	#set($contraceptions = $!{functions.eval($patient, "Initial Multi Coded", $map)})
 	    	$!{contraceptions}
     	</contraceptions>
     	<substances>
     		#set($map = {"evaluated.concept" : "PRESENCE OF SUBSTANCE USE"})
-	    	#set($substances = $functions.eval($patient, "Initial Multi Coded", $map))
+	    	#set($substances = $!{functions.eval($patient, "Initial Multi Coded", $map)})
 	    	$!{substances}
     	</substances>
     </current-medications>
@@ -256,28 +256,28 @@
     	<delivery-site>
     		<health-facility>
 				#set($map = {"evaluated.concept" : "DELIVERY PLACE, BIRTH PLAN"})
-		    	#set($facility = $functions.eval($patient, "Latest Single Coded", $map))
+		    	#set($facility = $!{functions.eval($patient, "Latest Single Coded", $map)})
 		    	$!{facility}
 	    	</health-facility>
     		<location>
 				#set($map = {"evaluated.concept" : "MOTHER'S PREFERRED DELIVERY PLACE, BIRTH PLAN"})
-		    	#set($location = $functions.eval($patient, "Latest Single Coded", $map))
+		    	#set($location = $!{functions.eval($patient, "Latest Single Coded", $map)})
 		    	$!{location}
     		</location>
     		<reasons>
 				#set($map = {"evaluated.concept" : "REASON FOR NOT DELIVERING AT HEALTH FACILITY"})
-		    	#set($reason = $functions.eval($patient, "Latest Multi Coded", $map))
+		    	#set($reason = $!{functions.eval($patient, "Latest Multi Coded", $map)})
 		    	$!{reason}
     		</reasons>
     	</delivery-site>
     	<delivery-mode>
 			#set($map = {"evaluated.concept" : "PREFERRED MODE OF DELIVERY"})
-		    #set($mode = $functions.eval($patient, "Latest Single Coded", $map))
+		    #set($mode = $!{functions.eval($patient, "Latest Single Coded", $map)})
 		    $!{mode}
     	</delivery-mode>
     	<infant-feeding>
 			#set($map = {"evaluated.concept" : "MOTHER'S PREFERRED FEEDING METHOD, BIRTH PLAN"})
-		    #set($feeding = $functions.eval($patient, "Latest Single Coded", $map))
+		    #set($feeding = $!{functions.eval($patient, "Latest Single Coded", $map)})
 		    $!{feeding}
     	</infant-feeding>
     </preferences>
@@ -300,16 +300,16 @@
 					 								  PREGNANCY OUTCOME;PLACE OF DELIVERY;LENGTH OF LABOR IN HOURS;
 					 								  METHOD OF DELIVERY;GENDER OF THE CHILD;BIRTH WEIGHT;
 					 								  MATERNAL, FETAL, OR CHILD COMPLICATIONS, FREETEXT"})
-		#set($previousPregnancies = $functions.eval($patient, "Initial Multi Concept", $map))
-		#foreach ($previousPregnancy in $previousPregnancies)
+		#set($previousPregnancies = $!{functions.eval($patient, "Initial Multi Concept", $map)})
+		#foreach (${previousPregnancy} in ${previousPregnancies})
 		<previous-pregnancy>
-			#foreach ($element in $previousPregnancy)
-				#if($velocityCount == 1 || $velocityCount == 2)
-					<element>$functions.formatDate($element.toDatetime())</element>
-				#elseif ($velocityCount == 3 || $velocityCount == 6)
-					<element>$functions.makeInteger($element.toNumber())</element>
+			#foreach (${element} in ${previousPregnancy})
+				#if(${velocityCount} == 1 || ${velocityCount} == 2)
+					<element>$!{functions.formatDate($!{element.toDatetime()})}</element>
+				#elseif (${velocityCount} == 3 || ${velocityCount} == 6)
+					<element>$!{functions.makeInteger($!{element.toNumber()})}</element>
 				#else
-					<element>$element</element>
+					<element>$!{element}</element>
 				#end
 			#end
 		</previous-pregnancy>
@@ -336,20 +336,20 @@
 					 "included.coded.values" : "NAUSEA AND VOMITING;HEADACHE;EDEMA, HANDS OR FACE;FEVER;
 					 						    DYSURIA;GENITAL SORES;COUGH;NIGHT SWEATS;
 					 						    VAGINAL DISCHARGE;VAGINAL BLEEDING;UTERINE CONTRACTION"})
-		#set($reviewSystems = $functions.eval($patient, "Historical Multi Coded", $map))
+		#set($reviewSystems = $!{functions.eval($patient, "Historical Multi Coded", $map)})
 		#set($map = {"evaluated.concept" : "FOETAL MOVEMENT"})
-		#set($foetalMovement = $functions.eval($patient, "Historical Single Coded", $map))
-		#foreach ($reviewSystem in $reviewSystems)
+		#set($foetalMovement = $!{functions.eval($patient, "Historical Single Coded", $map)})
+		#foreach (${reviewSystem} in ${reviewSystems})
 		<present-pregnancy>
-			#set($encounterCounter = $velocityCount - 1)
-			#foreach ($element in $reviewSystem)
-				#if($velocityCount == 1)
-					<element>$functions.formatDate($element.getResultDate())</element>
+			#set(${encounterCounter} = ${velocityCount} - 1)
+			#foreach (${element} in ${reviewSystem})
+				#if(${velocityCount} == 1)
+					<element>$!{functions.formatDate($!{element.getResultDate()})}</element>
 				#else
-					<element>$element</element>
+					<element>$!{element}</element>
 				#end
 			#end
-			<element>$foetalMovement.get($encounterCounter)</element>
+			<element>$!{foetalMovement.get($!{encounterCounter})}</element>
 		</present-pregnancy>
 		#end
 	</present-pregnancies>
@@ -376,20 +376,20 @@
 					 								  HEIGHT (CM);GENERAL EXAM FINDINGS;HEAD OR NECK EXAM FINDINGS;CARDIAC EXAM FINDINGS;
 					 								  RESPIRATORY EXAM FINDINGS;UROGENITAL EXAM FINDINGS;BREAST EXAM FINDINGS;FUNDAL HEIGHT;
 					 								  FOETAL HEART RATE;FOETAL PRESENTATION"})
-		#set($physicalExams = $functions.eval($patient, "Historical Multi Concept", $map))
-		#foreach ($physicalExam in $physicalExams)
+		#set($physicalExams = $!{functions.eval($patient, "Historical Multi Concept", $map)})
+		#foreach (${physicalExam} in ${physicalExams})
 		<physical-exam>
-			#foreach ($element in $physicalExam)
-				#if($velocityCount == 1)
-					<element>$functions.formatDate($element.getResultDate())</element>
-				#elseif($velocityCount == 4)
-					<element>$functions.makeInteger($element.toNumber()) / 
-				#elseif($velocityCount == 5)
-					$functions.makeInteger($element.toNumber())</element>
-				#elseif($velocityCount == 3 || $velocityCount == 15)
-					<element>$functions.makeInteger($element.toNumber())</element>
+			#foreach (${element} in ${physicalExam})
+				#if(${velocityCount} == 1)
+					<element>$!{functions.formatDate($!{element.getResultDate()})}</element>
+				#elseif(${velocityCount} == 4)
+					<element>$!{functions.makeInteger($!{element.toNumber()})} / 
+				#elseif(${velocityCount} == 5)
+					$!{functions.makeInteger($!{element.toNumber()})}</element>
+				#elseif(${velocityCount} == 3 || ${velocityCount} == 15)
+					<element>$!{functions.makeInteger($!{element.toNumber()})}</element>
 				#else
-					<element>$element</element>
+					<element>$!{element}</element>
 				#end
 			#end
 		</physical-exam>
@@ -399,27 +399,27 @@
 	<lab-tests>
 		<blood-group>
 			#set($map = {"evaluated.concept" : "BLOOD TYPING"})
-	    	#set($bloodTyping = $functions.eval($patient, "Initial Single Coded", $map))
+	    	#set($bloodTyping = $!{functions.eval($patient, "Initial Single Coded", $map)})
 	    	<value>$!{bloodTyping}</value>
-	    	<datetime>$functions.formatDate($bloodTyping.getResultDate())</datetime>
+	    	<datetime>$!{functions.formatDate($!{bloodTyping.getResultDate()})}</datetime>
 		</blood-group>
 		<rh>
 			#set($map = {"evaluated.concept" : "RHESUS FACTOR"})
-	    	#set($rhesus = $functions.eval($patient, "Initial Single Coded", $map))
+	    	#set($rhesus = $!{functions.eval($patient, "Initial Single Coded", $map)})
 	    	<value>$!{rhesus}</value>
-	    	<datetime>$functions.formatDate($rhesus.getResultDate())</datetime>
+	    	<datetime>$!{functions.formatDate($!{rhesus.getResultDate()})}</datetime>
 		</rh>
 		<antibody>
 			#set($map = {"evaluated.concept" : "ANTIBODY SCREEN"})
-	    	#set($antibody = $functions.eval($patient, "Initial Single Coded", $map))
+	    	#set($antibody = $!{functions.eval($patient, "Initial Single Coded", $map)})
 	    	<value>$!{antibody}</value>
-	    	<datetime>$functions.formatDate($antibody.getResultDate())</datetime>
+	    	<datetime>$!{functions.formatDate($!{antibody.getResultDate()})}</datetime>
 		</antibody>
 		<us>
 			#set($map = {"evaluated.concept" : "OBSTETRIC ULTRASOUND DONE"})
-	    	#set($us = $functions.eval($patient, "Initial Single Coded", $map))
+	    	#set($us = $!{functions.eval($patient, "Initial Single Coded", $map)})
 	    	<value>$!{us}</value>
-	    	<datetime>$functions.formatDate($us.getResultDate())</datetime>
+	    	<datetime>$!{functions.formatDate($!{us.getResultDate()})}</datetime>
 		</us>
 		<flowsheets>
 			<header>
@@ -433,14 +433,14 @@
 			</header>
 				#set($map = {"included.evaluated.concepts" : "HEMOGLOBIN;SERUM GLUCOSE;MALARIAL SMEAR;SERUM GLUCOSE;
 							 								  PRESENCE OF PROTEIN;PRESENCE OF SUGAR;PRESENCE OF LEUKOCYTES"})
-				#set($flowsheets = $functions.eval($patient, "Historical Multi Concept", $map))
-				#foreach ($flowsheet in $flowsheets)
+				#set($flowsheets = $!{functions.eval($patient, "Historical Multi Concept", $map)})
+				#foreach (${flowsheet} in ${flowsheets})
 				<flowsheet>
-					#foreach ($element in $flowsheet)
-						#if($velocityCount > 1)
+					#foreach (${element} in ${flowsheet})
+						#if(${velocityCount} > 1)
 						<element>
-							<value>$element</value>
-							<datetime>$functions.formatDate($element.getResultDate())</datetime>
+							<value>$!{element}</value>
+							<datetime>$!{functions.formatDate($!{element.getResultDate()})}</datetime>
 						</element>
 						#end
 					#end
@@ -470,14 +470,14 @@
 					 						   FOETAL MOVEMENT;SIGNS OF LABOR;METHOD OF DELIVERY;NEONATAL CARE;
 					 						   POSTPARTUM;WORK;PREMATURE RUPTURE OF MEMBRANES OR ANTEPARTUM HEMORRHAGE;
 					 						   INFANT FEEDING COUNSELING"})
-		#set($educationCounselings = $functions.eval($patient, "Historical Multi Coded", $map))
-		#foreach ($educationCounseling in $educationCounselings)
+		#set($educationCounselings = $!{functions.eval($patient, "Historical Multi Coded", $map)})
+		#foreach (${educationCounseling} in ${educationCounselings})
 		<education-counseling>
-			#foreach ($element in $educationCounseling)
-				#if($velocityCount == 1)
-					<element>$functions.formatDate($element.getResultDate())</element>
+			#foreach (${element} in ${educationCounseling})
+				#if(${velocityCount} == 1)
+					<element>$!{functions.formatDate($!{element.getResultDate()})}</element>
 				#else
-					<element>$element</element>
+					<element>$!{element}</element>
 				#end
 			#end
 		</education-counseling>
@@ -486,8 +486,8 @@
     
     <referrals>
 		#set($map = {"evaluated.concept" : "REFERRALS ORDERED"})
-		#set($referrals = $functions.eval($patient, "Latest Single Coded", $map))
+		#set($referrals = $!{functions.eval($patient, "Latest Single Coded", $map)})
 		<value>$!{referrals}</value>
-		<datetime>$functions.formatDate($referrals.getResultDate())</datetime>
+		<datetime>$!{functions.formatDate($!{referrals.getResultDate()})}</datetime>
     </referrals>
 </clinicalSummary>

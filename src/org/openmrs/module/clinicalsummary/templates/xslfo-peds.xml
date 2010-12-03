@@ -77,9 +77,9 @@
 				<!-- Begin Page Content -->
 				<fo:flow flow-name="xsl-region-body" font-family="Helvetica" font-size="10pt">
 					<fo:table table-layout="fixed" width="100%">
-						<fo:table-column column-width="25%" />
-						<fo:table-column column-width="25%" />
-						<fo:table-column column-width="10%" />
+						<fo:table-column column-width="26%" />
+						<fo:table-column column-width="26%" />
+						<fo:table-column column-width="8%" />
 						<fo:table-column column-width="20%" />
 						<fo:table-column column-width="20%" />
 						<fo:table-body>
@@ -91,11 +91,11 @@
 								</fo:table-cell>
 								<fo:table-cell text-align="center">
 									<fo:block font-weight="bold" font-style="italic" font-size="8pt">
-										<xsl:variable name="sequence" select="sequences/source" />
+										<xsl:variable name="source" select="reminders/sources/source" />
 										<xsl:variable name="total" select="count(reminders/reminder)" />
 										<xsl:for-each select="reminders/reminder">
-											<xsl:variable name="source" select="@source" />
-											<xsl:value-of select="$sequence[@name=$source]" />
+											<xsl:variable name="source_name" select="@source" />
+											<xsl:value-of select="$source[@name=$source_name]" />
 											<xsl:if test="position() &lt; $total">
 												<xsl:text>,</xsl:text>
 											</xsl:if>
@@ -680,23 +680,25 @@
 							7-Other(Explain)</fo:inline>
 					</fo:block>
 					<xsl:if test="reminders/reminder">
-						<fo:list-block font-size="12pt" space-before="6pt">
-							<xsl:for-each select="reminders/reminder">
-								<fo:list-item>
-									<fo:list-item-label end-indent="label-end()" text-align="right">
-										<fo:block>
-											<xsl:value-of select="position()" />.
-										</fo:block>
-									</fo:list-item-label>
-									<fo:list-item-body start-indent="body-start()">
-										<fo:block space-before="6pt">
-											<xsl:value-of select="." />
-											(___)
-										</fo:block>
-									</fo:list-item-body>
-								</fo:list-item>
-							</xsl:for-each>
-						</fo:list-block>
+						<xsl:if test="reminders/reminder/display='true'">
+							<fo:list-block font-size="12pt" space-before="6pt">
+									<xsl:for-each select="reminders/reminder">
+										<fo:list-item>
+											<fo:list-item-label end-indent="label-end()" text-align="right">
+												<fo:block>
+													<xsl:value-of select="position()" />.
+												</fo:block>
+											</fo:list-item-label>
+											<fo:list-item-body start-indent="body-start()">
+												<fo:block space-before="6pt">
+													<xsl:value-of select="." />
+													(___)
+												</fo:block>
+											</fo:list-item-body>
+										</fo:list-item>
+									</xsl:for-each>
+							</fo:list-block>
+						</xsl:if>
 					</xsl:if>
 				</fo:flow>
 			</fo:page-sequence>

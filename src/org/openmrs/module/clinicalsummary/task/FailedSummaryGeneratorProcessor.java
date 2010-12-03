@@ -42,20 +42,23 @@ public class FailedSummaryGeneratorProcessor {
 		
 		int counter = 0;
 		
-		Cohort cohort = new Cohort();
+		ExecutorService executorService = Executors.newFixedThreadPool(1);
 		for (SummaryError error : errors) {
+			Cohort cohort = new Cohort();
 			Patient patient = error.getPatient();
 			cohort.addMember(patient.getPatientId());
+			
 			summaryService.deleteError(error);
+			
+			GeneratorThread generatorThread = new GeneratorThread(cohort);
+			executorService.execute(generatorThread);
+			
+			if (log.isDebugEnabled())
+				log.debug("Generating " + cohort.size() + " summaries from failed list ...");
+			
+			counter++;
 			if (counter % 100 == 0)
 				Context.clearSession();
 		}
-		
-		if (log.isDebugEnabled())
-			log.debug("Generating " + cohort.size() + " summaries from failed list ...");
-		
-		GeneratorThread generatorThread = new GeneratorThread(cohort);
-		ExecutorService executorService = Executors.newFixedThreadPool(1);
-		executorService.execute(generatorThread);
 	}
 }
