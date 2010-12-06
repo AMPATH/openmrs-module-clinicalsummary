@@ -57,51 +57,54 @@ public class BabyStartARVReminderRule implements Rule {
 		Result reminder = new Result();
 		
 		Date birthdate = patient.getBirthdate();
-		Calendar birthdateCalendar = Calendar.getInstance();
-		birthdateCalendar.setTime(birthdate);
-		// 18 months after birthdate
-		birthdateCalendar.add(Calendar.MONTH, 18);
-		Date referenceDate = birthdateCalendar.getTime();
-		
-		Date now = new Date();
-		if (referenceDate.after(now)) {
-			// 4 weeks after birthdate
+		if (birthdate != null) {
+
+			Calendar birthdateCalendar = Calendar.getInstance();
 			birthdateCalendar.setTime(birthdate);
-			birthdateCalendar.add(Calendar.WEEK_OF_YEAR, 4);
-			referenceDate = birthdateCalendar.getTime();
+			// 18 months after birthdate
+			birthdateCalendar.add(Calendar.MONTH, 18);
+			Date referenceDate = birthdateCalendar.getTime();
 			
-			Concept positiveConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.POSITIVE);
-			
-			SummaryService service = Context.getService(SummaryService.class);
-			
-			LogicCriteria conceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.DNA_PCR_NAME);
-			LogicCriteria encounterCriteria = service.parseToken(SummaryDataSource.ENCOUNTER_TYPE).in(Collections.emptyList());
-			LogicCriteria criteria = conceptCriteria.and(encounterCriteria);
-			
-			Result obsResult = context.read(patient, service.getLogicDataSource("summary"), criteria);
-			
-			if (log.isDebugEnabled())
-				log.debug("Patient: " + patient.getPatientId() + ", elisa result: " + obsResult);
-			
-			// check if we have negative or positive
-			boolean dnaExist = false;
-			for (Result result : obsResult) {
-				if (result.getResultDate().after(referenceDate))
-					if (OpenmrsUtil.nullSafeEquals(positiveConcept, result.toConcept())) {
-						dnaExist = true;
-						break;
-					}
-			}
-			
-			if (dnaExist) {
-				ARVMedicationsRule arvMedicationsRule = new ARVMedicationsRule();
-				Result result = arvMedicationsRule.eval(context, patient, parameters);
+			Date now = new Date();
+			if (referenceDate.after(now)) {
+				// 4 weeks after birthdate
+				birthdateCalendar.setTime(birthdate);
+				birthdateCalendar.add(Calendar.WEEK_OF_YEAR, 4);
+				referenceDate = birthdateCalendar.getTime();
+				
+				Concept positiveConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.POSITIVE);
+				
+				SummaryService service = Context.getService(SummaryService.class);
+				
+				LogicCriteria conceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.DNA_PCR_NAME);
+				LogicCriteria encounterCriteria = service.parseToken(SummaryDataSource.ENCOUNTER_TYPE).in(Collections.emptyList());
+				LogicCriteria criteria = conceptCriteria.and(encounterCriteria);
+				
+				Result obsResult = context.read(patient, service.getLogicDataSource("summary"), criteria);
 				
 				if (log.isDebugEnabled())
-					log.debug("Patient: " + patient.getPatientId() + ", arv result: " + result);
+					log.debug("Patient: " + patient.getPatientId() + ", elisa result: " + obsResult);
 				
-				if (result.isEmpty())
-					reminder = new Result(REMINDER_TEXT);
+				// check if we have negative or positive
+				boolean dnaExist = false;
+				for (Result result : obsResult) {
+					if (result.getResultDate().after(referenceDate))
+						if (OpenmrsUtil.nullSafeEquals(positiveConcept, result.toConcept())) {
+							dnaExist = true;
+							break;
+						}
+				}
+				
+				if (dnaExist) {
+					ARVMedicationsRule arvMedicationsRule = new ARVMedicationsRule();
+					Result result = arvMedicationsRule.eval(context, patient, parameters);
+					
+					if (log.isDebugEnabled())
+						log.debug("Patient: " + patient.getPatientId() + ", arv result: " + result);
+					
+					if (result.isEmpty())
+						reminder = new Result(REMINDER_TEXT);
+				}
 			}
 		}
 		

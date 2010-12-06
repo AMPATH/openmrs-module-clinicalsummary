@@ -196,7 +196,7 @@
 			#set($map = {"evaluated.concept" : "RECIEVED ANTENATAL CARE SERVICE THIS VISIT",
 						 "included.coded.values" : "IRON SUPPLEMENT;COTRIMAZOLE;FOLIC ACID"})
 	    	#set($others = $!{functions.eval($patient, "Latest Multi Coded", $map)})
-			#foreach (${other} in ${others})
+			#foreach (${other} in $!{others})
 				<element>$!{other}</element>
 			#end
     	</medications>
@@ -210,12 +210,12 @@
 						 								  QUANTITY"})
 			#set($tt = $!{functions.eval($patient, "Historical Multi Concept", $map)})
 			#set(${latestTetanusBooster} = $!{tt.get(0)})
-	    		#set($total = $!{latestTetanusBooster.get(2).toNumber()})
-	    		#set(${given} = "RECEIVED")
-	    		#if ($!{latestTetanusBooster.get(1)} == '1')
-	    			#set(${total} = ${total} + 1)
-	    			#set(${received} = "RECEIVED")
-	    		#end
+	    	#set($total = $!{latestTetanusBooster.get(2).toNumber()})
+	    	#set(${given} = "RECEIVED")
+	    	#if ($!{latestTetanusBooster.get(1)} == '1')
+	    		#set($total = $total + 1)
+	    		#set(${received} = "RECEIVED")
+	    	#end
     		<received>
     			$!{received}
 	    	</received>
@@ -301,13 +301,13 @@
 					 								  METHOD OF DELIVERY;GENDER OF THE CHILD;BIRTH WEIGHT;
 					 								  MATERNAL, FETAL, OR CHILD COMPLICATIONS, FREETEXT"})
 		#set($previousPregnancies = $!{functions.eval($patient, "Initial Multi Concept", $map)})
-		#foreach (${previousPregnancy} in ${previousPregnancies})
+		#foreach (${previousPregnancy} in $!{previousPregnancies})
 		<previous-pregnancy>
-			#foreach (${element} in ${previousPregnancy})
+			#foreach (${element} in $!{previousPregnancy})
 				#if(${velocityCount} == 1 || ${velocityCount} == 2)
-					<element>$!{functions.formatDate($!{element.toDatetime()})}</element>
+					<element>$!{functions.formatDate(${element.toDatetime()})}</element>
 				#elseif (${velocityCount} == 3 || ${velocityCount} == 6)
-					<element>$!{functions.makeInteger($!{element.toNumber()})}</element>
+					<element>$!{functions.makeInteger(${element.toNumber()})}</element>
 				#else
 					<element>$!{element}</element>
 				#end
@@ -339,17 +339,17 @@
 		#set($reviewSystems = $!{functions.eval($patient, "Historical Multi Coded", $map)})
 		#set($map = {"evaluated.concept" : "FOETAL MOVEMENT"})
 		#set($foetalMovement = $!{functions.eval($patient, "Historical Single Coded", $map)})
-		#foreach (${reviewSystem} in ${reviewSystems})
+		#foreach (${reviewSystem} in $!{reviewSystems})
 		<present-pregnancy>
-			#set(${encounterCounter} = ${velocityCount} - 1)
-			#foreach (${element} in ${reviewSystem})
+			#set($encounterCounter = $velocityCount - 1)
+			#foreach (${element} in $!{reviewSystem})
 				#if(${velocityCount} == 1)
-					<element>$!{functions.formatDate($!{element.getResultDate()})}</element>
+					<element>$!{functions.formatDate(${element.getResultDate()})}</element>
 				#else
 					<element>$!{element}</element>
 				#end
 			#end
-			<element>$!{foetalMovement.get($!{encounterCounter})}</element>
+			<element>$!{foetalMovement.get($encounterCounter)}</element>
 		</present-pregnancy>
 		#end
 	</present-pregnancies>
@@ -377,9 +377,9 @@
 					 								  RESPIRATORY EXAM FINDINGS;UROGENITAL EXAM FINDINGS;BREAST EXAM FINDINGS;FUNDAL HEIGHT;
 					 								  FOETAL HEART RATE;FOETAL PRESENTATION"})
 		#set($physicalExams = $!{functions.eval($patient, "Historical Multi Concept", $map)})
-		#foreach (${physicalExam} in ${physicalExams})
+		#foreach (${physicalExam} in $!{physicalExams})
 		<physical-exam>
-			#foreach (${element} in ${physicalExam})
+			#foreach (${element} in $!{physicalExam})
 				#if(${velocityCount} == 1)
 					<element>$!{functions.formatDate($!{element.getResultDate()})}</element>
 				#elseif(${velocityCount} == 4)
@@ -434,9 +434,9 @@
 				#set($map = {"included.evaluated.concepts" : "HEMOGLOBIN;SERUM GLUCOSE;MALARIAL SMEAR;SERUM GLUCOSE;
 							 								  PRESENCE OF PROTEIN;PRESENCE OF SUGAR;PRESENCE OF LEUKOCYTES"})
 				#set($flowsheets = $!{functions.eval($patient, "Historical Multi Concept", $map)})
-				#foreach (${flowsheet} in ${flowsheets})
+				#foreach (${flowsheet} in $!{flowsheets})
 				<flowsheet>
-					#foreach (${element} in ${flowsheet})
+					#foreach (${element} in $!{flowsheet})
 						#if(${velocityCount} > 1)
 						<element>
 							<value>$!{element}</value>
@@ -471,9 +471,9 @@
 					 						   POSTPARTUM;WORK;PREMATURE RUPTURE OF MEMBRANES OR ANTEPARTUM HEMORRHAGE;
 					 						   INFANT FEEDING COUNSELING"})
 		#set($educationCounselings = $!{functions.eval($patient, "Historical Multi Coded", $map)})
-		#foreach (${educationCounseling} in ${educationCounselings})
+		#foreach (${educationCounseling} in $!{educationCounselings})
 		<education-counseling>
-			#foreach (${element} in ${educationCounseling})
+			#foreach (${element} in $!{educationCounseling})
 				#if(${velocityCount} == 1)
 					<element>$!{functions.formatDate($!{element.getResultDate()})}</element>
 				#else

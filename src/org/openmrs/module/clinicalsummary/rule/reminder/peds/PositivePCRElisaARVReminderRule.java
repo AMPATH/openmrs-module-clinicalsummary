@@ -58,113 +58,116 @@ public class PositivePCRElisaARVReminderRule implements Rule {
 		Result reminder = new Result();
 		
 		Date birthdate = patient.getBirthdate();
-		Calendar birthdateCalendar = Calendar.getInstance();
-		birthdateCalendar.setTime(birthdate);
-		// 18 months after birthdate
-		birthdateCalendar.add(Calendar.MONTH, 18);
-		Date eighteenMonths = birthdateCalendar.getTime();
-		// 6 weeks after birthdate
-		birthdateCalendar.setTime(birthdate);
-		birthdateCalendar.add(Calendar.YEAR, 5);
-		Date fiveYears = birthdateCalendar.getTime();
-		
-		Date now = new Date();
-		// only process if the patient is at least 18 months 
-		if (now.after(eighteenMonths) && now.before(fiveYears)) {
+		if (birthdate != null) {
+
+			Calendar birthdateCalendar = Calendar.getInstance();
+			birthdateCalendar.setTime(birthdate);
+			// 18 months after birthdate
+			birthdateCalendar.add(Calendar.MONTH, 18);
+			Date eighteenMonths = birthdateCalendar.getTime();
+			// 6 weeks after birthdate
+			birthdateCalendar.setTime(birthdate);
+			birthdateCalendar.add(Calendar.YEAR, 5);
+			Date fiveYears = birthdateCalendar.getTime();
 			
-			ARVMedicationsRule arvMedicationsRule = new ARVMedicationsRule();
-			Result arvResults = arvMedicationsRule.eval(context, patient, parameters);
-			
-			if (arvResults.isEmpty()) {
+			Date now = new Date();
+			// only process if the patient is at least 18 months 
+			if (now.after(eighteenMonths) && now.before(fiveYears)) {
 				
-				Concept positiveConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.POSITIVE);
+				ARVMedicationsRule arvMedicationsRule = new ARVMedicationsRule();
+				Result arvResults = arvMedicationsRule.eval(context, patient, parameters);
 				
-				birthdateCalendar.setTime(birthdate);
-				birthdateCalendar.add(Calendar.MONTH, 18);
-				Date referenceDate = birthdateCalendar.getTime();
-				
-				SummaryService service = Context.getService(SummaryService.class);
-				
-				LogicCriteria conceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.ELISA_NAME);
-				LogicCriteria encounterCriteria = service.parseToken(SummaryDataSource.ENCOUNTER_TYPE).in(Collections.emptyList());
-				LogicCriteria criteria = conceptCriteria.and(encounterCriteria);
-				
-				Result obsResult = context.read(patient, service.getLogicDataSource("summary"), criteria);
-				
-				if (log.isDebugEnabled())
-					log.debug("Patient: " + patient.getPatientId() + ", elisa result: " + obsResult);
-				
-				// check if we have negative or positive
-				boolean elisaPositive = false;
-				for (Result result : obsResult) {
-					if (result.getResultDate().after(referenceDate))
-						if (OpenmrsUtil.nullSafeEquals(positiveConcept, result.toConcept())) {
-							elisaPositive = true;
-							break;
-						}
-				}
-				
-				birthdateCalendar.setTime(birthdate);
-				birthdateCalendar.add(Calendar.WEEK_OF_YEAR, 4);
-				referenceDate = birthdateCalendar.getTime();
-				
-				conceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.DNA_PCR_NAME);
-				encounterCriteria = service.parseToken(SummaryDataSource.ENCOUNTER_TYPE).in(Collections.emptyList());
-				criteria = conceptCriteria.and(encounterCriteria);
-				
-				obsResult = context.read(patient, service.getLogicDataSource("summary"), criteria);
-				
-				if (log.isDebugEnabled())
-					log.debug("Patient: " + patient.getPatientId() + ", dna pcr result: " + obsResult);
-				
-				// check if we have negative or positive
-				boolean dnaPositive = false;
-				for (Result result : obsResult) {
-					if (result.getResultDate().after(referenceDate))
-						if (OpenmrsUtil.nullSafeEquals(positiveConcept, result.toConcept())) {
-							dnaPositive = true;
-							break;
-						}
-				}
-				
-				if (elisaPositive || dnaPositive) {
+				if (arvResults.isEmpty()) {
 					
-					conceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.CD4_PERCENT);
+					Concept positiveConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.POSITIVE);
+					
+					birthdateCalendar.setTime(birthdate);
+					birthdateCalendar.add(Calendar.MONTH, 18);
+					Date referenceDate = birthdateCalendar.getTime();
+					
+					SummaryService service = Context.getService(SummaryService.class);
+					
+					LogicCriteria conceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.ELISA_NAME);
+					LogicCriteria encounterCriteria = service.parseToken(SummaryDataSource.ENCOUNTER_TYPE).in(Collections.emptyList());
+					LogicCriteria criteria = conceptCriteria.and(encounterCriteria);
+					
+					Result obsResult = context.read(patient, service.getLogicDataSource("summary"), criteria);
+					
+					if (log.isDebugEnabled())
+						log.debug("Patient: " + patient.getPatientId() + ", elisa result: " + obsResult);
+					
+					// check if we have negative or positive
+					boolean elisaPositive = false;
+					for (Result result : obsResult) {
+						if (result.getResultDate().after(referenceDate))
+							if (OpenmrsUtil.nullSafeEquals(positiveConcept, result.toConcept())) {
+								elisaPositive = true;
+								break;
+							}
+					}
+					
+					birthdateCalendar.setTime(birthdate);
+					birthdateCalendar.add(Calendar.WEEK_OF_YEAR, 4);
+					referenceDate = birthdateCalendar.getTime();
+					
+					conceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.DNA_PCR_NAME);
 					encounterCriteria = service.parseToken(SummaryDataSource.ENCOUNTER_TYPE).in(Collections.emptyList());
 					criteria = conceptCriteria.and(encounterCriteria);
 					
 					obsResult = context.read(patient, service.getLogicDataSource("summary"), criteria);
-					boolean cd4Percent = false;
-					if (!obsResult.isEmpty()) {
-						Result latestCD4Percent = obsResult.latest();
-						if (latestCD4Percent.toNumber() < 25)
-							cd4Percent = true;
+					
+					if (log.isDebugEnabled())
+						log.debug("Patient: " + patient.getPatientId() + ", dna pcr result: " + obsResult);
+					
+					// check if we have negative or positive
+					boolean dnaPositive = false;
+					for (Result result : obsResult) {
+						if (result.getResultDate().after(referenceDate))
+							if (OpenmrsUtil.nullSafeEquals(positiveConcept, result.toConcept())) {
+								dnaPositive = true;
+								break;
+							}
 					}
 					
-					PedsWHOStageRule pedsWHOStageRule = new PedsWHOStageRule();
-					Result pedsWHOStage = pedsWHOStageRule.eval(context, patient, parameters);
-					boolean whoStage = false;
-					if (!pedsWHOStage.isEmpty())
-						if (pedsWHOStage.toNumber() == 3 || pedsWHOStage.toNumber() == 4)
-							whoStage = true;
-					
-					if (cd4Percent || whoStage) {
-						String message = " positive";
-						if (elisaPositive)
-							message = message + " ELISA,";
-						if (dnaPositive)
-							message = message + " DNA PCR,";
-						message = message.substring(0, message.length() - 1);
-						message = message + " AND";
-						if (cd4Percent)
-							message = message + " CD4 Percent  &lt; 25,";
-						if (whoStage)
-							message = message + " WHO Stage is 3 or 4,";
-						message = message.substring(0, message.length() - 1);
-						reminder = new Result(REMINDER_TEXT + message);
+					if (elisaPositive || dnaPositive) {
+						
+						conceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.CD4_PERCENT);
+						encounterCriteria = service.parseToken(SummaryDataSource.ENCOUNTER_TYPE).in(Collections.emptyList());
+						criteria = conceptCriteria.and(encounterCriteria);
+						
+						obsResult = context.read(patient, service.getLogicDataSource("summary"), criteria);
+						boolean cd4Percent = false;
+						if (!obsResult.isEmpty()) {
+							Result latestCD4Percent = obsResult.latest();
+							if (latestCD4Percent.toNumber() < 25)
+								cd4Percent = true;
+						}
+						
+						PedsWHOStageRule pedsWHOStageRule = new PedsWHOStageRule();
+						Result pedsWHOStage = pedsWHOStageRule.eval(context, patient, parameters);
+						boolean whoStage = false;
+						if (!pedsWHOStage.isEmpty())
+							if (pedsWHOStage.toNumber() == 3 || pedsWHOStage.toNumber() == 4)
+								whoStage = true;
+						
+						if (cd4Percent || whoStage) {
+							String message = " positive";
+							if (elisaPositive)
+								message = message + " ELISA,";
+							if (dnaPositive)
+								message = message + " DNA PCR,";
+							message = message.substring(0, message.length() - 1);
+							message = message + " AND";
+							if (cd4Percent)
+								message = message + " CD4 Percent  &lt; 25,";
+							if (whoStage)
+								message = message + " WHO Stage is 3 or 4,";
+							message = message.substring(0, message.length() - 1);
+							reminder = new Result(REMINDER_TEXT + message);
+						}
 					}
+					
 				}
-				
 			}
 		}
 		

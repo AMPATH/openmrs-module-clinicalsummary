@@ -41,7 +41,6 @@ public class FailedSummaryGeneratorProcessor {
 		List<SummaryError> errors = summaryService.getAllErrors();
 		
 		int counter = 0;
-		
 		ExecutorService executorService = Executors.newFixedThreadPool(1);
 		for (SummaryError error : errors) {
 			Cohort cohort = new Cohort();
@@ -54,7 +53,7 @@ public class FailedSummaryGeneratorProcessor {
 			executorService.execute(generatorThread);
 			
 			if (log.isDebugEnabled())
-				log.debug("Generating " + cohort.size() + " summaries from failed list ...");
+				log.debug("Generating " + patient.getPatientId() + " summaries from failed list ...");
 			
 			counter++;
 			if (counter % 100 == 0)

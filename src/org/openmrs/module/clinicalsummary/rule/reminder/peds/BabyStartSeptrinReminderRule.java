@@ -57,56 +57,59 @@ public class BabyStartSeptrinReminderRule implements Rule {
 		Result reminder = new Result();
 		
 		Date birthdate = patient.getBirthdate();
-		Calendar birthdateCalendar = Calendar.getInstance();
-		birthdateCalendar.setTime(birthdate);
-		// 18 months after birthdate
-		birthdateCalendar.add(Calendar.WEEK_OF_YEAR, 6);
-		Date sixWeeks = birthdateCalendar.getTime();
-		// 6 weeks after birthdate
-		birthdateCalendar.setTime(birthdate);
-		birthdateCalendar.add(Calendar.MONTH, 18);
-		Date eighteenMonths = birthdateCalendar.getTime();
-		
-		Date now = new Date();
-		// only process if the patient is at least 18 months 
-		if (now.after(sixWeeks) && now.before(eighteenMonths)) {
+		if (birthdate != null) {
+
+			Calendar birthdateCalendar = Calendar.getInstance();
+			birthdateCalendar.setTime(birthdate);
+			// 18 months after birthdate
+			birthdateCalendar.add(Calendar.WEEK_OF_YEAR, 6);
+			Date sixWeeks = birthdateCalendar.getTime();
+			// 6 weeks after birthdate
+			birthdateCalendar.setTime(birthdate);
+			birthdateCalendar.add(Calendar.MONTH, 18);
+			Date eighteenMonths = birthdateCalendar.getTime();
 			
-			PCPMedicationsRule pcpMedicationsRule = new PCPMedicationsRule();
-			Result pcpResults = pcpMedicationsRule.eval(context, patient, parameters);
-			
-			if (pcpResults.isEmpty()) {
+			Date now = new Date();
+			// only process if the patient is at least 18 months 
+			if (now.after(sixWeeks) && now.before(eighteenMonths)) {
 				
-				SummaryService service = Context.getService(SummaryService.class);
+				PCPMedicationsRule pcpMedicationsRule = new PCPMedicationsRule();
+				Result pcpResults = pcpMedicationsRule.eval(context, patient, parameters);
 				
-				birthdateCalendar.setTime(birthdate);
-				birthdateCalendar.add(Calendar.WEEK_OF_YEAR, 4);
-				Date referenceDate = birthdateCalendar.getTime();
-				
-				LogicCriteria conceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.DNA_PCR_NAME);
-				LogicCriteria encounterCriteria = service.parseToken(SummaryDataSource.ENCOUNTER_TYPE).in(Collections.emptyList());
-				LogicCriteria criteria = conceptCriteria.and(encounterCriteria);
-				
-				Result obsResult = context.read(patient, service.getLogicDataSource("summary"), criteria);
-				
-				if (log.isDebugEnabled())
-					log.debug("Patient: " + patient.getPatientId() + ", dna pcr result: " + obsResult);
-				
-				Concept negativeConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.NEGATIVE);
-				
-				// check if we have negative or positive
-				int negativeCount = 0;
-				for (Result result : obsResult) {
-					if (result.getResultDate().after(referenceDate))
-						if (OpenmrsUtil.nullSafeEquals(negativeConcept, result.toConcept())) {
-							negativeCount ++;
-							if (negativeCount >= 2)
-								break;
-						}
+				if (pcpResults.isEmpty()) {
+					
+					SummaryService service = Context.getService(SummaryService.class);
+					
+					birthdateCalendar.setTime(birthdate);
+					birthdateCalendar.add(Calendar.WEEK_OF_YEAR, 4);
+					Date referenceDate = birthdateCalendar.getTime();
+					
+					LogicCriteria conceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.DNA_PCR_NAME);
+					LogicCriteria encounterCriteria = service.parseToken(SummaryDataSource.ENCOUNTER_TYPE).in(Collections.emptyList());
+					LogicCriteria criteria = conceptCriteria.and(encounterCriteria);
+					
+					Result obsResult = context.read(patient, service.getLogicDataSource("summary"), criteria);
+					
+					if (log.isDebugEnabled())
+						log.debug("Patient: " + patient.getPatientId() + ", dna pcr result: " + obsResult);
+					
+					Concept negativeConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.NEGATIVE);
+					
+					// check if we have negative or positive
+					int negativeCount = 0;
+					for (Result result : obsResult) {
+						if (result.getResultDate().after(referenceDate))
+							if (OpenmrsUtil.nullSafeEquals(negativeConcept, result.toConcept())) {
+								negativeCount ++;
+								if (negativeCount >= 2)
+									break;
+							}
+					}
+					
+					if (negativeCount < 2)
+						reminder = new Result(REMINDER_TEXT);
+					
 				}
-				
-				if (negativeCount < 2)
-					reminder = new Result(REMINDER_TEXT);
-				
 			}
 		}
 		

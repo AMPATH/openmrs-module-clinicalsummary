@@ -56,102 +56,104 @@ public class PositivePCRElisaCD4ReminderRule implements Rule {
 		Result reminder = new Result();
 		
 		Date birthdate = patient.getBirthdate();
-		Calendar birthdateCalendar = Calendar.getInstance();
-		birthdateCalendar.setTime(birthdate);
-		// 4 weeks after birthdate
-		birthdateCalendar.add(Calendar.MONTH, 18);
-		Date referenceDate = birthdateCalendar.getTime();
-		
-		Concept positiveConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.POSITIVE);
-		
-		SummaryService service = Context.getService(SummaryService.class);
-		
-		LogicCriteria conceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.ELISA_NAME);
-		LogicCriteria encounterCriteria = service.parseToken(SummaryDataSource.ENCOUNTER_TYPE).in(Collections.emptyList());
-		LogicCriteria criteria = conceptCriteria.and(encounterCriteria);
-		
-		Result obsResult = context.read(patient, service.getLogicDataSource("summary"), criteria);
-		
-		if (log.isDebugEnabled())
-			log.debug("Patient: " + patient.getPatientId() + ", elisa result: " + obsResult);
-		
-		// check if we have negative or positive
-		boolean elisaExist = false;
-		for (Result result : obsResult) {
-			if (result.getResultDate().after(referenceDate))
-				if (OpenmrsUtil.nullSafeEquals(positiveConcept, result.toConcept())) {
-					elisaExist = true;
-					break;
-				}
-		}
-		
-		birthdateCalendar.setTime(birthdate);
-		birthdateCalendar.add(Calendar.WEEK_OF_YEAR, 4);
-		referenceDate = birthdateCalendar.getTime();
-		
-		conceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.DNA_PCR_NAME);
-		encounterCriteria = service.parseToken(SummaryDataSource.ENCOUNTER_TYPE).in(Collections.emptyList());
-		criteria = conceptCriteria.and(encounterCriteria);
-		
-		obsResult = context.read(patient, service.getLogicDataSource("summary"), criteria);
-		
-		if (log.isDebugEnabled())
-			log.debug("Patient: " + patient.getPatientId() + ", dna pcr result: " + obsResult);
-		
-		// check if we have negative or positive
-		boolean dnaExist = false;
-		for (Result result : obsResult) {
-			if (result.getResultDate().after(referenceDate))
-				if (OpenmrsUtil.nullSafeEquals(positiveConcept, result.toConcept())) {
-					dnaExist = true;
-					break;
-				}
-		}
-		
-		if (elisaExist || dnaExist) {
+		if (birthdate != null) {
+
+			Calendar birthdateCalendar = Calendar.getInstance();
+			birthdateCalendar.setTime(birthdate);
+			// 4 weeks after birthdate
+			birthdateCalendar.add(Calendar.MONTH, 18);
+			Date referenceDate = birthdateCalendar.getTime();
 			
-			Concept cd4PanelConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.CD4_PANEL_NAME);
+			Concept positiveConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.POSITIVE);
 			
-			conceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.CD4_NAME);
+			SummaryService service = Context.getService(SummaryService.class);
+			
+			LogicCriteria conceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.ELISA_NAME);
+			LogicCriteria encounterCriteria = service.parseToken(SummaryDataSource.ENCOUNTER_TYPE).in(Collections.emptyList());
+			LogicCriteria criteria = conceptCriteria.and(encounterCriteria);
+			
+			Result obsResult = context.read(patient, service.getLogicDataSource("summary"), criteria);
+			
+			if (log.isDebugEnabled())
+				log.debug("Patient: " + patient.getPatientId() + ", elisa result: " + obsResult);
+			
+			// check if we have negative or positive
+			boolean elisaExist = false;
+			for (Result result : obsResult) {
+				if (result.getResultDate().after(referenceDate))
+					if (OpenmrsUtil.nullSafeEquals(positiveConcept, result.toConcept())) {
+						elisaExist = true;
+						break;
+					}
+			}
+			
+			birthdateCalendar.setTime(birthdate);
+			birthdateCalendar.add(Calendar.WEEK_OF_YEAR, 4);
+			referenceDate = birthdateCalendar.getTime();
+			
+			conceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.DNA_PCR_NAME);
 			encounterCriteria = service.parseToken(SummaryDataSource.ENCOUNTER_TYPE).in(Collections.emptyList());
 			criteria = conceptCriteria.and(encounterCriteria);
 			
 			obsResult = context.read(patient, service.getLogicDataSource("summary"), criteria);
 			
 			if (log.isDebugEnabled())
-				log.debug("Patient: " + patient.getPatientId() + ", cd4 result: " + obsResult);
+				log.debug("Patient: " + patient.getPatientId() + ", dna pcr result: " + obsResult);
 			
-			// if there's no result, then check if they already order one
-			if (obsResult.isEmpty()) {
+			// check if we have negative or positive
+			boolean dnaExist = false;
+			for (Result result : obsResult) {
+				if (result.getResultDate().after(referenceDate))
+					if (OpenmrsUtil.nullSafeEquals(positiveConcept, result.toConcept())) {
+						dnaExist = true;
+						break;
+					}
+			}
+			
+			if (elisaExist || dnaExist) {
 				
-				Calendar calendar = Calendar.getInstance();
-				calendar.add(Calendar.MONTH, -6);
-				Date sixMonths = calendar.getTime();
+				Concept cd4PanelConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.CD4_PANEL_NAME);
 				
-				LogicCriteria testedConceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.TESTS_ORDERED);
-				LogicCriteria testedCriteria = testedConceptCriteria.and(encounterCriteria);
+				conceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.CD4_NAME);
+				encounterCriteria = service.parseToken(SummaryDataSource.ENCOUNTER_TYPE).in(Collections.emptyList());
+				criteria = conceptCriteria.and(encounterCriteria);
 				
-				Result testedResult = context.read(patient, service.getLogicDataSource("summary"), testedCriteria);
+				obsResult = context.read(patient, service.getLogicDataSource("summary"), criteria);
 				
 				if (log.isDebugEnabled())
-					log.debug("Patient: " + patient.getPatientId() + ", cd4 test result: " + testedResult);
+					log.debug("Patient: " + patient.getPatientId() + ", cd4 result: " + obsResult);
 				
-				boolean testExist = false;
-				
-				for (Result result : testedResult) {
-					// only process the date after the reference date
-					if (result.getResultDate().after(sixMonths))
-						if (OpenmrsUtil.nullSafeEquals(result.toConcept(), cd4PanelConcept)) {
-							testExist = true;
-							break;
-						}
+				// if there's no result, then check if they already order one
+				if (obsResult.isEmpty()) {
+					
+					Calendar calendar = Calendar.getInstance();
+					calendar.add(Calendar.MONTH, -6);
+					Date sixMonths = calendar.getTime();
+					
+					LogicCriteria testedConceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.TESTS_ORDERED);
+					LogicCriteria testedCriteria = testedConceptCriteria.and(encounterCriteria);
+					
+					Result testedResult = context.read(patient, service.getLogicDataSource("summary"), testedCriteria);
+					
+					if (log.isDebugEnabled())
+						log.debug("Patient: " + patient.getPatientId() + ", cd4 test result: " + testedResult);
+					
+					boolean testExist = false;
+					
+					for (Result result : testedResult) {
+						// only process the date after the reference date
+						if (result.getResultDate().after(sixMonths))
+							if (OpenmrsUtil.nullSafeEquals(result.toConcept(), cd4PanelConcept)) {
+								testExist = true;
+								break;
+							}
+					}
+					
+					if (!testExist)
+						reminder = new Result(REMINDER_TEXT);
 				}
-				
-				if (!testExist)
-					reminder = new Result(REMINDER_TEXT);
 			}
 		}
-		
 		return reminder;
 	}
 	

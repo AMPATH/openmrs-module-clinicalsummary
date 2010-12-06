@@ -56,80 +56,82 @@ public class RepeatPCRReminderRule implements Rule {
 		Result reminder = new Result();
 		
 		Date birthdate = patient.getBirthdate();
-		Calendar birthdateCalendar = Calendar.getInstance();
-		birthdateCalendar.setTime(birthdate);
-		// 18 months after birthdate
-		birthdateCalendar.add(Calendar.MONTH, 18);
-		Date eighteenMonths = birthdateCalendar.getTime();
-		// 6 weeks after birthdate
-		birthdateCalendar.setTime(birthdate);
-		birthdateCalendar.add(Calendar.WEEK_OF_YEAR, 6);
-		Date sixWeeks = birthdateCalendar.getTime();
-		
-		Date now = new Date();
-		// only process if the patient is at least 18 months 
-		if (now.after(sixWeeks) && now.before(eighteenMonths)) {
-			
-			// 4 weeks after birthdate
-			birthdateCalendar.setTime(birthdate);
-			birthdateCalendar.add(Calendar.WEEK_OF_YEAR, 4);
-			Date referenceDate = birthdateCalendar.getTime();
-			
-			Concept positiveConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.POSITIVE);
-			Concept negativeConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.NEGATIVE);
-			
-			SummaryService service = Context.getService(SummaryService.class);
-			
-			LogicCriteria conceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.DNA_PCR_NAME);
-			LogicCriteria encounterCriteria = service.parseToken(SummaryDataSource.ENCOUNTER_TYPE).in(Collections.emptyList());
-			LogicCriteria criteria = conceptCriteria.and(encounterCriteria);
-			
-			Result obsResult = context.read(patient, service.getLogicDataSource("summary"), criteria);
-			
-			if (log.isDebugEnabled())
-				log.debug("Patient: " + patient.getPatientId() + ", dna pcr result: " + obsResult);
-			
-			// check if we have negative or positive
-			int resultCount = 0;
-			for (Result result : obsResult)
-				if (result.getResultDate().after(referenceDate))
-					if (OpenmrsUtil.nullSafeEquals(positiveConcept, result.toConcept())
-					        || OpenmrsUtil.nullSafeEquals(negativeConcept, result.toConcept()))
-						resultCount++;
+		if (birthdate != null) {
 
-			// when we see there's 1 result "NEGATIVE" or "POSITIVE", we will search for the test or throw reminder
-			if (resultCount < 2) {
+			Calendar birthdateCalendar = Calendar.getInstance();
+			birthdateCalendar.setTime(birthdate);
+			// 18 months after birthdate
+			birthdateCalendar.add(Calendar.MONTH, 18);
+			Date eighteenMonths = birthdateCalendar.getTime();
+			// 6 weeks after birthdate
+			birthdateCalendar.setTime(birthdate);
+			birthdateCalendar.add(Calendar.WEEK_OF_YEAR, 6);
+			Date sixWeeks = birthdateCalendar.getTime();
+			
+			Date now = new Date();
+			// only process if the patient is at least 18 months 
+			if (now.after(sixWeeks) && now.before(eighteenMonths)) {
 				
-				Calendar nowCalendar = Calendar.getInstance();
-				nowCalendar.setTime(now);
-				// 6 months before
-				nowCalendar.add(Calendar.MONTH, -6);
-				// reference date is whichever is the latest between dob and 6 months ago
-				Date testReferenceDate = referenceDate.after(nowCalendar.getTime()) ? referenceDate : nowCalendar.getTime();
+				// 4 weeks after birthdate
+				birthdateCalendar.setTime(birthdate);
+				birthdateCalendar.add(Calendar.WEEK_OF_YEAR, 4);
+				Date referenceDate = birthdateCalendar.getTime();
 				
-				Concept dnaConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.DNA_PCR_NAME);
+				Concept positiveConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.POSITIVE);
+				Concept negativeConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.NEGATIVE);
 				
-				LogicCriteria testedConceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.TESTS_ORDERED);
-				LogicCriteria testedCriteria = testedConceptCriteria.and(encounterCriteria);
+				SummaryService service = Context.getService(SummaryService.class);
 				
-				Result testedResult = context.read(patient, service.getLogicDataSource("summary"), testedCriteria);
+				LogicCriteria conceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.DNA_PCR_NAME);
+				LogicCriteria encounterCriteria = service.parseToken(SummaryDataSource.ENCOUNTER_TYPE).in(Collections.emptyList());
+				LogicCriteria criteria = conceptCriteria.and(encounterCriteria);
+				
+				Result obsResult = context.read(patient, service.getLogicDataSource("summary"), criteria);
 				
 				if (log.isDebugEnabled())
-					log.debug("Patient: " + patient.getPatientId() + ", dna pcr test result: " + testedResult);
+					log.debug("Patient: " + patient.getPatientId() + ", dna pcr result: " + obsResult);
 				
-				int testCount = 0;
-				for (Result result : testedResult)
-					// only process the date after the reference date
-					if (result.getResultDate().after(testReferenceDate))
-						if (OpenmrsUtil.nullSafeEquals(result.toConcept(), dnaConcept))
-							testCount++;
-				
-				// if total the test and result is less than 2
-				if (testCount + resultCount < 2)
-					reminder = new Result(REMINDER_TEXT);
+				// check if we have negative or positive
+				int resultCount = 0;
+				for (Result result : obsResult)
+					if (result.getResultDate().after(referenceDate))
+						if (OpenmrsUtil.nullSafeEquals(positiveConcept, result.toConcept())
+						        || OpenmrsUtil.nullSafeEquals(negativeConcept, result.toConcept()))
+							resultCount++;
+
+				// when we see there's 1 result "NEGATIVE" or "POSITIVE", we will search for the test or throw reminder
+				if (resultCount < 2) {
+					
+					Calendar nowCalendar = Calendar.getInstance();
+					nowCalendar.setTime(now);
+					// 6 months before
+					nowCalendar.add(Calendar.MONTH, -6);
+					// reference date is whichever is the latest between dob and 6 months ago
+					Date testReferenceDate = referenceDate.after(nowCalendar.getTime()) ? referenceDate : nowCalendar.getTime();
+					
+					Concept dnaConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.DNA_PCR_NAME);
+					
+					LogicCriteria testedConceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.TESTS_ORDERED);
+					LogicCriteria testedCriteria = testedConceptCriteria.and(encounterCriteria);
+					
+					Result testedResult = context.read(patient, service.getLogicDataSource("summary"), testedCriteria);
+					
+					if (log.isDebugEnabled())
+						log.debug("Patient: " + patient.getPatientId() + ", dna pcr test result: " + testedResult);
+					
+					int testCount = 0;
+					for (Result result : testedResult)
+						// only process the date after the reference date
+						if (result.getResultDate().after(testReferenceDate))
+							if (OpenmrsUtil.nullSafeEquals(result.toConcept(), dnaConcept))
+								testCount++;
+					
+					// if total the test and result is less than 2
+					if (testCount + resultCount < 2)
+						reminder = new Result(REMINDER_TEXT);
+				}
 			}
 		}
-		
 		return reminder;
 	}
 	

@@ -57,51 +57,54 @@ public class ChildStartSeptrinReminderRule implements Rule {
 		Result reminder = new Result();
 		
 		Date birthdate = patient.getBirthdate();
-		Calendar birthdateCalendar = Calendar.getInstance();
-		birthdateCalendar.setTime(birthdate);
-		// 18 months after birthdate
-		birthdateCalendar.add(Calendar.MONTH, 18);
-		Date eighteenMonths = birthdateCalendar.getTime();
-		
-		Date now = new Date();
-		// only process if the patient is at least 18 months 
-		if (now.after(eighteenMonths)) {
+		if (birthdate != null) {
 			
-			PCPMedicationsRule pcpMedicationsRule = new PCPMedicationsRule();
-			Result pcpResults = pcpMedicationsRule.eval(context, patient, parameters);
+			Calendar birthdateCalendar = Calendar.getInstance();
+			birthdateCalendar.setTime(birthdate);
+			// 18 months after birthdate
+			birthdateCalendar.add(Calendar.MONTH, 18);
+			Date eighteenMonths = birthdateCalendar.getTime();
 			
-			if (pcpResults.isEmpty()) {
+			Date now = new Date();
+			// only process if the patient is at least 18 months 
+			if (now.after(eighteenMonths)) {
 				
-				SummaryService service = Context.getService(SummaryService.class);
+				PCPMedicationsRule pcpMedicationsRule = new PCPMedicationsRule();
+				Result pcpResults = pcpMedicationsRule.eval(context, patient, parameters);
 				
-				birthdateCalendar.setTime(birthdate);
-				birthdateCalendar.add(Calendar.MONTH, 18);
-				Date referenceDate = birthdateCalendar.getTime();
-				
-				LogicCriteria conceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.ELISA_NAME);
-				LogicCriteria encounterCriteria = service.parseToken(SummaryDataSource.ENCOUNTER_TYPE).in(Collections.emptyList());
-				LogicCriteria criteria = conceptCriteria.and(encounterCriteria);
-				
-				Result obsResult = context.read(patient, service.getLogicDataSource("summary"), criteria);
-				
-				if (log.isDebugEnabled())
-					log.debug("Patient: " + patient.getPatientId() + ", elisa result: " + obsResult);
-				
-				Concept positiveConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.POSITIVE);
-				
-				// check if we have negative or positive
-				boolean positiveFound = false;
-				for (Result result : obsResult) {
-					if (result.getResultDate().after(referenceDate))
-						if (OpenmrsUtil.nullSafeEquals(positiveConcept, result.toConcept())) {
-							positiveFound = true;
-							break;
-						}
+				if (pcpResults.isEmpty()) {
+					
+					SummaryService service = Context.getService(SummaryService.class);
+					
+					birthdateCalendar.setTime(birthdate);
+					birthdateCalendar.add(Calendar.MONTH, 18);
+					Date referenceDate = birthdateCalendar.getTime();
+					
+					LogicCriteria conceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.ELISA_NAME);
+					LogicCriteria encounterCriteria = service.parseToken(SummaryDataSource.ENCOUNTER_TYPE).in(Collections.emptyList());
+					LogicCriteria criteria = conceptCriteria.and(encounterCriteria);
+					
+					Result obsResult = context.read(patient, service.getLogicDataSource("summary"), criteria);
+					
+					if (log.isDebugEnabled())
+						log.debug("Patient: " + patient.getPatientId() + ", elisa result: " + obsResult);
+					
+					Concept positiveConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.POSITIVE);
+					
+					// check if we have negative or positive
+					boolean positiveFound = false;
+					for (Result result : obsResult) {
+						if (result.getResultDate().after(referenceDate))
+							if (OpenmrsUtil.nullSafeEquals(positiveConcept, result.toConcept())) {
+								positiveFound = true;
+								break;
+							}
+					}
+					
+					if (positiveFound)
+						reminder = new Result(REMINDER_TEXT);
+					
 				}
-				
-				if (positiveFound)
-					reminder = new Result(REMINDER_TEXT);
-				
 			}
 		}
 		

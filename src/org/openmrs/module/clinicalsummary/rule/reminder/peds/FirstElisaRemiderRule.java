@@ -56,75 +56,77 @@ public class FirstElisaRemiderRule implements Rule {
 		Result reminder = new Result();
 		
 		Date birthdate = patient.getBirthdate();
-		Calendar birthdateCalendar = Calendar.getInstance();
-		birthdateCalendar.setTime(birthdate);
-		// 18 months after birthdate
-		birthdateCalendar.add(Calendar.MONTH, 18);
-		Date referenceDate = birthdateCalendar.getTime();
-		
-		Date now = new Date();
-		// only process if the patient is at least 18 months 
-		if (referenceDate.before(now)) {
-			Concept positiveConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.POSITIVE);
-			Concept negativeConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.NEGATIVE);
+		if (birthdate != null) {
+
+			Calendar birthdateCalendar = Calendar.getInstance();
+			birthdateCalendar.setTime(birthdate);
+			// 18 months after birthdate
+			birthdateCalendar.add(Calendar.MONTH, 18);
+			Date referenceDate = birthdateCalendar.getTime();
 			
-			SummaryService service = Context.getService(SummaryService.class);
-			
-			LogicCriteria conceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.ELISA_NAME);
-			LogicCriteria encounterCriteria = service.parseToken(SummaryDataSource.ENCOUNTER_TYPE).in(Collections.emptyList());
-			LogicCriteria criteria = conceptCriteria.and(encounterCriteria);
-			
-			Result obsResult = context.read(patient, service.getLogicDataSource("summary"), criteria);
-			
-			if (log.isDebugEnabled())
-				log.debug("Patient: " + patient.getPatientId() + ", elisa result: " + obsResult);
-			
-			// check if we have negative or positive
-			boolean resultExist = false;
-			for (Result result : obsResult) {
-				if (result.getResultDate().after(referenceDate))
-					if (OpenmrsUtil.nullSafeEquals(positiveConcept, result.toConcept())
-					        || OpenmrsUtil.nullSafeEquals(negativeConcept, result.toConcept())) {
-						resultExist = true;
-						break;
-					}
-			}
-			
-			if (!resultExist) {
+			Date now = new Date();
+			// only process if the patient is at least 18 months 
+			if (referenceDate.before(now)) {
+				Concept positiveConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.POSITIVE);
+				Concept negativeConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.NEGATIVE);
 				
-				Calendar nowCalendar = Calendar.getInstance();
-				nowCalendar.setTime(now);
-				// 6 months before
-				nowCalendar.add(Calendar.MONTH, -6);
-				// reference date is whichever is the latest between dob and 6 months ago
-				Date testReferenceDate = referenceDate.after(nowCalendar.getTime()) ? referenceDate : nowCalendar.getTime();
+				SummaryService service = Context.getService(SummaryService.class);
 				
-				Concept elisaConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.ELISA_NAME);
+				LogicCriteria conceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.ELISA_NAME);
+				LogicCriteria encounterCriteria = service.parseToken(SummaryDataSource.ENCOUNTER_TYPE).in(Collections.emptyList());
+				LogicCriteria criteria = conceptCriteria.and(encounterCriteria);
 				
-				LogicCriteria testedConceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.TESTS_ORDERED);
-				LogicCriteria testedCriteria = testedConceptCriteria.and(encounterCriteria);
-				
-				Result testedResult = context.read(patient, service.getLogicDataSource("summary"), testedCriteria);
+				Result obsResult = context.read(patient, service.getLogicDataSource("summary"), criteria);
 				
 				if (log.isDebugEnabled())
-					log.debug("Patient: " + patient.getPatientId() + ", elisa ordered result: " + testedResult);
+					log.debug("Patient: " + patient.getPatientId() + ", elisa result: " + obsResult);
 				
-				boolean testExist = false;
-				
-				for (Result result : testedResult) {
-					// only process the date after the reference date
-					if (result.getResultDate().after(testReferenceDate))
-						if (OpenmrsUtil.nullSafeEquals(result.toConcept(), elisaConcept)) {
-							testExist = true;
+				// check if we have negative or positive
+				boolean resultExist = false;
+				for (Result result : obsResult) {
+					if (result.getResultDate().after(referenceDate))
+						if (OpenmrsUtil.nullSafeEquals(positiveConcept, result.toConcept())
+						        || OpenmrsUtil.nullSafeEquals(negativeConcept, result.toConcept())) {
+							resultExist = true;
 							break;
 						}
 				}
 				
-				if (!testExist)
-					reminder = new Result(REMINDER_TEXT);
+				if (!resultExist) {
+					
+					Calendar nowCalendar = Calendar.getInstance();
+					nowCalendar.setTime(now);
+					// 6 months before
+					nowCalendar.add(Calendar.MONTH, -6);
+					// reference date is whichever is the latest between dob and 6 months ago
+					Date testReferenceDate = referenceDate.after(nowCalendar.getTime()) ? referenceDate : nowCalendar.getTime();
+					
+					Concept elisaConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.ELISA_NAME);
+					
+					LogicCriteria testedConceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.TESTS_ORDERED);
+					LogicCriteria testedCriteria = testedConceptCriteria.and(encounterCriteria);
+					
+					Result testedResult = context.read(patient, service.getLogicDataSource("summary"), testedCriteria);
+					
+					if (log.isDebugEnabled())
+						log.debug("Patient: " + patient.getPatientId() + ", elisa ordered result: " + testedResult);
+					
+					boolean testExist = false;
+					
+					for (Result result : testedResult) {
+						// only process the date after the reference date
+						if (result.getResultDate().after(testReferenceDate))
+							if (OpenmrsUtil.nullSafeEquals(result.toConcept(), elisaConcept)) {
+								testExist = true;
+								break;
+							}
+					}
+					
+					if (!testExist)
+						reminder = new Result(REMINDER_TEXT);
+				}
 			}
 		}
-		
 		return reminder;
 	}
 	

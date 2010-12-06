@@ -25,13 +25,13 @@ public class ScoreUtils {
 	
 	// this is the approximation table of z-score to percentile
 	// the method will search the closest double value and return the position of that double value that will correspond to the z-score percentile
-	private static final Double[] zScores = { -2.326, -2.054, -1.881, -1.751, -1.645, -1.555, -1.476, -1.405, -1.341, -1.282,
-	        -1.227, -1.175, -1.126, -1.08, -1.036, -0.994, -0.954, -0.915, -0.878, -0.842, -0.806, -0.772, -0.739, -0.706,
-	        -0.674, -0.643, -0.613, -0.583, -0.553, -0.524, -0.496, -0.468, -0.44, -0.412, -0.385, -0.358, -0.332, -0.305,
-	        -0.279, -0.253, -0.228, -0.202, -0.176, -0.151, -0.126, -0.1, -0.075, -0.05, -0.025, 0.0, 0.025, 0.05, 0.075,
-	        0.1, 0.126, 0.151, 0.176, 0.202, 0.228, 0.253, 0.279, 0.305, 0.332, 0.358, 0.385, 0.412, 0.44, 0.468, 0.496,
-	        0.524, 0.553, 0.583, 0.613, 0.643, 0.674, 0.706, 0.739, 0.772, 0.806, 0.842, 0.878, 0.915, 0.954, 0.994, 1.036,
-	        1.08, 1.126, 1.175, 1.227, 1.282, 1.341, 1.405, 1.476, 1.555, 1.645, 1.751, 1.881, 2.054, 2.326 };
+	private static final Double[] zScores = { -2.326, -2.054, -1.881, -1.751, -1.645, -1.555, -1.476, -1.405, -1.341,
+	        -1.282, -1.227, -1.175, -1.126, -1.08, -1.036, -0.994, -0.954, -0.915, -0.878, -0.842, -0.806, -0.772, -0.739,
+	        -0.706, -0.674, -0.643, -0.613, -0.583, -0.553, -0.524, -0.496, -0.468, -0.44, -0.412, -0.385, -0.358, -0.332,
+	        -0.305, -0.279, -0.253, -0.228, -0.202, -0.176, -0.151, -0.126, -0.1, -0.075, -0.05, -0.025, 0.0, 0.025, 0.05,
+	        0.075, 0.1, 0.126, 0.151, 0.176, 0.202, 0.228, 0.253, 0.279, 0.305, 0.332, 0.358, 0.385, 0.412, 0.44, 0.468,
+	        0.496, 0.524, 0.553, 0.583, 0.613, 0.643, 0.674, 0.706, 0.739, 0.772, 0.806, 0.842, 0.878, 0.915, 0.954, 0.994,
+	        1.036, 1.08, 1.126, 1.175, 1.227, 1.282, 1.341, 1.405, 1.476, 1.555, 1.645, 1.751, 1.881, 2.054, 2.326 };
 	
 	private ScoreUtils() {
 	}
@@ -82,9 +82,9 @@ public class ScoreUtils {
 	}
 	
 	/**
-	 * This method will calculate if the zScore is closest to zScores[firstIndex] or zScores[secondIndex].
-	 * 
-	 * The requirement is the zScore is between zScores[firstIndex] and zScores[secondIndex].
+	 * This method will calculate if the zScore is closest to zScores[firstIndex] or
+	 * zScores[secondIndex]. The requirement is the zScore is between zScores[firstIndex] and
+	 * zScores[secondIndex].
 	 * 
 	 * @param zScore
 	 * @param firstIndex
@@ -132,100 +132,102 @@ public class ScoreUtils {
 	public static Double calculateZScore(Patient patient, Date asOfDate, Double weight) {
 		SummaryService service = Context.getService(SummaryService.class);
 		
-		Date birthDate = patient.getBirthdate();
-		
-		Calendar birthCalendar = Calendar.getInstance();
-		
-		birthCalendar.setTime(birthDate);
-		birthCalendar.add(Calendar.YEAR, 5);
-		Date fiveYars = birthCalendar.getTime();
-		
-		birthCalendar.setTime(birthDate);
-		birthCalendar.add(Calendar.WEEK_OF_YEAR, 13);
-		
-		Calendar todayCalendar = Calendar.getInstance();
-		todayCalendar.setTime(asOfDate);
-		
-		// today is after week 13, then we need to calculate the age in month
 		Double zScore = null;
-		
-		// decide the gender.
-		// our database contains both F or Female and M or Male
-		String gender = StringUtils.EMPTY;
-		if (StringUtils.equalsIgnoreCase(MALE_LONG_STRING, patient.getGender())
-		        || StringUtils.equalsIgnoreCase(MALE_SHORT_STRING, patient.getGender()))
-			gender = MALE_LONG_STRING;
-		else if (StringUtils.equalsIgnoreCase(FEMALE_LONG_STRING, patient.getGender())
-		        || StringUtils.equalsIgnoreCase(FEMALE_SHORT_STRING, patient.getGender()))
-			gender = FEMALE_LONG_STRING;
-		
-		if (log.isDebugEnabled())
-			log.debug("Patient: " + patient.getPatientId() + ", gender: " + gender);
-		
-		// only do processing for kids younger than 5 years old
-		if (fiveYars.after(todayCalendar.getTime()))
+		Date birthDate = patient.getBirthdate();
+		// apparently there are records with null birthdate
+		if (birthDate != null) {
 			
-			if (todayCalendar.after(birthCalendar)) {
-				birthCalendar.setTime(birthDate);
+			Calendar birthCalendar = Calendar.getInstance();
+			
+			birthCalendar.setTime(birthDate);
+			birthCalendar.add(Calendar.YEAR, 5);
+			Date fiveYars = birthCalendar.getTime();
+			
+			birthCalendar.setTime(birthDate);
+			birthCalendar.add(Calendar.WEEK_OF_YEAR, 13);
+			
+			Calendar todayCalendar = Calendar.getInstance();
+			todayCalendar.setTime(asOfDate);
+			
+			// decide the gender.
+			// our database contains both F or Female and M or Male
+			String gender = StringUtils.EMPTY;
+			if (StringUtils.equalsIgnoreCase(MALE_LONG_STRING, patient.getGender())
+			        || StringUtils.equalsIgnoreCase(MALE_SHORT_STRING, patient.getGender()))
+				gender = MALE_LONG_STRING;
+			else if (StringUtils.equalsIgnoreCase(FEMALE_LONG_STRING, patient.getGender())
+			        || StringUtils.equalsIgnoreCase(FEMALE_SHORT_STRING, patient.getGender()))
+				gender = FEMALE_LONG_STRING;
+			
+			if (log.isDebugEnabled())
+				log.debug("Patient: " + patient.getPatientId() + ", gender: " + gender);
+			
+			// only do processing for kids younger than 5 years old
+			if (fiveYars.after(todayCalendar.getTime()))
 				
-				int birthYear = birthCalendar.get(Calendar.YEAR);
-				int todayYear = todayCalendar.get(Calendar.YEAR);
-				
-				int ageInYear = todayYear - birthYear;
-				
-				int birthMonth = birthCalendar.get(Calendar.MONTH);
-				int todayMonth = todayCalendar.get(Calendar.MONTH);
-				
-				int ageInMonth = todayMonth - birthMonth;
-				if (ageInMonth < 0) {
-					// birth month is bigger, the decrease the year
-					ageInYear--;
-					ageInMonth = 12 - birthMonth + todayMonth;
-				}
-				
-				int birthDay = birthCalendar.get(Calendar.DATE);
-				int todayDay = todayCalendar.get(Calendar.DATE);
-				
-				int ageInDay = todayDay - birthDay;
-				if (ageInDay < 0) {
-					ageInMonth--;
-					// decrease the month, this way we get the previous month
-					birthCalendar.add(Calendar.MONTH, -1);
-					ageInDay = birthCalendar.getActualMaximum(Calendar.DATE) - birthDay + todayDay;
+				// today is after week 13, then we need to calculate the age in month
+				if (todayCalendar.after(birthCalendar)) {
+					birthCalendar.setTime(birthDate);
 					
-					if (ageInDay > birthCalendar.getActualMaximum(Calendar.DATE) / 2)
-						ageInMonth++;
+					int birthYear = birthCalendar.get(Calendar.YEAR);
+					int todayYear = todayCalendar.get(Calendar.YEAR);
+					
+					int ageInYear = todayYear - birthYear;
+					
+					int birthMonth = birthCalendar.get(Calendar.MONTH);
+					int todayMonth = todayCalendar.get(Calendar.MONTH);
+					
+					int ageInMonth = todayMonth - birthMonth;
+					if (ageInMonth < 0) {
+						// birth month is bigger, the decrease the year
+						ageInYear--;
+						ageInMonth = 12 - birthMonth + todayMonth;
+					}
+					
+					int birthDay = birthCalendar.get(Calendar.DATE);
+					int todayDay = todayCalendar.get(Calendar.DATE);
+					
+					int ageInDay = todayDay - birthDay;
+					if (ageInDay < 0) {
+						ageInMonth--;
+						// decrease the month, this way we get the previous month
+						birthCalendar.add(Calendar.MONTH, -1);
+						ageInDay = birthCalendar.getActualMaximum(Calendar.DATE) - birthDay + todayDay;
+						
+						if (ageInDay > birthCalendar.getActualMaximum(Calendar.DATE) / 2)
+							ageInMonth++;
+					}
+					
+					ageInMonth = ageInMonth + (ageInYear * 12);
+					
+					if (log.isDebugEnabled())
+						log.debug("Patient: " + patient.getPatientId() + ", age in month: " + ageInMonth);
+					
+					WeightAgeStandard standard = service.getWeightAgeStandard(ageInMonth, "Month", gender);
+					if (standard != null)
+						zScore = ScoreUtils.zScore(standard.getlValue(), standard.getmValue(), standard.getsValue(), weight);
+				} else {
+					birthCalendar.setTime(birthDate);
+					
+					long diff = todayCalendar.getTimeInMillis() - birthCalendar.getTimeInMillis();
+					long week = 1000 * 60 * 60 * 24 * 7;
+					long ageInWeek = diff / week;
+					// TODO: if the mod if more than half of the week, then round it up
+					// or should we use double casting here and do Math.round()
+					if (diff % week > week / 2)
+						ageInWeek++;
+					
+					if (log.isDebugEnabled())
+						log.debug("Patient: " + patient.getPatientId() + ", age in week: " + ageInWeek);
+					
+					WeightAgeStandard standard = service.getWeightAgeStandard((int) ageInWeek, "Week", gender);
+					if (standard != null)
+						zScore = ScoreUtils.zScore(standard.getlValue(), standard.getmValue(), standard.getsValue(), weight);
 				}
-				
-				ageInMonth = ageInMonth + (ageInYear * 12);
-				
-				if (log.isDebugEnabled())
-					log.debug("Patient: " + patient.getPatientId() + ", age in month: " + ageInMonth);
-				
-				WeightAgeStandard standard = service.getWeightAgeStandard(ageInMonth, "Month", gender);
-				if (standard != null)
-					zScore = ScoreUtils.zScore(standard.getlValue(), standard.getmValue(), standard.getsValue(), weight);
-			} else {
-				birthCalendar.setTime(birthDate);
-				
-				long diff = todayCalendar.getTimeInMillis() - birthCalendar.getTimeInMillis();
-				long week = 1000 * 60 * 60 * 24 * 7;
-				long ageInWeek = diff / week;
-				// TODO: if the mod if more than half of the week, then round it up
-				// or should we use double casting here and do Math.round()
-				if (diff % week > week / 2)
-					ageInWeek++;
-				
-				if (log.isDebugEnabled())
-					log.debug("Patient: " + patient.getPatientId() + ", age in week: " + ageInWeek);
-				
-				WeightAgeStandard standard = service.getWeightAgeStandard((int) ageInWeek, "Week", gender);
-				if (standard != null)
-					zScore = ScoreUtils.zScore(standard.getlValue(), standard.getmValue(), standard.getsValue(), weight);
-			}
-		
-		if (log.isDebugEnabled())
-			log.debug("Calculated zscore for patient: " + patient.getPatientId() + ", zscore: " + zScore);
+			
+			if (log.isDebugEnabled())
+				log.debug("Calculated zscore for patient: " + patient.getPatientId() + ", zscore: " + zScore);
+		}
 		
 		return zScore;
 	}
@@ -244,105 +246,109 @@ public class ScoreUtils {
 	public static Double calculatePercentile(Patient patient, Date asOfDate, Double weight) {
 		SummaryService service = Context.getService(SummaryService.class);
 		
-		Date birthDate = patient.getBirthdate();
-		
-		Calendar birthCalendar = Calendar.getInstance();
-		
-		birthCalendar.setTime(birthDate);
-		birthCalendar.add(Calendar.YEAR, 5);
-		Date fiveYars = birthCalendar.getTime();
-		
-		birthCalendar.setTime(birthDate);
-		birthCalendar.add(Calendar.WEEK_OF_YEAR, 13);
-		
-		Calendar todayCalendar = Calendar.getInstance();
-		todayCalendar.setTime(asOfDate);
-		
-		// today is after week 13, then we need to calculate the age in month
 		Double zScore = null;
 		Double percentile = null;
 		
-		// decide the gender.
-		// our database contains both F or Female and M or Male
-		String gender = StringUtils.EMPTY;
-		if (StringUtils.equalsIgnoreCase(MALE_LONG_STRING, patient.getGender())
-		        || StringUtils.equalsIgnoreCase(MALE_SHORT_STRING, patient.getGender()))
-			gender = MALE_LONG_STRING;
-		else if (StringUtils.equalsIgnoreCase(FEMALE_LONG_STRING, patient.getGender())
-		        || StringUtils.equalsIgnoreCase(FEMALE_SHORT_STRING, patient.getGender()))
-			gender = FEMALE_SHORT_STRING;
-		
-		// only do processing for kids younger than 5 years old
-		if (fiveYars.after(todayCalendar.getTime()))
+		Date birthDate = patient.getBirthdate();
+		// apparently there are records with null birthdate
+		if (birthDate != null) {
 			
-			if (todayCalendar.after(birthCalendar)) {
-				birthCalendar.setTime(birthDate);
+			Calendar birthCalendar = Calendar.getInstance();
+			
+			birthCalendar.setTime(birthDate);
+			birthCalendar.add(Calendar.YEAR, 5);
+			Date fiveYars = birthCalendar.getTime();
+			
+			birthCalendar.setTime(birthDate);
+			birthCalendar.add(Calendar.WEEK_OF_YEAR, 13);
+			
+			Calendar todayCalendar = Calendar.getInstance();
+			todayCalendar.setTime(asOfDate);
+			
+			// today is after week 13, then we need to calculate the age in month
+			
+			// decide the gender.
+			// our database contains both F or Female and M or Male
+			String gender = StringUtils.EMPTY;
+			if (StringUtils.equalsIgnoreCase(MALE_LONG_STRING, patient.getGender())
+			        || StringUtils.equalsIgnoreCase(MALE_SHORT_STRING, patient.getGender()))
+				gender = MALE_LONG_STRING;
+			else if (StringUtils.equalsIgnoreCase(FEMALE_LONG_STRING, patient.getGender())
+			        || StringUtils.equalsIgnoreCase(FEMALE_SHORT_STRING, patient.getGender()))
+				gender = FEMALE_SHORT_STRING;
+			
+			// only do processing for kids younger than 5 years old
+			if (fiveYars.after(todayCalendar.getTime()))
 				
-				int birthYear = birthCalendar.get(Calendar.YEAR);
-				int todayYear = todayCalendar.get(Calendar.YEAR);
-				
-				int ageInYear = todayYear - birthYear;
-				
-				int birthMonth = birthCalendar.get(Calendar.MONTH);
-				int todayMonth = todayCalendar.get(Calendar.MONTH);
-				
-				int ageInMonth = todayMonth - birthMonth;
-				if (ageInMonth < 0) {
-					// birth month is bigger, the decrease the year
-					ageInYear--;
-					ageInMonth = 12 - birthMonth + todayMonth;
-				}
-				
-				int birthDay = birthCalendar.get(Calendar.DATE);
-				int todayDay = todayCalendar.get(Calendar.DATE);
-				
-				int ageInDay = todayDay - birthDay;
-				if (ageInDay < 0) {
-					ageInMonth--;
-					// decrease the month, this way we get the previous month
-					birthCalendar.add(Calendar.MONTH, -1);
-					ageInDay = birthCalendar.getActualMaximum(Calendar.DATE) - birthDay + todayDay;
+				if (todayCalendar.after(birthCalendar)) {
+					birthCalendar.setTime(birthDate);
 					
-					if (ageInDay > birthCalendar.getActualMaximum(Calendar.DATE) / 2)
-						ageInMonth++;
+					int birthYear = birthCalendar.get(Calendar.YEAR);
+					int todayYear = todayCalendar.get(Calendar.YEAR);
+					
+					int ageInYear = todayYear - birthYear;
+					
+					int birthMonth = birthCalendar.get(Calendar.MONTH);
+					int todayMonth = todayCalendar.get(Calendar.MONTH);
+					
+					int ageInMonth = todayMonth - birthMonth;
+					if (ageInMonth < 0) {
+						// birth month is bigger, the decrease the year
+						ageInYear--;
+						ageInMonth = 12 - birthMonth + todayMonth;
+					}
+					
+					int birthDay = birthCalendar.get(Calendar.DATE);
+					int todayDay = todayCalendar.get(Calendar.DATE);
+					
+					int ageInDay = todayDay - birthDay;
+					if (ageInDay < 0) {
+						ageInMonth--;
+						// decrease the month, this way we get the previous month
+						birthCalendar.add(Calendar.MONTH, -1);
+						ageInDay = birthCalendar.getActualMaximum(Calendar.DATE) - birthDay + todayDay;
+						
+						if (ageInDay > birthCalendar.getActualMaximum(Calendar.DATE) / 2)
+							ageInMonth++;
+					}
+					
+					ageInMonth = ageInMonth + (ageInYear * 12);
+					
+					if (log.isDebugEnabled())
+						log.debug("Patient: " + patient.getPatientId() + ", age in month: " + ageInMonth);
+					
+					WeightAgeStandard standard = service.getWeightAgeStandard(ageInMonth, "Month", gender);
+					if (standard != null) {
+						zScore = ScoreUtils.zScore(standard.getlValue(), standard.getmValue(), standard.getsValue(), weight);
+						percentile = ScoreUtils.percentile(standard.getlValue(), standard.getmValue(), standard.getsValue(),
+						    zScore);
+					}
+					
+				} else {
+					birthCalendar.setTime(birthDate);
+					
+					long diff = todayCalendar.getTimeInMillis() - birthCalendar.getTimeInMillis();
+					long week = 1000 * 60 * 60 * 24 * 7;
+					int ageInWeek = (int) (diff / week);
+					// TODO: if the mod if more than half of the week, then round it up
+					// or should we use double casting here and do Math.round()
+					if (diff % week > week / 2)
+						ageInWeek++;
+					
+					if (log.isDebugEnabled())
+						log.debug("Patient: " + patient.getPatientId() + ", age in week: " + ageInWeek);
+					
+					WeightAgeStandard standard = service.getWeightAgeStandard(ageInWeek, "Week", gender);
+					if (standard != null) {
+						zScore = ScoreUtils.zScore(standard.getlValue(), standard.getmValue(), standard.getsValue(), weight);
+						percentile = ScoreUtils.percentile(standard.getlValue(), standard.getmValue(), standard.getsValue(),
+						    zScore);
+					}
 				}
-				
-				ageInMonth = ageInMonth + (ageInYear * 12);
-				
-				if (log.isDebugEnabled())
-					log.debug("Patient: " + patient.getPatientId() + ", age in month: " + ageInMonth);
-				
-				WeightAgeStandard standard = service.getWeightAgeStandard(ageInMonth, "Month", gender);
-				if (standard != null) {
-					zScore = ScoreUtils.zScore(standard.getlValue(), standard.getmValue(), standard.getsValue(), weight);
-					percentile = ScoreUtils.percentile(standard.getlValue(), standard.getmValue(), standard.getsValue(),
-					    zScore);
-				}
-				
-			} else {
-				birthCalendar.setTime(birthDate);
-				
-				long diff = todayCalendar.getTimeInMillis() - birthCalendar.getTimeInMillis();
-				long week = 1000 * 60 * 60 * 24 * 7;
-				int ageInWeek = (int) (diff / week);
-				// TODO: if the mod if more than half of the week, then round it up
-				// or should we use double casting here and do Math.round()
-				if (diff % week > week / 2)
-					ageInWeek++;
-				
-				if (log.isDebugEnabled())
-					log.debug("Patient: " + patient.getPatientId() + ", age in week: " + ageInWeek);
-				
-				WeightAgeStandard standard = service.getWeightAgeStandard(ageInWeek, "Week", gender);
-				if (standard != null) {
-					zScore = ScoreUtils.zScore(standard.getlValue(), standard.getmValue(), standard.getsValue(), weight);
-					percentile = ScoreUtils.percentile(standard.getlValue(), standard.getmValue(), standard.getsValue(),
-					    zScore);
-				}
-			}
-		
-		if (log.isDebugEnabled())
-			log.debug("Calculated percentile for patient: " + patient.getPatientId() + ", percentile: " + percentile);
+			
+			if (log.isDebugEnabled())
+				log.debug("Calculated percentile for patient: " + patient.getPatientId() + ", percentile: " + percentile);
+		}
 		
 		return percentile;
 	}
