@@ -140,12 +140,6 @@
     </information>
     
     <medical-history>
-    	<hiv-status>
-			#set($map = {"evaluated.concept" : "REVIEW OF MEDICAL HISTORY",
-						 "included.coded.values" : "HUMAN IMMUNODEFICIENCY VIRUS"})
-	    	#set($hivStatus = $!{functions.eval($patient, "Initial Multi Coded", $map)})
-	    	$!{hivStatus}
-	    </hiv-status>
 	    <hiv>
 	    	<tested>
 				#set($map = {"evaluated.concept" : "HIV TESTED THIS VISIT"})

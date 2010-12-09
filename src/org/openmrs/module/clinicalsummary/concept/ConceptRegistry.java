@@ -155,7 +155,6 @@ public class ConceptRegistry {
 			if (OpenmrsUtil.nullSafeEquals(parent, cachedConcept.getConcept())) {
 				if (cachedConcept.getChildConcepts().contains(child))
 					return true;
-				break;
 			}
 		}
 		return false;

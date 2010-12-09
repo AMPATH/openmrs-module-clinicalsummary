@@ -263,17 +263,6 @@
 										<xsl:element name="fo:block-container">
 											<fo:block><fo:inline font-weight="bold">MEDICAL HISTORY</fo:inline></fo:block>
 											<fo:block>
-												<fo:inline font-weight="bold">HIV Hx: </fo:inline>
-												<xsl:choose>
-													<xsl:when test="medical-history/hiv-status = ''">
-														<fo:inline>NEGATIVE</fo:inline>
-													</xsl:when>
-													<xsl:otherwise>
-														<fo:inline>POSITIVE</fo:inline>
-													</xsl:otherwise>
-												</xsl:choose>
-											</fo:block>
-											<fo:block>
 												<fo:inline font-weight="bold">HIV Test: </fo:inline>
 												<xsl:choose>
 													<xsl:when test="medical-history/hiv/tested/value = 'YES'">
@@ -345,10 +334,16 @@
 													<xsl:otherwise>
 														<fo:inline>
 														<xsl:value-of select="current-medications/tt/received" />
-														<xsl:choose>
-															<xsl:when test="current-medications/tt/total &lt; 5">(TOTAL = <xsl:value-of select="current-medications/tt/total" />)</xsl:when>
-															<xsl:otherwise>(COMPLETED)</xsl:otherwise>
-														</xsl:choose>
+														<xsl:if test="current-medications/tt/total != ''">
+															<xsl:choose>
+																<xsl:when test="current-medications/tt/total &lt; 5">
+																	<xsl:text>(TOTAL = </xsl:text>
+																	<xsl:value-of select="current-medications/tt/total" />
+																	<xsl:text>)</xsl:text>
+																</xsl:when>
+																<xsl:otherwise>(COMPLETED)</xsl:otherwise>
+															</xsl:choose>
+														</xsl:if>
 														</fo:inline>
 													</xsl:otherwise>
 												</xsl:choose>

@@ -13,6 +13,7 @@
  */
 package org.openmrs.module.clinicalsummary.engine;
 
+import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
@@ -32,16 +33,17 @@ import org.openmrs.module.clinicalsummary.SummaryService;
  */
 public class VelocityContextUtils {
 	
-	public Integer makeInteger(Double d) {
+	public String makeInteger(Double d) {
 		if (d == null)
-			return Integer.valueOf(0);
-		return Integer.valueOf(d.intValue());
+			return StringUtils.EMPTY;
+		DecimalFormat decimalFormat = new DecimalFormat("#");
+		return decimalFormat.format(d);
 	}
 	
 	public String formatDate(Date date) {
 		
 		if (date == null)
-			return "";
+			return StringUtils.EMPTY;
 		
 		return Context.getDateFormat().format(date);
 	}
@@ -49,7 +51,7 @@ public class VelocityContextUtils {
 	public String printConceptName(Concept concept) {
 		
 		if (concept == null)
-			return "";
+			return StringUtils.EMPTY;
 
 		// use the best name as the default name
 		String name = concept.getBestName(Context.getLocale()).getName();
@@ -60,7 +62,7 @@ public class VelocityContextUtils {
 				continue;
 			
 			// search for a shorter name if available
-			if (StringUtils.length(conceptName.getName()) < 5 && Pattern.matches("(\\s*\\w+\\s*)+", conceptName.getName()))
+			if (StringUtils.length(conceptName.getName()) < 10 && Pattern.matches("(\\s*\\w+\\s*)+", conceptName.getName()))
 				name = conceptName.getName();
 		}
 		
