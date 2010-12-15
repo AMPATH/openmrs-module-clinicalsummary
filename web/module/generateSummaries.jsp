@@ -14,6 +14,9 @@
 
 $j = jQuery.noConflict();
 
+var progress;
+var timeout;
+
 $j(document).ready(function() {
 
 	// add hover state change
@@ -27,14 +30,41 @@ $j(document).ready(function() {
 	)
 	
 	// init all input to use jquery css
-	$j(':input').addClass('ui-state-default ui-corner-all');
+	$j(':input').addClass('ui-state-default');
 
 	// create the accordion pane
 	$j('#accordion').accordion({
 		autoHeight: false
 	});
+
+	progress = $j('#progressbar').progressbar({value: 0});
+
+	// check the status of the server when the page gets loaded
+	checkStatus();
 	
 });
+
+function checkStatus() {
+	jQuery.getJSON('checkGenerationStatus.form', function(data) {
+		
+		if (data.running) {
+			// show the processing text
+			$j('#progress').html('<spring:message code="clinicalsummary.processing"/> ' + data.processed + ' <spring:message code="clinicalsummary.of"/> ' + data.total);
+			// create and show the progress bar
+			$j('#progressbar').show();
+			// check back the server after 10s
+			timeout = setTimeout('checkStatus()', 3000);
+		} else {
+			// show the status
+			$j('#progress').html('<spring:message code="clinicalsummary.noProcess"/>.');
+			// hide the progress bar
+			$j('#progressbar').hide();
+			// clear the timeout
+			clearTimeout(timeout);
+		}
+		progress.progressbar('value', data.percentage);
+	});
+}
 </script>
 
 <h2><spring:message code="clinicalsummary.title" /></h2>
@@ -85,6 +115,12 @@ $j(document).ready(function() {
 			</table>
 			<input type="submit" value="<spring:message code="clinicalsummary.generate"/>"/>
 		</form>
+	</div>
+	<h3><a href="#">Generation Status</a></h3>
+	<div>
+		<p><spring:message code="clinicalsummary.serverStatus"/>: <span id="status"></span></p>
+		<span id="progress"></span>
+		<div id="progressbar"></div>
 	</div>
 </div>
 

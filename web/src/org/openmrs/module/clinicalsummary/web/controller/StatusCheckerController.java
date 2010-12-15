@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
  *
  */
 @Controller
-public class StatusCheckerFormController {
+public class StatusCheckerController {
 	
 	@RequestMapping(value = "/module/clinicalsummary/checkStatus", method = RequestMethod.GET)
 	public void checkStatus(HttpServletResponse response) throws IOException {

@@ -37,14 +37,24 @@ public class GeneratorThread implements Runnable {
 		IDLE, RUNNING, FINISHED, ERROR
 	}
 	
+	private static Integer currentId;
+	
+	private static Integer counter;
+	
+	private static Integer total;
+	
+	private static Status status;
+	
 	private final Cohort cohort;
 	
 	private final UserContext userContext;
 	
-	private Status status;
-	
 	public GeneratorThread(Cohort cohort) {
-		this.status = Status.IDLE;
+		status = Status.IDLE;
+		total = cohort.size();
+		counter = 0;
+		currentId = -1;
+		
 		this.cohort = cohort;
 		this.userContext = Context.getUserContext();
 	}
@@ -69,7 +79,6 @@ public class GeneratorThread implements Runnable {
 			// the encounter buffer here. if the logic service is fast enough,
 			// we wouldn't need to do this actually
 			
-			int counter = 0;
 			Cohort subCohort = new Cohort();
 			for (Integer patientId : cohort.getMemberIds()) {
 				subCohort.addMember(patientId);
@@ -83,25 +92,46 @@ public class GeneratorThread implements Runnable {
 					GeneratorEngine generatorEngine = new GeneratorEngine(summaryDataSource, folder);
 					
 					for (Integer processedId : subCohort.getMemberIds())
-						generatorEngine.generateSummary(patientService.getPatient(processedId));
+						generatorEngine.generateSummary(patientService.getPatient(currentId = processedId));
 					
 					subCohort = new Cohort();
 					Context.clearSession();
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			status = Status.ERROR;
 			log.error("Exception encountered when trying to generate summaries ...", e);
-		}
-		finally {
+		} finally {
 			status = Status.FINISHED;
 			Context.closeSession();
 		}
 	}
 	
-	public boolean isRunning() {
+	/**
+	 * @return
+	 */
+	public static boolean isRunning() {
 		return status == Status.RUNNING;
 	}
 	
+	/**
+	 * @return
+	 */
+	public static Integer currentPatient() {
+		return currentId;
+	}
+	
+	/**
+	 * @return
+	 */
+	public static Integer getProcessed() {
+		return counter;
+	}
+	
+	/**
+	 * @return
+	 */
+	public static Integer getTotal() {
+		return total;
+	}
 }

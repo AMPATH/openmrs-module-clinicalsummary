@@ -48,7 +48,7 @@ $j(document).ready(function() {
 	progress = $j('#progressbar').progressbar({value: 0});
 
 	// check the status of the server when the page gets loaded
-	checkStatus()
+	checkStatus();
 });
 
 function checkStatus() {

@@ -48,6 +48,8 @@ public class GenerateSummariesFormController {
 	
 	private static final Log log = LogFactory.getLog(GenerateSummariesFormController.class);
 	
+	private final ExecutorService executorService = Executors.newFixedThreadPool(1);
+	
 	@RequestMapping(method = RequestMethod.GET)
 	public void preparePage(ModelMap map) {
 		if (Context.isAuthenticated())
@@ -92,11 +94,14 @@ public class GenerateSummariesFormController {
 					cohort = summaryService.getCohortByLocation(location, startDate, endDate);
 				}
 				
+				GeneratorThread generatorThread = new GeneratorThread(cohort);
+				executorService.execute(generatorThread);
+				
 				if (log.isDebugEnabled())
 					log.debug("Generating summary for: " + cohort.getCommaSeparatedPatientIds());
-				GeneratorThread generatorThread = new GeneratorThread(cohort);
-				ExecutorService executorService = Executors.newFixedThreadPool(1);
-				executorService.execute(generatorThread);
+				
+				// TODO we need to display total thread need to be executed
+				// TODO we need to display the progress of the regeneration
 			}
 		}
 	}
