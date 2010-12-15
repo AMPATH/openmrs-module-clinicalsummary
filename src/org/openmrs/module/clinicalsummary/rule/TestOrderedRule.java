@@ -34,6 +34,7 @@ import org.openmrs.logic.Rule;
 import org.openmrs.logic.result.Result;
 import org.openmrs.logic.result.Result.Datatype;
 import org.openmrs.logic.rule.RuleParameterInfo;
+import org.openmrs.module.clinicalsummary.ObsPair;
 import org.openmrs.module.clinicalsummary.SummaryService;
 import org.openmrs.module.clinicalsummary.cache.SummaryDataSource;
 import org.openmrs.module.clinicalsummary.concept.ConceptRegistry;
@@ -87,7 +88,7 @@ public class TestOrderedRule implements Rule {
         }
 		
 		Result flowsheet = new Result();
-		
+
 		// Structure:
 		// Main Result
 		// -- Result(Value (optional), Status (optional), Datetime)
@@ -118,6 +119,14 @@ public class TestOrderedRule implements Rule {
 					result.setResultDate(resultDate);
 					flowsheet.add(result);
 					
+					ObsPair obsPair = new ObsPair(patient, resultDate, concept);
+					if (testResult.getDatatype() == Datatype.CODED)
+						obsPair.setAnswer(testResult.toConcept());
+					if (testResult.getDatatype() == Datatype.NUMERIC)
+						obsPair.setValue(testResult.toNumber());
+					obsPair.setStatus("No Order");
+					service.saveObsPair(obsPair);
+					
 					// remove the test and the result
 					resultObservations.remove(0);
 				} else {
@@ -145,6 +154,12 @@ public class TestOrderedRule implements Rule {
 				result.setValueText("Test Ordered");
 				result.setResultDate(testDate);
 				flowsheet.add(result);
+
+				Concept testOrderedConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.TESTS_ORDERED);
+				ObsPair obsPair = new ObsPair(patient, testDate, testOrderedConcept);
+				obsPair.setAnswer(testOrder.toConcept());
+				obsPair.setStatus("Test Ordered");
+				service.saveObsPair(obsPair);
 				
 				// remove the test
 				testedObservations.remove(0);
@@ -182,6 +197,15 @@ public class TestOrderedRule implements Rule {
 			result.setValueText("No Order");
 			result.setResultDate(testResult.getResultDate());
 			flowsheet.add(result);
+			
+			
+			ObsPair obsPair = new ObsPair(patient, testResult.getResultDate(), concept);
+			if (testResult.getDatatype() == Datatype.CODED)
+				obsPair.setAnswer(testResult.toConcept());
+			if (testResult.getDatatype() == Datatype.NUMERIC)
+				obsPair.setValue(testResult.toNumber());
+			obsPair.setStatus("No Order");
+			service.saveObsPair(obsPair);
 		}
 		
 		while (testedObservations.size() > 0) {
@@ -190,6 +214,12 @@ public class TestOrderedRule implements Rule {
 			result.setValueText("Test Ordered");
 			result.setResultDate(testOrder.getResultDate());
 			flowsheet.add(result);
+			
+			Concept testOrderedConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.TESTS_ORDERED);
+			ObsPair obsPair = new ObsPair(patient, testOrder.getResultDate(), testOrderedConcept);
+			obsPair.setAnswer(testOrder.toConcept());
+			obsPair.setStatus("Test Ordered");
+			service.saveObsPair(obsPair);
 		}
 		
 		Result slicedResult = RuleUtils.sliceResult(flowsheet, 5);

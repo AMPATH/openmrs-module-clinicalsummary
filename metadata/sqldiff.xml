@@ -729,5 +729,41 @@
 			INSERT INTO `clinical_summary_weight_age` VALUES ('150', '0.0407', '5.8393', '0.12622', 'Female', '13', 'Week');
 		</sql>
 	</diff>
+	
+	<diff>
+		<version>2.3.1</version>
+		<author>Nyoman Ribeka</author>
+		<date>December 13 2010</date>
+		<description>
+			Added table to list all missing tests ordered and the result
+		</description>
+		<sql>
+			DROP TABLE IF EXISTS `clinical_summary_obs_pair`;
+			CREATE TABLE `clinical_summary_obs_pair` (
+			  `pair_id` int(11) NOT NULL AUTO_INCREMENT,
+			  `patient_id` int(11) NOT NULL,
+			  `concept_id` int(11) NOT NULL,
+			  `answer_id` int(11),
+			  `value` double,
+			  `status` varchar(255) NOT NULL,
+			  `obs_datetime` datetime NOT NULL default '1900-01-01 01:01:01',
+			  `creator` int(11) NOT NULL default '0',
+			  `date_created` datetime NOT NULL default '1900-01-01 01:01:01',
+			  PRIMARY KEY (`pair_id`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+		</sql>
+	</diff>
+	
+	<diff>
+		<version>2.3.2</version>
+		<author>Nyoman Ribeka</author>
+		<date>July 14 2010</date>
+		<description>
+			Add index on clinical_summary_index table
+		</description>
+		<sql>
+			CREATE INDEX clinical_summary_obs_pair_patient ON clinical_summary_obs_pair (patient_id);
+		</sql>
+	</diff>
 
 </sqldiff>

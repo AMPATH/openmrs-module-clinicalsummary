@@ -169,6 +169,14 @@ public interface StandardConceptConstants {
 	        TypeConstants.PEDS_INITIAL, TypeConstants.PEDS_RETURN, TypeConstants.PEDS_NONCLINICAL })
 	String RETURN_VISIT_DATE = "RETURN VISIT DATE";
 	
+	@RegisterConcept
+	@BufferObservations(type = { TypeConstants.PEDS_INITIAL, TypeConstants.PEDS_RETURN, TypeConstants.PEDS_NONCLINICAL })
+	String RETURN_VISIT_DATE_ADULT = "RETURN VISIT DATE";
+	
+	@RegisterConcept
+	@BufferObservations(type = { TypeConstants.ADULT_INITIAL, TypeConstants.ADULT_RETURN, TypeConstants.ADULT_NONCLINICAL })
+	String RETURN_VISIT_DATE_PEDS = "RETURN VISIT DATE";
+	
 	// WHO stage
 	@RegisterConcept
 	@BufferObservations(type = { TypeConstants.ADULT_INITIAL, TypeConstants.ADULT_RETURN, TypeConstants.ADULT_NONCLINICAL,

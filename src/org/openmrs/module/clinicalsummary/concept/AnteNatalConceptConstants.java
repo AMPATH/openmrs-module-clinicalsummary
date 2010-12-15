@@ -38,75 +38,75 @@ public interface AnteNatalConceptConstants {
 	String FOLIC_ACID = "FOLIC ACID";
 	
 	@RegisterConcept
-	@BufferObservations(type = { TypeConstants.ANC_INITIAL, TypeConstants.ANC_RETURN })
+	@BufferObservations(type = { TypeConstants.ANC_INITIAL})
 	String CIVIL_STATUS = "CIVIL STATUS";
 	
 	@RegisterConcept
-	@BufferObservations(type = { TypeConstants.ANC_INITIAL, TypeConstants.ANC_RETURN })
+	@BufferObservations(type = { TypeConstants.ANC_INITIAL })
 	String OCCUPATION = "OCCUPATION";
 	
 	@RegisterConcept
-	@BufferObservations(type = { TypeConstants.ANC_INITIAL, TypeConstants.ANC_RETURN })
+	@BufferObservations(type = { TypeConstants.ANC_INITIAL})
 	String HIGHEST_EDUCATION = "HIGHEST EDUCATION";
 	
 	@RegisterConcept
-	@BufferObservations(type = { TypeConstants.ANC_INITIAL, TypeConstants.ANC_RETURN })
+	@BufferObservations(type = { TypeConstants.ANC_INITIAL})
 	String EMERGENCY_TRANSPORTATION_PLAN = "EMERGENCY TRANSPORTATION PLAN";
 	
 	@RegisterConcept
-	@BufferObservations(type = { TypeConstants.ANC_INITIAL, TypeConstants.ANC_RETURN })
+	@BufferObservations(type = { TypeConstants.ANC_INITIAL })
 	String OBSTETRIC_ULTRASOUND = "OBSTETRIC ULTRASOUND DONE";
 	
 	@RegisterConcept
-	@BufferObservations(type = { TypeConstants.ANC_INITIAL, TypeConstants.ANC_RETURN })
+	@BufferObservations(type = { TypeConstants.ANC_INITIAL})
 	String HISTORY_MENTAL_PROBLEM = "HISTORY OF POSTPARTUM DEPRESSION OR MENTAL HEALTH PROBLEM";
 	
 	@RegisterConcept
-	@BufferObservations(type = { TypeConstants.ANC_INITIAL, TypeConstants.ANC_RETURN })
+	@BufferObservations(type = { TypeConstants.ANC_RETURN })
 	String ANTI_D_RH_IGG = "ANTI-D RH IGG GIVEN AT 28 GESTATION WEEKS ";
 	
 	@RegisterConcept
-	@BufferObservations(type = { TypeConstants.ANC_INITIAL, TypeConstants.ANC_RETURN })
+	@BufferObservations(type = { TypeConstants.ANC_INITIAL })
 	String PARTNER_OCCUPATION = "PARTNER'S OCCUPATION";
 	
 	@RegisterConcept
-	@BufferObservations(type = { TypeConstants.ANC_INITIAL, TypeConstants.ANC_RETURN })
+	@BufferObservations(type = { TypeConstants.ANC_INITIAL })
 	String HEALTH_INSURANCE = "HEALTH INSURANCE";
 	
 	@RegisterConcept
-	@BufferObservations(type = { TypeConstants.ANC_INITIAL, TypeConstants.ANC_RETURN })
+	@BufferObservations(type = { TypeConstants.ANC_RETURN })
 	String DELIVERY_PLACE_BIRTH_PLAN = "DELIVERY PLACE, BIRTH PLAN";
 	
 	@RegisterConcept
-	@BufferObservations(type = { TypeConstants.ANC_INITIAL, TypeConstants.ANC_RETURN })
+	@BufferObservations(type = { TypeConstants.ANC_RETURN })
 	String MOTHER_DELIVERY_PLACE_BIRTH_PLAN = "MOTHER'S PREFERRED DELIVERY PLACE, BIRTH PLAN";
 	
 	@RegisterConcept
-	@BufferObservations(type = { TypeConstants.ANC_INITIAL, TypeConstants.ANC_RETURN })
+	@BufferObservations(type = { TypeConstants.ANC_RETURN })
 	String REASON_NOT_DELIVERING_AT_HEALTH_FACILITY = "REASON FOR NOT DELIVERING AT HEALTH FACILITY";
 	
 	@RegisterConcept
-	@BufferObservations(type = { TypeConstants.ANC_INITIAL, TypeConstants.ANC_RETURN })
+	@BufferObservations(type = { TypeConstants.ANC_RETURN })
 	String PREFERRED_MODE_OF_DELIVERY = "PREFERRED MODE OF DELIVERY";
 	
 	@RegisterConcept
-	@BufferObservations(type = { TypeConstants.ANC_INITIAL, TypeConstants.ANC_RETURN })
+	@BufferObservations(type = { TypeConstants.ANC_RETURN })
 	String MOTHER_FEEDING_BIRTH_PLAN = "MOTHER'S PREFERRED FEEDING METHOD, BIRTH PLAN";
 	
 	@RegisterConcept
-	@BufferObservations(type = { TypeConstants.ANC_INITIAL, TypeConstants.ANC_RETURN })
+	@BufferObservations(type = { TypeConstants.ANC_RETURN })
 	String REFERRALS = "REFERRALS ORDERED";
 	
 	@RegisterConcept
-	@BufferObservations(type = { TypeConstants.ANC_INITIAL, TypeConstants.ANC_RETURN })
+	@BufferObservations(type = { TypeConstants.ANC_INITIAL })
 	String HIV_TESTED_THIS_VISIT = "HIV TESTED THIS VISIT";
 	
 	@RegisterConcept
-	@BufferObservations(type = { TypeConstants.ANC_INITIAL, TypeConstants.ANC_RETURN })
+	@BufferObservations(type = { TypeConstants.ANC_INITIAL })
 	String HIV_RAPID_TEST_QUALITATIVE = "HIV RAPID TEST, QUALITATIVE";
 	
 	@RegisterConcept
-	@BufferObservations(type = { TypeConstants.ANC_INITIAL, TypeConstants.ANC_RETURN })
+	@BufferObservations(type = { TypeConstants.ANC_RETURN })
 	String TETANUS_BOOSTER_COMPLETED = "TETANUS BOOSTER COMPLETED";
 	
 	@RegisterConcept
@@ -126,11 +126,11 @@ public interface AnteNatalConceptConstants {
 	 * ****
 	 */
 	@RegisterConcept
-	@BufferObservations(type = { TypeConstants.ANC_INITIAL, TypeConstants.ANC_RETURN })
+	@BufferObservations(type = { TypeConstants.ANC_INITIAL })
 	String GRAVIDA = "GRAVIDA";
 	
 	@RegisterConcept
-	@BufferObservations(type = { TypeConstants.ANC_INITIAL, TypeConstants.ANC_RETURN })
+	@BufferObservations(type = { TypeConstants.ANC_INITIAL })
 	String PARITY = "PARITY";
 	
 	// historical single numeric
@@ -203,11 +203,11 @@ public interface AnteNatalConceptConstants {
 	String RETURN_VISIT_DATE = "RETURN VISIT DATE";
 	
 	@RegisterConcept
-	@BufferObservations(type = { TypeConstants.ANC_INITIAL, TypeConstants.ANC_RETURN })
+	@BufferObservations(type = { TypeConstants.ANC_INITIAL })
 	String LAST_MENSTRUAL_PERIOD_DATE = "LAST MENSTRUAL PERIOD DATE";
 	
 	@RegisterConcept
-	@BufferObservations(type = { TypeConstants.ANC_INITIAL, TypeConstants.ANC_RETURN })
+	@BufferObservations(type = { TypeConstants.ANC_INITIAL })
 	String ESTIMATED_DATE_OF_CONFINEMENT = "ESTIMATED DATE OF CONFINEMENT";
 	
 	/* ****
@@ -215,11 +215,11 @@ public interface AnteNatalConceptConstants {
 	 * ****
 	 */
 	@RegisterConcept
-	@BufferObservations(type = { TypeConstants.ANC_INITIAL, TypeConstants.ANC_RETURN })
+	@BufferObservations(type = { TypeConstants.ANC_INITIAL})
 	String METHOD_OF_FAMILY_PLANNING = "METHOD OF FAMILY PLANNING";
 	
 	@RegisterConcept
-	@BufferObservations(type = { TypeConstants.ANC_INITIAL, TypeConstants.ANC_RETURN })
+	@BufferObservations(type = { TypeConstants.ANC_INITIAL})
 	String PRESENCE_OF_SUBSTANCE_USE = "PRESENCE OF SUBSTANCE USE";
 	
 	@RegisterConcept
@@ -239,11 +239,11 @@ public interface AnteNatalConceptConstants {
 	 * ****
 	 */
 	@RegisterConcept
-	@BufferObservations(type = { TypeConstants.ANC_INITIAL, TypeConstants.ANC_RETURN })
+	@BufferObservations(type = { TypeConstants.ANC_RETURN })
 	String RECIEVED_ANTENATAL_CARE_SERVICE_THIS_VISIT = "RECIEVED ANTENATAL CARE SERVICE THIS VISIT";
 	
 	@RegisterConcept
-	@BufferObservations(type = { TypeConstants.ANC_INITIAL, TypeConstants.ANC_RETURN })
+	@BufferObservations(type = { TypeConstants.ANC_INITIAL })
 	String REVIEW_OF_MEDICAL_HISTORY = "REVIEW OF MEDICAL HISTORY";
 	
 	/* ****
@@ -251,60 +251,60 @@ public interface AnteNatalConceptConstants {
 	 * ****
 	 */
 	@RegisterConcept
-	@BufferObservations(type = { TypeConstants.ANC_INITIAL, TypeConstants.ANC_RETURN })
+	@BufferObservations(type = { TypeConstants.ANC_RETURN })
 	String TYPES_OF_BARRIER_TO_PROPER_HEALTH_CARE = "TYPES OF BARRIER TO PROPER HEALTH CARE";
 	
 	@RegisterConcept
-	@BufferObservations(type = { TypeConstants.ANC_INITIAL, TypeConstants.ANC_RETURN })
+	@BufferObservations(type = { TypeConstants.ANC_INITIAL})
 	String PAST_OBSTERICAL_HISTORY = "PAST OBSTERICAL HISTORY";
 	
 	@RegisterConcept
-	@BufferObservations(type = { TypeConstants.ANC_INITIAL, TypeConstants.ANC_RETURN })
+	@BufferObservations(type = { TypeConstants.ANC_INITIAL })
 	String DATE_OF_CONFINEMENT = "DATE OF CONFINEMENT";
 	
 	@RegisterConcept
-	@BufferObservations(type = { TypeConstants.ANC_INITIAL, TypeConstants.ANC_RETURN })
+	@BufferObservations(type = { TypeConstants.ANC_INITIAL})
 	String GESTATION_MONTH_OR_MISCARRIAGE = "GESTATION MONTH AT DELIVERY OR MISCARRIAGE";
 	
 	@RegisterConcept
-	@BufferObservations(type = { TypeConstants.ANC_INITIAL, TypeConstants.ANC_RETURN })
+	@BufferObservations(type = { TypeConstants.ANC_INITIAL})
 	String PREGNANCY_OUTCOME = "PREGNANCY OUTCOME";
 	
 	@RegisterConcept
-	@BufferObservations(type = { TypeConstants.ANC_INITIAL, TypeConstants.ANC_RETURN })
+	@BufferObservations(type = { TypeConstants.ANC_INITIAL})
 	String PLACE_OF_DELIVERY = "PLACE OF DELIVERY";
 	
 	@RegisterConcept
-	@BufferObservations(type = { TypeConstants.ANC_INITIAL, TypeConstants.ANC_RETURN })
+	@BufferObservations(type = { TypeConstants.ANC_INITIAL})
 	String LENGTH_OF_LABOR_IN_HOURS = "LENGTH OF LABOR IN HOURS";
 	
 	@RegisterConcept
-	@BufferObservations(type = { TypeConstants.ANC_INITIAL, TypeConstants.ANC_RETURN })
+	@BufferObservations(type = { TypeConstants.ANC_INITIAL})
 	String METHOD_OF_DELIVERY = "METHOD OF DELIVERY";
 	
 	@RegisterConcept
-	@BufferObservations(type = { TypeConstants.ANC_INITIAL, TypeConstants.ANC_RETURN })
+	@BufferObservations(type = { TypeConstants.ANC_INITIAL})
 	String GENDER_OF_THE_CHILD = "GENDER OF THE CHILD";
 	
 	@RegisterConcept
-	@BufferObservations(type = { TypeConstants.ANC_INITIAL, TypeConstants.ANC_RETURN })
+	@BufferObservations(type = { TypeConstants.ANC_INITIAL})
 	String BIRTH_WEIGHT = "BIRTH WEIGHT";
 	
 	@RegisterConcept
-	@BufferObservations(type = { TypeConstants.ANC_INITIAL, TypeConstants.ANC_RETURN })
+	@BufferObservations(type = { TypeConstants.ANC_INITIAL})
 	String MATERNAL_FETAL_OR_CHILD_COMPLICATIONS = "MATERNAL, FETAL, OR CHILD COMPLICATIONS, FREETEXT";
 	
 	// lab test
 	@RegisterConcept
-	@BufferObservations(type = { TypeConstants.ANC_INITIAL, TypeConstants.ANC_RETURN })
+	@BufferObservations(type = { TypeConstants.ANC_INITIAL })
 	String RHESUS_FACTOR = "RHESUS FACTOR";
 	
 	@RegisterConcept
-	@BufferObservations(type = { TypeConstants.ANC_INITIAL, TypeConstants.ANC_RETURN })
+	@BufferObservations(type = { TypeConstants.ANC_INITIAL })
 	String ANTIBODY_SCREEN = "ANTIBODY SCREEN";
 	
 	@RegisterConcept
-	@BufferObservations(type = { TypeConstants.ANC_INITIAL, TypeConstants.ANC_RETURN })
+	@BufferObservations(type = { TypeConstants.ANC_INITIAL })
 	String BLOOD_TYPING = "BLOOD TYPING";
 	
 	@RegisterConcept

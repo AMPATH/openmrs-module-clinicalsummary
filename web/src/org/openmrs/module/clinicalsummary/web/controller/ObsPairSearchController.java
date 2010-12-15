@@ -14,7 +14,6 @@
 package org.openmrs.module.clinicalsummary.web.controller;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,31 +25,22 @@ import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ArrayNode;
-import org.codehaus.jackson.node.ObjectNode;
-import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.clinicalsummary.SummaryIndex;
 import org.openmrs.module.clinicalsummary.SummaryService;
-import org.openmrs.module.clinicalsummary.SummaryTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
-public class SummarySearchIndexFormController {
+public class ObsPairSearchController {
 	
-	private static final Log log = LogFactory.getLog(SummarySearchIndexFormController.class);
+	private static final Log log = LogFactory.getLog(ObsPairSearchController.class);
 	
-	public SummarySearchIndexFormController() {
-		log.info("Creating SummarySearchIndexFormController object ...");
-	}
-	
-	@RequestMapping("/module/clinicalsummary/summarySearchIndex")
+	@SuppressWarnings("unchecked")
+	@RequestMapping("/module/clinicalsummary/obsPairSearch")
 	public void createJsonContent(@RequestParam(required = false, value = "iDisplayStart") int displayStart,
 	                              @RequestParam(required = false, value = "iDisplayLength") int displayLength,
 	                              @RequestParam(required = false, value = "sEcho") int echo,
@@ -58,58 +48,52 @@ public class SummarySearchIndexFormController {
 	                              HttpServletResponse response, HttpServletRequest request) throws IOException,
 	                                                                                       ServletRequestBindingException {
 		if (Context.isAuthenticated()) {
-
+			
 			response.setContentType("application/json");
 			
 			SummaryService service = Context.getService(SummaryService.class);
 			
-			List<SummaryIndex> indexes = service.getIndexes(StringUtils.trim(search), displayStart, displayLength);
-			int totalIndexes = service.countIndexes(StringUtils.EMPTY);
-			int filteredIndexes = service.countIndexes(search);
+			if (StringUtils.length(search) < 3)
+				search = StringUtils.EMPTY;
+			
+			List pairs = service.getObsPairs(StringUtils.trim(search), displayStart, displayLength);
+			int totalPairs = service.countObsPairs(StringUtils.EMPTY);
+			int filteredPairs = service.countObsPairs(search);
+			
+			if (log.isDebugEnabled())
+				log.debug("Total pairs found: " + pairs.size());
 			
 			ObjectMapper mapper = new ObjectMapper();
 			JsonFactory factory = mapper.getJsonFactory();
 			JsonGenerator generator = factory.createJsonGenerator(response.getOutputStream(), JsonEncoding.UTF8);
 			generator.useDefaultPrettyPrinter();
 			
-			JsonNode rootNode = mapper.createObjectNode();
-			((ObjectNode) rootNode).put("sEcho", echo);
-			((ObjectNode) rootNode).put("iTotalRecords", totalIndexes);
-			((ObjectNode) rootNode).put("iTotalDisplayRecords", filteredIndexes);
-			ArrayNode arrayNode = ((ObjectNode) rootNode).putArray("aaData");
+			generator.writeStartObject();
+			generator.writeStringField("sEcho", String.valueOf(echo));
+			generator.writeStringField("iTotalRecords", String.valueOf(totalPairs));
+			generator.writeStringField("iTotalDisplayRecords", String.valueOf(filteredPairs));
 			
-			for (SummaryIndex index : indexes) {
-				ArrayNode innerArray = arrayNode.addArray();
+			generator.writeArrayFieldStart("aaData");
+			
+			for (Object object : pairs) {
+				generator.writeStartArray();
+				Object[] results = (Object[]) object;
 				
-				innerArray.add(index.getIndexId());
+				Patient patient = (Patient) results[1];
+				generator.writeString(String.valueOf(patient.getPatientId()));
+				generator.writeString(patient.getPatientIdentifier().getIdentifier());
+				generator.writeString(patient.getGivenName());
+				generator.writeString(patient.getMiddleName());
+				generator.writeString(patient.getFamilyName());
 				
-				String identifier = "N/A";
-				Patient patient = index.getPatient();
-				if (patient != null && patient.getPatientIdentifier() != null)
-					identifier = patient.getPatientIdentifier().getIdentifier();
-				innerArray.add(identifier);
-				
-				innerArray.add(patient.getGivenName());
-				innerArray.add(patient.getMiddleName());
-				innerArray.add(patient.getFamilyName());
-				
-				Location location = index.getLocation();
-				innerArray.add(location == null ? "N/A" : location.getName());
-				
-				Date returnDate = index.getReturnDate();
-				innerArray.add(returnDate == null ? "N/A" : Context.getDateFormat().format(returnDate));
-				
-				SummaryTemplate template = index.getTemplate();
-				innerArray.add(template == null ? "N/A" : template.getName());
-				
-				Date initialDate = index.getInitialDate();
-				innerArray.add(initialDate == null ? "N/A" : Context.getDateFormat().format(initialDate));
-				
-				Date generatedDate = index.getGeneratedDate();
-				innerArray.add(generatedDate == null ? "N/A" : Context.getDateFormat().format(generatedDate));
+				Integer counter = (Integer) results[0];
+				generator.writeNumber(counter);
+				generator.writeEndArray();
 			}
 			
-			mapper.writeTree(generator, rootNode);
+			generator.writeEndArray();
+			generator.writeEndObject();
+			
 			generator.close();
 		}
 	}

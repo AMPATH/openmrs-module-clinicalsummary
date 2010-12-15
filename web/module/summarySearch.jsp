@@ -22,12 +22,6 @@ tr.even.row_highlight {
 tr.odd.row_highlight  {
 	background-color: #9FAFD1;
 }
-tr.even.row_highlight td.sorting_1 {
-	background-color: #B0BED9;
-}
-tr.odd.row_highlight td.sorting_1 {
-	background-color: #9FAFD1;
-}
 
 </style>
 
@@ -105,11 +99,11 @@ tr.odd.row_highlight td.sorting_1 {
 			                 { "bSortable": false, "sWidth": "10%" },
 			                 { "bSortable": false, "sWidth": "10%" },
 			                 { "bSortable": false, "sWidth": "10%" },
-			                 { "sWidth": "20%" },
-			                 { "sWidth": "8%" },
-			                 { "sWidth": "14%" },
-			                 { "sWidth": "8%" },
-			                 { "sWidth": "8%" }
+			                 { "bSortable": false, "sWidth": "20%" },
+			                 { "bSortable": false, "sWidth": "8%" },
+			                 { "bSortable": false, "sWidth": "14%" },
+			                 { "bSortable": false, "sWidth": "8%" },
+			                 { "bSortable": false, "sWidth": "8%" }
 	             ]
 		}).fnSetFilteringDelay(1000);
 
@@ -233,6 +227,27 @@ tr.odd.row_highlight td.sorting_1 {
 <spring:message code="clinicalsummary.searchInstructions" />
 
 <div id="accordion">
+	<h3><a href="#">Search Summary Files</a></h3>
+	<div class="box">
+		<table width="100%" id="indexes">
+			<thead>
+				<tr>
+					<th>Index Id</th>
+					<th>Identifier</th>
+					<th>Given Name</th>
+					<th>Middle Name</th>
+					<th>Family Name</th>
+					<th>Location</th>
+					<th>Return Date</th>
+					<th>Template</th>
+					<th>Initial Date</th>
+					<th>Generated</th>
+				</tr>
+			</thead>
+			<tbody>
+			</tbody>
+		</table>
+	</div>
 	<h3><a href="#">Selected Summary Files</a></h3>
 	<div class="box">
 		<table width="100%" id="printed">
@@ -256,27 +271,6 @@ tr.odd.row_highlight td.sorting_1 {
 		<p>
 			<a id="printSummaries" href="javascript:void(0)">Print Summaries</a>
 		</p>
-	</div>
-	<h3><a href="#">Search Summary Files</a></h3>
-	<div class="box">
-		<table width="100%" id="indexes">
-			<thead>
-				<tr>
-					<th>Index Id</th>
-					<th>Identifier</th>
-					<th>Given Name</th>
-					<th>Middle Name</th>
-					<th>Family Name</th>
-					<th>Location</th>
-					<th>Return Date</th>
-					<th>Template</th>
-					<th>Initial Date</th>
-					<th>Generated</th>
-				</tr>
-			</thead>
-			<tbody>
-			</tbody>
-		</table>
 	</div>
 </div>
 

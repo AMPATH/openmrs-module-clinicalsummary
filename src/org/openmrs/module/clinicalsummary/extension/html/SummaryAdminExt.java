@@ -58,6 +58,9 @@ public class SummaryAdminExt extends AdministrationSectionExt {
 		if (Context.hasPrivilege(SummaryConstants.PRIV_MANAGE_SUMMARY))
 			map.put("module/clinicalsummary/initialSummary.form", "clinicalsummary.initial");
 		
+		if (Context.hasPrivilege(SummaryConstants.PRIV_MANAGE_SUMMARY))
+			map.put("module/clinicalsummary/obsPairList.form", "clinicalsummary.obs.pair");
+		
 		return map;
 	}
 	

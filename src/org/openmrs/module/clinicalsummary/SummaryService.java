@@ -52,7 +52,6 @@ public interface SummaryService {
 	public SummaryTemplate saveTemplate(SummaryTemplate summary) throws APIException;
 	
 	/**
-	 * 
 	 * @param summary
 	 * @throws APIException
 	 */
@@ -118,7 +117,8 @@ public interface SummaryService {
 	public List<Encounter> getEncountersByType(Cohort cohort, EncounterType encounterType) throws APIException;
 	
 	/**
-	 * Get observations on a certain concept based on the encounter type from which the observations comes from
+	 * Get observations on a certain concept based on the encounter type from which the observations
+	 * comes from
 	 * 
 	 * @param cohort the patients
 	 * @param concept the concept
@@ -229,26 +229,26 @@ public interface SummaryService {
 	public List<SummaryIndex> getIndexes(Location location, SummaryTemplate template, Date startReturnDate,
 	                                     Date endReturnDate) throws APIException;
 	
-
 	/**
 	 * Get index entry based on the template and the patient
 	 * 
 	 * @param patient the patient
 	 * @param template the template
-	 * @return index with matching template for a certain patient. This will be guaranteed a unique index
+	 * @return index with matching template for a certain patient. This will be guaranteed a unique
+	 *         index
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_LOCATIONS, OpenmrsConstants.PRIV_VIEW_PATIENTS, OpenmrsConstants.PRIV_VIEW_OBS })
 	public SummaryIndex getIndex(Patient patient, SummaryTemplate template) throws APIException;
 	
-
 	/**
 	 * Get index entry based on the template and the patient
 	 * 
 	 * @param patient the patient
 	 * @param template the template
-	 * @return index with matching template for a certain patient. This will be guaranteed a unique index
+	 * @return index with matching template for a certain patient. This will be guaranteed a unique
+	 *         index
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
@@ -279,19 +279,18 @@ public interface SummaryService {
 	public List<SummaryIndex> getAllIndexes() throws APIException;
 	
 	/**
-	 * Get all indexes that match the location criteria 
+	 * Get all indexes that match the location criteria
 	 * 
 	 * @param location location from which the index should come from
 	 * @param initialDate TODO
 	 * @return all indexes for the location
 	 * @throws APIException
 	 */
-	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_LOCATIONS, OpenmrsConstants.PRIV_VIEW_PATIENTS, OpenmrsConstants.PRIV_VIEW_OBS })
 	public Integer updateIndexesInitialDate(Location location, Date initialDate) throws APIException;
 	
 	/**
-	 * Get the earliest date when a location receive a summary record 
+	 * Get the earliest date when a location receive a summary record
 	 * 
 	 * @param location location from which the index should come from
 	 * @return the earliest date for a location when they receive index
@@ -302,10 +301,10 @@ public interface SummaryService {
 	public Date getEarliestIndex(Location location) throws APIException;
 	
 	/**
-	 * Get the latest observations for a certain patient. This latest observations
-	 * will be used as a reference on what date a summary was generated. All pdfs are generated
-	 * when there's new observation coming to the database. This date will become handy when
-	 * we need to regenerate pdfs for all patients in the system.
+	 * Get the latest observations for a certain patient. This latest observations will be used as a
+	 * reference on what date a summary was generated. All pdfs are generated when there's new
+	 * observation coming to the database. This date will become handy when we need to regenerate
+	 * pdfs for all patients in the system.
 	 * 
 	 * @param patient the patient
 	 * @return the latest observation.
@@ -327,7 +326,8 @@ public interface SummaryService {
 	 * @return result of the rule evaluation
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_ENCOUNTERS, OpenmrsConstants.PRIV_VIEW_PATIENTS, OpenmrsConstants.PRIV_VIEW_OBS })
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_ENCOUNTERS, OpenmrsConstants.PRIV_VIEW_PATIENTS,
+	        OpenmrsConstants.PRIV_VIEW_OBS })
 	public Result evalCriteria(Patient patient, LogicCriteria criteria) throws APIException;
 	
 	/**
@@ -343,7 +343,8 @@ public interface SummaryService {
 	 * @return result of the rule evaluation
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_ENCOUNTERS, OpenmrsConstants.PRIV_VIEW_PATIENTS, OpenmrsConstants.PRIV_VIEW_OBS })
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_ENCOUNTERS, OpenmrsConstants.PRIV_VIEW_PATIENTS,
+	        OpenmrsConstants.PRIV_VIEW_OBS })
 	public Result evalCriteria(Patient patient, String token, Map<String, Object> parameters) throws APIException;
 	
 	/**
@@ -360,8 +361,8 @@ public interface SummaryService {
 	public LogicCriteria parseToken(String token) throws APIException;
 	
 	/**
-	 * Implementation of the logic service with transactional read only annotation. Currently
-	 * the default annotation of the logic service is transactional read-write. This will makes the
+	 * Implementation of the logic service with transactional read only annotation. Currently the
+	 * default annotation of the logic service is transactional read-write. This will makes the
 	 * generation process take a while to finish. With a read only annotation, this will speedup the
 	 * generation process. See <a href="http://dev.openmrs.org/ticket/2230">ticket 3320</a> for more
 	 * detail.
@@ -399,8 +400,8 @@ public interface SummaryService {
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_LOCATIONS, OpenmrsConstants.PRIV_VIEW_PATIENTS, OpenmrsConstants.PRIV_VIEW_OBS })
-	public List<SummaryIndex> getIndexes(String search, String sortOrder, int sortColumn, int displayStart, int displayLength) throws APIException;
-
+	public List<SummaryIndex> getIndexes(String search, Integer displayStart, Integer displayLength) throws APIException;
+	
 	/**
 	 * Count index for a certain criteria. This is used by jQuery plugin
 	 * 
@@ -410,8 +411,8 @@ public interface SummaryService {
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_LOCATIONS, OpenmrsConstants.PRIV_VIEW_PATIENTS, OpenmrsConstants.PRIV_VIEW_OBS })
-    public Integer countIndexes(String search) throws APIException;
-
+	public Integer countIndexes(String search) throws APIException;
+	
 	/**
 	 * @param age
 	 * @param ageUnit
@@ -420,4 +421,53 @@ public interface SummaryService {
 	 */
 	@Transactional(readOnly = true)
 	public WeightAgeStandard getWeightAgeStandard(Integer age, String ageUnit, String gender);
+	
+	/**
+	 * @param obsPair
+	 * @return
+	 */
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_PATIENTS, OpenmrsConstants.PRIV_VIEW_OBS })
+	public ObsPair saveObsPair(ObsPair obsPair);
+
+	/**
+	 * @param obsPair
+	 */
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_PATIENTS, OpenmrsConstants.PRIV_VIEW_OBS })
+	public void deleteObsPair(ObsPair obsPair);
+
+	/**
+	 * @param patient
+	 * @return
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_PATIENTS, OpenmrsConstants.PRIV_VIEW_OBS })
+	public List<ObsPair> getObsPairForPatient(Patient patient);
+
+	/**
+	 * @return
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_PATIENTS, OpenmrsConstants.PRIV_VIEW_OBS })
+	public List<ObsPair> getAllObsPairs();
+	
+	/**
+	 * @param search
+	 * @param displayStart
+	 * @param displayLength
+	 * @return
+	 * @throws APIException
+	 */
+	@SuppressWarnings("unchecked")
+    @Transactional(readOnly = true)
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_PATIENTS, OpenmrsConstants.PRIV_VIEW_OBS })
+	public List getObsPairs(String search, int displayStart, int displayLength) throws APIException;
+	
+	/**
+	 * @param search
+	 * @return
+	 * @throws APIException
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_PATIENTS, OpenmrsConstants.PRIV_VIEW_OBS })
+	public Integer countObsPairs(String search) throws APIException;
 }

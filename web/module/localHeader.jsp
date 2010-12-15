@@ -51,4 +51,11 @@
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
+	<openmrs:hasPrivilege privilege="Manage Summaries">
+		<li <c:if test='<%= request.getRequestURI().contains("obsPairList") %>'>class="active"</c:if>>
+			<a href="${pageContext.request.contextPath}/module/clinicalsummary/obsPairList.form">
+				<spring:message code="clinicalsummary.obs.pair"/>
+			</a>
+		</li>
+	</openmrs:hasPrivilege>
 </ul>

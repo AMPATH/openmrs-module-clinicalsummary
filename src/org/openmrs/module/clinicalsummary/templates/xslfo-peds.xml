@@ -91,6 +91,7 @@
 								</fo:table-cell>
 								<fo:table-cell text-align="center">
 									<fo:block font-weight="bold" font-style="italic" font-size="8pt">
+									<xsl:if test="reminders/display-number">
 										<xsl:variable name="source" select="reminders/sources/source" />
 										<xsl:variable name="total" select="count(reminders/reminder)" />
 										<xsl:for-each select="reminders/reminder">
@@ -100,6 +101,7 @@
 												<xsl:text>,</xsl:text>
 											</xsl:if>
 										</xsl:for-each>
+									</xsl:if>
 									</fo:block>
 								</fo:table-cell>
 								<fo:table-cell number-columns-spanned="2" text-align="right">
@@ -680,23 +682,23 @@
 							7-Other(Explain)</fo:inline>
 					</fo:block>
 					<xsl:if test="reminders/reminder">
-						<xsl:if test="reminders/reminder/display='true'">
+						<xsl:if test="reminders/display-text">
 							<fo:list-block font-size="12pt" space-before="6pt">
-									<xsl:for-each select="reminders/reminder">
-										<fo:list-item>
-											<fo:list-item-label end-indent="label-end()" text-align="right">
-												<fo:block>
-													<xsl:value-of select="position()" />.
-												</fo:block>
-											</fo:list-item-label>
-											<fo:list-item-body start-indent="body-start()">
-												<fo:block space-before="6pt">
-													<xsl:value-of select="." />
-													(___)
-												</fo:block>
-											</fo:list-item-body>
-										</fo:list-item>
-									</xsl:for-each>
+								<xsl:for-each select="reminders/reminder">
+									<fo:list-item>
+										<fo:list-item-label end-indent="label-end()" text-align="right">
+											<fo:block>
+												<xsl:value-of select="position()" />.
+											</fo:block>
+										</fo:list-item-label>
+										<fo:list-item-body start-indent="body-start()">
+											<fo:block space-before="6pt">
+												<xsl:value-of select="." />
+												(___)
+											</fo:block>
+										</fo:list-item-body>
+									</fo:list-item>
+								</xsl:for-each>
 							</fo:list-block>
 						</xsl:if>
 					</xsl:if>

@@ -25,6 +25,7 @@ import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.api.db.DAOException;
+import org.openmrs.module.clinicalsummary.ObsPair;
 import org.openmrs.module.clinicalsummary.SummaryError;
 import org.openmrs.module.clinicalsummary.SummaryIndex;
 import org.openmrs.module.clinicalsummary.SummaryTemplate;
@@ -55,7 +56,7 @@ public interface SummaryDAO {
 	/**
 	 * @see org.openmrs.module.clinicalsummary.SummaryService#getCohortByLocation(Location, Date, Date)
 	 */
-	public Cohort getPatientsByLocation(Location location, Date startDate, Date endDate);
+	public Cohort getPatientsByLocation(Location location, Date startDate, Date endDate)throws DAOException;
 	
 	/**
 	 * @see org.openmrs.module.clinicalsummary.SummaryService#saveError(SummaryError)
@@ -65,12 +66,12 @@ public interface SummaryDAO {
 	/**
 	 * @see org.openmrs.module.clinicalsummary.SummaryService#getAllErrors()
 	 */
-	public List<SummaryError> getAllErrors();
+	public List<SummaryError> getAllErrors() throws DAOException;
 	
 	/**
 	 * @see org.openmrs.module.clinicalsummary.SummaryService#deleteError(SummaryError)
 	 */
-	public void deleteError(SummaryError summaryError);
+	public void deleteError(SummaryError summaryError) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.module.clinicalsummary.SummaryService#saveIndex(SummaryIndex)
@@ -80,38 +81,38 @@ public interface SummaryDAO {
 	/**
 	 * @see org.openmrs.module.clinicalsummary.SummaryService#getAllIndexes()
 	 */
-	public List<SummaryIndex> getAllIndexes();
+	public List<SummaryIndex> getAllIndexes() throws DAOException;
 
 	/**
 	 * @see org.openmrs.module.clinicalsummary.SummaryService#getEarliestIndex(Location)
 	 */
-	public Date getEarliestIndex(Location location);
+	public Date getEarliestIndex(Location location) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.module.clinicalsummary.SummaryService#getLatestObservation(Patient)
 	 */
-	public Obs getLatestObservation(Patient patient);
+	public Obs getLatestObservation(Patient patient) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.module.clinicalsummary.SummaryService#updateIndexesInitialDate(Location,
 	 *      Date)
 	 */
-	public Integer updateIndexesInitialDate(Location location, Date initialDate);
+	public Integer updateIndexesInitialDate(Location location, Date initialDate) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.module.clinicalsummary.SummaryService#getIndex(Patient, SummaryTemplate)
 	 */
-	public SummaryIndex getIndex(Patient patient, SummaryTemplate template);
+	public SummaryIndex getIndex(Patient patient, SummaryTemplate template) throws DAOException;
 
 	/**
 	 * @see org.openmrs.module.clinicalsummary.SummaryService#getIndexes(List<Patient>)
 	 */
-	public List<SummaryIndex> getIndexes(List<Patient> patients);
+	public List<SummaryIndex> getIndexes(List<Patient> patients) throws DAOException;
 
 	/**
      * @see org.openmrs.module.clinicalsummary.SummaryService#getIndex(java.lang.Integer)
      */
-    public SummaryIndex getIndex(Integer indexId);
+    public SummaryIndex getIndex(Integer indexId) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.module.clinicalsummary.SummaryService#getIndexes(Location, SummaryTemplate, Date, Date)
@@ -121,7 +122,7 @@ public interface SummaryDAO {
 	/**
 	 * @see org.openmrs.module.clinicalsummary.SummaryService#getObservationsByEncounterType(Cohort, Concept, List)
 	 */
-	public List<Obs> getObservations(Cohort cohort, Concept concept, Collection<EncounterType> encounterTypes);
+	public List<Obs> getObservations(Cohort cohort, Concept concept, Collection<EncounterType> encounterTypes)throws DAOException;
 
 	/**
 	 * @see org.openmrs.module.clinicalsummary.db.SummaryDAO#getEncounters(Cohort, List)
@@ -131,15 +132,46 @@ public interface SummaryDAO {
 	/**
 	 * @see org.openmrs.module.clinicalsummary.SummaryService#getIndexes(String, String, int, int, int)
 	 */
-	public List<SummaryIndex> findIndexes(String search, String sortOrder, int sortColumn, int displayStart, int displayLength);
+	public List<SummaryIndex> findIndexes(String search, Integer displayStart, Integer displayLength) throws DAOException;
 
 	/**
 	 * @see org.openmrs.module.clinicalsummary.SummaryService#countIndexes(String)
 	 */
-	public Integer countIndexes(String search);
+	public Integer countIndexes(String search) throws DAOException;
 
 	/**
 	 * @see org.openmrs.module.clinicalsummary.SummaryService#getWeightAgeStandard(Integer, String, String)
 	 */
-	public WeightAgeStandard getWeightAgeStandard(Integer age, String ageUnit, String gender);
+	public WeightAgeStandard getWeightAgeStandard(Integer age, String ageUnit, String gender) throws DAOException;
+	
+	/**
+	 * @see org.openmrs.module.clinicalsummary.SummaryService#saveObsPair(ObsPair)
+	 */
+	public ObsPair saveObsPair(ObsPair obsPair) throws DAOException;
+	
+	/**
+	 * @see org.openmrs.module.clinicalsummary.SummaryService#getObsPairForPatient(Patient)
+	 */
+	public List<ObsPair> getObsPairForPatient(Patient patient) throws DAOException;
+
+	/**
+	 * @see org.openmrs.module.clinicalsummary.SummaryService#getAllObsPairs()
+	 */
+	public List<ObsPair> getAllObsPairs() throws DAOException;
+	
+	/**
+	 * @see org.openmrs.module.clinicalsummary.SummaryService#getObsPairs(String, int, int)
+	 */
+	@SuppressWarnings("unchecked")
+    public List getObsPairs(String search, Integer start, Integer length) throws DAOException;
+	
+	/**
+	 * @see org.openmrs.module.clinicalsummary.SummaryService#deleteObsPair(ObsPair)
+	 */
+	public void deleteObsPair(ObsPair obsPair) throws DAOException;
+
+	/**
+	 * @see org.openmrs.module.clinicalsummary.SummaryService#countObsPairs(String)
+	 */
+	public Integer countObsPair(String search) throws DAOException;
 }

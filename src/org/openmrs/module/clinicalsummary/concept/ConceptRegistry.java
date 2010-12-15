@@ -388,4 +388,12 @@ public class ConceptRegistry {
 			return Collections.emptyList();
 		return cachedConceptKey.getTypeNames();
 	}
+	
+	/**
+	 * Destroy the cache object
+	 */
+	public static void clearInstance() {
+		if (instance != null)
+			instance = null;
+	}
 }

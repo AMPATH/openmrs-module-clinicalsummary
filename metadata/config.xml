@@ -94,6 +94,7 @@
 		SummaryError.hbm.xml
 		SummaryIndex.hbm.xml
 		WeightAgeStandard.hbm.xml
+		ObsPair.hbm.xml
 	</mappingFiles>
 	
 </module>

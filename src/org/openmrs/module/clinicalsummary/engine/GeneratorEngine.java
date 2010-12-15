@@ -36,6 +36,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fop.apps.FOUserAgent;
@@ -53,6 +54,7 @@ import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.clinicalsummary.MappingPosition;
+import org.openmrs.module.clinicalsummary.ObsPair;
 import org.openmrs.module.clinicalsummary.SummaryError;
 import org.openmrs.module.clinicalsummary.SummaryIndex;
 import org.openmrs.module.clinicalsummary.SummaryService;
@@ -74,6 +76,14 @@ public class GeneratorEngine {
 	public GeneratorEngine(SummaryDataSource summaryDataSource, File outputLocation) {
 		this.outputLocation = outputLocation;
 		Context.getService(SummaryService.class).setLogicDataSource("summary", summaryDataSource);
+	}
+	
+	private void prepareObsPair(Patient patient) {
+		// TODO: this is hacky way to register the test ordered pairing
+		SummaryService service = Context.getService(SummaryService.class);
+		List<ObsPair> pairs = service.getObsPairForPatient(patient);
+		for (ObsPair obsPair : pairs)
+			service.deleteObsPair(obsPair);
 	}
 	
 	private Collection<SummaryTemplate> prepareTemplate(Patient patient) {
@@ -142,9 +152,9 @@ public class GeneratorEngine {
 			context.put("fn", exportFunctions);
 			context.put("patientSet", patientSet);
 			
-			Collection<SummaryTemplate> templates = prepareTemplate(patient);
+			prepareObsPair(patient);
 			
-			for (SummaryTemplate template : templates) {
+			for (SummaryTemplate template : prepareTemplate(patient)) {
 				
 				try {
 					
@@ -249,13 +259,14 @@ public class GeneratorEngine {
 	}
 	
 	private void setFatalException(Patient patient, Exception e) {
-		
 		SummaryService summaryService = Context.getService(SummaryService.class);
-		
 		SummaryError error = new SummaryError();
 		error.setPatient(patient);
-		error.setErrorDetails(e.toString());
-		
+		ToStringBuilder builder = new ToStringBuilder(error);
+		builder.append("patient id", patient.getPatientId());
+		builder.append("message", e.getMessage());
+		builder.append("cause", e.getCause());
+		error.setErrorDetails(builder.toString());
 		summaryService.saveError(error);
 	}
 }

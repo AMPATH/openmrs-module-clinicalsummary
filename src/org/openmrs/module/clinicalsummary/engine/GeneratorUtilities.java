@@ -67,6 +67,7 @@ import org.openmrs.module.clinicalsummary.rule.reminder.peds.BaselinePCRReminder
 import org.openmrs.module.clinicalsummary.rule.reminder.peds.BaselineSGPTReminderRule;
 import org.openmrs.module.clinicalsummary.rule.reminder.peds.ChildStartARVReminderRule;
 import org.openmrs.module.clinicalsummary.rule.reminder.peds.ChildStartSeptrinReminderRule;
+import org.openmrs.module.clinicalsummary.rule.reminder.peds.DisplayReminderRule;
 import org.openmrs.module.clinicalsummary.rule.reminder.peds.FirstElisaRemiderRule;
 import org.openmrs.module.clinicalsummary.rule.reminder.peds.MalnutritionHospitalizeReminderRule;
 import org.openmrs.module.clinicalsummary.rule.reminder.peds.MalnutritionReferralReminderRule;
@@ -151,5 +152,6 @@ public class GeneratorUtilities {
 		service.addRule("Malnutrition Referral Reminder", new MalnutritionReferralReminderRule());
 		
 		service.addRule("Child Weight", new ChildWeightRule());
+		service.addRule("Display Reminder", new DisplayReminderRule());
 	}
 }

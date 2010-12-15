@@ -137,4 +137,12 @@ public class TypeRegistry {
 	public static void learnTypes(String typeName) {
 		getInstance().registerType(typeName);
 	}
+	
+	/**
+	 * Destroy the cache instance
+	 */
+	public static void clearInstance() {
+		if (instance != null)
+			instance = null;
+	}
 }

@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="@MODULE_PACKAGE@">
+
+	<class name="ObsPair" table="clinical_summary_obs_pair">
+
+		<id name="id" type="java.lang.Integer" column="pair_id" unsaved-value="0">
+			<generator class="org.openmrs.api.db.hibernate.NativeIfNotAssignedIdentityGenerator" />
+		</id>
+		
+        <many-to-one name="patient" column="patient_id" class="org.openmrs.Patient" lazy="false"/>
+        <many-to-one name="concept" column="concept_id" class="org.openmrs.Concept" lazy="false"/>
+        <many-to-one name="answer" column="answer_id" class="org.openmrs.Concept" lazy="false"/>
+        <property name="value" column="value" type="java.lang.Double"/>
+        <property name="status" column="status" type="java.lang.String"/>
+		<property name="obsDatetime" type="java.util.Date" column="obs_datetime" not-null="true" length="19" />
+			
+		<many-to-one name="creator" class="org.openmrs.User" not-null="true">
+			<column name="creator" />
+		</many-to-one>
+
+		<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" length="19" />
+	</class>
+</hibernate-mapping>

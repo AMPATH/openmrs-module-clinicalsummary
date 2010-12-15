@@ -31,6 +31,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.logic.LogicCriteria;
 import org.openmrs.logic.datasource.LogicDataSource;
 import org.openmrs.logic.result.Result;
+import org.openmrs.module.clinicalsummary.ObsPair;
 import org.openmrs.module.clinicalsummary.SummaryError;
 import org.openmrs.module.clinicalsummary.SummaryIndex;
 import org.openmrs.module.clinicalsummary.SummaryService;
@@ -232,8 +233,8 @@ public class SummaryServiceImpl implements SummaryService {
 	 * @see org.openmrs.module.clinicalsummary.SummaryService#getIndexes(java.lang.String, String, int, int, int)
 	 */
 	@Override
-    public List<SummaryIndex> getIndexes(String search, String sortOrder, int sortColumn, int displayStart, int displayLength) {
-	    return summaryDAO.findIndexes(search, sortOrder, sortColumn, displayStart, displayLength);
+    public List<SummaryIndex> getIndexes(String search, Integer displayStart, Integer displayLength) {
+	    return summaryDAO.findIndexes(search, displayStart, displayLength);
     }
 
 	/**
@@ -259,12 +260,62 @@ public class SummaryServiceImpl implements SummaryService {
 	public void setLogicDataSource(String hint, LogicDataSource dataSource) throws APIException {
 		Context.getLogicService().registerLogicDataSource(hint, dataSource);
 	}
-
+	
 	/**
-	 * @see org.openmrs.module.clinicalsummary.SummaryService#getWeightAgeStandard(java.lang.Integer, java.lang.String, java.lang.String)
+	 * @see org.openmrs.module.clinicalsummary.SummaryService#getWeightAgeStandard(java.lang.Integer,
+	 *      java.lang.String, java.lang.String)
 	 */
 	@Override
-    public WeightAgeStandard getWeightAgeStandard(Integer age, String ageUnit, String gender) {
-	    return summaryDAO.getWeightAgeStandard(age, ageUnit, gender);
+	public WeightAgeStandard getWeightAgeStandard(Integer age, String ageUnit, String gender) {
+		return summaryDAO.getWeightAgeStandard(age, ageUnit, gender);
+	}
+	
+	/**
+	 * @see org.openmrs.module.clinicalsummary.SummaryService#deleteObsPair(org.openmrs.module.clinicalsummary.ObsPair)
+	 */
+	@Override
+	public void deleteObsPair(ObsPair obsPair) {
+		summaryDAO.deleteObsPair(obsPair);
+	}
+	
+	/**
+	 * @see org.openmrs.module.clinicalsummary.SummaryService#getObsPairs()
+	 */
+	@Override
+	public List<ObsPair> getAllObsPairs() {
+		return summaryDAO.getAllObsPairs();
+	}
+	
+	/**
+	 * @see org.openmrs.module.clinicalsummary.SummaryService#getObsPairForPatient(org.openmrs.Patient)
+	 */
+	@Override
+	public List<ObsPair> getObsPairForPatient(Patient patient) {
+		return summaryDAO.getObsPairForPatient(patient);
+	}
+	
+	/**
+	 * @see org.openmrs.module.clinicalsummary.SummaryService#saveObsPair(org.openmrs.module.clinicalsummary.ObsPair)
+	 */
+	@Override
+	public ObsPair saveObsPair(ObsPair obsPair) {
+		return summaryDAO.saveObsPair(obsPair);
+	}
+
+	/**
+	 * @see org.openmrs.module.clinicalsummary.SummaryService#countObsPair(java.lang.String)
+	 */
+	@Override
+    public Integer countObsPairs(String search) throws APIException {
+	    return summaryDAO.countObsPair(search);
+    }
+
+	/**
+	 * @see org.openmrs.module.clinicalsummary.SummaryService#getObsPairs(java.lang.String, int, int)
+	 */
+	@SuppressWarnings("unchecked")
+    @Override
+    public List getObsPairs(String search, int displayStart, int displayLength) throws APIException {
+	    return summaryDAO.getObsPairs(search, displayStart, displayLength);
     }
 }
