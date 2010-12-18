@@ -14,6 +14,7 @@
 package org.openmrs.module.clinicalsummary.engine;
 
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
@@ -45,7 +46,9 @@ public class VelocityContextUtils {
 		if (date == null)
 			return StringUtils.EMPTY;
 		
-		return Context.getDateFormat().format(date);
+		String format = "dd-MMM-yyyy";
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
+		return simpleDateFormat.format(date);
 	}
 	
 	public String printConceptName(Concept concept) {

@@ -26,10 +26,6 @@ import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ArrayNode;
-import org.codehaus.jackson.node.ObjectNode;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
@@ -64,52 +60,58 @@ public class SummarySearchIndexFormController {
 			SummaryService service = Context.getService(SummaryService.class);
 			
 			List<SummaryIndex> indexes = service.getIndexes(StringUtils.trim(search), displayStart, displayLength);
-			int totalIndexes = service.countIndexes(StringUtils.EMPTY);
-			int filteredIndexes = service.countIndexes(search);
+			Integer totalIndexes = service.countIndexes(StringUtils.EMPTY);
+			Integer filtered = service.countIndexes(StringUtils.trim(search));
 			
-			ObjectMapper mapper = new ObjectMapper();
-			JsonFactory factory = mapper.getJsonFactory();
+			JsonFactory factory = new JsonFactory();
 			JsonGenerator generator = factory.createJsonGenerator(response.getOutputStream(), JsonEncoding.UTF8);
 			generator.useDefaultPrettyPrinter();
 			
-			JsonNode rootNode = mapper.createObjectNode();
-			((ObjectNode) rootNode).put("sEcho", echo);
-			((ObjectNode) rootNode).put("iTotalRecords", totalIndexes);
-			((ObjectNode) rootNode).put("iTotalDisplayRecords", filteredIndexes);
-			ArrayNode arrayNode = ((ObjectNode) rootNode).putArray("aaData");
+			generator.writeStartObject();
+			
+			generator.writeArrayFieldStart("aaData");
 			
 			for (SummaryIndex index : indexes) {
-				ArrayNode innerArray = arrayNode.addArray();
-				
-				innerArray.add(index.getIndexId());
+				generator.writeStartArray();
+
+				generator.writeNumber(index.getIndexId());
 				
 				String identifier = "N/A";
 				Patient patient = index.getPatient();
 				if (patient != null && patient.getPatientIdentifier() != null)
 					identifier = patient.getPatientIdentifier().getIdentifier();
-				innerArray.add(identifier);
+				generator.writeString(identifier);
 				
-				innerArray.add(patient.getGivenName());
-				innerArray.add(patient.getMiddleName());
-				innerArray.add(patient.getFamilyName());
+				generator.writeString(patient.getGivenName());
+				generator.writeString(patient.getMiddleName());
+				generator.writeString(patient.getFamilyName());
 				
 				Location location = index.getLocation();
-				innerArray.add(location == null ? "N/A" : location.getName());
+				generator.writeString(location == null ? "N/A" : location.getName());
 				
 				Date returnDate = index.getReturnDate();
-				innerArray.add(returnDate == null ? "N/A" : Context.getDateFormat().format(returnDate));
+				generator.writeString(returnDate == null ? "N/A" : Context.getDateFormat().format(returnDate));
 				
 				SummaryTemplate template = index.getTemplate();
-				innerArray.add(template == null ? "N/A" : template.getName());
+				generator.writeString(template == null ? "N/A" : template.getName());
 				
 				Date initialDate = index.getInitialDate();
-				innerArray.add(initialDate == null ? "N/A" : Context.getDateFormat().format(initialDate));
+				generator.writeString(initialDate == null ? "N/A" : Context.getDateFormat().format(initialDate));
 				
 				Date generatedDate = index.getGeneratedDate();
-				innerArray.add(generatedDate == null ? "N/A" : Context.getDateFormat().format(generatedDate));
+				generator.writeString(generatedDate == null ? "N/A" : Context.getDateFormat().format(generatedDate));
+				
+				generator.writeEndArray();
 			}
 			
-			mapper.writeTree(generator, rootNode);
+			generator.writeEndArray();
+			
+			generator.writeNumberField("sEcho", echo);
+			generator.writeNumberField("iTotalRecords", totalIndexes);
+			generator.writeNumberField("iTotalDisplayRecords", filtered);
+			
+			generator.writeEndObject();
+			
 			generator.close();
 		}
 	}

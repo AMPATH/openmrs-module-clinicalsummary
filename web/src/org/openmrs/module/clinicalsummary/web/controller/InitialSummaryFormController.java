@@ -26,9 +26,6 @@ import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ObjectNode;
 import org.openmrs.Location;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.clinicalsummary.SummaryService;
@@ -56,21 +53,19 @@ public class InitialSummaryFormController {
 				try {
 					response.setContentType("application/json");
 					
-					ObjectMapper mapper = new ObjectMapper();
-					JsonFactory factory = mapper.getJsonFactory();
+					JsonFactory factory = new JsonFactory();
 					
 					JsonGenerator generator = factory.createJsonGenerator(response.getOutputStream(), JsonEncoding.UTF8);
 					generator.useDefaultPrettyPrinter();
 					
-					JsonNode rootNode = mapper.createObjectNode();
-					
+					generator.writeStartObject();
 					Date date = Context.getService(SummaryService.class).getEarliestIndex(location);
 					String dateString = "N/A";
 					if (date != null)
 						dateString = Context.getDateFormat().format(date);
-					((ObjectNode) rootNode).put("date", dateString);
+					generator.writeStringField("date", dateString);
+					generator.writeEndObject();
 					
-					mapper.writeTree(generator, rootNode);
 					generator.close();
 				}
 				catch (IOException e) {

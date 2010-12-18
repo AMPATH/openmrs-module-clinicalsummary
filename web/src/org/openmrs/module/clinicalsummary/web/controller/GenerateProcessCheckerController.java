@@ -20,7 +20,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.clinicalsummary.engine.GeneratorThread;
 import org.openmrs.module.clinicalsummary.io.SummaryIO;
@@ -40,9 +39,7 @@ public class GenerateProcessCheckerController {
 			
 			response.setContentType("application/json");
 			
-			ObjectMapper mapper = new ObjectMapper();
-			JsonFactory factory = mapper.getJsonFactory();
-			
+			JsonFactory factory = new JsonFactory();
 			JsonGenerator generator = factory.createJsonGenerator(response.getOutputStream(), JsonEncoding.UTF8);
 			generator.useDefaultPrettyPrinter();
 			
@@ -59,6 +56,9 @@ public class GenerateProcessCheckerController {
 			if (SummaryIO.getTotal() > 0)
 				percentage = Math.floor((processed / total) * 100);
 			generator.writeNumberField("percentage", percentage);
+			
+			if (!GeneratorThread.isRunning())
+				GeneratorThread.resetThread();
 			
 			generator.writeEndObject();
 			generator.close();

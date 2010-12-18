@@ -25,7 +25,6 @@ import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.clinicalsummary.SummaryService;
@@ -57,28 +56,24 @@ public class ObsPairSearchController {
 				search = StringUtils.EMPTY;
 			
 			List pairs = service.getObsPairs(StringUtils.trim(search), displayStart, displayLength);
-			int totalPairs = service.countObsPairs(StringUtils.EMPTY);
-			int filteredPairs = service.countObsPairs(search);
+			Integer totalPairs = service.countObsPairs(StringUtils.EMPTY);
+			Integer filtered = service.countObsPairs(StringUtils.trim(search));
 			
 			if (log.isDebugEnabled())
 				log.debug("Total pairs found: " + pairs.size());
 			
-			ObjectMapper mapper = new ObjectMapper();
-			JsonFactory factory = mapper.getJsonFactory();
+			JsonFactory factory = new JsonFactory();
 			JsonGenerator generator = factory.createJsonGenerator(response.getOutputStream(), JsonEncoding.UTF8);
 			generator.useDefaultPrettyPrinter();
 			
 			generator.writeStartObject();
-			generator.writeStringField("sEcho", String.valueOf(echo));
-			generator.writeStringField("iTotalRecords", String.valueOf(totalPairs));
-			generator.writeStringField("iTotalDisplayRecords", String.valueOf(filteredPairs));
 			
 			generator.writeArrayFieldStart("aaData");
 			
 			for (Object object : pairs) {
 				generator.writeStartArray();
-				Object[] results = (Object[]) object;
 				
+				Object[] results = (Object[]) object;
 				Patient patient = (Patient) results[1];
 				generator.writeString(String.valueOf(patient.getPatientId()));
 				generator.writeString(patient.getPatientIdentifier().getIdentifier());
@@ -88,10 +83,15 @@ public class ObsPairSearchController {
 				
 				Integer counter = (Integer) results[0];
 				generator.writeNumber(counter);
+				
 				generator.writeEndArray();
 			}
 			
 			generator.writeEndArray();
+			
+			generator.writeNumberField("sEcho", echo);
+			generator.writeNumberField("iTotalRecords", totalPairs);
+			generator.writeNumberField("iTotalDisplayRecords", filtered);
 			generator.writeEndObject();
 			
 			generator.close();

@@ -14,6 +14,7 @@
 package org.openmrs.module.clinicalsummary.engine;
 
 import java.io.File;
+import java.util.TreeSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,7 +40,7 @@ public class GeneratorThread implements Runnable {
 	
 	private static Integer currentId;
 	
-	private static Integer counter;
+	private static Integer processed;
 	
 	private static Integer total;
 	
@@ -50,13 +51,20 @@ public class GeneratorThread implements Runnable {
 	private final UserContext userContext;
 	
 	public GeneratorThread(Cohort cohort) {
-		status = Status.IDLE;
+		resetThread();
+		
 		total = cohort.size();
-		counter = 0;
-		currentId = -1;
 		
 		this.cohort = cohort;
 		this.userContext = Context.getUserContext();
+	}
+	
+	/**
+	 */
+	public static void resetThread() {
+		status = Status.IDLE;
+		processed = 0;
+		currentId = -1;
 	}
 	
 	/**
@@ -79,6 +87,7 @@ public class GeneratorThread implements Runnable {
 			// the encounter buffer here. if the logic service is fast enough,
 			// we wouldn't need to do this actually
 			
+			int counter = 0;
 			Cohort subCohort = new Cohort();
 			for (Integer patientId : cohort.getMemberIds()) {
 				subCohort.addMember(patientId);
@@ -91,10 +100,12 @@ public class GeneratorThread implements Runnable {
 					SummaryDataSource summaryDataSource = new SummaryDataSource(provider);
 					GeneratorEngine generatorEngine = new GeneratorEngine(summaryDataSource, folder);
 					
-					for (Integer processedId : subCohort.getMemberIds())
+					for (Integer processedId : subCohort.getMemberIds()) {
 						generatorEngine.generateSummary(patientService.getPatient(currentId = processedId));
+						processed++;
+					}
 					
-					subCohort = new Cohort();
+					subCohort.setMemberIds(new TreeSet<Integer>());
 					Context.clearSession();
 				}
 			}
@@ -125,7 +136,7 @@ public class GeneratorThread implements Runnable {
 	 * @return
 	 */
 	public static Integer getProcessed() {
-		return counter;
+		return processed;
 	}
 	
 	/**

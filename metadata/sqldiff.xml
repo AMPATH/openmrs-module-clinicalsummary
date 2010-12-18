@@ -763,6 +763,9 @@
 		</description>
 		<sql>
 			CREATE INDEX clinical_summary_obs_pair_patient ON clinical_summary_obs_pair (patient_id);
+			CREATE INDEX clinical_summary_obs_pair_concept ON clinical_summary_obs_pair (concept_id);
+			CREATE INDEX clinical_summary_obs_pair_answer ON clinical_summary_obs_pair (answer_id);
+			CREATE INDEX clinical_summary_obs_pair_datetime ON clinical_summary_obs_pair (obs_datetime);
 		</sql>
 	</diff>
 

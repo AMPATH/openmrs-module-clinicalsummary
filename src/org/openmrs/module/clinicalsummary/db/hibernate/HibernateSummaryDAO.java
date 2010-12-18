@@ -499,17 +499,11 @@ public class HibernateSummaryDAO implements SummaryDAO {
 	/**
 	 * @see org.openmrs.module.clinicalsummary.db.SummaryDAO#countObsPair(java.lang.String)
 	 */
-	@SuppressWarnings("unchecked")
-    @Override
+	@Override
 	public Integer countObsPair(String search) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ObsPair.class);
 		preparePatientCriteria(criteria, search);
-		
-		criteria.setProjection(Projections.projectionList()
-			.add(Projections.rowCount())
-			.add(Projections.groupProperty("patient")));
-		
-		List list = criteria.list();
-		return list.size();
+		criteria.setProjection(Projections.countDistinct("patient"));
+		return (Integer) criteria.uniqueResult();
 	}
 }

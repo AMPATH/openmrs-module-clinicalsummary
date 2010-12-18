@@ -21,9 +21,6 @@ import org.apache.commons.io.FileUtils;
 import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ObjectNode;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.clinicalsummary.io.SummaryIO;
 import org.springframework.stereotype.Controller;
@@ -42,33 +39,33 @@ public class StatusCheckerController {
 			
 			response.setContentType("application/json");
 			
-			ObjectMapper mapper = new ObjectMapper();
-			JsonFactory factory = mapper.getJsonFactory();
+			JsonFactory factory = new JsonFactory();
 			
 			JsonGenerator generator = factory.createJsonGenerator(response.getOutputStream(), JsonEncoding.UTF8);
 			generator.useDefaultPrettyPrinter();
 			
-			JsonNode rootNode = mapper.createObjectNode();
+			generator.writeStartObject();
 			
-			((ObjectNode) rootNode).put("filename", SummaryIO.getFilename());
-			((ObjectNode) rootNode).put("running", SummaryIO.isRunning());
+			generator.writeStringField("filename", SummaryIO.getFilename());
+			generator.writeBooleanField("running", SummaryIO.isRunning());
 			
 			String total = FileUtils.byteCountToDisplaySize(SummaryIO.getTotal());
 			String processed = FileUtils.byteCountToDisplaySize(SummaryIO.getProcessed());
-			((ObjectNode) rootNode).put("total", total);
-			((ObjectNode) rootNode).put("processed", processed);
+			generator.writeStringField("total", total);
+			generator.writeStringField("processed", processed);
 			
 			double percentage = 0;
 			if (SummaryIO.getTotal() > 0)
 				percentage = Math.floor(((double) SummaryIO.getProcessed() / (double) SummaryIO.getTotal()) * 100);
-			((ObjectNode) rootNode).put("percentage", percentage);
+			generator.writeNumberField("percentage", percentage);
 			
-			((ObjectNode) rootNode).put("status", SummaryIO.getExecutionStatus());
+			generator.writeStringField("status", SummaryIO.getExecutionStatus());
 			
 			if (SummaryIO.isFinished())
 				SummaryIO.resetTask();
 			
-			mapper.writeTree(generator, rootNode);
+			generator.writeEndObject();
+			
 			generator.close();
 		}
 	}
