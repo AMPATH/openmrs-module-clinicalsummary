@@ -155,6 +155,11 @@ public interface SummaryDAO {
 	public ObsPair saveObsPair(ObsPair obsPair) throws DAOException;
 	
 	/**
+	 * @see org.openmrs.module.clinicalsummary.SummaryService#deletePatientObsPairs(Patient)
+	 */
+	public void deletePatientObsPairs(Patient patient) throws DAOException;
+	
+	/**
 	 * @see org.openmrs.module.clinicalsummary.SummaryService#getObsPairForPatient(Patient)
 	 */
 	public List<ObsPair> getObsPairForPatient(Patient patient) throws DAOException;

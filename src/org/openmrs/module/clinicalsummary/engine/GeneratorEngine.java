@@ -54,7 +54,6 @@ import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.clinicalsummary.MappingPosition;
-import org.openmrs.module.clinicalsummary.ObsPair;
 import org.openmrs.module.clinicalsummary.SummaryError;
 import org.openmrs.module.clinicalsummary.SummaryIndex;
 import org.openmrs.module.clinicalsummary.SummaryService;
@@ -79,11 +78,8 @@ public class GeneratorEngine {
 	}
 	
 	private void prepareObsPair(Patient patient) {
-		// TODO: this is hacky way to register the test ordered pairing
 		SummaryService service = Context.getService(SummaryService.class);
-		List<ObsPair> pairs = service.getObsPairForPatient(patient);
-		for (ObsPair obsPair : pairs)
-			service.deleteObsPair(obsPair);
+		service.deletePatientObsPairs(patient);
 	}
 	
 	private Collection<SummaryTemplate> prepareTemplate(Patient patient) {

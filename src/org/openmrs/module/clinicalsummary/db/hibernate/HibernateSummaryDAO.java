@@ -454,6 +454,17 @@ public class HibernateSummaryDAO implements SummaryDAO {
 	}
 	
 	/**
+	 * @see org.openmrs.module.clinicalsummary.db.SummaryDAO#deletePatientObsPairs(org.openmrs.Patient)
+	 */
+	@Override
+	public void deletePatientObsPairs(Patient patient) throws DAOException {
+		String stringQuery = "delete from ObsPair o where o.patient = :patient";
+		Query query = sessionFactory.getCurrentSession().createQuery(stringQuery);
+		query.setParameter("patient", patient);
+		query.executeUpdate();
+	}
+	
+	/**
 	 * @see org.openmrs.module.clinicalsummary.db.SummaryDAO#getObsPairForPatient(org.openmrs.Patient)
 	 */
 	@SuppressWarnings("unchecked")

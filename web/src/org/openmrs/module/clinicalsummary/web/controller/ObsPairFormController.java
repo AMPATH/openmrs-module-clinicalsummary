@@ -50,7 +50,7 @@ public class ObsPairFormController {
 					String answerName = answer.getName(Context.getLocale(), false).getName();
 					conceptNames.put(answer.getConceptId(), answerName);
 				}
-            }
+			}
 			
 			map.addAttribute("patient", patient);
 			map.addAttribute("conceptNames", conceptNames);

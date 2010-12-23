@@ -171,7 +171,6 @@ public interface SummaryService {
 	 * @should save the error to the database
 	 * @should update the error in the database
 	 */
-	@Authorized( { SummaryConstants.PRIV_MANAGE_SUMMARY })
 	public SummaryError saveError(SummaryError summaryError) throws APIException;
 	
 	/**
@@ -185,7 +184,6 @@ public interface SummaryService {
 	 * @should return empty list when no errors are found for a patient
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { SummaryConstants.PRIV_MANAGE_SUMMARY })
 	public Cohort getErrorCohort() throws APIException;
 	
 	/**
@@ -195,7 +193,6 @@ public interface SummaryService {
 	 * @throws APIException
 	 * @should delete certain error object
 	 */
-	@Authorized( { SummaryConstants.PRIV_MANAGE_SUMMARY })
 	public void deleteError(SummaryError summaryError) throws APIException;
 	
 	/**
@@ -205,7 +202,6 @@ public interface SummaryService {
 	 * @throws APIException
 	 * @should delete certain error object
 	 */
-	@Authorized( { SummaryConstants.PRIV_MANAGE_SUMMARY })
 	public void deleteError(Patient patient) throws APIException;
 
 	/**
@@ -447,12 +443,18 @@ public interface SummaryService {
 
 	/**
 	 * @param patient
+	 */
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_PATIENTS, OpenmrsConstants.PRIV_VIEW_OBS })
+	public void deletePatientObsPairs(Patient patient);
+	
+	/**
+	 * @param patient
 	 * @return
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_PATIENTS, OpenmrsConstants.PRIV_VIEW_OBS })
 	public List<ObsPair> getObsPairForPatient(Patient patient);
-
+	
 	/**
 	 * @return
 	 */

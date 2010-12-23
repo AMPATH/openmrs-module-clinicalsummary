@@ -294,6 +294,14 @@ public class SummaryServiceImpl implements SummaryService {
 	}
 	
 	/**
+	 * @see org.openmrs.module.clinicalsummary.SummaryService#deletePatientObsPairs(org.openmrs.Patient)
+	 */
+	@Override
+	public void deletePatientObsPairs(Patient patient) {
+		summaryDAO.deletePatientObsPairs(patient);
+	}
+
+	/**
 	 * @see org.openmrs.module.clinicalsummary.SummaryService#getObsPairForPatient(org.openmrs.Patient)
 	 */
 	@Override
