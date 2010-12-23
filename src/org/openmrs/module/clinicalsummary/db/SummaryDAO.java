@@ -64,14 +64,19 @@ public interface SummaryDAO {
 	public SummaryError saveError(SummaryError summaryError) throws DAOException;
 	
 	/**
-	 * @see org.openmrs.module.clinicalsummary.SummaryService#getAllErrors()
+	 * @see org.openmrs.module.clinicalsummary.SummaryService#getErrorCohort()
 	 */
-	public List<SummaryError> getAllErrors() throws DAOException;
+	public Cohort getErrorCohort() throws DAOException;
 	
 	/**
 	 * @see org.openmrs.module.clinicalsummary.SummaryService#deleteError(SummaryError)
 	 */
 	public void deleteError(SummaryError summaryError) throws DAOException;
+	
+	/**
+	 * @see org.openmrs.module.clinicalsummary.SummaryService#deleteError(Patient)
+	 */
+	public void deleteError(Patient patient) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.module.clinicalsummary.SummaryService#saveIndex(SummaryIndex)

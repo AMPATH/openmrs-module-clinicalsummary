@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.LogicalExpression;
@@ -194,13 +195,13 @@ public class HibernateSummaryDAO implements SummaryDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.module.clinicalsummary.db.SummaryDAO#getAllErrors()
+	 * @see org.openmrs.module.clinicalsummary.db.SummaryDAO#getErrorCohort()
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
-	public List<SummaryError> getAllErrors() throws DAOException {
+	public Cohort getErrorCohort() throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(SummaryError.class);
-		return criteria.list();
+		criteria.setProjection(Projections.property("patient.patientId"));
+		return new Cohort(criteria.list());
 	}
 	
 	/**
@@ -209,6 +210,17 @@ public class HibernateSummaryDAO implements SummaryDAO {
 	@Override
 	public void deleteError(SummaryError summaryError) throws DAOException {
 		sessionFactory.getCurrentSession().delete(summaryError);
+	}
+	
+	/**
+	 * @see org.openmrs.module.clinicalsummary.db.SummaryDAO#deleteError(org.openmrs.module.clinicalsummary.SummaryError)
+	 */
+	@Override
+	public void deleteError(Patient patient) throws DAOException {
+		String stringQuery = "delete from SummaryError s where s.patient = :patient";
+		Query query = sessionFactory.getCurrentSession().createQuery(stringQuery);
+		query.setParameter("patient", patient);
+		query.executeUpdate();
 	}
 	
 	/**

@@ -111,8 +111,8 @@ public class SummaryServiceImpl implements SummaryService {
 	/**
 	 * @see org.openmrs.module.clinicalsummary.SummaryService#getErrorsByPatient(org.openmrs.Patient)
 	 */
-	public List<SummaryError> getAllErrors() throws APIException {
-		return summaryDAO.getAllErrors();
+	public Cohort getErrorCohort() throws APIException {
+		return summaryDAO.getErrorCohort();
 	}
 	
 	/**
@@ -129,6 +129,13 @@ public class SummaryServiceImpl implements SummaryService {
 		summaryDAO.deleteError(summaryError);
 	}
 	
+	/**
+	 * @see org.openmrs.module.clinicalsummary.SummaryService#deleteError(org.openmrs.Patient)
+	 */
+	public void deleteError(Patient patient) throws APIException {
+		summaryDAO.deleteError(patient);
+	}
+
 	/**
 	 * @see org.openmrs.module.clinicalsummary.SummaryService#getAllIndexes()
 	 */

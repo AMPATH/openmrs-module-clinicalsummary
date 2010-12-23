@@ -186,7 +186,7 @@ public interface SummaryService {
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { SummaryConstants.PRIV_MANAGE_SUMMARY })
-	public List<SummaryError> getAllErrors() throws APIException;
+	public Cohort getErrorCohort() throws APIException;
 	
 	/**
 	 * Delete a certain error from the database.
@@ -198,6 +198,16 @@ public interface SummaryService {
 	@Authorized( { SummaryConstants.PRIV_MANAGE_SUMMARY })
 	public void deleteError(SummaryError summaryError) throws APIException;
 	
+	/**
+	 * Delete a certain error from the database.
+	 * 
+	 * @param summaryError error object that will be deleted
+	 * @throws APIException
+	 * @should delete certain error object
+	 */
+	@Authorized( { SummaryConstants.PRIV_MANAGE_SUMMARY })
+	public void deleteError(Patient patient) throws APIException;
+
 	/**
 	 * Save the index for a generated summary to the database
 	 * 

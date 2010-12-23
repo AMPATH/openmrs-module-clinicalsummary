@@ -13,16 +13,13 @@
  */
 package org.openmrs.module.clinicalsummary.task;
 
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
-import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.clinicalsummary.SummaryError;
 import org.openmrs.module.clinicalsummary.SummaryService;
 import org.openmrs.module.clinicalsummary.engine.GeneratorThread;
 
@@ -38,26 +35,17 @@ public class FailedSummaryGeneratorProcessor {
 	
 	public void processSummary() {
 		SummaryService summaryService = Context.getService(SummaryService.class);
-		List<SummaryError> errors = summaryService.getAllErrors();
+		Cohort cohort = summaryService.getErrorCohort();
 		
-		int counter = 0;
 		ExecutorService executorService = Executors.newFixedThreadPool(1);
-		for (SummaryError error : errors) {
-			Cohort cohort = new Cohort();
-			Patient patient = error.getPatient();
-			cohort.addMember(patient.getPatientId());
-			
-			summaryService.deleteError(error);
-			
-			GeneratorThread generatorThread = new GeneratorThread(cohort);
-			executorService.execute(generatorThread);
+		for (Integer patientId : cohort.getMemberIds()) {
+			summaryService.deleteError(Context.getPatientService().getPatient(patientId));
 			
 			if (log.isDebugEnabled())
-				log.debug("Generating " + patient.getPatientId() + " summaries from failed list ...");
-			
-			counter++;
-			if (counter % 100 == 0)
-				Context.clearSession();
+				log.debug("Deleting error log for " + patientId + " summaries from failed list ...");
 		}
+		
+		GeneratorThread generatorThread = new GeneratorThread(cohort);
+		executorService.execute(generatorThread);
 	}
 }
