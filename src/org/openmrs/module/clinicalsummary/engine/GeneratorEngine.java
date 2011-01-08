@@ -170,19 +170,18 @@ public class GeneratorEngine {
 					transformer.transform(source, result);
 					
 					out.close();
-					
+					exportFunctions.clear();
 					setIndex(patient, template);
-					
 				}
 				catch (Exception e) {
-					setFatalException(patient, e);
 					log.error("Failed generating summary ...", e);
+					setFatalException(patient, e);
 				}
 			}
 		}
 		catch (Exception e) {
-			setFatalException(patient, e);
 			log.error("Failed generating summary ...", e);
+			setFatalException(patient, e);
 		}
 	}
 	
@@ -262,6 +261,7 @@ public class GeneratorEngine {
 		builder.append("patient id", patient.getPatientId());
 		builder.append("message", e.getMessage());
 		builder.append("cause", e.getCause());
+		builder.append("toString", e.toString());
 		error.setErrorDetails(builder.toString());
 		summaryService.saveError(error);
 	}
