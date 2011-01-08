@@ -53,6 +53,8 @@ import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.Module;
+import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.clinicalsummary.MappingPosition;
 import org.openmrs.module.clinicalsummary.SummaryError;
 import org.openmrs.module.clinicalsummary.SummaryIndex;
@@ -148,11 +150,17 @@ public class GeneratorEngine {
 			context.put("fn", exportFunctions);
 			context.put("patientSet", patientSet);
 			
+			Module module = ModuleFactory.getModuleById("clinicalsummary");
+			String moduleVersion = module.getVersion();
+			context.put("moduleVersion", moduleVersion);
+			
 			prepareObsPair(patient);
 			
 			for (SummaryTemplate template : prepareTemplate(patient)) {
 				
 				try {
+					context.put("templateRevision", template.getRevision());
+					context.put("templateName", template.getName());
 					
 					Writer writer = new StringWriter();
 					Velocity.evaluate(context, writer, GeneratorEngine.class.getName(), template.getTemplate());
@@ -170,16 +178,13 @@ public class GeneratorEngine {
 					transformer.transform(source, result);
 					
 					out.close();
-					exportFunctions.clear();
 					setIndex(patient, template);
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					log.error("Failed generating summary ...", e);
 					setFatalException(patient, e);
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			log.error("Failed generating summary ...", e);
 			setFatalException(patient, e);
 		}

@@ -32,7 +32,7 @@ $j(document).ready(function() {
 	)
 	
 	// init all input to use jquery css
-	$j(':input').addClass('ui-state-default ui-corner-all');
+	$j(':input').addClass('ui-state-default');
 
 	// pressing the submit button will post the form to the server
 	// block all input and wait for the reply from the server

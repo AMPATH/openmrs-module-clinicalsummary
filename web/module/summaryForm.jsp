@@ -27,7 +27,7 @@
 		)
 		
 		// init all input to use jquery css
-		$j(':input').addClass('ui-state-default ui-corner-all');
+		$j(':input').addClass('ui-state-default');
 		
 		$j(".encounterTypeNames").autocomplete('summaryMapping.form', {
 				multiple: false,
@@ -83,6 +83,12 @@
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 					<i><spring:message code="clinicalsummary.retired.help"/></i>
 				</td>
+			</tr>
+		</spring:bind>
+		<spring:bind path="summary.revision">
+			<tr>
+				<th><spring:message code="clinicalsummary.revision"/></th>
+				<td><input type="text" name="${status.expression}" value="${status.value}" size="43" readonly="readonly" /></td>
 			</tr>
 		</spring:bind>
 		<spring:bind path="summary.name">

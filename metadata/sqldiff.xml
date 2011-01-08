@@ -768,5 +768,17 @@
 			CREATE INDEX clinical_summary_obs_pair_datetime ON clinical_summary_obs_pair (obs_datetime);
 		</sql>
 	</diff>
+	
+	<diff>
+		<version>2.3.3</version>
+		<author>Nyoman Ribeka</author>
+		<date>July 14 2010</date>
+		<description>
+			Add index on clinical_summary_index table
+		</description>
+		<sql>
+			ALTER TABLE clinical_summary ADD COLUMN revision INT(11) NOT NULL DEFAULT 1;
+		</sql>
+	</diff>
 
 </sqldiff>

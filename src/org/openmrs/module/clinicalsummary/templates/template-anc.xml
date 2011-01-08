@@ -1,5 +1,9 @@
 <?xml version="1.0"?>
 <clinicalSummary>
+	<moduleVersion>$!{moduleVersion}</moduleVersion>
+	<templateRevision>$!{templateRevision}</templateRevision>
+	<templateName>$!{templateName}</templateName>
+	
 	<identifiers>
 	<!-- pull the first identifier from all active identifier -->
     #foreach(${id} in $!{patient.getActiveIdentifiers()})

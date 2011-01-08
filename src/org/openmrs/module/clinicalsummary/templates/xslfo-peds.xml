@@ -29,7 +29,7 @@
 						<fo:table-column column-width="60%" />
 						<fo:table-column column-width="40%" />
 						<fo:table-body>
-							<fo:table-row height="1cm">
+							<fo:table-row>
 								<fo:table-cell display-align="center">
 									<fo:block text-align="left" font-size="8pt">
 										<xsl:if test="lastEncounter/location">
@@ -62,16 +62,31 @@
 										</fo:block>
 									</fo:block>
 								</fo:table-cell>
-								<fo:table-cell display-align="center">
-									<fo:block text-align="right" font-size="20pt" font-weight="bold">
-										<xsl:value-of select="id" />
+								<fo:table-cell text-align="right">
+									<fo:block>
+										<fo:block text-align="right" font-size="16pt" font-weight="bold">
+											<xsl:value-of select="id" />
+										</fo:block>
+										<fo:block font-size="6pt">
+											<fo:block>
+												<xsl:text>Generated on </xsl:text>
+												<xsl:value-of select="format-dateTime(current-dateTime(), '[D01]-[MNn,*-3]-[Y0001] at [H01]:[m01]:[s01]')" /> 
+											</fo:block>
+											<fo:block>
+												<xsl:text>Version </xsl:text>
+												<xsl:value-of select="moduleVersion" />
+											</fo:block>
+											<fo:block>
+												<xsl:value-of select="templateName" />
+												<xsl:text> revision </xsl:text>
+												<xsl:value-of select="templateRevision" />
+											</fo:block>
+										</fo:block>
 									</fo:block>
 								</fo:table-cell>
 							</fo:table-row>
 						</fo:table-body>
 					</fo:table>
-					<fo:block>
-					</fo:block>
 				</fo:static-content>
 
 				<!-- Begin Page Content -->

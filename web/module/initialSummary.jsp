@@ -47,7 +47,7 @@ $j(document).ready(function() {
 	});
 	
 	// init all input to use jquery css
-	$j(':input').addClass('ui-state-default ui-corner-all');
+	$j(':input').addClass('ui-state-default');
 });
 </script>
 

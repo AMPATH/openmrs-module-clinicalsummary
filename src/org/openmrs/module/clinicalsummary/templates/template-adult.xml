@@ -1,5 +1,9 @@
 <?xml version="1.0"?>
 <clinicalSummary>
+	<moduleVersion>$!{moduleVersion}</moduleVersion>
+	<templateRevision>$!{templateRevision}</templateRevision>
+	<templateName>$!{templateName}</templateName>
+
 	#set($summaryCache = {})
     #set($patientId = $!{patient.getPatientId()})
 

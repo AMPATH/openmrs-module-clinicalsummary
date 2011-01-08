@@ -61,6 +61,8 @@ public class SummaryTemplate extends BaseOpenmrsMetadata {
 	
 	private MappingPosition position;
 	
+	private Integer revision;
+	
 	/**
 	 * @return the name
 	 */
@@ -247,13 +249,31 @@ public class SummaryTemplate extends BaseOpenmrsMetadata {
 		hash = 31 * templateId.hashCode() + hash;
 		return hash;
 	}
-
+	
 	/**
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-	    return "SummaryTemplate: " + name;
-    }
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "SummaryTemplate: " + name;
+	}
+	
+	/**
+	 * Return the value of the revision
+	 * 
+	 * @return the revision
+	 */
+	public Integer getRevision() {
+		return revision;
+	}
+	
+	/**
+	 * Set the revision with the revision value
+	 * 
+	 * @param revision the revision to set
+	 */
+	public void setRevision(Integer revision) {
+		this.revision = revision;
+	}
 	
 }

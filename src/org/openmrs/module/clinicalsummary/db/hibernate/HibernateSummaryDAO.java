@@ -66,6 +66,8 @@ public class HibernateSummaryDAO implements SummaryDAO {
 			String stringQuery = "UPDATE SummaryTemplate s SET s.preferred = :preferred";
 			sessionFactory.getCurrentSession().createQuery(stringQuery).setBoolean("preferred", false).executeUpdate();
 		}
+		// increase the revision
+		summary.setRevision(summary.getRevision() + 1);
 		sessionFactory.getCurrentSession().saveOrUpdate(summary);
 		return summary;
 	}
@@ -200,6 +202,7 @@ public class HibernateSummaryDAO implements SummaryDAO {
 	@Override
 	public Cohort getErrorCohort() throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(SummaryError.class);
+		criteria.createAlias("patient", "patient");
 		criteria.setProjection(Projections.property("patient.patientId"));
 		return new Cohort(criteria.list());
 	}
