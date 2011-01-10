@@ -16,7 +16,6 @@ package org.openmrs.module.clinicalsummary;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.module.Activator;
-import org.openmrs.module.clinicalsummary.engine.GeneratorUtilities;
 
 public class SummaryActivator implements Activator {
 	
@@ -26,11 +25,6 @@ public class SummaryActivator implements Activator {
 	 * @see org.openmrs.module.Activator#startup()
 	 */
 	public void startup() {
-		try {
-	        GeneratorUtilities.registerDefaultRules();
-        } catch (Exception e) {
-	        log.error("Registering rules throwing exception ...", e);
-        }
 		log.info("Starting up Summary Module");
 	}
 	

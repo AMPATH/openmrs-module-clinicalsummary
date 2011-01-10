@@ -264,6 +264,8 @@ public class SummaryTemplate extends BaseOpenmrsMetadata {
 	 * @return the revision
 	 */
 	public Integer getRevision() {
+		if (revision == null)
+			return 0;
 		return revision;
 	}
 	

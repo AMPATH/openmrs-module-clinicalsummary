@@ -18,6 +18,9 @@ import java.lang.reflect.Method;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
+import org.openmrs.Location;
+import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsUtil;
 import org.springframework.aop.AfterReturningAdvice;
 
 /**
@@ -27,12 +30,18 @@ public class EncounterCreatedAdvice implements AfterReturningAdvice {
 	
 	private static final Log log = LogFactory.getLog(EncounterCreatedAdvice.class);
 	
+	private static final Location MTRH_MODULE_4 = Context.getLocationService().getLocation("MTRH Module 4");
+	
 	public void afterReturning(Object returnValue, Method method, Object[] args, Object target) throws Throwable {
 		if (method.getName().equals("saveEncounter")) {
 			Encounter encounter = (Encounter) args[0];
 			
 			if (log.isDebugEnabled())
 				log.debug("Interception save encounter for type: " + encounter.getEncounterType().getName() + " ...");
+			
+			if (OpenmrsUtil.nullSafeEquals(encounter.getLocation(), MTRH_MODULE_4)) {
+				// randomize the patient
+			}
 		}
 	}
 	

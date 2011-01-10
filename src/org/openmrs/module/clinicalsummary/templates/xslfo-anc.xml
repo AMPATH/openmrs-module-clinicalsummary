@@ -4,6 +4,8 @@
 	exclude-result-prefixes="fo">
 	<xsl:output method="xml" version="1.0" omit-xml-declaration="no" indent="yes" />
 
+	<xsl:key name="medicationElement" match="element" use="."/>
+	
 	<xsl:template match="clinicalSummary">
 		<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format">
 			<fo:layout-master-set>
@@ -330,10 +332,13 @@
 												<fo:inline font-weight="bold">CURRENT MEDICATIONS </fo:inline>
 												<xsl:choose>
 													<xsl:when test="current-medications/medications/element">
-														<xsl:for-each select="current-medications/medications/element">
+														<xsl:variable name="medicationCount" select="count(current-medications/medications/element[generate-id(.)=generate-id(key('medicationElement', .)[1])])" />
+														<xsl:for-each select="current-medications/medications/element[generate-id(.)=generate-id(key('medicationElement', .)[1])]">
 															<fo:inline>
 																<xsl:value-of select="." />
-																<xsl:if test="position() &lt; last()">,</xsl:if>
+																<xsl:if test="position() &lt; $medicationCount">
+																	<xsl:text>,</xsl:text>
+																</xsl:if>
 															</fo:inline>
 														</xsl:for-each>
 													</xsl:when>

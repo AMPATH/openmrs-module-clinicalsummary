@@ -186,10 +186,8 @@
     	<medications>
 			#set($map = {"included.evaluated.concepts" : "MEDICATION ADDED"})
 			#set($medicationsAdded = $!{functions.eval($patient, "Historical Multi Concept", $map)})
-			#foreach (${element} in $!{medicationsAdded.get(0)})
-				#if (${velocityCount} > 1)
-					<element>$!{element}</element>
-				#end
+			#foreach (${element} in $!{medicationsAdded})
+				<element>$!{element.get(1)}</element>
 			#end
 			#set($map = {"evaluated.concept" : "RECIEVED ANTENATAL CARE SERVICE THIS VISIT",
 						 "included.coded.values" : "IRON SUPPLEMENT;COTRIMAZOLE;FOLIC ACID"})

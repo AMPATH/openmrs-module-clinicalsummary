@@ -60,6 +60,7 @@ public class DisplayReminderRule implements Rule {
 			Result latestEncounterResult = encounterResults.latest();
 			Encounter encounter = (Encounter) latestEncounterResult.getResultObject();
 			// TODO: hack for module 4 only
+			// this should check for the control group
 			if (StringUtils.equalsIgnoreCase(encounter.getLocation().getName(), "MTRH Module 4"))
 				result = new Result(Boolean.FALSE);
 			
