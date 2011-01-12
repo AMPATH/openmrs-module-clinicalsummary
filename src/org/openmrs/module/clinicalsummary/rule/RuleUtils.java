@@ -104,7 +104,7 @@ public class RuleUtils {
 					if (log.isDebugEnabled())
 						log.debug("prev concept: " + prevResult.toConcept() + ", current concept: " + currentResult.toConcept());
 					
-					if (OpenmrsUtil.nullSafeEquals(currentResult.getDatatype(), Datatype.NUMERIC)
+					if (OpenmrsUtil.nullSafeEquals(currentResult.getDatatype(), Datatype.CODED)
 					        && OpenmrsUtil.nullSafeEquals(prevResult.toConcept(), currentResult.toConcept()))
 						continue;
 				}
