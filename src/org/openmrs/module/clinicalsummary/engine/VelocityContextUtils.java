@@ -16,7 +16,6 @@ package org.openmrs.module.clinicalsummary.engine;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -55,18 +54,16 @@ public class VelocityContextUtils {
 		
 		if (concept == null)
 			return StringUtils.EMPTY;
-
+		
 		// use the best name as the default name
 		String name = concept.getBestName(Context.getLocale()).getName();
-		Locale locale = Context.getLocale();
-		for (ConceptName conceptName : concept.getNames()) {
-			Locale conceptLocale = conceptName.getLocale();
-			if (!StringUtils.equalsIgnoreCase(conceptLocale.getLanguage(), locale.getLanguage()))
-				continue;
-			
-			// search for a shorter name if available
-			if (StringUtils.length(conceptName.getName()) < 10 && Pattern.matches("(\\s*\\w+\\s*)+", conceptName.getName()))
-				name = conceptName.getName();
+		if (StringUtils.length(name) > 10) {
+			for (ConceptName conceptName : concept.getNames(Context.getLocale())) {
+				// search for a shorter name if available
+				if (StringUtils.length(conceptName.getName()) < 10
+				        && Pattern.matches("(\\s*\\w+\\s*)+", conceptName.getName()))
+					name = conceptName.getName();
+			}
 		}
 		
 		return name;

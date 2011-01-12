@@ -13,11 +13,11 @@
  */
 package org.openmrs.module.clinicalsummary.rule;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.logic.result.Result;
+import org.openmrs.logic.result.Result.Datatype;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -92,18 +92,20 @@ public class RuleUtils {
 					log.debug("current: " + currentResult.getResultDate() + " prev: " + prevResult.getResultDate());
 				
 				if (DateUtils.isSameDay(prevResult.getResultDate(), currentResult.getResultDate())
-				        && ObjectUtils.equals(prevResult.getDatatype(), currentResult.getDatatype())) {
+				        && OpenmrsUtil.nullSafeEquals(prevResult.getDatatype(), currentResult.getDatatype())) {
 					
 					if (log.isDebugEnabled())
 						log.debug("prev number: " + prevResult.toNumber() + ", current number: " + currentResult.toNumber());
 					
-					if (ObjectUtils.equals(prevResult.toNumber(), currentResult.toNumber()))
+					if (OpenmrsUtil.nullSafeEquals(currentResult.getDatatype(), Datatype.NUMERIC)
+					        && OpenmrsUtil.nullSafeEquals(prevResult.toNumber(), currentResult.toNumber()))
 						continue;
 					
 					if (log.isDebugEnabled())
 						log.debug("prev concept: " + prevResult.toConcept() + ", current concept: " + currentResult.toConcept());
 					
-					if (ObjectUtils.equals(prevResult.toConcept(), currentResult.toConcept()))
+					if (OpenmrsUtil.nullSafeEquals(currentResult.getDatatype(), Datatype.NUMERIC)
+					        && OpenmrsUtil.nullSafeEquals(prevResult.toConcept(), currentResult.toConcept()))
 						continue;
 				}
 				consolidatedResult.add(prevResult);

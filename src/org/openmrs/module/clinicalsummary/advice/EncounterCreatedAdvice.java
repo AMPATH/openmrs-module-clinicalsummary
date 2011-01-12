@@ -30,8 +30,6 @@ public class EncounterCreatedAdvice implements AfterReturningAdvice {
 	
 	private static final Log log = LogFactory.getLog(EncounterCreatedAdvice.class);
 	
-	private static final Location MTRH_MODULE_4 = Context.getLocationService().getLocation("MTRH Module 4");
-	
 	public void afterReturning(Object returnValue, Method method, Object[] args, Object target) throws Throwable {
 		if (method.getName().equals("saveEncounter")) {
 			Encounter encounter = (Encounter) args[0];
@@ -39,7 +37,10 @@ public class EncounterCreatedAdvice implements AfterReturningAdvice {
 			if (log.isDebugEnabled())
 				log.debug("Interception save encounter for type: " + encounter.getEncounterType().getName() + " ...");
 			
-			if (OpenmrsUtil.nullSafeEquals(encounter.getLocation(), MTRH_MODULE_4)) {
+			// TODO: this is a hack for study only
+			Location module4 = Context.getLocationService().getLocation("MTRH Module 4");
+			
+			if (OpenmrsUtil.nullSafeEquals(encounter.getLocation(), module4)) {
 				// randomize the patient
 			}
 		}
