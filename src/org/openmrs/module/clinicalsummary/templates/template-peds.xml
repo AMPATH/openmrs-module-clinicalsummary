@@ -359,12 +359,6 @@
     	        $!{baselineCXRReminder}
     	    </reminder>
         #end
-        #set($basedCD4ARVReminder = $!{functions.eval($patient, "CD4 Based ARV Reminder", $summaryCache)})
-        #if(${basedCD4ARVReminder} && "$!{basedCD4ARVReminder}" != "")
-    	    <reminder source="CD4 Based ARV Reminder">
-    	        $!{basedCD4ARVReminder}
-    	    </reminder>
-        #end
         #set($positivePCRElisaCD4Reminder = $!{functions.eval($patient, "Positive PCR Elisa CD4 Reminder", $summaryCache)})
         #if(${positivePCRElisaCD4Reminder} && "$!{positivePCRElisaCD4Reminder}" != "")
     	    <reminder source="Positive PCR Elisa CD4 Reminder">
@@ -432,7 +426,6 @@
 	    	<source name="Baseline Creatinine Reminder">4</source>
 	    	<source name="Baseline HGB Reminder">5</source>
 	    	<source name="Baseline CXR Reminder">6</source>
-	    	<source name="CD4 Based ARV Reminder">7</source>
 	    	<source name="Positive PCR Elisa CD4 Reminder">8</source>
 	    	<source name="Positive PCR Elisa ARV Reminder">9</source>
 	    	<source name="First Elisa Remider">10</source>

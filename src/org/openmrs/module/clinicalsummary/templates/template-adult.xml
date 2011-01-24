@@ -271,6 +271,12 @@
     	        $!{sgptReminder}
     	    </reminder>
         #end
+        #set($basedCD4ARVReminder = $!{functions.eval($patient, "CD4 Based ARV Reminder", $summaryCache)})
+        #if(${basedCD4ARVReminder} && "$!{basedCD4ARVReminder}" != "")
+    	    <reminder>
+    	        $!{basedCD4ARVReminder}
+    	    </reminder>
+        #end
     </reminders>
 
 </clinicalSummary>

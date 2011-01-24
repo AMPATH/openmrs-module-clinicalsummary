@@ -100,7 +100,7 @@ public class RepeatPCRReminderRule implements Rule {
 							resultCount++;
 
 				// when we see there's 1 result "NEGATIVE" or "POSITIVE", we will search for the test or throw reminder
-				if (resultCount < 2) {
+				if (resultCount == 1) {
 					
 					Calendar nowCalendar = Calendar.getInstance();
 					nowCalendar.setTime(now);

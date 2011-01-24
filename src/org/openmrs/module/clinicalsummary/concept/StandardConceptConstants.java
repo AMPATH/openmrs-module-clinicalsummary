@@ -428,4 +428,7 @@ public interface StandardConceptConstants {
 	@RegisterConcept
 	String NUTRITIONAL_SUPPORT = "NUTRITIONAL SUPPORT";
 	
+	@RegisterConcept
+	String NO = "NO";
+	
 }

@@ -68,7 +68,7 @@ public class HIVRxAdherenceRule implements Rule {
 		boolean missingData = false;
 		boolean imperfect = false;
 		
-		Concept arvAdherence = ConceptRegistry.getCachedConcept(StandardConceptConstants.ADHERENCE_ARV_DRUGS);
+		Concept noAdherence = ConceptRegistry.getCachedConcept(StandardConceptConstants.NO);
 		Concept allAdherence = ConceptRegistry.getCachedConcept(StandardConceptConstants.ADHERENCE_ALL);
 		
 		SummaryService service = Context.getService(SummaryService.class);
@@ -123,7 +123,7 @@ public class HIVRxAdherenceRule implements Rule {
 				if (OpenmrsUtil.nullSafeEquals(encounter, monthObs.getEncounter())) {
 					foundMonth = true;
 					
-					if (!OpenmrsUtil.nullSafeEquals(arvAdherence, valueCoded))
+					if (!OpenmrsUtil.nullSafeEquals(noAdherence, valueCoded))
 						imperfect = true;
 					
 					break;
