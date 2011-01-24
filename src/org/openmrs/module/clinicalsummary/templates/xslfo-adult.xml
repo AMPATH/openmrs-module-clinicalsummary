@@ -104,30 +104,10 @@
 										<fo:block font-weight="bold" font-size="20pt">
 											<xsl:value-of select="id" />
 										</fo:block>
-										<xsl:if test="alternateId">
-											<xsl:variable name="maxIds" select="4" />
-											<xsl:for-each select="alternateId">
-												<xsl:choose>
-													<xsl:when test="position() &lt; $maxIds">
-														<fo:block color="#888888">
-															<fo:inline>
-																<xsl:value-of select="." />
-															</fo:inline>
-														</fo:block>
-													</xsl:when>
-													<xsl:when test="position() = ($maxIds + 1)">
-														<fo:block color="#888888">
-															<fo:inline font-style="italic">(not all ids shown)
-															</fo:inline>
-														</fo:block>
-													</xsl:when>
-												</xsl:choose>
-											</xsl:for-each>
-										</xsl:if>
 									</fo:table-cell>
 								</fo:table-row>
 								<fo:table-row>
-									<fo:table-cell number-columns-spanned="4">
+									<fo:table-cell number-columns-spanned="2">
 										<fo:block font-size="14pt" space-after="6pt">
 											<xsl:choose>
 												<xsl:when test="gender = 'M'">
@@ -144,6 +124,30 @@
 												<xsl:value-of select="birthdate/value" />
 												)
 											</fo:inline>
+										</fo:block>
+									</fo:table-cell>
+									<fo:table-cell number-columns-spanned="2" number-rows-spanned="2" text-align="right">
+										<fo:block font-size="10pt" space-after="6pt">
+											<xsl:if test="alternateId">
+												<xsl:variable name="maxIds" select="2" />
+												<xsl:for-each select="alternateId">
+													<xsl:choose>
+														<xsl:when test="position() &lt; $maxIds">
+															<fo:block color="#888888">
+																<fo:inline>
+																	<xsl:value-of select="." />
+																</fo:inline>
+															</fo:block>
+														</xsl:when>
+														<xsl:when test="position() = ($maxIds + 1)">
+															<fo:block color="#888888">
+																<fo:inline font-style="italic">(not all ids shown)
+																</fo:inline>
+															</fo:block>
+														</xsl:when>
+													</xsl:choose>
+												</xsl:for-each>
+											</xsl:if>
 										</fo:block>
 									</fo:table-cell>
 								</fo:table-row>
