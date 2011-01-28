@@ -25,6 +25,8 @@ import org.openmrs.api.context.UserContext;
 import org.openmrs.module.clinicalsummary.SummaryConstants;
 import org.openmrs.module.clinicalsummary.cache.DataProvider;
 import org.openmrs.module.clinicalsummary.cache.SummaryDataSource;
+import org.openmrs.module.clinicalsummary.concept.ConceptRegistry;
+import org.openmrs.module.clinicalsummary.encounter.TypeRegistry;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -114,8 +116,15 @@ public class GeneratorThread implements Runnable {
 			log.error("Exception encountered when trying to generate summaries ...", e);
 		} finally {
 			status = Status.FINISHED;
+			clearCacheInstances();
 			Context.closeSession();
 		}
+	}
+	
+	private void clearCacheInstances() {
+		TemplateRegistry.clearInstance();
+		ConceptRegistry.clearInstance();
+		TypeRegistry.clearInstance();
 	}
 	
 	/**

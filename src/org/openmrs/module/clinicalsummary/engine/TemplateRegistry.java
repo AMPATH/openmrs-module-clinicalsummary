@@ -192,7 +192,7 @@ public class TemplateRegistry {
 	/**
 	 * @see org.openmrs.module.clinicalsummary.engine.TemplateRegistry#destroy()
 	 */
-	public static void destroyInstance() {
+	public static void clearInstance() {
 		getInstance().destroy();
 	}
 }

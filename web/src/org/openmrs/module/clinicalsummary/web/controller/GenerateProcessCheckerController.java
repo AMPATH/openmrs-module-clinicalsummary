@@ -54,7 +54,7 @@ public class GenerateProcessCheckerController {
 			
 			double percentage = 0;
 			if (SummaryIO.getTotal() > 0)
-				percentage = Math.floor((processed / total) * 100);
+				percentage = (processed / total) * 100;
 			generator.writeNumberField("percentage", percentage);
 			
 			if (!GeneratorThread.isRunning())

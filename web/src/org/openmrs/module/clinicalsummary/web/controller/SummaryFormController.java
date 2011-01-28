@@ -55,7 +55,7 @@ public class SummaryFormController {
 			css.saveTemplate(summaryTemplate);
 			
 			// destroy the template cache when we save a new template
-			TemplateRegistry.destroyInstance();
+			TemplateRegistry.clearInstance();
 			
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "clinicalsummary.saved");
 			
