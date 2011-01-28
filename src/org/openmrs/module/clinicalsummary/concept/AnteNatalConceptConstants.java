@@ -288,7 +288,7 @@ public interface AnteNatalConceptConstants {
 	
 	@RegisterConcept
 	@BufferObservations(type = { TypeConstants.ANC_INITIAL})
-	String BIRTH_WEIGHT = "BIRTH WEIGHT";
+	String BIRTH_WEIGHT = "BIRTH WEIGHT (KG)";
 	
 	@RegisterConcept
 	@BufferObservations(type = { TypeConstants.ANC_INITIAL})

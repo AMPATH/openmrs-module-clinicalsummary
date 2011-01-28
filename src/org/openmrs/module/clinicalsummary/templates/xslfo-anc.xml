@@ -420,11 +420,14 @@
 															<xsl:otherwise>HEALTH FACILITY, NOT MTRH</xsl:otherwise>
 														</xsl:choose>
 													</xsl:when>
-													<xsl:otherwise>
+													<xsl:when test="preferences/delivery-site/health-facility = 'NO'">
 														<fo:inline>NOT AT HEALTH FACILITY</fo:inline>
 														<xsl:if test="preferences/delivery-site/reasons">
 															<fo:inline>(<xsl:value-of select="preferences/delivery-site/reasons" />)</fo:inline>
 														</xsl:if>
+													</xsl:when>
+													<xsl:otherwise>
+														<fo:inline>UNKNOWN</fo:inline>
 													</xsl:otherwise>
 												</xsl:choose>
 											</fo:block>
