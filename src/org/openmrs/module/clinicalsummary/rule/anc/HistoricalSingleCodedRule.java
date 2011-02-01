@@ -67,7 +67,7 @@ public class HistoricalSingleCodedRule implements Rule {
 		
 		int counter = 0;
 		int encounterCounter = 0;
-		boolean shouldStop = false;
+		boolean shouldStop = (latestInitial != null);
 		while (!shouldStop) {
 			Result encounter = null;
 			// if there's still encounter available, then get that one
