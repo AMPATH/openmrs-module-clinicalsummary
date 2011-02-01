@@ -18,11 +18,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
+import org.openmrs.Location;
 import org.openmrs.Patient;
+import org.openmrs.api.context.Context;
 import org.openmrs.logic.LogicContext;
 import org.openmrs.logic.LogicException;
 import org.openmrs.logic.Rule;
@@ -31,6 +32,7 @@ import org.openmrs.logic.result.Result.Datatype;
 import org.openmrs.logic.rule.RuleParameterInfo;
 import org.openmrs.module.clinicalsummary.encounter.TypeConstants;
 import org.openmrs.module.clinicalsummary.rule.CompleteEncounterRule;
+import org.openmrs.util.OpenmrsUtil;
 
 /**
  * 
@@ -44,11 +46,10 @@ public class DisplayReminderRule implements Rule {
 	 *      java.util.Map)
 	 */
 	public Result eval(LogicContext context, Patient patient, Map<String, Object> parameters) throws LogicException {
-		Result result = new Result(Boolean.TRUE);
+		Result result = new Result(Boolean.FALSE);
 		
-		List<String> typeNames = Arrays.asList(TypeConstants.ADULT_INITIAL,
-		    TypeConstants.ADULT_RETURN, TypeConstants.ADULT_NONCLINICAL,
-		    TypeConstants.PEDS_INITIAL, TypeConstants.PEDS_RETURN,
+		List<String> typeNames = Arrays.asList(TypeConstants.ADULT_INITIAL, TypeConstants.ADULT_RETURN,
+		    TypeConstants.ADULT_NONCLINICAL, TypeConstants.PEDS_INITIAL, TypeConstants.PEDS_RETURN,
 		    TypeConstants.PEDS_NONCLINICAL);
 		
 		parameters.put("evaluated.encounter", "encounter.type");
@@ -59,15 +60,14 @@ public class DisplayReminderRule implements Rule {
 		if (!encounterResults.isEmpty()) {
 			Result latestEncounterResult = encounterResults.latest();
 			Encounter encounter = (Encounter) latestEncounterResult.getResultObject();
+			Location pediatricModule = Context.getLocationService().getLocation("MTRH Module 4");
+			
 			// TODO: hack for module 4 only
 			// this should check for the control group
-			if (StringUtils.equalsIgnoreCase(encounter.getLocation().getName(), "MTRH Module 4"))
-				result = new Result(Boolean.FALSE);
+			log.info("Encounter Location: " + encounter.getLocation() + ", Module Location: " + pediatricModule);
 			
-			if (log.isDebugEnabled()) {
-				log.debug("Patient: " + patient.getPatientId() + ", location: " + encounter.getLocation());
-				log.debug("Patient: " + patient.getPatientId() + ", display: " + result);
-			}
+			if (!OpenmrsUtil.nullSafeEquals(encounter.getLocation(), pediatricModule))
+				result = new Result(Boolean.TRUE);
 			
 		}
 		return result;
