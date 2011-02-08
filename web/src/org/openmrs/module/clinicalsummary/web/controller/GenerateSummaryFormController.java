@@ -24,22 +24,22 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.filefilter.WildcardFileFilter;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.clinicalsummary.SummaryConstants;
-import org.openmrs.module.clinicalsummary.cache.DataProvider;
-import org.openmrs.module.clinicalsummary.cache.SummaryDataSource;
-import org.openmrs.module.clinicalsummary.engine.GeneratorEngine;
+import org.openmrs.module.clinicalsummary.engine.GeneratorThread;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -62,63 +62,40 @@ public class GenerateSummaryFormController {
 	
 	private static final String PDF_EXTENSION = ".pdf";
 	
-	private static final String MIME_TYPE = "application/pdf";
-	
-	private boolean generating;
+	private static final String PDF_MIME_TYPE = "application/pdf";
 	
 	@RequestMapping("/module/clinicalsummary/generate")
 	public String generate(final @RequestParam(required = true, value = "patientId") int patientId,
 	                       final HttpServletRequest request, final HttpServletResponse response) {
 		if (Context.isAuthenticated()) {
 			
-			generating = false;
-			
 			Cohort cohort = new Cohort();
 			cohort.addMember(patientId);
 			
 			String delayString = Context.getAdministrationService().getGlobalProperty(GENERATOR_DELAY);
 			Integer delay = NumberUtils.toInt(delayString, 3000);
-			boolean delayed = (delay != 0);
 			
-			if (delayed) {
-				
-				// after x seconds try to get the summary
-				final Timer timer = new Timer();
-				timer.schedule(new TimerTask() {
-					
-					@Override
-					public void run() {
+			// if someone specify a delay, then that means we are given a time window to generate the summary sheet
+			if (delay > 0)
+				try {
+					ExecutorService executorService = Executors.newFixedThreadPool(1);
+					GeneratorThread generatorThread = new GeneratorThread(cohort);
+					executorService.execute(generatorThread);
+					if (executorService.awaitTermination(delay, TimeUnit.SECONDS))
 						prepareAttachment(response, patientId);
-					}
-					
-				}, delay);
-				
-				generating = true;
-				
-				DataProvider provider = new DataProvider(cohort);
-				SummaryDataSource summaryDataSource = new SummaryDataSource(provider);
-				
-				File folder = OpenmrsUtil.getDirectoryInApplicationDataDirectory(SummaryConstants.GENERATED_PDF_LOCATION);
-				GeneratorEngine generatorEngine = new GeneratorEngine(summaryDataSource, folder);
-				
-				for (Integer processedId : cohort.getMemberIds())
-					generatorEngine.generateSummary(Context.getPatientService().getPatient(processedId));
-				
-				timer.cancel();
-				
-				generating = false;
-			}
-			prepareAttachment(response, patientId);
+				} catch (Exception e) {
+					String referer = request.getHeader("Referer");
+					return "redirect:" + referer;
+				}
+			else
+				// we don't have any delay, so we just return the attachment
+				prepareAttachment(response, patientId);
 		}
 		
-		String referer = request.getHeader("Referer");
-		return "redirect:" + referer;
+		return StringUtils.EMPTY;
 	}
 	
 	private void prepareAttachment(HttpServletResponse response, Integer patientId) {
-		
-		if (!generating)
-		
 		try {
 			//Prepare response
 			// create a temporary file that will hold all copied pdf file
@@ -155,8 +132,7 @@ public class GenerateSummaryFormController {
 					int pageCount = reader.getNumberOfPages();
 					for (int i = 1; i <= pageCount; i++)
 						copy.addPage(copy.getImportedPage(reader, i));
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					log.error("Failed to add summary for patient: " + patientId, e);
 				}
 			}
@@ -168,7 +144,7 @@ public class GenerateSummaryFormController {
 			String downloadFilename = "PreGeneratedSummary_" + time + patientId + PDF_EXTENSION;
 			
 			response.setHeader("Content-Disposition", "attachment; filename=" + downloadFilename);
-			response.setContentType(MIME_TYPE);
+			response.setContentType(PDF_MIME_TYPE);
 			response.setContentLength((int) summaryCollectionsFile.length());
 			response.flushBuffer();
 			
@@ -186,8 +162,7 @@ public class GenerateSummaryFormController {
 			
 			input.close();
 			output.close();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			log.error("Failed generating summary for patient " + patientId + " ... ", e);
 		}
 	}

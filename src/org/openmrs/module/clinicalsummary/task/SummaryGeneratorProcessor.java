@@ -32,6 +32,7 @@ import org.openmrs.module.clinicalsummary.SummaryService;
 import org.openmrs.module.clinicalsummary.concept.ConceptRegistry;
 import org.openmrs.module.clinicalsummary.encounter.TypeRegistry;
 import org.openmrs.module.clinicalsummary.engine.GeneratorThread;
+import org.openmrs.module.clinicalsummary.engine.TemplateRegistry;
 import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.scheduler.TaskDefinition;
 
@@ -67,13 +68,6 @@ public class SummaryGeneratorProcessor {
 	/*
 	 * End of scheduler task property
 	 */
-	
-	/**
-	 */
-	public SummaryGeneratorProcessor() {
-		TypeRegistry.clearInstance();
-		ConceptRegistry.clearInstance();
-	}
 
 	public void processSummary() {
 		
@@ -148,5 +142,16 @@ public class SummaryGeneratorProcessor {
 				administrationService.saveGlobalProperty(globalProperty);
 			}
 		}
+		// clear all cache instances for the day
+		clearCacheInstances();
+	}
+	
+	/**
+	 *
+	 */
+	private void clearCacheInstances() {
+		TemplateRegistry.clearInstance();
+		ConceptRegistry.clearInstance();
+		TypeRegistry.clearInstance();
 	}
 }
