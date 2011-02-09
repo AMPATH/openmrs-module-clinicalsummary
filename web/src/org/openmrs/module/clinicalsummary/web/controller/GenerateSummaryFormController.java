@@ -86,6 +86,8 @@ public class GenerateSummaryFormController {
 				} catch (Exception e) {
 					String referer = request.getHeader("Referer");
 					return "redirect:" + referer;
+				} finally {
+					prepareAttachment(response, patientId);
 				}
 			else
 				// we don't have any delay, so we just return the attachment
