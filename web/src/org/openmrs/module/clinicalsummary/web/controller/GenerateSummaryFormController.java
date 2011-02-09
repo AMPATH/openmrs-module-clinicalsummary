@@ -81,7 +81,7 @@ public class GenerateSummaryFormController {
 					ExecutorService executorService = Executors.newFixedThreadPool(1);
 					GeneratorThread generatorThread = new GeneratorThread(cohort);
 					executorService.execute(generatorThread);
-					if (executorService.awaitTermination(delay, TimeUnit.SECONDS))
+					if (executorService.awaitTermination(delay, TimeUnit.MILLISECONDS))
 						prepareAttachment(response, patientId);
 				} catch (Exception e) {
 					String referer = request.getHeader("Referer");
