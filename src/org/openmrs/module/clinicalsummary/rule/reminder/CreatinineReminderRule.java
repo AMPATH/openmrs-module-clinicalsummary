@@ -55,11 +55,11 @@ public class CreatinineReminderRule implements Rule {
 		
 		Concept chemistryLabConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.CHEMISTRY_LAB_TESTS_NAME);
 		Concept serumElectrolytesConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.SERUM_ELECTROLYTES_NAME);
+		Concept creatinineConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.CREATININE_NAME);
 		
 		SummaryService service = Context.getService(SummaryService.class);
 		
-		LogicCriteria conceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(
-		    StandardConceptConstants.CREATININE_NAME);
+		LogicCriteria conceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.CREATININE_NAME);
 		LogicCriteria encounterCriteria = service.parseToken(SummaryDataSource.ENCOUNTER_TYPE).in(Collections.emptyList());
 		LogicCriteria criteria = conceptCriteria.and(encounterCriteria);
 		
@@ -75,8 +75,7 @@ public class CreatinineReminderRule implements Rule {
 			calendar.add(Calendar.MONTH, -6);
 			Date sixMonths = calendar.getTime();
 			
-			LogicCriteria testedConceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(
-			    StandardConceptConstants.TESTS_ORDERED);
+			LogicCriteria testedConceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.TESTS_ORDERED);
 			LogicCriteria testedCriteria = testedConceptCriteria.and(encounterCriteria);
 			
 			Result testedResult = context.read(patient, service.getLogicDataSource("summary"), testedCriteria);
@@ -87,7 +86,8 @@ public class CreatinineReminderRule implements Rule {
 				// only process the date after the reference date
 				if (result.getResultDate().after(sixMonths))
 					if (OpenmrsUtil.nullSafeEquals(result.toConcept(), chemistryLabConcept)
-					        || OpenmrsUtil.nullSafeEquals(result.toConcept(), serumElectrolytesConcept)) {
+					        || OpenmrsUtil.nullSafeEquals(result.toConcept(), serumElectrolytesConcept)
+					        || OpenmrsUtil.nullSafeEquals(result.toConcept(), creatinineConcept)) {
 						testExist = true;
 						break;
 					}
