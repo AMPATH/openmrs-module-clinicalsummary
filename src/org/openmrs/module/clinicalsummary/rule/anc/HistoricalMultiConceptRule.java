@@ -85,7 +85,7 @@ public class HistoricalMultiConceptRule implements Rule {
 		// 		   )*
 		
 		int encounterCounter = 0;
-		boolean shouldStop = (latestInitial != null);
+		boolean shouldStop = (latestInitial == null);
 		while (!shouldStop) {
 			Result encounter = null;
 			// if there's still encounter available, then get that one
