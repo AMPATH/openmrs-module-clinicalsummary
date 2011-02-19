@@ -101,6 +101,24 @@ public class ChildStartSeptrinReminderRule implements Rule {
 							}
 					}
 					
+					conceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.RAPID_ELISA_NAME);
+					encounterCriteria = service.parseToken(SummaryDataSource.ENCOUNTER_TYPE).in(Collections.emptyList());
+					criteria = conceptCriteria.and(encounterCriteria);
+					
+					obsResult = context.read(patient, service.getLogicDataSource("summary"), criteria);
+					
+					if (log.isDebugEnabled())
+						log.debug("Patient: " + patient.getPatientId() + ", elisa result: " + obsResult);
+					
+					// check if we have negative or positive
+					for (Result result : obsResult) {
+						if (result.getResultDate().after(referenceDate))
+							if (OpenmrsUtil.nullSafeEquals(positiveConcept, result.toConcept())) {
+								positiveFound = true;
+								break;
+							}
+					}
+					
 					if (positiveFound)
 						reminder = new Result(REMINDER_TEXT);
 					

@@ -304,6 +304,10 @@ public interface StandardConceptConstants {
 	
 	@RegisterConcept
 	@BufferObservations
+	String RAPID_ELISA_NAME = "HIV RAPID TEST, QUALITATIVE";
+	
+	@RegisterConcept
+	@BufferObservations
 	String DNA_PCR_NAME = "HIV DNA POLYMERASE CHAIN REACTION, QUALITATIVE";
 	
 	@RegisterConcept

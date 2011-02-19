@@ -103,6 +103,25 @@ public class ChildStartARVReminderRule implements Rule {
 							}
 					}
 					
+					conceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.RAPID_ELISA_NAME);
+					encounterCriteria = service.parseToken(SummaryDataSource.ENCOUNTER_TYPE).in(Collections.emptyList());
+					criteria = conceptCriteria.and(encounterCriteria);
+					
+					obsResult = context.read(patient, service.getLogicDataSource("summary"), criteria);
+					
+					if (log.isDebugEnabled())
+						log.debug("Patient: " + patient.getPatientId() + ", elisa result: " + obsResult);
+					
+					// check if we have negative or positive
+					boolean rapidElisaPositive = false;
+					for (Result result : obsResult) {
+						if (result.getResultDate().after(referenceDate))
+							if (OpenmrsUtil.nullSafeEquals(positiveConcept, result.toConcept())) {
+								rapidElisaPositive = true;
+								break;
+							}
+					}
+					
 					birthdateCalendar.setTime(birthdate);
 					birthdateCalendar.add(Calendar.WEEK_OF_YEAR, 4);
 					referenceDate = birthdateCalendar.getTime();
@@ -126,7 +145,7 @@ public class ChildStartARVReminderRule implements Rule {
 							}
 					}
 					
-					if (elisaPositive || dnaPositive) {
+					if (elisaPositive || dnaPositive || rapidElisaPositive) {
 
 						conceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.CD4_PERCENT);
 						encounterCriteria = service.parseToken(SummaryDataSource.ENCOUNTER_TYPE).in(Collections.emptyList());
@@ -163,6 +182,8 @@ public class ChildStartARVReminderRule implements Rule {
 							String message = " positive";
 							if (elisaPositive)
 								message = message + " ELISA,";
+							if (rapidElisaPositive)
+								message = message + " Rapid ELISA,";
 							if (dnaPositive)
 								message = message + " DNA PCR,";
 							message = message.substring(0, message.length() - 1);

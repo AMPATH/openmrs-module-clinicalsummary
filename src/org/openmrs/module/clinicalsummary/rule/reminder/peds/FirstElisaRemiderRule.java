@@ -92,6 +92,23 @@ public class FirstElisaRemiderRule implements Rule {
 						}
 				}
 				
+				conceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.RAPID_ELISA_NAME);
+				criteria = conceptCriteria.and(encounterCriteria);
+				
+				obsResult = context.read(patient, service.getLogicDataSource("summary"), criteria);
+				
+				if (log.isDebugEnabled())
+					log.debug("Patient: " + patient.getPatientId() + ", rapid elisa result: " + obsResult);
+				
+				for (Result result : obsResult) {
+					if (result.getResultDate().after(referenceDate))
+						if (OpenmrsUtil.nullSafeEquals(positiveConcept, result.toConcept())
+						        || OpenmrsUtil.nullSafeEquals(negativeConcept, result.toConcept())) {
+							resultExist = true;
+							break;
+						}
+				}
+				
 				if (!resultExist) {
 					
 					Calendar nowCalendar = Calendar.getInstance();
@@ -102,6 +119,7 @@ public class FirstElisaRemiderRule implements Rule {
 					Date testReferenceDate = referenceDate.after(nowCalendar.getTime()) ? referenceDate : nowCalendar.getTime();
 					
 					Concept elisaConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.ELISA_NAME);
+					Concept rapidElisaConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.RAPID_ELISA_NAME);
 					
 					LogicCriteria testedConceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.TESTS_ORDERED);
 					LogicCriteria testedCriteria = testedConceptCriteria.and(encounterCriteria);
@@ -112,11 +130,11 @@ public class FirstElisaRemiderRule implements Rule {
 						log.debug("Patient: " + patient.getPatientId() + ", elisa ordered result: " + testedResult);
 					
 					boolean testExist = false;
-					
 					for (Result result : testedResult) {
 						// only process the date after the reference date
 						if (result.getResultDate().after(testReferenceDate))
-							if (OpenmrsUtil.nullSafeEquals(result.toConcept(), elisaConcept)) {
+							if (OpenmrsUtil.nullSafeEquals(result.toConcept(), elisaConcept)
+							        || OpenmrsUtil.nullSafeEquals(result.toConcept(), rapidElisaConcept)) {
 								testExist = true;
 								break;
 							}

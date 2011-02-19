@@ -317,12 +317,7 @@
     </cxrs>
     
     <reminders>
-    	#set($display = $!{functions.eval($patient, "Display Reminder", $summaryCache)})
-        #if("$!{display.toString()}" != "false")
-        	<display-text />
-        #else
-        	<display-number />
-        #end
+        <display-number />
         #set($baselinePCRReminder = $!{functions.eval($patient, "Baseline PCR Reminder", $summaryCache)})
         #if(${baselinePCRReminder} && "$!{baselinePCRReminder}" != "")
     	    <reminder source="Baseline PCR Reminder">

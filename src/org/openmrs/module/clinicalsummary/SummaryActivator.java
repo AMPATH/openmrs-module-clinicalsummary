@@ -16,6 +16,7 @@ package org.openmrs.module.clinicalsummary;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.module.Activator;
+import org.openmrs.module.clinicalsummary.rule.reminder.peds.DisplayReminderRule;
 
 public class SummaryActivator implements Activator {
 	
@@ -26,6 +27,7 @@ public class SummaryActivator implements Activator {
 	 */
 	public void startup() {
 		log.info("Starting up Summary Module");
+		DisplayReminderRule.randomNumber = null;
 	}
 	
 	/**
@@ -33,6 +35,7 @@ public class SummaryActivator implements Activator {
 	 */
 	public void shutdown() {
 		log.info("Shutting down Summary Module");
+		DisplayReminderRule.writeRandomNumber(DisplayReminderRule.randomNumber);
 	}
 	
 }

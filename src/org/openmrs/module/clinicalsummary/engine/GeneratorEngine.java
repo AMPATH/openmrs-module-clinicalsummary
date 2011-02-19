@@ -36,6 +36,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -46,6 +47,11 @@ import org.apache.fop.apps.MimeConstants;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.runtime.RuntimeConstants;
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+import org.dom4j.Node;
+import org.dom4j.io.DocumentSource;
 import org.openmrs.Cohort;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
@@ -105,7 +111,6 @@ public class GeneratorEngine {
 		
 		// prepare the templates mapped to any encounter
 		for (SummaryTemplate summaryTemplate : TemplateRegistry.getCachedTemplates(MappingPosition.ANY_ENCOUNTER)) {
-			// re-use this thing, recycling is goooodddd!!!!
 			typeNames = new HashSet<String>();
 			for (EncounterType encounterType : summaryTemplate.getEncounterTypes())
 				typeNames.add(encounterType.getName());
@@ -174,7 +179,28 @@ public class GeneratorEngine {
 					Source xsltSource = new StreamSource(new StringReader(template.getXslt()));
 					Transformer transformer = TransformerFactory.newInstance().newTransformer(xsltSource);
 					Result result = new SAXResult(fop.getDefaultHandler());
-					Source source = new StreamSource(new StringReader(writer.toString()));
+					
+					Document document = DocumentHelper.parseText(writer.toString());
+					Element rootElement = document.getRootElement();
+					for (int i = 0; i < rootElement.nodeCount(); i++) {
+	                    Node node = rootElement.node(i);
+	                    if (node instanceof Element && StringUtils.equals(node.getName(), "reminders")) {
+	                    	Element childElement = (Element) node;
+	                    	for (int j = 0; j < childElement.nodeCount(); j++) {
+	                    		Node childElementNode = childElement.node(j);
+	                    		if (StringUtils.equals(childElementNode.getName(), "reminder")) {
+	    							org.openmrs.logic.result.Result display = functions.eval(patient, "Display Reminder", new HashMap<String, Object>());
+	    							Boolean displayReminderText = display.toBoolean();
+	    							if (displayReminderText)
+	    								childElement.addElement("display-text");
+	    							
+	    							break;
+	                    		}
+                            }
+	                    }
+                    }
+					
+					Source source = new DocumentSource(document);
 					transformer.transform(source, result);
 					
 					out.close();

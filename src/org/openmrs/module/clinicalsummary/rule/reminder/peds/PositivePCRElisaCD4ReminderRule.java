@@ -87,6 +87,25 @@ public class PositivePCRElisaCD4ReminderRule implements Rule {
 					}
 			}
 			
+			conceptCriteria = service.parseToken(SummaryDataSource.CONCEPT).equalTo(StandardConceptConstants.RAPID_ELISA_NAME);
+			encounterCriteria = service.parseToken(SummaryDataSource.ENCOUNTER_TYPE).in(Collections.emptyList());
+			criteria = conceptCriteria.and(encounterCriteria);
+			
+			obsResult = context.read(patient, service.getLogicDataSource("summary"), criteria);
+			
+			if (log.isDebugEnabled())
+				log.debug("Patient: " + patient.getPatientId() + ", rapid elisa result: " + obsResult);
+			
+			// check if we have negative or positive
+			boolean rapidElisaExist = false;
+			for (Result result : obsResult) {
+				if (result.getResultDate().after(referenceDate))
+					if (OpenmrsUtil.nullSafeEquals(positiveConcept, result.toConcept())) {
+						rapidElisaExist = true;
+						break;
+					}
+			}
+			
 			birthdateCalendar.setTime(birthdate);
 			birthdateCalendar.add(Calendar.WEEK_OF_YEAR, 4);
 			referenceDate = birthdateCalendar.getTime();
@@ -110,7 +129,7 @@ public class PositivePCRElisaCD4ReminderRule implements Rule {
 					}
 			}
 			
-			if (elisaExist || dnaExist) {
+			if (elisaExist || dnaExist || rapidElisaExist) {
 				
 				Concept cd4PanelConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.CD4_PANEL_NAME);
 				

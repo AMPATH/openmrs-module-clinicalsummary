@@ -55,6 +55,7 @@ public class BaselineCreatinineReminderRule implements Rule {
 		
 		Concept chemistryLabConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.CHEMISTRY_LAB_TESTS_NAME);
 		Concept serumElectrolytesConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.SERUM_ELECTROLYTES_NAME);
+		Concept serumCreatinineConcept = ConceptRegistry.getCachedConcept(StandardConceptConstants.CREATININE_NAME);
 		
 		SummaryService service = Context.getService(SummaryService.class);
 		
@@ -87,7 +88,8 @@ public class BaselineCreatinineReminderRule implements Rule {
 				// only process the date after the reference date
 				if (result.getResultDate().after(sixMonths))
 					if (OpenmrsUtil.nullSafeEquals(result.toConcept(), chemistryLabConcept)
-					        || OpenmrsUtil.nullSafeEquals(result.toConcept(), serumElectrolytesConcept)) {
+					        || OpenmrsUtil.nullSafeEquals(result.toConcept(), serumElectrolytesConcept)
+					        || OpenmrsUtil.nullSafeEquals(result.toConcept(), serumCreatinineConcept)) {
 						testExist = true;
 						break;
 					}
@@ -98,7 +100,9 @@ public class BaselineCreatinineReminderRule implements Rule {
 				Result pcrResult = pcrRule.eval(context, patient, parameters);
 				PositiveElisaRule elisaRule = new PositiveElisaRule();
 				Result elisaResult = elisaRule.eval(context, patient, parameters);
-				if (pcrResult.toBoolean() || elisaResult.toBoolean())
+				PositiveRapidElisaRule rapidElisaRule = new PositiveRapidElisaRule();
+				Result rapidElisaResult = rapidElisaRule.eval(context, patient, parameters);
+				if (pcrResult.toBoolean() || elisaResult.toBoolean() || rapidElisaResult.toBoolean())
 					reminder = new Result(CREATININE_REMINDER);
 			}
 		}

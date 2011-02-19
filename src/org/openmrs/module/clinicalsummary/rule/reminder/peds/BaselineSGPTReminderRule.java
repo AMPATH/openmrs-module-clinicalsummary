@@ -96,7 +96,9 @@ public class BaselineSGPTReminderRule implements Rule {
 				Result pcrResult = pcrRule.eval(context, patient, parameters);
 				PositiveElisaRule elisaRule = new PositiveElisaRule();
 				Result elisaResult = elisaRule.eval(context, patient, parameters);
-				if (pcrResult.toBoolean() || elisaResult.toBoolean())
+				PositiveRapidElisaRule rapidElisaRule = new PositiveRapidElisaRule();
+				Result rapidElisaResult = rapidElisaRule.eval(context, patient, parameters);
+				if (pcrResult.toBoolean() || elisaResult.toBoolean() || rapidElisaResult.toBoolean())
 					reminder = new Result(SGPT_REMINDER);
 			}
 		}

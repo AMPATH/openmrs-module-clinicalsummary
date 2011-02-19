@@ -14,7 +14,7 @@
 	<classpathentry kind="lib" path="lib-common/commons-lang-2.4.jar" sourcepath="/openmrs-source/commons-lang-2.4-src.zip"/>
 	<classpathentry kind="lib" path="lib-common/commons-logging-1.1.1.jar"/>
 	<classpathentry kind="lib" path="lib-common/dbunit-2.4.4.jar"/>
-	<classpathentry kind="lib" path="lib-common/dom4j-1.6.1.jar"/>
+	<classpathentry kind="lib" path="lib-common/dom4j-1.6.1.jar" sourcepath="/home/nribeka/.m2/repository/dom4j/dom4j/1.6.1/dom4j-1.6.1-sources.jar"/>
 	<classpathentry kind="lib" path="lib-common/dwr-205.jar"/>
 	<classpathentry kind="lib" path="lib-common/ehcache-1.2.4.jar"/>
 	<classpathentry kind="lib" path="lib-common/hapi-0.5.jar"/>
