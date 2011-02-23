@@ -58,12 +58,14 @@ public class VelocityContextUtils {
 		// use the best name as the default name
 		String name = concept.getBestName(Context.getLocale()).getName();
 		if (StringUtils.length(name) > 10) {
-			for (ConceptName conceptName : concept.getNames(Context.getLocale())) {
-				// search for a shorter name if available
-				if (StringUtils.length(conceptName.getName()) < 10
-				        && Pattern.matches("(\\s*\\w+\\s*)+", conceptName.getName()))
-					name = conceptName.getName();
-			}
+			name = concept.getShortNameInLocale(Context.getLocale()).getName();
+			if (StringUtils.length(name) > 10)
+				for (ConceptName conceptName : concept.getNames(Context.getLocale())) {
+					// search for a shorter name if available
+					if (StringUtils.length(conceptName.getName()) < 10
+					        && Pattern.matches("(\\s*\\w+\\s*)+", conceptName.getName()))
+						name = conceptName.getName();
+				}
 		}
 		
 		return name;
