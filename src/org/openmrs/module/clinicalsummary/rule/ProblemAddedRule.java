@@ -75,7 +75,7 @@ public class ProblemAddedRule implements Rule {
 		Map<Concept, Result> conceptResolveds = new HashMap<Concept, Result>();
 		for (Result resolvedResult : resolvedResults) {
 			Concept concept = resolvedResult.toConcept();
-			if (ConceptRegistry.isCachedParentOf(clinicalConcept, concept)) {
+			if (!ConceptRegistry.isCachedParentOf(clinicalConcept, concept)) {
 				Result resolveds = conceptResolveds.get(concept);
 				if (resolveds == null) {
 					resolveds = new Result();
@@ -106,19 +106,9 @@ public class ProblemAddedRule implements Rule {
 				// if resolved come before added problem, then it's not resolving the added problem (add to the problems list)
 				// if resolved come after added problem, then it's cancelling the added problem (remove the resolved and don't put the added in the list)
 				Result resolveds = conceptResolveds.get(concept);
-				while (!resolveds.isEmpty()) {
-					Result resolved = resolveds.get(0);
-					if (resolved.getResultDate().before(addedResult.getResultDate())) {
-						Result problemObservations = conceptProblems.get(concept);
-						if (problemObservations == null) {
-							problemObservations = new Result();
-							conceptProblems.put(concept, problemObservations);
-						}
-						problemObservations.add(addedResult);
-						break;
-					} else {
-						resolveds.remove(0);
-					}
+				Result resolved = resolveds.get(0);
+				while (!resolveds.isEmpty() && resolved.getResultDate().before(addedResult.getResultDate())) {
+					resolved = resolveds.remove(0);
 				}
 			}
 		}

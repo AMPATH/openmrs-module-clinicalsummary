@@ -44,7 +44,7 @@ public class FirstElisaRemiderRule implements Rule {
 	
 	private static final Log log = LogFactory.getLog(FirstElisaRemiderRule.class);
 	
-	private static final String REMINDER_TEXT = "Please order HIV ELISA. Pt &gt; 18 mo old with no valid ELISA result.";
+	private static final String REMINDER_TEXT = "Please order HIV ELISA. Pt &gt; 18 mo old with no valid ELISA result done after age 18 mo.";
 	
 	/**
 	 * @see org.openmrs.logic.Rule#eval(org.openmrs.logic.LogicContext, org.openmrs.Patient,

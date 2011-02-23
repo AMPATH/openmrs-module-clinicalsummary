@@ -487,6 +487,9 @@
             <fo:block font-size="12pt" space-before="6pt" >
                 <fo:inline  font-size="14pt" text-decoration="underline" font-weight="bold">Reminders</fo:inline>: (Write number next to each reminder)
             </fo:block>
+			<fo:block font-size="8pt">
+				Note: Labs with no results after 6 months or ordered before recommended minimum age are considered invalid orders
+			</fo:block>
 			<fo:block font-size="8pt" font-style="italic">
 				<fo:inline>1-Ordered Today, 2-Not Applicable, 3-Previously Ordered, 4-Pt Allergic, 5-Pt Refused, 6-I Disagree with Reminder, 7-Other(Explain)</fo:inline>
 			</fo:block>
