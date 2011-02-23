@@ -45,7 +45,7 @@ public class BabyStartSeptrinReminderRule implements Rule {
 	
 	private static final Log log = LogFactory.getLog(BabyStartSeptrinReminderRule.class);
 	
-	private static final String REMINDER_TEXT = "Consider starting Septrin Prophylaxis. Pt with &lt; 2 negative DNA PCR (age 6 wk - 18 mo)";
+	private static final String REMINDER_TEXT = "Consider starting PCP Prophylaxis. Pt with &lt; 2 negative DNA PCR (age 6 wk - 18 mo)";
 	
 	/**
 	 * @see org.openmrs.logic.Rule#eval(org.openmrs.logic.LogicContext, org.openmrs.Patient,
