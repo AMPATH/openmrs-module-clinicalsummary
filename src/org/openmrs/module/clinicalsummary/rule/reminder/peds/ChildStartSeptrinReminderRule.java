@@ -45,7 +45,7 @@ public class ChildStartSeptrinReminderRule implements Rule {
 	
 	private static final Log log = LogFactory.getLog(ChildStartSeptrinReminderRule.class);
 	
-	private static final String REMINDER_TEXT = "Consider starting Septrin Prophylaxis. Pt with positive ELISA, older than 18 mo.";
+	private static final String REMINDER_TEXT = "Consider starting PCP Prophylaxis. Pt with positive ELISA, older than 18 mo.";
 	
 	/**
 	 * @see org.openmrs.logic.Rule#eval(org.openmrs.logic.LogicContext, org.openmrs.Patient,
