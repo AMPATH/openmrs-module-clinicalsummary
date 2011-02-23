@@ -171,9 +171,9 @@ public class DisplayReminderRule implements Rule {
 	
 	public static void writeRandomNumber(int[] randomizedValues) {
 		StringBuffer buffer = new StringBuffer();
-		for (int i : randomizedValues) {
-			buffer.append(i).append(SPACE_CHARACTER);
-		}
+		if (randomizedValues != null)
+			for (int i : randomizedValues)
+				buffer.append(i).append(SPACE_CHARACTER);
 		String randomNumberString = buffer.toString().trim();
 		
 		if (log.isDebugEnabled())
