@@ -44,7 +44,7 @@ public class RepeatPCRReminderRule implements Rule {
 	
 	private static final Log log = LogFactory.getLog(RepeatPCRReminderRule.class);
 	
-	private static final String REMINDER_TEXT = "Please order DNA PCR. Pt btn 6 wks &amp; 18 mo with only one DNA PCR";
+	private static final String REMINDER_TEXT = "Please re-order DNA PCR if patient weaned. Pt aged 6 wks-18 mo with only one PCR.";
 	
 	/**
 	 * @see org.openmrs.logic.Rule#eval(org.openmrs.logic.LogicContext, org.openmrs.Patient,
