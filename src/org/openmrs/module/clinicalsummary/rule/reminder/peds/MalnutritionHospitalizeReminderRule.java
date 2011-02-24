@@ -39,7 +39,7 @@ public class MalnutritionHospitalizeReminderRule implements Rule {
 	
 	private static final Log log = LogFactory.getLog(MalnutritionHospitalizeReminderRule.class);
 	
-	private static final String REMINDER_TEXT = "Hospitalize for malnutrition. Last z-score (WT-for-Age) in AMRS -3 or less.";
+	private static final String REMINDER_TEXT = "Hospitalize for malnutrition. Last WT-for-Age Z-score in AMRS -3 or less.";
 	
 	/**
 	 * @see org.openmrs.logic.Rule#eval(org.openmrs.logic.LogicContext, org.openmrs.Patient,

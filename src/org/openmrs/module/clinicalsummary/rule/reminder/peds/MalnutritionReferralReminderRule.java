@@ -43,7 +43,7 @@ public class MalnutritionReferralReminderRule implements Rule {
 	
 	private static final Log log = LogFactory.getLog(MalnutritionReferralReminderRule.class);
 	
-	private static final String REMINDER_TEXT = "Refer for Nutritional Support. Last z-score (WT-for-Age) in AMRS -1.5 or less.";
+	private static final String REMINDER_TEXT = "Refer for Nutritional Support. Last WT-for-Age Z-score in AMRS -1.5 or less.";
 	
 	/**
 	 * @see org.openmrs.logic.Rule#eval(org.openmrs.logic.LogicContext, org.openmrs.Patient,
