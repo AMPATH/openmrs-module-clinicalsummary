@@ -1,0 +1,802 @@
+<?xml version="1.0"?>
+<clinicalSummary>
+	<currentDatetime>$!{fn.getCurrentDatetime()}</currentDatetime>
+	<moduleVersion>$!{fn.getModuleVersion("clinicalsummary")}</moduleVersion>
+	<templateRevision>$!{summary.getRevision()}</templateRevision>
+	<templateName>$!{summary.getName()}</templateName>
+	<id>$!{patientId}</id>
+
+	<identifiers>
+		#foreach($id in $!{patient.getActiveIdentifiers()})
+			#if ($velocityCount == 1)
+				<identifier>$!{id}</identifier>
+			#else
+				<alternateIdentifier>$!{id}</alternateIdentifier>
+			#end
+		#end
+	</identifiers>
+
+	#set($params = {"encounterType": ["ANCINITIAL", "ANCRETURN"],
+	                "encounter.size": 1,
+	                "concept": ["RETURN VISIT DATE"],
+	                "obs.size": 1})
+	#set($returnVisit = $fn.evaluate($patient, "Encounter Based Obs", $params))
+	<returnVisit>$!{fn.format($returnVisit.toDatetime())}</returnVisit>
+
+	#set($params = {"encounterType": ["ANCINITIAL", "ANCRETURN"],
+	                "encounter.order": "asc",
+	                "encounter.size": 1})
+	#set($encounterResults = $fn.evaluate($patient, "Encounter String Restrictions", $params))
+	#set($earliestEncounter = $encounterResults.get(0))
+	<earliestEncounter>
+		<datetime>
+			$!{fn.extractProperty($earliestEncounter.getResultObject(), "encounterDatetime")}
+		</datetime>
+	</earliestEncounter>
+
+	#set($params = {"encounterType": ["ANCINITIAL", "ANCRETURN"],
+	                "encounter.size": 1})
+	#set($encounterResults = $fn.evaluate($patient, "Encounter String Restrictions", $params))
+	#set($latestEncounter = $encounterResults.get(0))
+	<latestEncounter>
+		<datetime>
+			$!{fn.extractProperty($latestEncounter.getResultObject(), "encounterDatetime")}
+		</datetime>
+		<location>
+			$!{fn.extractProperty($latestEncounter.getResultObject(), "location")}
+		</location>
+		<provider>
+			$!{fn.extractProperty($latestEncounter.getResultObject(), "provider.personName")}
+		</provider>
+		<creator>
+			$!{fn.extractProperty($latestEncounter.getResultObject(), "creator.personName")}
+		</creator>
+		<dateCreated>
+			$!{fn.extractProperty($latestEncounter.getResultObject(), "dateCreated")}
+		</dateCreated>
+	</latestEncounter>
+
+
+	<demographic>
+		<name>
+			$!{patient.getGivenName()}
+			$!{patient.getMiddleName()}
+			$!{patient.getFamilyName()}
+	    </name>
+		<gender>
+			#set($gender = $!{patient.getGender()})
+			#if ($gender == 'M')
+				Male
+			#elseif ($gender == 'F')
+				Female
+			#else
+				Unknown
+			#end
+		</gender>
+		<birthdate estimated="$!{patient.getBirthdateEstimated()}">$!{fn.format($!{patient.getBirthdate()})}</birthdate>
+		<age>$!{patient.getAge()} Years</age>
+
+		<address>
+			#set($address = $patient.getPersonAddress())
+			#if ($!{address.getSubregion()} != '')
+				$!{address.getSubregion()},
+			#end
+			#if ($!{address.getRegion()} != '')
+				$!{address.getRegion()}
+			#end
+		</address>
+
+		#set($params = {"encounterType" : ["ANCINITIAL"],
+		                "encounter.size": 1,
+		                "concept": ["HIGHEST EDUCATION"],
+		                "obs.size" : 1})
+		#set($education = $fn.evaluate($patient, "Encounter Based Obs", $params))
+		<education>$!{fn.format($education)}</education>
+
+		#set($params = {"encounterType" : ["ANCINITIAL"],
+		                "encounter.size": 1,
+		                "concept": ["CIVIL STATUS"],
+		                "obs.size" : 1})
+		#set($status = $fn.evaluate($patient, "Encounter Based Obs", $params))
+		<civilStatus>$!{fn.format($status)}</civilStatus>
+
+		#set($params = {"encounterType" : ["ANCINITIAL"],
+		                "encounter.size": 1,
+		                "concept": ["OCCUPATION"],
+		                "obs.size" : 1})
+		#set($occupation = $fn.evaluate($patient, "Encounter Based Obs", $params))
+		<occupation>$!{fn.format($occupation)}</occupation>
+	</demographic>
+
+	<pregnancyHistory>
+
+		#set($params = {"encounterType" : ["ANCINITIAL"],
+		                "encounter.size": 1,
+		                "concept": ["GRAVIDA"],
+		                "obs.size" : 1})
+		#set($gravida = $fn.evaluate($patient, "Encounter Based Obs", $params))
+		<gravida>$!{fn.format($!{gravida.latest()})}</gravida>
+
+		#set($params = {"encounterType" : ["ANCINITIAL"],
+		                "encounter.size": 1,
+		                "concept": ["PARITY"],
+		                "obs.size" : 1})
+		#set($parity = $fn.evaluate($patient, "Encounter Based Obs", $params))
+		<parity>$!{fn.format($!{parity.latest()})}</parity>
+
+		#set($params = {"encounterType" : ["ANCINITIAL"],
+		                "encounter.size": 1,
+		                "concept": ["LAST MENSTRUAL PERIOD DATE"],
+		                "obs.size" : 1})
+		#set($menstrualDate = $fn.evaluate($patient, "Encounter Based Obs", $params))
+		<lastMenstrualPeriod>$!{fn.format($menstrualDate)}</lastMenstrualPeriod>
+
+		#set($params = {"encounterType" : ["ANCINITIAL"],
+		                "encounter.size": 1,
+		                "concept": ["ESTIMATED DATE OF CONFINEMENT"],
+		                "obs.size" : 1})
+		#set($deliveryDate = $fn.evaluate($patient, "Encounter Based Obs", $params))
+		<estimatedDeliveryDate>$!{fn.format($deliveryDate)}</estimatedDeliveryDate>
+
+		#set($params = {"encounterType" : ["ANCINITIAL"],
+		                "encounter.size": 1,
+		                "concept": ["OBSTETRIC ULTRASOUND DONE"],
+		                "obs.size" : 1})
+		#set($ultrasound = $fn.evaluate($patient, "Encounter Based Obs", $params))
+		<ultrasound>$!{fn.format($ultrasound)}</ultrasound>
+
+	</pregnancyHistory>
+
+	<partner>
+		<name>$!{patient.getAttribute("Partner Name")}</name>
+		<age>$!{patient.getAttribute("Partner Age")}</age>
+
+		#set($params = {"encounterType" : ["ANCINITIAL"],
+		                "encounter.size": 1,
+		                "concept": ["PARTNER'S OCCUPATION"],
+		                "obs.size" : 1})
+		#set($occupation = $fn.evaluate($patient, "Encounter Based Obs", $params))
+		<occupation>$!{fn.format($occupation)}</occupation>
+	</partner>
+
+
+	<information>
+
+		#set($params = {"encounterType" : ["ANCINITIAL"],
+		                "encounter.size": 1,
+		                "concept": ["HEALTH INSURANCE"],
+		                "obs.size" : 1})
+		#set($insurance = $fn.evaluate($patient, "Encounter Based Obs", $params))
+		<insurance>$!{fn.format($insurance)}</insurance>
+
+		#set($params = {"encounterType" : ["ANCINITIAL"],
+		                "encounter.size": 1,
+		                "concept": ["EMERGENCY TRANSPORTATION PLAN"],
+		                "obs.size" : 1})
+		#set($transport = $fn.evaluate($patient, "Encounter Based Obs", $params))
+		<transport>$!{fn.format($transport)}</transport>
+
+		#set($params = {"encounterType" : ["ANCINITIAL", "ANCRETURN"],
+		                "encounter.after": "ANCINITIAL",
+		                "concept": ["TYPES OF BARRIER TO PROPER HEALTH CARE"]})
+		#set($barriers = $fn.evaluate($patient, "Encounter Based No Filter", $params))
+		<barriers>$!{barriers}</barriers>
+
+		#set($params = {"encounterType" : ["ANCINITIAL"],
+		                "encounter.size": 1,
+		                "concept": ["RECIEVED ANTENATAL CARE SERVICE THIS VISIT"],
+			            "valueCoded": ["INSECTICIDE-TREATED BEDNET"],
+		                "obs.size" : 1})
+		#set($bednet = $fn.evaluate($patient, "Encounter Based Obs", $params))
+		<bedNet>$!{fn.format($bednet)}</bedNet>
+	</information>
+
+	<medicalHistory>
+		<hiv>
+			#set($params = {"encounterType" : ["ANCINITIAL"],
+							"encounter.size": 1,
+							"concept": ["HIV TESTED THIS VISIT"],
+							"obs.size" : 1})
+			#set($tested = $fn.evaluate($patient, "Encounter Based Obs", $params))
+			<tested>
+				<value>$!{fn.format($tested)}</value>
+				<datetime>$!{fn.format($tested.getResultDate())}</datetime>
+			</tested>
+
+			#set($params = {"encounterType" : ["ANCINITIAL"],
+							"encounter.size": 1,
+							"concept": ["HIV RAPID TEST, QUALITATIVE"],
+							"obs.size" : 1})
+			#set($qualitative = $fn.evaluate($patient, "Encounter Based Obs", $params))
+			<qualitative>$!{fn.format($qualitative)}</qualitative>
+		</hiv>
+
+		#set($params = {"encounterType" : ["ANCINITIAL"],
+		                "encounter.size": 1,
+		                "concept": ["REVIEW OF MEDICAL HISTORY"],
+			            "valueCoded": ["CERVICITIS", "PELVIC INFLAMMATORY DISEASE", "GENITAL SORES", "WARTS, GENITAL", "GONORRHEA", "SYPHILIS",
+		                               "HERPES SIMPLEX, NOS","CHLAMYDIA TRACHOMATIS","TRICHOMONAS"]})
+		#set($std = $fn.evaluate($patient, "Encounter Based Obs", $params))
+		<std>$!{std}</std>
+
+		#set($params = {"encounterType" : ["ANCINITIAL"],
+		                "encounter.size": 1,
+		                "concept": ["HISTORY OF POSTPARTUM DEPRESSION OR MENTAL HEALTH PROBLEM"],
+		                "obs.size" : 1})
+		#set($depression = $fn.evaluate($patient, "Encounter Based Obs", $params))
+		<depression>$!{fn.format($depression)}</depression>
+
+		#set($params = {"encounterType" : ["ANCINITIAL"],
+		                "encounter.size": 1,
+		                "concept": ["REVIEW OF MEDICAL HISTORY"],
+			            "valueCoded": ["THYROID NODULE", "DIABETES MELLITUS", "HYPERTENSION", "ICTERIC SCLERA", "HEART DISEASE", "ASTHMA",
+		                               "ABNORMAL PAP SMEAR", "THROMBUS", "URINARY TRACT INFECTION", "SEIZURE", "PROBLEMS WITH ANESTHESIA",
+		                               "HISTORY OF BLOOD TRANSFUSION", "HISTORY OF MULTIPLE BIRTHS IN MATERNAL FAMILY",
+		                               "CONGENITAL ANOMALY IN NEWBORN", "ANEMIA", "BREAST DISORDERS", "HISTORY OF HOSPITALIZATION",
+		                               "ALLERGY REACTION FROM DRUGS"]})
+		#set($other = $fn.evaluate($patient, "Encounter Based Obs", $params))
+		<others>$!{other}</others>
+	</medicalHistory>
+
+	<currentMedications>
+		<medications>
+			#set($params = {"encounterType" : ["ANCINITIAL", "ANCRETURN"],
+			                "encounter.after": "ANCINITIAL",
+							"concept": ["MEDICATION ADDED"]})
+			#set($medicationsAdded = $fn.evaluate($patient, "Encounter Based No Filter", $params))
+			#foreach ($element in $medicationsAdded)
+				<element>$!{fn.format($element)}</element>
+			#end
+
+			#set($params = {"encounterType" : ["ANCINITIAL", "ANCRETURN"],
+			                "encounter.after": "ANCINITIAL",
+							"concept": ["RECIEVED ANTENATAL CARE SERVICE THIS VISIT"],
+			                "valueCoded": ["IRON SUPPLEMENT", "COTRIMAZOLE", "FOLIC ACID"]})
+			#set($otherMedications = $fn.evaluate($patient, "Encounter Based No Filter", $params))
+			#foreach ($element in $otherMedications)
+				<element>$!{fn.format($element)}</element>
+			#end
+		</medications>
+		<tetanusBooster>
+
+			#set($params = {"encounterType" : ["ANCINITIAL", "ANCRETURN"],
+							"encounter.size": 1,
+							"concept": ["TETANUS BOOSTER COMPLETED"],
+							"obs.size": 1})
+			#set($boosterCompleted = $fn.evaluate($patient, "Encounter Based Obs", $params))
+			<completed>$!{fn.format($boosterCompleted)}</completed>
+
+			#set($params = {"encounterType" : ["ANCINITIAL", "ANCRETURN"],
+							"encounter.size": 1,
+							"concept": ["NUMBER OF DOSES"],
+							"obs.size" : 1})
+			#set($received = $fn.evaluate($patient, "Encounter Based Obs", $params))
+			<totalBooster>$!{fn.format($received)}</totalBooster>
+
+			#set($params = {"encounterType" : ["ANCINITIAL", "ANCRETURN"],
+							"encounter.size": 1,
+							"concept": ["RECIEVED ANTENATAL CARE SERVICE THIS VISIT"],
+							"valueCoded": ["TETANUS BOOSTER"],
+							"obs.size" : 1})
+			#set($received = $fn.evaluate($patient, "Encounter Based Obs", $params))
+			<received>$!{fn.format($received)}</received>
+		</tetanusBooster>
+
+		#set($params = {"encounterType" : ["ANCINITIAL", "ANCRETURN"],
+		                "encounter.size": 1,
+		                "concept": ["RECIEVED ANTENATAL CARE SERVICE THIS VISIT"],
+		                "valueCoded": ["INTERMITTENT PREVENTIVE TREATMENT 1"],
+		                "obs.size" : 1})
+		#set($firstPreventive = $fn.evaluate($patient, "Encounter Based Obs", $params))
+		<firstPreventiveTreatment>$!{fn.format($firstPreventive)}</firstPreventiveTreatment>
+
+		#set($params = {"encounterType" : ["ANCINITIAL", "ANCRETURN"],
+		                "encounter.size": 1,
+		                "concept": ["RECIEVED ANTENATAL CARE SERVICE THIS VISIT"],
+		                "valueCoded": ["INTERMITTENT PREVENTIVE TREATMENT 2"],
+		                "obs.size" : 1})
+		#set($secondPreventive = $fn.evaluate($patient, "Encounter Based Obs", $params))
+		<secondPreventiveTreatment>$!{fn.format($secondPreventive)}</secondPreventiveTreatment>
+
+		#set($params = {"encounterType" : ["ANCINITIAL", "ANCRETURN"],
+		                "encounter.size": 1,
+		                "concept": ["ANTI-D RH IGG GIVEN AT 28 GESTATION WEEKS "],
+		                "obs.size" : 1})
+		#set($anti = $fn.evaluate($patient, "Encounter Based Obs", $params))
+		<anti-d>$!{fn.format($anti)}</anti-d>
+
+		#set($params = {"encounterType" : ["ANCINITIAL"],
+		                "encounter.size": 1,
+		                "concept": ["METHOD OF FAMILY PLANNING"]})
+		#set($contraceptions = $fn.evaluate($patient, "Encounter Based Obs", $params))
+		<contraceptions>$!{fn.format($contraceptions)}</contraceptions>
+
+		#set($params = {"encounterType" : ["ANCINITIAL"],
+		                "encounter.size": 1,
+		                "concept": ["PRESENCE OF SUBSTANCE USE"]})
+		#set($substances = $fn.evaluate($patient, "Encounter Based Obs", $params))
+		<substances>$!{fn.format($substances)}</substances>
+	</currentMedications>
+
+	<preferences>
+		<deliverySite>
+
+			#set($params = {"encounterType" : ["ANCINITIAL", "ANCRETURN"],
+			                "encounter.size": 1,
+			                "concept": ["DELIVERY PLACE, BIRTH PLAN"],
+			                "obs.size" : 1})
+			#set($healthFacility = $fn.evaluate($patient, "Encounter Based Obs", $params))
+			<healthFacility>$!{fn.format($healthFacility)}</healthFacility>
+
+			#set($params = {"encounterType" : ["ANCINITIAL", "ANCRETURN"],
+			                "encounter.size": 1,
+			                "concept": ["MOTHER'S PREFERRED DELIVERY PLACE, BIRTH PLAN"],
+			                "obs.size" : 1})
+			#set($location = $fn.evaluate($patient, "Encounter Based Obs", $params))
+			<location>$!{fn.format($location)}</location>
+
+			#set($params = {"encounterType" : ["ANCINITIAL", "ANCRETURN"],
+			                "encounter.size": 1,
+			                "concept": ["REASON FOR NOT DELIVERING AT HEALTH FACILITY"]})
+			#set($reasons = $fn.evaluate($patient, "Encounter Based Obs", $params))
+			<reasons>$!{fn.format($reasons)}</reasons>
+		</deliverySite>
+
+		#set($params = {"encounterType" : ["ANCINITIAL", "ANCRETURN"],
+		                "encounter.size": 1,
+		                "concept": ["PREFERRED MODE OF DELIVERY"],
+		                "obs.size" : 1})
+		#set($deliveryMode = $fn.evaluate($patient, "Encounter Based Obs", $params))
+		<deliveryMode>$!{fn.format($deliveryMode)}</deliveryMode>
+
+		#set($params = {"encounterType" : ["ANCINITIAL", "ANCRETURN"],
+		                "encounter.size": 1,
+		                "concept": ["MOTHER'S PREFERRED FEEDING METHOD, BIRTH PLAN"],
+		                "obs.size" : 1})
+		#set($infantFeeding = $fn.evaluate($patient, "Encounter Based Obs", $params))
+		<infantFeeding>$!{fn.format($infantFeeding)}</infantFeeding>
+	</preferences>
+
+	<previousPregnancies>
+		<header>
+			<element>DOD</element>
+			<element>Gestation at Delivery / Miscarriage</element>
+			<element>Outcomes</element>
+			<element>Location</element>
+			<element>Length of Labors</element>
+			<element>Method of Delivery</element>
+			<element>Gender</element>
+			<element>Weight</element>
+			<element>Complication</element>
+		</header>
+		#set($params = {"encounterType" : ["ANCINITIAL"],
+			            "encounter.size" : 1,
+						"encounter.after": "ANCINITIAL",
+		                "concept": ["PAST OBSTERICAL HISTORY"],
+						"valueCoded": ["DATE OF CONFINEMENT", "GESTATION MONTH AT DELIVERY OR MISCARRIAGE", "PREGNANCY OUTCOME", "PLACE OF DELIVERY",
+									   "LENGTH OF LABOR IN HOURS", "METHOD OF DELIVERY", "GENDER OF THE CHILD", "BIRTH WEIGHT (KG)",
+									   "MATERNAL, FETAL, OR CHILD COMPLICATIONS, FREETEXT"]})
+		#set($pregnancyHistories = $fn.evaluate($patient, "Encounter Based Concept Set Filtered", $params))
+		#foreach ($pregnancyHistory in $pregnancyHistories)
+			<entry>
+				#foreach ($element in $pregnancyHistory)
+					<element>$!{fn.format($element)}</element>
+				#end
+			</entry>
+		#end
+	</previousPregnancies>
+
+	<presentPregnancies>
+		<header>
+			<element>Date</element>
+			<element>N/V</element>
+			<element>H/A</element>
+			<element>Swelling</element>
+			<element>Fever</element>
+			<element>Dysuria</element>
+			<element>Genital Ulcers</element>
+			<element>Cough</element>
+			<element>Night Sweats</element>
+			<element>Vaginal Discharge</element>
+			<element>Vaginal Bleeding</element>
+			<element>Uterine Contraction</element>
+		</header>
+		#set($params = {"encounterType" : ["ANCINITIAL", "ANCRETURN"],
+						"encounter.after": "ANCINITIAL",
+						"concept": ["REVIEW OF SYSTEMS, OBSTETRICAL"],
+						"valueCoded": ["NAUSEA AND VOMITING", "HEADACHE", "EDEMA, HANDS OR FACE", "FEVER", "DYSURIA", "GENITAL SORES", "COUGH",
+									   "NIGHT SWEATS", "VAGINAL DISCHARGE", "VAGINAL BLEEDING", "UTERINE CONTRACTION"]})
+		#set($presentPregnancies = $fn.evaluate($patient, "Encounter Based Concept Answer Filtered", $params))
+		#foreach ($presentPregnancy in $presentPregnancies)
+			<entry>
+				#foreach ($element in $presentPregnancy)
+					#if ($velocityCount == 1)
+						<datetime>$!{fn.format($element)}</datetime>
+					#else
+						<element>$!{fn.format($element)}</element>
+					#end
+				#end
+			</entry>
+		#end
+	</presentPregnancies>
+
+	#set($params = {"encounterType" : ["ANCINITIAL", "ANCRETURN"],
+	                "encounter.after": "ANCINITIAL",
+	                "concept": ["FOETAL MOVEMENT"]})
+	#set($foetalMovements = $fn.evaluate($patient, "Encounter Based Concept Filtered", $params))
+	<foetalMovements>
+		<header>
+			<element>Foet Mvmt</element>
+		</header>
+		#foreach ($foetalMovement in $foetalMovements)
+			<entry>
+				#foreach ($element in $foetalMovement)
+					#if ($velocityCount == 1)
+						<datetime>$!{fn.format($element)}</datetime>
+					#else
+						<element>$!{fn.format($element)}</element>
+					#end
+				#end
+			</entry>
+		#end
+	</foetalMovements>
+
+	<physicalExams>
+		<header>
+			<element>Date</element>
+			<element>Temp</element>
+			<element>HR</element>
+			<element>BP</element>
+			<element>WT (KG)</element>
+			<element>HT (CM)</element>
+			<element>Gen</element>
+			<element>Head Neck</element>
+			<element>CVS</element>
+			<element>Resp</element>
+			<element>Gyn</element>
+			<element>Breast</element>
+			<element>Fundal HT (CM)</element>
+			<element>Fetal HR</element>
+			<element>Presentation</element>
+		</header>
+		#set($params = {"encounterType" : ["ANCINITIAL", "ANCRETURN"],
+						"encounter.after": "ANCINITIAL",
+						"concept": ["TEMPERATURE (C)", "PULSE", "SYSTOLIC BLOOD PRESSURE", "DIASTOLIC BLOOD PRESSURE", "WEIGHT (KG)", "HEIGHT (CM)",
+									"GENERAL EXAM FINDINGS", "HEAD OR NECK EXAM FINDINGS", "CARDIAC EXAM FINDINGS", "RESPIRATORY EXAM FINDINGS",
+									"UROGENITAL EXAM FINDINGS", "BREAST EXAM FINDINGS", "FUNDAL HEIGHT", "FOETAL HEART RATE", "FOETAL PRESENTATION"]})
+		#set($physicalExams = $fn.evaluate($patient, "Encounter Based Concept Filtered", $params))
+		#foreach ($physicalExam in $physicalExams)
+			<entry>
+				#foreach ($element in $physicalExam)
+					#if ($velocityCount == 1)
+						<datetime>$!{fn.format($element)}</datetime>
+					#elseif ($velocityCount == 4)
+					    <element>$!{fn.format($element)} /
+					#elseif($velocityCount == 5)
+						$!{fn.format($element)}</element>
+					#else
+						<element>$!{fn.format($element)}</element>
+					#end
+				#end
+			</entry>
+		#end
+	</physicalExams>
+
+	<labs>
+
+		#set($params = {"encounterType" : ["ANCINITIAL"],
+		                "encounter.size": 1,
+		                "concept": ["BLOOD TYPING"],
+		                "obs.size" : 1})
+		#set($bloodTyping = $fn.evaluate($patient, "Encounter Based Obs", $params))
+		<bloodGroup>
+			<value>$!{fn.format($bloodTyping)}</value>
+			<datetime>$!{fn.format($bloodTyping.getResultDate())}</datetime>
+		</bloodGroup>
+
+		#set($params = {"encounterType" : ["ANCINITIAL"],
+		                "encounter.size": 1,
+		                "concept": ["INDIRECT COOMB'S TEST"],
+		                "obs.size" : 1})
+		#set($coombs = $fn.evaluate($patient, "Encounter Based Obs", $params))
+		<coombs>
+			<value>$!{fn.format($coombs)}</value>
+			<datetime>$!{fn.format($coombs.getResultDate())}</datetime>
+		</coombs>
+
+		#set($params = {"encounterType" : ["ANCINITIAL"],
+		                "encounter.size": 1,
+		                "concept": ["RHESUS FACTOR"],
+		                "obs.size" : 1})
+		#set($rhesus = $fn.evaluate($patient, "Encounter Based Obs", $params))
+		<rhesus>
+			<value>$!{fn.format($rhesus)}</value>
+			<datetime>$!{fn.format($rhesus.getResultDate())}</datetime>
+		</rhesus>
+
+		#set($params = {"encounterType" : ["ANCINITIAL"],
+		                "encounter.size": 1,
+		                "concept": ["ANTIBODY SCREEN"],
+		                "obs.size" : 1})
+		#set($antiBody = $fn.evaluate($patient, "Encounter Based Obs", $params))
+		<antibody>
+			<value>$!{fn.format($antiBody)}</value>
+			<datetime>$!{fn.format($antiBody.getResultDate())}</datetime>
+		</antibody>
+
+		#set($params = {"encounterType" : ["ANCINITIAL"],
+		                "encounter.size": 1,
+		                "concept": ["OBSTETRIC ULTRASOUND DONE"],
+		                "obs.size" : 1})
+		#set($ultraSound = $fn.evaluate($patient, "Encounter Based Obs", $params))
+		<ultrasound>
+			<value>$!{fn.format($ultraSound)}</value>
+			<datetime>$!{fn.format($ultraSound.getResultDate())}</datetime>
+		</ultrasound>
+
+		<results>
+			<header>
+				<element>HGB</element>
+				<element>BS</element>
+				<element>PBS</element>
+				<element>VDRL</element>
+				<element>Prot</element>
+				<element>Gluc</element>
+				<element>Leuc</element>
+			</header>
+			#set($params = {"concept": ["HEMOGLOBIN", "SERUM GLUCOSE", "MALARIAL SMEAR", "SYPHILIS - VDRL, QUALITATIVE", "PRESENCE OF PROTEIN",
+			                            "PRESENCE OF SUGAR", "PRESENCE OF LEUKOCYTES"]})
+			#set($labResults = $fn.evaluate($patient, "Datetime Based Concept Filtered", $params))
+			#foreach ($labResult in $labResults)
+				<entry>
+					#foreach ($element in $labResult)
+						#if ($velocityCount > 1)
+							<element>
+								<value>$!{fn.format($element)}</value>
+								<datetime>$!{fn.format($element.getResultDate())}</datetime>
+							</element>
+						#end
+					#end
+				</entry>
+			#end
+		</results>
+	</labs>
+
+	<educationCounselings>
+		<header>
+			<element>Date</element>
+			<element>Weight Gain</element>
+			<element>Sex Education</element>
+			<element>Birth Control</element>
+			<element>Medication Use</element>
+			<element>Foetal Movement</element>
+			<element>Signs of Labor</element>
+			<element>Delivery Mode</element>
+			<element>Neonatal Care</element>
+			<element>Post Part Care</element>
+			<element>Work</element>
+			<element>PROM/APH</element>
+			<element>Infant Feeding</element>
+		</header>
+		#set($params = {"encounterType" : ["ANCINITIAL", "ANCRETURN"],
+						"encounter.after": "ANCINITIAL",
+						"concept": ["PATIENT EDUCATION RECEIVED THIS VISIT"],
+						"valueCoded": ["NUTRITIONAL SUPPORT", "SEX EDUCATION", "CONTRACEPTION", "MEDICATION USE COUNSELLING", "FOETAL MOVEMENT",
+									   "SIGNS OF LABOR", "METHOD OF DELIVERY", "NEONATAL CARE", "POSTPARTUM", "WORK",
+									   "PREMATURE RUPTURE OF MEMBRANES OR ANTEPARTUM HEMORRHAGE", "INFANT FEEDING COUNSELING"]})
+		#set($educationCounselings = $fn.evaluate($patient, "Encounter Based Concept Answer Filtered", $params))
+		#foreach ($educationCounseling in $educationCounselings)
+			<entry>
+				#foreach ($element in $educationCounseling)
+					#if ($velocityCount == 1)
+						<datetime>$!{fn.format($element)}</datetime>
+					#else
+						<element>$!{fn.format($element)}</element>
+					#end
+				#end
+			</entry>
+		#end
+	</educationCounselings>
+
+	#set($params = {"encounterType" : ["ANCINITIAL", "ANCRETURN"],
+	                "encounter.size": 1,
+	                "concept": ["REFERRALS ORDERED"],
+	                "obs.size" : 1})
+	#set($referral = $fn.evaluate($patient, "Encounter Based Obs", $params))
+	<referral>
+		<value>$!{fn.format($referral)}</value>
+		<datetime>$!{fn.format($referral.getResultDate())}</datetime>
+	</referral>
+
+	<reminders displayId="true" displayText="true">
+
+		#set($params = {"encounterType" : ["ANCINITIAL", "ANCRETURN"],
+	                    "reminder": "Please order blood typing. No blood group/ABO results available."})
+		#set($reminder = $fn.evaluate($patient, "Pregnancy Blood Group Reminder", $params))
+		#foreach($element in $reminder)
+			<reminder>
+				<id>43</id>
+				<token>Pregnancy Blood Group Reminder</token>
+				<value>$!{fn.format($element)}</value>
+			</reminder>
+		#end
+
+		#set($params = {"encounterType" : ["ANCINITIAL", "ANCRETURN"],
+	                    "reminder": "Please order HIV test. No HIV test done this pregnancy."})
+		#set($reminder = $fn.evaluate($patient, "Pregnancy Elisa Reminder", $params))
+		#foreach($element in $reminder)
+			<reminder>
+				<id>44</id>
+				<token>Pregnancy Elisa Reminder</token>
+				<value>$!{fn.format($element)}</value>
+			</reminder>
+		#end
+
+		#set($params = {"encounterType" : ["ANCINITIAL", "ANCRETURN"],
+	                    "reminder": "Please order Haemogram. No Haemogram available during this pregnancy."})
+		#set($reminder = $fn.evaluate($patient, "Pregnancy Hb Reminder", $params))
+		#foreach($element in $reminder)
+			<reminder>
+				<id>45</id>
+				<token>Pregnancy Hb Reminder</token>
+				<value>$!{fn.format($element)}</value>
+			</reminder>
+		#end
+
+		#set($params = {"encounterType" : ["ANCINITIAL", "ANCRETURN"],
+	                    "reminder": "Consider ordering Rhesus Factor (Rh). No Rh results available for patient."})
+		#set($reminder = $fn.evaluate($patient, "Pregnancy Rhesus Reminder", $params))
+		#foreach($element in $reminder)
+			<reminder>
+				<id>46</id>
+				<token>Pregnancy Rhesus Reminder</token>
+				<value>$!{fn.format($element)}</value>
+			</reminder>
+		#end
+
+		#set($params = {"encounterType" : ["ANCINITIAL", "ANCRETURN"],
+	                    "reminder": "Please order Syphilis/VDRL Test. No Syphilis/VDRL results this pregnancy."})
+		#set($reminder = $fn.evaluate($patient, "Pregnancy Syphilis Reminder", $params))
+		#foreach($element in $reminder)
+			<reminder>
+				<id>47</id>
+				<token>Pregnancy Syphilis Reminder</token>
+				<value>$!{fn.format($element)}</value>
+			</reminder>
+		#end
+
+		#set($params = {"encounterType" : ["ANCINITIAL", "ANCRETURN"],
+	                    "reminder": "Please record/order Urinalysis.  No urinalysis results within last month."})
+		#set($reminder = $fn.evaluate($patient, "Pregnancy Urinalysis Reminder", $params))
+		#foreach($element in $reminder)
+			<reminder>
+				<id>48</id>
+				<token>Pregnancy Urinalysis Reminder</token>
+				<value>$!{fn.format($element)}</value>
+			</reminder>
+		#end
+
+		#set($params = {"encounterType" : ["ANCINITIAL", "ANCRETURN"],
+	                    "reminder": "Consider admitting patient today.  Pt is post-term (>=41 weeks gestation)."})
+		#set($reminder = $fn.evaluate($patient, "Admit Post Term Reminder", $params))
+		#foreach($element in $reminder)
+			<reminder>
+				<id>49</id>
+				<token>Admit Post Term Reminder</token>
+				<value>$!{fn.format($element)}</value>
+			</reminder>
+		#end
+
+		#set($params = {"encounterType" : ["ANCINITIAL", "ANCRETURN"],
+	                    "reminder": "Consider admission: Patient >37 weeks and elective CS is planned."})
+		#set($reminder = $fn.evaluate($patient, "Elective C Section Reminder", $params))
+		#foreach($element in $reminder)
+			<reminder>
+				<id>50</id>
+				<token>Elective C Section Reminder</token>
+				<value>$!{fn.format($element)}</value>
+			</reminder>
+		#end
+
+		#set($params = {"encounterType" : ["ANCINITIAL", "ANCRETURN"],
+	                    "reminder": "Please give Anti-D RH IgG. RH and ICT neg. woman > 28 wk gestation, no Anti-D IgG given."})
+		#set($reminder = $fn.evaluate($patient, "Indirect Coombs Anti D Reminder", $params))
+		#foreach($element in $reminder)
+			<reminder>
+				<id>51</id>
+				<token>Indirect Coombs Anti D Reminder</token>
+				<value>$!{fn.format($element)}</value>
+			</reminder>
+		#end
+
+		#set($params = {"encounterType" : ["ANCINITIAL", "ANCRETURN"],
+	                    "reminder": "Please order Indirect Coombs (ICT). RH-neg woman > 28 wk gestation, no ICT result."})
+		#set($reminder = $fn.evaluate($patient, "Indirect Coombs Test Reminder", $params))
+		#foreach($element in $reminder)
+			<reminder>
+				<id>52</id>
+				<token>Indirect Coombs Test Reminder</token>
+				<value>$!{fn.format($element)}</value>
+			</reminder>
+		#end
+
+		#set($params = {"encounterType" : ["ANCINITIAL", "ANCRETURN"],
+	                    "reminder": "Please start Iron Supplement.  Hgb < 10 or no Hgb result this pregnancy."})
+		#set($reminder = $fn.evaluate($patient, "Iron Supplement Reminder", $params))
+		#foreach($element in $reminder)
+			<reminder>
+				<id>53</id>
+				<token>Iron Supplement Reminder</token>
+				<value>$!{fn.format($element)}</value>
+			</reminder>
+		#end
+
+		#set($params = {"encounterType" : ["ANCINITIAL", "ANCRETURN"],
+	                    "reminder": "Please start Folic acid.  Pt on no Folic acid."})
+		#set($reminder = $fn.evaluate($patient, "Folic Acid Reminder", $params))
+		#foreach($element in $reminder)
+			<reminder>
+				<id>54</id>
+				<token>Folic Acid Reminder</token>
+				<value>$!{fn.format($element)}</value>
+			</reminder>
+		#end
+
+		#set($params = {"encounterType" : ["ANCINITIAL", "ANCRETURN"],
+	                    "reminder": "Please give IPT1. Woman in 2nd trimester and has not received IPT"})
+		#set($reminder = $fn.evaluate($patient, "First Intermittent Preventive Treatment Reminder", $params))
+		#foreach($element in $reminder)
+			<reminder>
+				<id>55</id>
+				<token>First Intermittent Preventive Treatment Reminder</token>
+				<value>$!{fn.format($element)}</value>
+			</reminder>
+		#end
+
+		#set($params = {"encounterType" : ["ANCINITIAL", "ANCRETURN"],
+	                    "reminder": "Please give IPT2. Woman in 3rd trimester and has not received IPT"})
+		#set($reminder = $fn.evaluate($patient, "Second Intermittent Preventive Treatment Reminder", $params))
+		#foreach($element in $reminder)
+			<reminder>
+				<id>56</id>
+				<token>Second Intermittent Preventive Treatment Reminder</token>
+				<value>$!{fn.format($element)}</value>
+			</reminder>
+		#end
+
+		#set($params = {"encounterType" : ["ANCINITIAL", "ANCRETURN"],
+	                    "reminder": "Please record whether TT was given today [ ]Yes [ ]No"})
+		#set($reminder = $fn.evaluate($patient, "Record Tetanus Booster Reminder", $params))
+		#foreach($element in $reminder)
+			<reminder>
+				<id>57</id>
+				<token>Record Tetanus Booster Reminder</token>
+				<value>$!{fn.format($element)}</value>
+			</reminder>
+		#end
+
+		#set($params = {"encounterType" : ["ANCINITIAL", "ANCRETURN"],
+	                    "reminder": "Please give TT today. No TT dose recorded."})
+		#set($reminder = $fn.evaluate($patient, "First Tetanus Booster Reminder", $params))
+		#foreach($element in $reminder)
+			<reminder>
+				<id>58</id>
+				<token>First Tetanus Booster Reminder</token>
+				<value>$!{fn.format($element)}</value>
+			</reminder>
+		#end
+
+		#set($params = {"encounterType" : ["ANCINITIAL", "ANCRETURN"],
+	                    "reminder": "Please give TT2. Over 1 month since TT1 was given."})
+		#set($reminder = $fn.evaluate($patient, "Second Tetanus Booster Reminder", $params))
+		#foreach($element in $reminder)
+			<reminder>
+				<id>59</id>
+				<token>Second Tetanus Booster Reminder</token>
+				<value>$!{fn.format($element)}</value>
+			</reminder>
+		#end
+
+	</reminders>
+
+</clinicalSummary>

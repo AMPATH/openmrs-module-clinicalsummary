@@ -1,0 +1,335 @@
+<?xml version="1.0"?>
+<clinicalSummary>
+	<currentDatetime>$!{fn.getCurrentDatetime()}</currentDatetime>
+	<moduleVersion>$!{fn.getModuleVersion("clinicalsummary")}</moduleVersion>
+	<templateRevision>$!{summary.getRevision()}</templateRevision>
+	<templateName>$!{summary.getName()}</templateName>
+	<id>$!{patient}</id>
+
+	#foreach($id in $!{patient.getActiveIdentifiers()})
+		#if ($velocityCount == 1)
+			<identifier>$!{id}</identifier>
+		#else
+			<alternateIdentifier>$!{id}</alternateIdentifier>
+		#end
+	#end
+
+	<name>
+		$!{patient.getGivenName()}
+		$!{patient.getMiddleName()}
+		$!{patient.getFamilyName()}
+	</name>
+
+	<gender>
+	#set($gender = $!{patient.getGender()})
+	#if ($gender == 'M')
+		Male
+	#elseif ($gender == 'F')
+		Female
+	#else
+		Unknown
+	#end
+	</gender>
+	<birthdate estimated="$!{patient.getBirthdateEstimated()}">$!{fn.format($!{patient.getBirthdate()})}</birthdate>
+	<age>$!{patient.getAge()} Years</age>
+
+	#set($params = {"concept": ["PREGNANCY STATUS"],
+	                "obs.size": 1})
+	#set($pregnancyStatus = $fn.evaluate($patient, "Obs String Restrictions", $params))
+	<pregnancyStatus>
+		<result>$!{fn.format($pregnancyStatus)}</result>
+		<datetime>$!{fn.format($pregnancyStatus.toDatetime())}</datetime>
+	</pregnancyStatus>
+
+	#set($params = {"encounterType": ["ADULTINITIAL", "ADULTRETURN", "ADULTNONCLINICALMEDICATION"],
+	                "encounter.size": 1,
+	                "concept": ["RETURN VISIT DATE"],
+	                "obs.size": 1})
+	#set($returnVisit = $fn.evaluate($patient, "Encounter Based Obs", $params))
+	<returnVisit>$!{fn.format($returnVisit.toDatetime())}</returnVisit>
+
+	#set($params = {"encounterType": ["ADULTINITIAL", "ADULTRETURN", "ADULTNONCLINICALMEDICATION"],
+	                "encounter.order": "asc",
+	                "encounter.size": 1})
+	#set($encounterResults = $fn.evaluate($patient, "Encounter String Restrictions", $params))
+	#set($earliestEncounter = $encounterResults.get(0))
+	<earliestEncounter>
+		<datetime>$!{fn.extractProperty($earliestEncounter.getResultObject(), "encounterDatetime")}</datetime>
+	</earliestEncounter>
+
+	#set($params = {"encounterType": ["ADULTINITIAL", "ADULTRETURN", "ADULTNONCLINICALMEDICATION"],
+	                "encounter.size": 1})
+	#set($encounterResults = $fn.evaluate($patient, "Encounter String Restrictions", $params))
+	#set($latestEncounter = $encounterResults.get(0))
+	<latestEncounter>
+		<datetime>$!{fn.extractProperty($latestEncounter.getResultObject(), "encounterDatetime")}</datetime>
+		<location>$!{fn.extractProperty($latestEncounter.getResultObject(), "location")}</location>
+		<provider>$!{fn.extractProperty($latestEncounter.getResultObject(), "provider.personName")}</provider>
+		<creator>$!{fn.extractProperty($latestEncounter.getResultObject(), "creator.personName")}</creator>
+		<dateCreated>$!{fn.extractProperty($latestEncounter.getResultObject(), "dateCreated")}</dateCreated>
+	</latestEncounter>
+
+	#set($params = {})
+	#set($problems = $fn.evaluate($patient, "Problem List", $params))
+	<problemList>
+		#foreach($problem in $problems)
+		<problems>
+			#foreach($element in $problem)
+			<problem>
+				<datetime>$!{fn.format($element.getResultDate())}</datetime>
+				<value>$!{fn.format($element)}</value>
+			</problem>
+			#end
+		</problems>
+		#end
+	</problemList>
+
+	<medications type="arv">
+		#set($params = {"encounterType": ["ADULTINITIAL", "ADULTRETURN", "ADULTNONCLINICALMEDICATION"]})
+		#set($arv = $fn.evaluate($patient, "Anti Retro Viral Medications", $params))
+		#foreach($element in $arv)
+		<medication>
+			<datetime>$!{fn.format($element.getResultDate())}</datetime>
+			<value>$!{fn.format($element)}</value>
+		</medication>
+		#end
+	</medications>
+
+	<medications type="oi">
+		#set($params = {"encounterType": ["ADULTINITIAL", "ADULTRETURN", "ADULTNONCLINICALMEDICATION"]})
+		#set($pcp = $fn.evaluate($patient, "Pneumocystis Carinii Medications", $params))
+		#foreach($element in $pcp)
+		<medication>
+			<datetime>$!{fn.format($element.getResultDate())}</datetime>
+			<value>$!{fn.format($element)}</value>
+		</medication>
+		#end
+
+		#set($params = {"encounterType": ["ADULTINITIAL", "ADULTRETURN", "ADULTNONCLINICALMEDICATION"]})
+		#set($crypto = $fn.evaluate($patient, "Cryptococcal Medications", $params))
+		#foreach($element in $crypto)
+		<medication>
+			<datetime>$!{fn.format($element.getResultDate())}</datetime>
+			<value>$!{fn.format($element)}</value>
+		</medication>
+		#end
+
+		#set($params = {"encounterType": ["ADULTINITIAL", "ADULTRETURN", "ADULTNONCLINICALMEDICATION"]})
+		#set($tuberculosis = $fn.evaluate($patient, "Tuberculosis Medications", $params))
+		#foreach($element in $tuberculosis)
+		<medication>
+			<datetime>$!{fn.format($element.getResultDate())}</datetime>
+			<value>$!{fn.format($element)}</value>
+		</medication>
+		#end
+
+		#set($params = {"encounterType": ["ADULTINITIAL", "ADULTRETURN", "ADULTNONCLINICALMEDICATION"]})
+		#set($tuberculosis = $fn.evaluate($patient, "Tuberculosis Treatment", $params))
+		#foreach($element in $tuberculosis)
+		<medication>
+			<datetime>$!{fn.format($element.getResultDate())}</datetime>
+			<value>$!{fn.format($element)}</value>
+		</medication>
+		#end
+	</medications>
+
+	<flowsheet>
+		<results name="WT (KG)">
+			#set($params = {"concept": ["WEIGHT (KG)"]})
+			#set($weight = $fn.evaluate($patient, "Obs Flowsheet", $params))
+			#foreach($element in $weight)
+			<result>
+				<datetime>$!{fn.format($element.getResultDate())}</datetime>
+				<value>$!{element.toNumber()}</value>
+			</result>
+			#end
+		</results>
+		<results name="HT (CM)">
+			#set($params = {"concept": ["HEIGHT (CM)"]})
+			#set($height = $fn.evaluate($patient, "Obs Flowsheet", $params))
+			#foreach($element in $height)
+			<result>
+				<datetime>$!{fn.format($element.getResultDate())}</datetime>
+				<value>$!{element.toNumber()}</value>
+			</result>
+			#end
+		</results>
+		<results name="SBP">
+			#set($params = {"concept": ["SYSTOLIC BLOOD PRESSURE"]})
+			#set($sbp = $fn.evaluate($patient, "Obs Flowsheet", $params))
+			#foreach($element in $sbp)
+			<result>
+				<datetime>$!{fn.format($element.getResultDate())}</datetime>
+				<value>$!{element.toNumber()}</value>
+			</result>
+			#end
+		</results>
+		<results name="DBP">
+			#set($params = {"concept": ["DIASTOLIC BLOOD PRESSURE"]})
+			#set($dbp= $fn.evaluate($patient, "Obs Flowsheet", $params))
+			#foreach($element in $dbp)
+			<result>
+				<datetime>$!{fn.format($element.getResultDate())}</datetime>
+				<value>$!{element.toNumber()}</value>
+			</result>
+			#end
+		</results>
+		<results name="HGB">
+			#set($params = {"concept": ["HEMOGLOBIN"],
+			                "valueCoded": ["HEMOGLOBIN", "COMPLETE BLOOD COUNT"]})
+			#set($hgb = $fn.evaluate($patient, "Obs Ordered Flowsheet", $params))
+			#foreach($element in $hgb)
+			<result>
+				<datetime>$!{fn.format($element.getResultDate())}</datetime>
+				<value>$!{element.toNumber()}</value>
+				<status>$!{fn.format($element)}</status>
+			</result>
+			#end
+		</results>
+		<results name="RBS">
+			#set($params = {"concept": ["SERUM GLUCOSE"],
+			                "valueCoded": ["SERUM GLUCOSE"]})
+			#set($rbs = $fn.evaluate($patient, "Obs Ordered Flowsheet", $params))
+			#foreach($element in $rbs)
+			<result>
+				<datetime>$!{fn.format($element.getResultDate())}</datetime>
+				<value>$!{element.toNumber()}</value>
+				<status>$!{fn.format($element)}</status>
+			</result>
+			#end
+		</results>
+		<results name="A1C">
+			#set($params = {"concept": ["GLYCOSYLATED HEMOGLOBIN"]})
+			#set($glycosylated = $fn.evaluate($patient, "Obs Flowsheet", $params))
+			#foreach($element in $glycosylated)
+			<result>
+				<datetime>$!{fn.format($element.getResultDate())}</datetime>
+				<value>$!{element.toNumber()}</value>
+			</result>
+			#end
+		</results>
+		<results name="CD4">
+			#set($params = {"concept": ["CD4 COUNT"],
+			                "valueCoded": ["CD4 PANEL"],
+			                "obs.merged": ["CD4 PERCENT"]})
+			#set($cd4 = $fn.evaluate($patient, "Obs Ordered Merged Flowsheet", $params))
+			#foreach($element in $cd4)
+			<result>
+				<datetime>$!{fn.format($element.getResultDate())}</datetime>
+				<value>$!{element.toNumber()}</value>
+				<status>$!{fn.format($element)}</status>
+				<percentage>$!{element.getResultObject()}</percentage>
+			</result>
+			#end
+		</results>
+	</flowsheet>
+
+	#set($params = {"concept": ["CXR"],
+	                "obs.size": 2})
+	#set($cxr = $fn.evaluate($patient, "Obs String Restrictions", $params))
+	<cxrs>
+		#foreach($element in $cxr)
+			<cxr>
+				<datetime>$!{fn.format($element.getResultDate())}</datetime>
+				<value>$!{fn.format($element)}</value>
+			</cxr>
+		#end
+	</cxrs>
+
+	<labs>
+		#set($params = {"concept": ["SYPHILIS - VDRL, QUALITATIVE"],
+						"obs.size": 1})
+		#set($vdrl = $fn.evaluate($patient, "Obs String Restrictions", $params))
+		<vdrl>
+			<result>$!{fn.format($vdrl)}</result>
+			<datetime>$!{fn.format($vdrl.toDatetime())}</datetime>
+		</vdrl>
+
+		#set($params = {"concept": ["WIDAL TEST"],
+						"obs.size": 1})
+		#set($widal = $fn.evaluate($patient, "Obs String Restrictions", $params))
+		<widal>
+			<result>$!{fn.format($widal)}</result>
+			<datetime>$!{fn.format($widal.toDatetime())}</datetime>
+		</widal>
+
+		#set($params = {"concept": ["BRUCELLA TEST"],
+						"obs.size": 1})
+		#set($brucella = $fn.evaluate($patient, "Obs String Restrictions", $params))
+		<brucella>
+			<result>$!{fn.format($brucella)}</result>
+			<datetime>$!{fn.format($brucella.toDatetime())}</datetime>
+		</brucella>
+
+		#set($params = {"concept": ["RHESUS FACTOR"],
+		                "obs.size" : 1})
+		#set($rhesus = $fn.evaluate($patient, "Obs String Restrictions", $params))
+		<rhesus>
+			<value>$!{fn.format($rhesus)}</value>
+			<datetime>$!{fn.format($rhesus.getResultDate())}</datetime>
+		</rhesus>
+	</labs>
+
+	<urinalysis>
+		<results name="PROTEIN">
+			#set($params = {"concept": ["PRESENCE OF PROTEIN"]})
+			#set($protein = $fn.evaluate($patient, "Obs Flowsheet", $params))
+			#foreach($element in $protein)
+			<result>
+				<datetime>$!{fn.format($element.getResultDate())}</datetime>
+				<value>$!{fn.format($element.toConcept())}</value>
+			</result>
+			#end
+		</results>
+
+		<results name="SUGAR">
+			#set($params = {"concept": ["PRESENCE OF SUGAR"]})
+			#set($protein = $fn.evaluate($patient, "Obs Flowsheet", $params))
+			#foreach($element in $protein)
+			<result>
+				<datetime>$!{fn.format($element.getResultDate())}</datetime>
+				<value>$!{fn.format($element.toConcept())}</value>
+			</result>
+			#end
+		</results>
+
+		<results name="LEUKOCYTES">
+			#set($params = {"concept": ["PRESENCE OF LEUKOCYTES"]})
+			#set($protein = $fn.evaluate($patient, "Obs Flowsheet", $params))
+			#foreach($element in $protein)
+			<result>
+				<datetime>$!{fn.format($element.getResultDate())}</datetime>
+				<value>$!{fn.format($element.toConcept())}</value>
+			</result>
+			#end
+		</results>
+	</urinalysis>
+
+	<sputums>
+		#set($params = {"concept": ["SPUTUM FOR ACID FAST BACILLI, DETAILED"],
+						"obs.setMembers": ["SPUTUM FOR ACID FAST BACILLI", "SEQUENCE OF SPUTUM FOR ACID FAST BACILLI",
+		                                   "ORDER OF SPUTUM FOR ACID FAST BACILLI "]})
+		#set($sputums = $fn.evaluate($patient, "Concept Set Based Obs", $params))
+		#foreach ($sputum in $sputums)
+			<result>
+				<datetime>$!{fn.format($sputum.get(0))}</datetime>
+				<value>$!{fn.format($sputum.get(1))}</value>
+				<sequence>$!{fn.format($sputum.get(2))}</sequence>
+				<order>$!{fn.format($sputum.get(3))}</order>
+			</result>
+		#end
+	</sputums>
+
+	<encounters>
+		#set($encounters = $fn.evaluate($patient, "Encounter Diagnosis And Medication", {}))
+		#foreach ($encounter in $encounters)
+			<encounter>
+				<encounterType>$!{fn.format($encounter.get(0))}</encounterType>
+				<encounterDatetime>$!{fn.format($encounter.get(1).getResultDate())}</encounterDatetime>
+				<encounterDiagnosis>$!{fn.format($encounter.get(1))}</encounterDiagnosis>
+				<encounterMedication>$!{fn.format($encounter.get(2))}</encounterMedication>
+			</encounter>
+		#end
+	</encounters>
+
+</clinicalSummary>

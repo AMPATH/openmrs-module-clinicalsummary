@@ -1,0 +1,60 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+
+	<patient patient_id="6" creator="1" date_created="2006-01-18 00:00:00.0" changed_by="1" date_changed="2008-08-18 12:25:31.0"
+	         voided="false" void_reason="" />
+	<patient patient_id="7" creator="1" date_created="2006-01-18 00:00:00.0" changed_by="1" date_changed="2008-08-18 12:25:57.0"
+	         voided="false" void_reason="" />
+	<patient patient_id="8" creator="1" date_created="2006-01-18 00:00:00.0" changed_by="1" date_changed="2008-08-18 12:24:34.0"
+	         voided="false" void_reason="" />
+
+	<patient_identifier patient_identifier_id="3" patient_id="6" identifier="12345K" identifier_type="2" preferred="0"
+	                    location_id="3" creator="1" date_created="2008-08-18 11:44:54.0" voided="false" void_reason=""
+	                    uuid="f10dd2a1-098f-4b50-8cc5-23efb0898360" />
+	<patient_identifier patient_identifier_id="4" patient_id="7" identifier="6TS-4" identifier_type="1" preferred="0"
+	                    location_id="1" creator="1" date_created="2006-01-18 00:00:00.0" voided="false" void_reason=""
+	                    uuid="489efb7f-0786-4726-88a3-f0fcd250fd1a" />
+	<patient_identifier patient_identifier_id="5" patient_id="7" identifier="72MK-4" identifier_type="1" preferred="0"
+	                    location_id="1" creator="1" date_created="2006-01-18 00:00:00.0" voided="false" void_reason=""
+	                    uuid="489efb7f-0786-4726-88a3-f0fcd250dd1a" />
+	<patient_identifier patient_identifier_id="6" patient_id="7" identifier="77MK-4" identifier_type="1" preferred="0"
+	                    location_id="1" creator="1" date_created="2006-01-18 00:00:00.0" voided="false" void_reason=""
+	                    uuid="489efb7f-0786-4726-88a3-f0fcd250ad1a" />
+	<patient_identifier patient_identifier_id="7" patient_id="7" identifier="78MK-4" identifier_type="1" preferred="0"
+	                    location_id="1" creator="1" date_created="2006-01-18 00:00:00.0" voided="false" void_reason=""
+	                    uuid="489efb7f-0786-4726-88a3-f0fcd25aad1a" />
+	<patient_identifier patient_identifier_id="8" patient_id="8" identifier="7TU-8" identifier_type="1" preferred="0"
+	                    location_id="1" creator="1" date_created="2006-01-18 00:00:00.0" voided="false" void_reason=""
+	                    uuid="2c23a55b-dee3-450c-914f-fe4bd0748d81" />
+
+	<person person_id="6" gender="M" birthdate="2007-05-27 00:00:00.0" birthdate_estimated="0" dead="false" creator="1"
+	        date_created="2006-01-18 00:00:00.0" voided="false" uuid="a2e04421-525f-442f-8138-05b619d16def" />
+	<person person_id="7" gender="F" birthdate="1976-08-25 00:00:00.0" birthdate_estimated="1" dead="false" creator="1"
+	        date_created="2006-01-18 00:00:00.0" voided="false" uuid="7946f880-b197-400b-9caa-a3c661d23041" />
+	<person person_id="8" gender="F" birthdate="2011-01-01 00:00:00" dead="false" creator="1" birthdate_estimated="0"
+	        date_created="2006-01-18 00:00:00.0" voided="false" uuid="8adf539e-4b5a-47aa-80c0-1a1025c957fa" />
+
+	<person_address person_address_id="9350" person_id="6" preferred="false" address1="" address2="" city_village=""
+	                state_province="" postal_code="" country="" latitude="" longitude="" creator="1"
+	                date_created="2008-08-18 11:44:02.0" voided="false" void_reason=""
+	                uuid="96144109-6125-4a52-92a0-6564716bee8e" />
+	<person_address person_address_id="7" person_id="7" preferred="false" address1="" address2="" city_village="Kapina"
+	                state_province="" postal_code="" country="" latitude="" longitude="" creator="1"
+	                date_created="2006-01-18 00:00:00.0" voided="false" void_reason=""
+	                uuid="921c0e23-d941-4bac-8ce4-ac0d0f7d8a91" />
+	<person_address person_address_id="8" person_id="8" preferred="false" address1="" address2="" city_village="Jabali"
+	                state_province="" postal_code="" country="" latitude="" longitude="" creator="1"
+	                date_created="2006-01-18 00:00:00.0" voided="false" void_reason=""
+	                uuid="7418fe01-e7e0-4f0c-ad1b-484d845577f9" />
+
+	<person_name person_name_id="7" preferred="false" person_id="7" given_name="Collet" middle_name="Test"
+	             family_name="Chebaskwony" creator="1" date_created="2006-01-18 00:00:00.0" voided="false" void_reason=""
+	             uuid="a65c343e-1384-493a-a55b-d325924acd94" />
+	<person_name person_name_id="8" preferred="false" person_id="8" given_name="Anet" middle_name="Test" family_name="Oloo"
+	             creator="1" date_created="2006-01-18 00:00:00.0" voided="false" void_reason=""
+	             uuid="5f3c5a8b-7589-408b-a219-20f50e68b164" />
+	<person_name person_name_id="9351" preferred="true" person_id="6" given_name="Johnny" middle_name="Test" family_name="Doe"
+	             creator="1" date_created="2008-08-18 11:44:02.0" voided="false" void_reason=""
+	             uuid="c8fb44f1-b54c-4741-a485-9d435ec8e28f" />
+
+</dataset>

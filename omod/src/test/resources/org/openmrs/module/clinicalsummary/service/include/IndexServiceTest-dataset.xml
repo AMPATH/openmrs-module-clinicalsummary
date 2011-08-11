@@ -1,0 +1,87 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+	<clinical_summary id="1" name="First Summary Template" description="First summary template description"
+	                  xml="First xml text" xslt="First xslt text" revision="0" preferred="0" creator="1" retired="0"
+	                  date_created="2011-03-01 00:00:00" uuid="61ae96f4-6afe-4351-b6f8-cd4fc383cfe1" />
+	<clinical_summary id="3" name="Third Summary Template" description="Third summary template description"
+	                  xml="Third xml text" xslt="Third xslt text" revision="0" preferred="0" creator="1" retired="0"
+	                  date_created="2011-03-01 00:00:00" uuid="61ae96f4-6afe-4351-b6f8-fd4fc383cce1" />
+	<clinical_summary id="4" name="Fourth Summary Template" description="Fourth summary template description"
+	                  xml="Fourth xml text" xslt="Fourth xslt text" revision="0" preferred="0" creator="1" retired="0"
+	                  date_created="2011-03-01 00:00:00" uuid="61ae96f4-6afe-4d51-b6f8-fd4fc383cce1" />
+
+	<clinical_summary_index id="1" summary="1" patient="7" location="1" return_date="2011-12-31" generated_date="2011-03-01"
+	                        initial_date="2011-01-01" creator="1" date_created="2011-03-01"
+	                        uuid="61ae96f4-6afe-4d51-b6f8-ad4fc383cce1" />
+	<clinical_summary_index id="2" summary="3" patient="7" location="1" return_date="2011-12-31" generated_date="2011-03-01"
+	                        initial_date="2011-01-01" creator="1" date_created="2011-03-01"
+	                        uuid="61ae96f4-6afe-4d51-b6f8-bd4fc383cce1" />
+	<clinical_summary_index id="3" summary="4" patient="7" location="2" return_date="2011-12-31" generated_date="2011-03-01"
+	                        initial_date="2011-01-01" creator="1" date_created="2011-03-01"
+	                        uuid="61af96f4-6afe-4d51-b6f8-ad4fc383cce1" />
+	<clinical_summary_index id="4" summary="4" patient="8" location="1" return_date="2011-12-31" generated_date="2011-03-01"
+	                        initial_date="2011-01-01" creator="1" date_created="2011-03-01"
+	                        uuid="61af96f4-6afe-4e51-b6f8-ad4fc383cce1" />
+	<clinical_summary_index id="5" summary="4" patient="8" location="2" return_date="2011-12-31" generated_date="2011-03-01"
+	                        initial_date="2011-01-01" creator="1" date_created="2011-03-01"
+	                        uuid="61af96f4-6afe-4551-b6f8-ad4fc383cce1" />
+
+	<location location_id="1" name="Unknown Location" description="The default location used when limited information is known"
+	          address1="" address2="" city_village="" state_province="" postal_code="" country="" creator="1"
+	          date_created="2005-09-22 00:00:00.0" retired="false" uuid="dc5c1fcc-0459-4201-bf70-0b90535ba362" />
+	<location location_id="2" name="Xanadu"
+	          description="A metaphor for opulence, most famously in the English Romantic Samuel Taylor Coleridge&apos;s poem Kubla Khan."
+	          address1="800 Boylston Street" address2="" city_village="Boston" state_province="MA" postal_code="02115"
+	          country="USA" latitude="" longitude="" creator="1" date_created="2008-08-15 13:46:50.0" retired="false"
+	          uuid="9356400c-a5a2-4532-8f2b-2361b3446eb8" />
+	<location location_id="3" name="Never Never Land" description="This is never be found" address1="" address2=""
+	          city_village="Peter" state_province="Pan" postal_code="" country="Wendy" latitude="" longitude="" creator="1"
+	          retired="false" date_created="2008-08-15 15:28:54.0" uuid="167ce20c-4785-4285-9119-d197268f7f4a" />
+
+	<patient patient_id="6" creator="1" date_created="2006-01-18 00:00:00.0" changed_by="1" date_changed="2008-08-18 12:25:31.0"
+	         voided="false" void_reason="" />
+	<patient patient_id="7" creator="1" date_created="2006-01-18 00:00:00.0" changed_by="1" date_changed="2008-08-18 12:25:57.0"
+	         voided="false" void_reason="" />
+	<patient patient_id="8" creator="1" date_created="2006-01-18 00:00:00.0" changed_by="1" date_changed="2008-08-18 12:24:34.0"
+	         voided="false" void_reason="" />
+
+	<patient_identifier patient_identifier_id="3" patient_id="6" identifier="12345K" identifier_type="2" preferred="0"
+	                    location_id="3" creator="1" date_created="2008-08-18 11:44:54.0" voided="false" void_reason=""
+	                    uuid="f10dd2a1-098f-4b50-8cc5-23efb0898360" />
+	<patient_identifier patient_identifier_id="4" patient_id="7" identifier="6TS-4" identifier_type="1" preferred="0"
+	                    location_id="1" creator="1" date_created="2006-01-18 00:00:00.0" voided="false" void_reason=""
+	                    uuid="489efb7f-0786-4726-88a3-f0fcd2505d1a" />
+	<patient_identifier patient_identifier_id="5" patient_id="8" identifier="7TU-8" identifier_type="1" preferred="0"
+	                    location_id="1" creator="1" date_created="2006-01-18 00:00:00.0" voided="false" void_reason=""
+	                    uuid="2c23a55b-dee3-450c-914f-fe4bd0748d81" />
+
+	<person person_id="6" gender="M" birthdate="2007-05-27 00:00:00.0" birthdate_estimated="0" dead="false" creator="1"
+	        date_created="2006-01-18 00:00:00.0" voided="false" uuid="a2e04421-525f-442f-8138-05b619d16def" />
+	<person person_id="7" gender="F" birthdate="1976-08-25 00:00:00.0" birthdate_estimated="1" dead="false" creator="1"
+	        date_created="2006-01-18 00:00:00.0" voided="false" uuid="7946f880-b197-400b-9caa-a3c661d23041" />
+	<person person_id="8" gender="F" dead="false" creator="1" birthdate_estimated="0" date_created="2006-01-18 00:00:00.0"
+	        voided="false" uuid="8adf539e-4b5a-47aa-80c0-1a1025c957fa" />
+
+	<person_address person_address_id="9350" person_id="6" preferred="false" address1="" address2="" city_village=""
+	                state_province="" postal_code="" country="" latitude="" longitude="" creator="1"
+	                date_created="2008-08-18 11:44:02.0" voided="false" void_reason=""
+	                uuid="96144109-6125-4a52-92a0-6564716bee8e" />
+	<person_address person_address_id="7" person_id="7" preferred="false" address1="" address2="" city_village="Kapina"
+	                state_province="" postal_code="" country="" latitude="" longitude="" creator="1"
+	                date_created="2006-01-18 00:00:00.0" voided="false" void_reason=""
+	                uuid="921c0e23-d941-4bac-8ce4-ac0d0f7d8a91" />
+	<person_address person_address_id="8" person_id="8" preferred="false" address1="" address2="" city_village="Jabali"
+	                state_province="" postal_code="" country="" latitude="" longitude="" creator="1"
+	                date_created="2006-01-18 00:00:00.0" voided="false" void_reason=""
+	                uuid="7418fe01-e7e0-4f0c-ad1b-484d845577f9" />
+
+	<person_name person_name_id="7" preferred="false" person_id="7" given_name="Collet" middle_name="Test"
+	             family_name="Chebaskwony" creator="1" date_created="2006-01-18 00:00:00.0" voided="false" void_reason=""
+	             uuid="a65c343e-1384-493a-a55b-d325924acd94" />
+	<person_name person_name_id="8" preferred="false" person_id="8" given_name="Anet" middle_name="Test" family_name="Oloo"
+	             creator="1" date_created="2006-01-18 00:00:00.0" voided="false" void_reason=""
+	             uuid="5f3c5a8b-7589-408b-a219-20f50e68b164" />
+	<person_name person_name_id="9351" preferred="true" person_id="6" given_name="Johnny" middle_name="Test" family_name="Doe"
+	             creator="1" date_created="2008-08-18 11:44:02.0" voided="false" void_reason=""
+	             uuid="c8fb44f1-b54c-4741-a485-9d435ec8e28f" />
+</dataset>

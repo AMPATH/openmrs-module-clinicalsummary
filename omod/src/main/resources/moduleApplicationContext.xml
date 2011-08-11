@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:jee="http://www.springframework.org/schema/jee"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+			http://www.springframework.org/schema/context
+			http://www.springframework.org/schema/context/spring-context-3.0.xsd
+			http://www.springframework.org/schema/jee
+			http://www.springframework.org/schema/jee/spring-jee-3.0.xsd
+			http://www.springframework.org/schema/tx
+			http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+			http://www.springframework.org/schema/aop
+           	http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+            http://www.springframework.org/schema/util
+            http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+
+	<context:component-scan base-package="org.openmrs.module.clinicalsummary" />
+
+	<bean parent="serviceContext">
+		<property name="moduleService">
+			<list>
+				<value>org.openmrs.module.clinicalsummary.service.CoreService</value>
+				<bean class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+					<property name="transactionManager" ref="transactionManager"/>
+					<property name="target">
+						<bean class="org.openmrs.module.clinicalsummary.service.impl.CoreServiceImpl">
+							<property name="coreDAO">
+								<bean class="org.openmrs.module.clinicalsummary.db.hibernate.HibernateCoreDAO">
+									<property name="sessionFactory" ref="sessionFactory"/>
+								</bean>
+							</property>
+						</bean>
+					</property>
+					<property name="preInterceptors" ref="serviceInterceptors"/>
+					<property name="transactionAttributeSource">
+						<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
+					</property>
+				</bean>
+			</list>
+		</property>
+	</bean>
+
+	<bean parent="serviceContext">
+		<property name="moduleService">
+			<list>
+				<value>org.openmrs.module.clinicalsummary.service.LoggableService</value>
+				<bean class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+					<property name="transactionManager" ref="transactionManager"/>
+					<property name="target">
+						<bean class="org.openmrs.module.clinicalsummary.service.impl.LoggableServiceImpl">
+							<property name="loggableDAO">
+								<bean class="org.openmrs.module.clinicalsummary.db.hibernate.HibernateLoggableDAO">
+									<property name="sessionFactory" ref="sessionFactory"/>
+								</bean>
+							</property>
+						</bean>
+					</property>
+					<property name="preInterceptors" ref="serviceInterceptors"/>
+					<property name="transactionAttributeSource">
+						<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
+					</property>
+				</bean>
+			</list>
+		</property>
+	</bean>
+
+	<bean parent="serviceContext">
+		<property name="moduleService">
+			<list>
+				<value>org.openmrs.module.clinicalsummary.service.IndexService</value>
+				<bean class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+					<property name="transactionManager" ref="transactionManager"/>
+					<property name="target">
+						<bean class="org.openmrs.module.clinicalsummary.service.impl.IndexServiceImpl">
+							<property name="indexDAO">
+								<bean class="org.openmrs.module.clinicalsummary.db.hibernate.HibernateIndexDAO">
+									<property name="sessionFactory" ref="sessionFactory"/>
+								</bean>
+							</property>
+						</bean>
+					</property>
+					<property name="preInterceptors" ref="serviceInterceptors"/>
+					<property name="transactionAttributeSource">
+						<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
+					</property>
+				</bean>
+			</list>
+		</property>
+	</bean>
+
+	<bean parent="serviceContext">
+		<property name="moduleService">
+			<list>
+				<value>org.openmrs.module.clinicalsummary.service.SummaryService</value>
+				<bean class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+					<property name="transactionManager" ref="transactionManager"/>
+					<property name="target">
+						<bean class="org.openmrs.module.clinicalsummary.service.impl.SummaryServiceImpl">
+							<property name="summaryDAO">
+								<bean class="org.openmrs.module.clinicalsummary.db.hibernate.HibernateSummaryDAO">
+									<property name="sessionFactory" ref="sessionFactory"/>
+								</bean>
+							</property>
+						</bean>
+					</property>
+					<property name="preInterceptors" ref="serviceInterceptors"/>
+					<property name="transactionAttributeSource">
+						<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
+					</property>
+				</bean>
+			</list>
+		</property>
+	</bean>
+
+	<bean parent="serviceContext">
+		<property name="moduleService">
+			<list>
+				<value>org.openmrs.module.clinicalsummary.service.EvaluatorService</value>
+				<bean class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+					<property name="transactionManager" ref="transactionManager"/>
+					<property name="target">
+						<bean class="org.openmrs.module.clinicalsummary.service.impl.EvaluatorServiceImpl"/>
+					</property>
+					<property name="preInterceptors" ref="serviceInterceptors"/>
+					<property name="transactionAttributeSource">
+						<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
+					</property>
+				</bean>
+			</list>
+		</property>
+	</bean>
+
+	<bean parent="serviceContext">
+		<property name="moduleService">
+			<list>
+				<value>org.openmrs.module.clinicalsummary.service.UtilService</value>
+				<bean class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+					<property name="transactionManager" ref="transactionManager"/>
+					<property name="target">
+						<bean class="org.openmrs.module.clinicalsummary.service.impl.UtilServiceImpl">
+							<property name="utilDAO">
+								<bean class="org.openmrs.module.clinicalsummary.db.hibernate.HibernateUtilDAO">
+									<property name="sessionFactory" ref="sessionFactory"/>
+								</bean>
+							</property>
+						</bean>
+					</property>
+					<property name="preInterceptors" ref="serviceInterceptors"/>
+					<property name="transactionAttributeSource">
+						<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
+					</property>
+				</bean>
+			</list>
+		</property>
+	</bean>
+
+	<bean parent="serviceContext">
+		<property name="moduleService">
+			<list>
+				<value>org.openmrs.module.clinicalsummary.service.ReminderService</value>
+				<bean class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+					<property name="transactionManager" ref="transactionManager"/>
+					<property name="target">
+						<bean class="org.openmrs.module.clinicalsummary.service.impl.ReminderServiceImpl">
+							<property name="reminderDAO">
+								<bean class="org.openmrs.module.clinicalsummary.db.hibernate.HibernateReminderDAO">
+									<property name="sessionFactory" ref="sessionFactory"/>
+								</bean>
+							</property>
+						</bean>
+					</property>
+					<property name="preInterceptors" ref="serviceInterceptors"/>
+					<property name="transactionAttributeSource">
+						<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
+					</property>
+				</bean>
+			</list>
+		</property>
+	</bean>
+
+</beans>

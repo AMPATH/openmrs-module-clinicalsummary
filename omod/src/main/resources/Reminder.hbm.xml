@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+		"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+		"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+
+	<class name="org.openmrs.module.clinicalsummary.Reminder" table="clinical_summary_reminder">
+
+		<id name="id" type="java.lang.Integer" column="id" unsaved-value="0">
+			<generator class="org.openmrs.api.db.hibernate.NativeIfNotAssignedIdentityGenerator" />
+		</id>
+
+		<property name="token" type="java.lang.String" not-null="true" length="255" />
+
+		<property name="content" type="java.lang.String" not-null="true" length="1024" />
+
+		<many-to-one name="patient" column="patient" class="org.openmrs.Patient" not-null="true" />
+
+		<many-to-one name="provider" column="provider" class="org.openmrs.Person" not-null="true" />
+
+		<many-to-one name="location" column="location" class="org.openmrs.Location" not-null="true" />
+
+		<many-to-one name="encounter" column="encounter" class="org.openmrs.Encounter" not-null="true" />
+
+		<property name="reminderDatetime" type="java.util.Date" column="reminder_datetime" not-null="true" length="19" />
+
+		<many-to-one name="creator" class="org.openmrs.User" not-null="true">
+			<column name="creator" />
+		</many-to-one>
+
+		<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" length="19" />
+
+		<many-to-one name="changedBy" class="org.openmrs.User">
+			<column name="changed_by" />
+		</many-to-one>
+
+		<property name="dateChanged" type="java.util.Date" column="date_changed" length="19" />
+
+		<property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" />
+
+	</class>
+</hibernate-mapping>

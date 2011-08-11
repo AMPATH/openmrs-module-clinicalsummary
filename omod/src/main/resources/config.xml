@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC "-//OpenMRS//DTD OpenMRS Config 1.0//EN" "http://resources.openmrs.org/doctype/config-1.3.dtd">
+<module configVersion="1.3">
+
+	<!-- Base Module Properties -->
+	<id>@MODULE_ID@</id>
+	<name>@MODULE_NAME@</name>
+	<version>@MODULE_VERSION@</version>
+	<package>@MODULE_PACKAGE@</package>
+	<author>Nyoman Ribeka</author>
+	<description>
+		Display and print patient clinical summary
+	</description>
+
+	<require_modules>
+		<require_module version="0.5">org.openmrs.logic</require_module>
+	</require_modules>
+
+	<activator>@MODULE_PACKAGE@.activator.SummaryActivator</activator>
+
+	<require_version>1.8.0</require_version>
+
+	<extension>
+		<point>org.openmrs.patientDashboard.Header</point>
+		<class>@MODULE_PACKAGE@.extension.html.SummaryDashboardHeaderExt</class>
+	</extension>
+	<extension>
+		<point>org.openmrs.admin.list</point>
+		<class>@MODULE_PACKAGE@.extension.html.SummaryAdminExt</class>
+	</extension>
+
+	<advice>
+		<point>org.openmrs.api.EncounterService</point>
+		<class>@MODULE_PACKAGE@.advice.EncounterCreatedAdvice</class>
+	</advice>
+
+	<privilege>
+		<name>Manage Summaries</name>
+		<description>Able to add/edit summary templates</description>
+	</privilege>
+	<privilege>
+		<name>View Summaries</name>
+		<description>Able to view clinical summaries</description>
+	</privilege>
+	<privilege>
+		<name>Generate Summaries</name>
+		<description>Able to generate clinical summaries</description>
+	</privilege>
+	<privilege>
+		<name>Print Summaries</name>
+		<description>Able to print clinical summaries</description>
+	</privilege>
+
+	<globalProperty>
+		<property>@MODULE_ID@.generated</property>
+		<defaultValue>clinicalsummary/generated</defaultValue>
+		<description>Directory in the file system where clinical summaries are generated.</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.encryption</property>
+		<defaultValue>clinicalsummary/encryption</defaultValue>
+		<description>Directory in the file system where clinical summaries secret file are generated.</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.zipped</property>
+		<defaultValue>clinicalsummary/zipped</defaultValue>
+		<description>Directory in the file system where patient reminder logs are located.</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.batch.counter</property>
+		<defaultValue>0</defaultValue>
+		<description>Batch cluster offset to rotate the batch generation of summary</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.batch.initialized</property>
+		<defaultValue />
+		<description>Flag to decided whether all location cluster have been initialized with default summary</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.generator.delay</property>
+		<defaultValue />
+		<description>Delay before generator fallback to grab pre-generated summary</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.ordered.observations</property>
+		<defaultValue>{"configuration": [{"concept": ["CD4"], "valueCoded":["CD4 PANEL"]}, {"concept": ["HEMOGLOBIN"], "valueCoded": ["HEMOGLOBIN",
+			"COMPLETE BLOOD COUNT"]}]}</defaultValue>
+		<description>Observation pairing configuration</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.location.group</property>
+		<defaultValue>1 3 4 5 7 12 14 22 84</defaultValue>
+		<description>Evaluator default location grouping</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.post.tokens</property>
+		<defaultValue>Pediatric Reminder Study</defaultValue>
+		<description>Post processing token</description>
+	</globalProperty>
+
+	<!-- Internationalization -->
+	<!-- All message codes should start with moduleId.* -->
+	<messages>
+		<lang>en</lang>
+		<file>messages.properties</file>
+	</messages>
+	<!-- /Internationalization -->
+
+	<mappingFiles>
+		${omodHbmConfig}
+	</mappingFiles>
+
+</module>

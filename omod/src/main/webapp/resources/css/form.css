@@ -1,0 +1,90 @@
+#header {
+	margin-left: 1em;
+}
+
+#container {
+	font-size: small;
+	margin-top: 10px;
+	border: 1px solid #ccc;
+	-webkit-box-shadow: rgba(0, 0, 0, .2) 0px 0px 5px;
+	-moz-box-shadow: rgba(0, 0, 0, .2) 0px 0px 5px;
+	-o-box-shadow: rgba(0, 0, 0, .2) 0px 0px 5px;
+	box-shadow: rgba(0, 0, 0, .2) 0px 0px 5px;
+}
+
+#clear {
+	clear: both;
+	margin-left: 1em;
+}
+
+#main {
+	position: relative;
+	top: 0;
+	left: 0;
+}
+
+#maincontent {
+	float: left;
+	margin-left: 1em;
+}
+
+#leftcontent {
+	width: 40%;
+	float: left;
+	margin-left: 1em;
+}
+
+#rightcontent {
+	width: 40%;
+	float: left;
+	margin-left: 1em;
+}
+
+#sidebar {
+	margin-left: 1em;
+	float: left;
+	width: 320px;
+}
+
+fieldset {
+	padding: 0;
+	margin-bottom: 1em;
+}
+
+legend {
+	margin-left: 1em;
+	margin-left: 1em;
+	color: #000000;
+	font-weight: bold;
+}
+
+fieldset ol {
+	padding: 0 0 1em 1em;
+	list-style: none;
+}
+
+fieldset li {
+	padding-bottom: 0.5em;
+}
+
+ol li label {
+	display: block;
+}
+
+fieldset ul {
+	padding: 0 0 0 0;
+	list-style: none;
+}
+
+fieldset.text {
+	border-style: none;
+}
+
+fieldset.checkbox {
+	border-style: none;
+}
+
+fieldset.submit {
+	margin-top: 1em;
+	border-style: none;
+}

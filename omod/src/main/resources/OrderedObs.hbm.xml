@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+		"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+		"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+
+	<typedef name="status" class="org.openmrs.module.clinicalsummary.db.hibernate.type.StringEnumType">
+		<param name="enum">org.openmrs.module.clinicalsummary.util.obs.Status</param>
+	</typedef>
+
+	<class name="org.openmrs.module.clinicalsummary.util.obs.OrderedObs" table="clinical_summary_ordered_observation">
+
+		<id name="id" type="java.lang.Integer" column="pair_id" unsaved-value="0">
+			<generator class="org.openmrs.api.db.hibernate.NativeIfNotAssignedIdentityGenerator" />
+		</id>
+
+		<many-to-one name="person" column="person" class="org.openmrs.Person" lazy="false" />
+
+		<many-to-one name="provider" column="provider" class="org.openmrs.Person" lazy="false" />
+
+		<many-to-one name="location" column="location" class="org.openmrs.Location" lazy="false" />
+
+		<many-to-one name="concept" column="concept" class="org.openmrs.Concept" lazy="false" />
+
+		<many-to-one name="valueCoded" column="value_coded" class="org.openmrs.Concept" lazy="false" />
+
+		<property name="valueNumeric" column="value_numeric" type="java.lang.Double" />
+
+		<property name="orderedDatetime" type="java.util.Date" column="ordered_datetime" not-null="true" length="19" />
+
+		<many-to-one name="obs" column="obs" class="org.openmrs.Obs" lazy="false" />
+
+		<property name="status" column="status" type="status" />
+
+		<many-to-one name="creator" class="org.openmrs.User" not-null="true">
+			<column name="creator" />
+		</many-to-one>
+
+		<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" length="19" />
+
+		<property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" />
+	</class>
+</hibernate-mapping>

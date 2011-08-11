@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+	<clinical_summary id="1" name="First Summary Template" description="First summary template description"
+	                  xml="First xml text" xslt="First xslt text" revision="0" preferred="0" creator="1" retired="0"
+	                  date_created="2011-03-01 00:00:00" uuid="61ae96f4-6afe-4351-b6f8-cd4fc383cfe1" />
+	<clinical_summary id="3" name="Third Summary Template" description="Third summary template description"
+	                  xml="Third xml text" xslt="Third xslt text" revision="0" preferred="0" creator="1" retired="0"
+	                  date_created="2011-03-01 00:00:00" uuid="61ae96f4-6afe-4351-b6f8-fd4fc383cce1" />
+
+	<encounter_type encounter_type_id="1" name="Scheduled" description="Scheduled Visit" creator="1"
+	                date_created="2005-02-24 00:00:00.0" retired="false" uuid="61ae96f4-6afe-4351-b6f8-cd4fc383cce1" />
+	<encounter_type encounter_type_id="2" name="Emergency" description="Emergency visit" creator="1"
+	                date_created="2005-02-24 00:00:00.0" retired="false" uuid="07000be2-26b6-4cce-8b40-866d8435b613" />
+
+	<clinical_summary_mapping id="1" summary="1" encounter_type="1" mapping_type="Latest Encounter" creator="1"
+	                          date_created="2011-03-02 00:00:00.0" retired="false" uuid="07000be2-26b6-4cce-8b40-866d84357613" />
+
+	<clinical_summary_mapping id="2" summary="1" encounter_type="2" mapping_type="Latest Encounter" creator="1"
+	                          date_created="2011-03-02 00:00:00.0" retired="false" uuid="07000be2-26b6-4cce-8b40-866e84357613" />
+
+	<clinical_summary_mapping id="3" summary="2" encounter_type="1" mapping_type="Any Encounter" creator="1"
+	                          date_created="2011-03-02 00:00:00.0" retired="false" uuid="07000be2-26b6-4cce-8b40-f66e84357613" />
+
+	<clinical_summary_mapping id="4" summary="2" encounter_type="2" mapping_type="Latest Encounter" creator="1"
+	                          date_created="2011-03-02 00:00:00.0" retired="false" uuid="0700fbe2-26b6-4cce-8b40-f66e84357613" />
+
+</dataset>
