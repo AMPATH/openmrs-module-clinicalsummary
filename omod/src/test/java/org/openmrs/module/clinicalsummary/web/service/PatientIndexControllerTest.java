@@ -23,7 +23,10 @@ import org.junit.Test;
 import org.openmrs.module.clinicalsummary.web.controller.service.PatientIndexController;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.web.servlet.HandlerAdapter;
+import org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter;
 
 /**
  */
@@ -45,20 +48,16 @@ public class PatientIndexControllerTest extends BaseModuleContextSensitiveTest {
 	 */
 	@Test
 	public void searchIndex_shouldReturnIndexesForThePatient() throws Exception {
-		/*
 		MockHttpServletRequest request = new MockHttpServletRequest();
-		request.setMethod("POST");
+		request.setMethod("GET");
 		request.setRequestURI("/module/clinicalsummary/service/patient/index");
-		request.setParameter("summaryId", String.valueOf(7));
+		request.setParameter("username", "admin");
+		request.setParameter("password", "test");
 		request.setParameter("patientId", String.valueOf(7));
 
 		MockHttpServletResponse response = new MockHttpServletResponse();
-
+		HandlerAdapter handlerAdapter = new AnnotationMethodHandlerAdapter();
 		handlerAdapter.handle(request, response, controller);
-		*/
-
-		MockHttpServletResponse response = new MockHttpServletResponse();
-		controller.searchIndex("admin", "test", 7, response);
 
 		Assert.assertTrue(StringUtils.isNotEmpty(response.getContentAsString()));
 		Assert.assertTrue(StringUtils.contains(response.getContentAsString(), "Collet Test Chebaskwony"));
@@ -71,20 +70,16 @@ public class PatientIndexControllerTest extends BaseModuleContextSensitiveTest {
 	 */
 	@Test
 	public void searchIndex_shouldReturnEmptyListWhenNoIndexFoundForThePatient() throws Exception {
-		/*
 		MockHttpServletRequest request = new MockHttpServletRequest();
-		request.setMethod("POST");
+		request.setMethod("GET");
 		request.setRequestURI("/module/clinicalsummary/service/patient/index");
-		request.setParameter("summaryId", String.valueOf(1));
-		request.setParameter("patientId", String.valueOf(7));
+		request.setParameter("patientId", String.valueOf(8));
+		request.setParameter("username", "admin");
+		request.setParameter("password", "test");
 
 		MockHttpServletResponse response = new MockHttpServletResponse();
-
+		HandlerAdapter handlerAdapter = new AnnotationMethodHandlerAdapter();
 		handlerAdapter.handle(request, response, controller);
-		*/
-
-		MockHttpServletResponse response = new MockHttpServletResponse();
-		controller.searchIndex("admin", "test", 8, response);
 
 		Assert.assertTrue(StringUtils.isNotEmpty(response.getContentAsString()));
 	}

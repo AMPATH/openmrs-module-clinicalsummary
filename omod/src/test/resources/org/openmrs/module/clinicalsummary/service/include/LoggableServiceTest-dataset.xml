@@ -1,28 +1,22 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
 	<clinical_summary id="1" name="First Summary Template" description="First summary template description"
-	                  xml="First xml text" xslt="First xslt text" revision="0" preferred="0" creator="1" retired="0"
+	                  xml="First xml text" xslt="First xslt text" revision="0" auto_generate="0" creator="1" retired="0"
 	                  date_created="2011-03-01 00:00:00" uuid="61ae96f4-6afe-4351-b6f8-cd4fc383cfe1" />
 	<clinical_summary id="3" name="Third Summary Template" description="Third summary template description"
-	                  xml="Third xml text" xslt="Third xslt text" revision="0" preferred="0" creator="1" retired="0"
+	                  xml="Third xml text" xslt="Third xslt text" revision="0" auto_generate="0" creator="1" retired="0"
 	                  date_created="2011-03-01 00:00:00" uuid="61ae96f4-6afe-4351-b6f8-fd4fc383cce1" />
 	<clinical_summary id="4" name="Fourth Summary Template" description="Fourth summary template description"
-	                  xml="Fourth xml text" xslt="Fourth xslt text" revision="0" preferred="0" creator="1" retired="0"
+	                  xml="Fourth xml text" xslt="Fourth xslt text" revision="0" auto_generate="0" creator="1" retired="0"
 	                  date_created="2011-03-01 00:00:00" uuid="61ae96f4-6afe-4d51-b6f8-fd4fc383cce1" />
 
-	<clinical_summary_loggable id="1" patient="7" summary="1" message="First loggable message" creator="1"
-	                           date_created="2006-01-18" />
-	<clinical_summary_loggable id="2" patient="7" summary="3" message="Second loggable message" creator="1"
-	                           date_created="2006-01-18" />
-	<clinical_summary_loggable id="3" patient="7" summary="1" message="Thirsd loggable message" creator="1"
-	                           date_created="2006-01-18" />
+	<clinical_summary_loggable id="1" patient="7" message="First loggable message" creator="1" date_created="2006-01-18" />
+	<clinical_summary_loggable id="2" patient="7" message="Second loggable message" creator="1" date_created="2006-01-18" />
+	<clinical_summary_loggable id="3" patient="7" message="Thirsd loggable message" creator="1" date_created="2006-01-18" />
 
-	<clinical_summary_loggable id="5" patient="8" summary="3" message="First loggable message" creator="1"
-	                           date_created="2006-01-18" />
-	<clinical_summary_loggable id="6" patient="8" summary="1" message="Second loggable message" creator="1"
-	                           date_created="2006-01-18" />
-	<clinical_summary_loggable id="7" patient="8" summary="3" message="Thirsd loggable message" creator="1"
-	                           date_created="2006-01-18" />
+	<clinical_summary_loggable id="5" patient="8" message="First loggable message" creator="1" date_created="2006-01-18" />
+	<clinical_summary_loggable id="6" patient="8" message="Second loggable message" creator="1" date_created="2006-01-18" />
+	<clinical_summary_loggable id="7" patient="8" message="Thirsd loggable message" creator="1" date_created="2006-01-18" />
 
 	<patient patient_id="6" creator="1" date_created="2006-01-18 00:00:00.0" changed_by="1" date_changed="2008-08-18 12:25:31.0"
 	         voided="false" void_reason="" />

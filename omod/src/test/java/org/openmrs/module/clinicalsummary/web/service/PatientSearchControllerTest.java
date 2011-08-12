@@ -22,7 +22,10 @@ import org.junit.Test;
 import org.openmrs.module.clinicalsummary.web.controller.service.PatientSearchController;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.web.servlet.HandlerAdapter;
+import org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter;
 
 /**
  */
@@ -39,19 +42,16 @@ public class PatientSearchControllerTest extends BaseModuleContextSensitiveTest 
 	 */
 	@Test
 	public void searchPatient_shouldReturnPatientsWithNameSearchTerm() throws Exception {
-		/*
 		MockHttpServletRequest request = new MockHttpServletRequest();
-		request.setMethod("POST");
+		request.setMethod("GET");
 		request.setRequestURI("/module/clinicalsummary/service/patient/search");
 		request.setParameter("term", "Collet");
+		request.setParameter("username", "admin");
+		request.setParameter("password", "test");
 
 		MockHttpServletResponse response = new MockHttpServletResponse();
-
+		HandlerAdapter handlerAdapter = new AnnotationMethodHandlerAdapter();
 		handlerAdapter.handle(request, response, controller);
-		*/
-
-		MockHttpServletResponse response = new MockHttpServletResponse();
-		controller.searchPatient("admin", "test", "Collet", response);
 
 		Assert.assertTrue(StringUtils.isNotEmpty(response.getContentAsString()));
 		Assert.assertTrue(StringUtils.contains(response.getContentAsString(), "Collet Test Chebaskwony"));
@@ -64,19 +64,16 @@ public class PatientSearchControllerTest extends BaseModuleContextSensitiveTest 
 	 */
 	@Test
 	public void searchPatient_shouldReturnPatientsWithIdentifierSearchTerm() throws Exception {
-		/*
 		MockHttpServletRequest request = new MockHttpServletRequest();
-		request.setMethod("POST");
+		request.setMethod("GET");
 		request.setRequestURI("/module/clinicalsummary/service/patient/search");
 		request.setParameter("term", "6TS-4");
+		request.setParameter("username", "admin");
+		request.setParameter("password", "test");
 
 		MockHttpServletResponse response = new MockHttpServletResponse();
-
+		HandlerAdapter handlerAdapter = new AnnotationMethodHandlerAdapter();
 		handlerAdapter.handle(request, response, controller);
-		*/
-
-		MockHttpServletResponse response = new MockHttpServletResponse();
-		controller.searchPatient("admin", "test", "6TS-4", response);
 
 		Assert.assertTrue(StringUtils.isNotEmpty(response.getContentAsString()));
 		Assert.assertTrue(StringUtils.contains(response.getContentAsString(), "Collet Test Chebaskwony"));
@@ -89,19 +86,16 @@ public class PatientSearchControllerTest extends BaseModuleContextSensitiveTest 
 	 */
 	@Test
 	public void searchPatient_shouldReturnEmptyListWhenNoPatientMatchSearchTerm() throws Exception {
-		/*
 		MockHttpServletRequest request = new MockHttpServletRequest();
-		request.setMethod("POST");
+		request.setMethod("GET");
 		request.setRequestURI("/module/clinicalsummary/service/patient/search");
 		request.setParameter("term", "999-3");
+		request.setParameter("username", "admin");
+		request.setParameter("password", "test");
 
 		MockHttpServletResponse response = new MockHttpServletResponse();
-
+		HandlerAdapter handlerAdapter = new AnnotationMethodHandlerAdapter();
 		handlerAdapter.handle(request, response, controller);
-		*/
-
-		MockHttpServletResponse response = new MockHttpServletResponse();
-		controller.searchPatient("admin", "test", "999-3", response);
 
 		Assert.assertTrue(StringUtils.isNotEmpty(response.getContentAsString()));
 		Assert.assertFalse(StringUtils.contains(response.getContentAsString(), "999-3"));

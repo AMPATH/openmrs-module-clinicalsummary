@@ -15,6 +15,12 @@
 package org.openmrs.module.clinicalsummary.db.hibernate;
 
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.time.DateUtils;
@@ -37,12 +43,6 @@ import org.openmrs.module.clinicalsummary.db.CoreDAO;
 import org.openmrs.module.clinicalsummary.util.FetchOrdering;
 import org.openmrs.module.clinicalsummary.util.FetchRestriction;
 import org.openmrs.util.OpenmrsUtil;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 /**
  *
@@ -167,9 +167,6 @@ public class HibernateCoreDAO implements CoreDAO {
 
 		// exclude all voided encounters
 		criteria.add(Restrictions.eq("voided", Boolean.FALSE));
-
-		// mysql optimization to stream the result set instead of buffering all result sets to the memory
-		criteria.setFetchSize(Integer.MIN_VALUE);
 
 		List<Encounter> encounters = new ArrayList<Encounter>();
 

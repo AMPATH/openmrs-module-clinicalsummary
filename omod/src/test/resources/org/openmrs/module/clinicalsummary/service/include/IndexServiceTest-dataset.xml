@@ -1,13 +1,13 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
 	<clinical_summary id="1" name="First Summary Template" description="First summary template description"
-	                  xml="First xml text" xslt="First xslt text" revision="0" preferred="0" creator="1" retired="0"
+	                  xml="First xml text" xslt="First xslt text" revision="0" auto_generate="0" creator="1" retired="0"
 	                  date_created="2011-03-01 00:00:00" uuid="61ae96f4-6afe-4351-b6f8-cd4fc383cfe1" />
 	<clinical_summary id="3" name="Third Summary Template" description="Third summary template description"
-	                  xml="Third xml text" xslt="Third xslt text" revision="0" preferred="0" creator="1" retired="0"
+	                  xml="Third xml text" xslt="Third xslt text" revision="0" auto_generate="0" creator="1" retired="0"
 	                  date_created="2011-03-01 00:00:00" uuid="61ae96f4-6afe-4351-b6f8-fd4fc383cce1" />
 	<clinical_summary id="4" name="Fourth Summary Template" description="Fourth summary template description"
-	                  xml="Fourth xml text" xslt="Fourth xslt text" revision="0" preferred="0" creator="1" retired="0"
+	                  xml="Fourth xml text" xslt="Fourth xslt text" revision="0" auto_generate="0" creator="1" retired="0"
 	                  date_created="2011-03-01 00:00:00" uuid="61ae96f4-6afe-4d51-b6f8-fd4fc383cce1" />
 
 	<clinical_summary_index id="1" summary="1" patient="7" location="1" return_date="2011-12-31" generated_date="2011-03-01"

@@ -1,5 +1,12 @@
 package org.openmrs.module.clinicalsummary.service;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -14,19 +21,11 @@ import org.openmrs.EncounterType;
 import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.OpenmrsObject;
-import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.clinicalsummary.rule.EvaluableConstants;
 import org.openmrs.module.clinicalsummary.util.FetchOrdering;
 import org.openmrs.module.clinicalsummary.util.FetchRestriction;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
 
 /**
  */
@@ -94,8 +93,6 @@ public class CoreServiceTest extends BaseModuleContextSensitiveTest {
 	@Test
 	public void getPatientEncounters_shouldReturnAllEncountersThatMatchTheSearchCriteria() {
 
-		Patient patient = Context.getPatientService().getPatient(7);
-
 		Location firstLocation = Context.getLocationService().getLocation(1);
 		Location secondLocation = Context.getLocationService().getLocation(2);
 
@@ -110,24 +107,24 @@ public class CoreServiceTest extends BaseModuleContextSensitiveTest {
 
 		FetchRestriction fetchRestriction = new FetchRestriction();
 
-		List<Encounter> encounters = coreService.getPatientEncounters(patient.getPatientId(), restrictions, fetchRestriction);
+		List<Encounter> encounters = coreService.getPatientEncounters(7, restrictions, fetchRestriction);
 		Assert.assertNotNull(encounters);
 		Assert.assertTrue(CollectionUtils.isNotEmpty(encounters));
 		Assert.assertEquals(2, encounters.size());
 		Assert.assertEquals(Integer.valueOf(4), encounters.get(0).getEncounterId());
 
 		fetchRestriction.setFetchOrdering(FetchOrdering.ORDER_ASCENDING);
-		encounters = coreService.getPatientEncounters(patient.getPatientId(), restrictions, fetchRestriction);
+		encounters = coreService.getPatientEncounters(7, restrictions, fetchRestriction);
 		Assert.assertEquals(Integer.valueOf(3), encounters.get(0).getEncounterId());
 
 		fetchRestriction.setSize(1);
-		encounters = coreService.getPatientEncounters(patient.getPatientId(), restrictions, fetchRestriction);
+		encounters = coreService.getPatientEncounters(7, restrictions, fetchRestriction);
 		Assert.assertEquals(1, encounters.size());
 
 		fetchRestriction = new FetchRestriction();
 
 		restrictions.put(EvaluableConstants.ENCOUNTER_TYPE, Arrays.<OpenmrsObject>asList(firstEncounterType));
-		encounters = coreService.getPatientEncounters(patient.getPatientId(), restrictions, fetchRestriction);
+		encounters = coreService.getPatientEncounters(7, restrictions, fetchRestriction);
 		Assert.assertEquals(1, encounters.size());
 		Assert.assertEquals(Integer.valueOf(4), encounters.get(0).getEncounterId());
 	}
@@ -138,7 +135,6 @@ public class CoreServiceTest extends BaseModuleContextSensitiveTest {
 	 */
 	@Test
 	public void getPatientEncounters_shouldReturnEmptyListWhenNoEncounterMatchTheCriteria() {
-		Patient patient = Context.getPatientService().getPatient(10);
 		Location firstLocation = Context.getLocationService().getLocation(1);
 
 		CoreService coreService = Context.getService(CoreService.class);
@@ -148,7 +144,7 @@ public class CoreServiceTest extends BaseModuleContextSensitiveTest {
 
 		FetchRestriction fetchRestriction = new FetchRestriction();
 
-		List<Encounter> encounters = coreService.getPatientEncounters(patient.getPatientId(), restrictions, fetchRestriction);
+		List<Encounter> encounters = coreService.getPatientEncounters(10, restrictions, fetchRestriction);
 		Assert.assertNotNull(encounters);
 		Assert.assertTrue(CollectionUtils.isEmpty(encounters));
 	}
@@ -159,7 +155,6 @@ public class CoreServiceTest extends BaseModuleContextSensitiveTest {
 	 */
 	@Test
 	public void getPatientObservations_shouldReturnAllObservationsThatMatchTheSearchCriteria() {
-		Patient patient = Context.getPatientService().getPatient(7);
 
 		Concept sevenConcept = Context.getConceptService().getConcept(7);
 		Concept twentyOneConcept = Context.getConceptService().getConcept(21);
@@ -173,28 +168,28 @@ public class CoreServiceTest extends BaseModuleContextSensitiveTest {
 		CoreService coreService = Context.getService(CoreService.class);
 
 		restrictions.put(EvaluableConstants.OBS_ENCOUNTER, Arrays.<OpenmrsObject>asList(thirdEncounter));
-		List<Obs> observations = coreService.getPatientObservations(patient.getPatientId(), restrictions, new FetchRestriction());
+		List<Obs> observations = coreService.getPatientObservations(7, restrictions, new FetchRestriction());
 		Assert.assertNotNull(observations);
 		Assert.assertTrue(CollectionUtils.isNotEmpty(observations));
 		Assert.assertEquals(2, observations.size());
 
 		restrictions.put(EvaluableConstants.OBS_ENCOUNTER, Arrays.<OpenmrsObject>asList(fourthEncounter));
-		observations = coreService.getPatientObservations(patient.getPatientId(), restrictions, new FetchRestriction());
+		observations = coreService.getPatientObservations(7, restrictions, new FetchRestriction());
 		Assert.assertNotNull(observations);
 		Assert.assertTrue(CollectionUtils.isNotEmpty(observations));
 		Assert.assertEquals(6, observations.size());
 
 		restrictions.put(EvaluableConstants.OBS_CONCEPT, Arrays.<OpenmrsObject>asList(fiveSevenconcept));
-		observations = coreService.getPatientObservations(patient.getPatientId(), restrictions, new FetchRestriction());
+		observations = coreService.getPatientObservations(7, restrictions, new FetchRestriction());
 		Assert.assertEquals(1, observations.size());
 
 		restrictions.remove(EvaluableConstants.OBS_ENCOUNTER);
-		observations = coreService.getPatientObservations(patient.getPatientId(), restrictions, new FetchRestriction());
+		observations = coreService.getPatientObservations(7, restrictions, new FetchRestriction());
 		Assert.assertEquals(2, observations.size());
 
 		restrictions.put(EvaluableConstants.OBS_CONCEPT, Arrays.<OpenmrsObject>asList(twentyOneConcept));
 		restrictions.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.<OpenmrsObject>asList(sevenConcept));
-		observations = coreService.getPatientObservations(patient.getPatientId(), restrictions, new FetchRestriction());
+		observations = coreService.getPatientObservations(7, restrictions, new FetchRestriction());
 		Assert.assertEquals(1, observations.size());
 	}
 
@@ -204,8 +199,6 @@ public class CoreServiceTest extends BaseModuleContextSensitiveTest {
 	 */
 	@Test
 	public void getPatientObservations_shouldReturnEmptyListWhenNoObservationMatchTheCriteria() {
-		Patient patient = Context.getPatientService().getPatient(21);
-
 		Concept sevenConcept = Context.getConceptService().getConcept(7);
 
 		CoreService coreService = Context.getService(CoreService.class);
@@ -215,7 +208,7 @@ public class CoreServiceTest extends BaseModuleContextSensitiveTest {
 
 		FetchRestriction fetchRestriction = new FetchRestriction();
 
-		List<Obs> observations = coreService.getPatientObservations(patient.getPatientId(), restrictions, fetchRestriction);
+		List<Obs> observations = coreService.getPatientObservations(21, restrictions, fetchRestriction);
 		Assert.assertNotNull(observations);
 		Assert.assertTrue(CollectionUtils.isEmpty(observations));
 	}

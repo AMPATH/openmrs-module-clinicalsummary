@@ -23,7 +23,10 @@ import org.junit.Test;
 import org.openmrs.module.clinicalsummary.web.controller.service.PatientSummaryController;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.web.servlet.HandlerAdapter;
+import org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter;
 
 /**
  */
@@ -45,8 +48,17 @@ public class PatientSummaryControllerTest extends BaseModuleContextSensitiveTest
 	 */
 	@Test
 	public void searchSummary_shouldReturnSummaryDataForPatientAndSummary() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.setMethod("GET");
+		request.setRequestURI("/module/clinicalsummary/service/patient/summary");
+		request.setParameter("username", "admin");
+		request.setParameter("password", "test");
+		request.setParameter("patientId", "7");
+		request.setParameter("summaryId", "3");
+
 		MockHttpServletResponse response = new MockHttpServletResponse();
-		controller.searchSummary("admin", "test", "7", 3, response);
+		HandlerAdapter handlerAdapter = new AnnotationMethodHandlerAdapter();
+		handlerAdapter.handle(request, response, controller);
 
 		Assert.assertFalse(StringUtils.isNotEmpty(response.getContentAsString()));
 	}
@@ -57,8 +69,17 @@ public class PatientSummaryControllerTest extends BaseModuleContextSensitiveTest
 	 */
 	@Test
 	public void searchSummary_shouldReturnEmptyDataWhenNoIndexFoundForThePatientAndSummary() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.setMethod("GET");
+		request.setRequestURI("/module/clinicalsummary/service/patient/summary");
+		request.setParameter("username", "admin");
+		request.setParameter("password", "test");
+		request.setParameter("patientId", "7");
+		request.setParameter("summaryId", "4");
+
 		MockHttpServletResponse response = new MockHttpServletResponse();
-		controller.searchSummary("admin", "test", "7", 4, response);
+		HandlerAdapter handlerAdapter = new AnnotationMethodHandlerAdapter();
+		handlerAdapter.handle(request, response, controller);
 
 		Assert.assertFalse(StringUtils.isNotEmpty(response.getContentAsString()));
 	}
