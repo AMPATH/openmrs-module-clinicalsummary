@@ -263,6 +263,52 @@
 						</fo:table-body>
 					</fo:table>
 
+					<fo:table table-layout="fixed" width="100%" space-before="6pt">
+						<fo:table-column column-width="20%" />
+						<fo:table-column column-width="40%" />
+						<fo:table-column column-width="40%" />
+						<fo:table-body font-size="10pt">
+							<fo:table-row text-align="center" border-bottom="thin solid black" font-weight="bold">
+								<fo:table-cell border-right="thin solid black" padding="2pt">
+									<fo:block>Encounter Type</fo:block>
+								</fo:table-cell>
+								<fo:table-cell border-right="thin solid black" padding="2pt">
+									<fo:block>Diagnosis</fo:block>
+								</fo:table-cell>
+								<fo:table-cell padding="2pt">
+									<fo:block>Drugs / Vaccines</fo:block>
+								</fo:table-cell>
+							</fo:table-row>
+							<xsl:for-each select="encounters/result">
+								<xsl:variable name="i" select="position()" />
+								<fo:table-row text-align="center" font-size="8pt">
+									<xsl:attribute name="background-color">
+										<xsl:if test="$i mod 2">#F8F8F8</xsl:if>
+										<xsl:if test="not($i mod 2)">#FFFFFF</xsl:if>
+									</xsl:attribute>
+									<fo:table-cell border-right="thin solid black" padding="2pt">
+										<fo:block>
+											<xsl:value-of select="encounterType" />
+											<fo:inline font-size="6pt">
+												(<xsl:value-of select="encounterDatetime" />)
+											</fo:inline>
+										</fo:block>
+									</fo:table-cell>
+									<fo:table-cell border-right="thin solid black" padding="2pt">
+										<fo:block>
+											<xsl:value-of select="encounterDiagnosis" />
+										</fo:block>
+									</fo:table-cell>
+									<fo:table-cell padding="2pt">
+										<fo:block>
+											<xsl:value-of select="encounterMedication" />
+										</fo:block>
+									</fo:table-cell>
+								</fo:table-row>
+							</xsl:for-each>
+						</fo:table-body>
+					</fo:table>
+
 					<!-- Flowsheet -->
 					<fo:block font-size="12pt" font-weight="bold" space-before="12pt">
 						<fo:block font-size="12pt" font-weight="bold" space-before="12pt">
@@ -374,6 +420,46 @@
 							</fo:block>
 						</xsl:otherwise>
 					</xsl:choose>
+
+
+					<fo:table table-layout="fixed" width="100%" space-before="6pt">
+						<fo:table-column column-width="20%" />
+						<fo:table-column column-width="40%" />
+						<fo:table-column column-width="40%" />
+						<fo:table-body font-size="10pt">
+							<fo:table-row text-align="center" border-bottom="thin solid black" font-weight="bold">
+								<fo:table-cell border-right="thin solid black" padding="2pt">
+									<fo:block>Encounter Type</fo:block>
+								</fo:table-cell>
+								<fo:table-cell border-right="thin solid black" padding="2pt">
+									<fo:block>Diagnosis</fo:block>
+								</fo:table-cell>
+								<fo:table-cell padding="2pt">
+									<fo:block>Drugs / Vaccines</fo:block>
+								</fo:table-cell>
+							</fo:table-row>
+							<xsl:for-each select="encounters/result">
+								<fo:table-row text-align="center" border-bottom="thin solid black" font-weight="bold">
+									<fo:table-cell border-right="thin solid black" padding="2pt">
+										<fo:block>
+											<xsl:value-of select="encounterType" /> ( <xsl:value-of select="encounterDatetime" />)
+										</fo:block>
+									</fo:table-cell>
+									<fo:table-cell border-right="thin solid black" padding="2pt">
+										<fo:block>
+											<xsl:value-of select="encounterDiagnosis" />
+										</fo:block>
+									</fo:table-cell>
+									<fo:table-cell padding="2pt">
+										<fo:block>
+											<xsl:value-of select="encounterMedication" />
+										</fo:block>
+									</fo:table-cell>
+								</fo:table-row>
+							</xsl:for-each>
+						</fo:table-body>
+					</fo:table>
+
 					<!-- Reminders -->
 					<fo:block space-before="6pt">
 						<xsl:attribute name="border-bottom">thin solid black</xsl:attribute>

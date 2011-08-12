@@ -323,12 +323,12 @@
 	<encounters>
 		#set($encounters = $fn.evaluate($patient, "Encounter Diagnosis And Medication", {}))
 		#foreach ($encounter in $encounters)
-			<encounter>
+			<result>
 				<encounterType>$!{fn.format($encounter.get(0))}</encounterType>
-				<encounterDatetime>$!{fn.format($encounter.get(1).getResultDate())}</encounterDatetime>
+				<encounterDatetime>$!{fn.format($encounter.get(0).getResultDate())}</encounterDatetime>
 				<encounterDiagnosis>$!{fn.format($encounter.get(1))}</encounterDiagnosis>
 				<encounterMedication>$!{fn.format($encounter.get(2))}</encounterMedication>
-			</encounter>
+			</result>
 		#end
 	</encounters>
 

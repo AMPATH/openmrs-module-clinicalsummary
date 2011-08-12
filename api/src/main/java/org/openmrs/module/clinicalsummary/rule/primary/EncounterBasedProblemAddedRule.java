@@ -14,6 +14,14 @@
 
 package org.openmrs.module.clinicalsummary.rule.primary;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
@@ -25,20 +33,10 @@ import org.openmrs.logic.result.Result;
 import org.openmrs.module.clinicalsummary.cache.CacheUtils;
 import org.openmrs.module.clinicalsummary.rule.EvaluableConstants;
 import org.openmrs.module.clinicalsummary.rule.EvaluableNameConstants;
-import org.openmrs.module.clinicalsummary.rule.EvaluableParameter;
 import org.openmrs.module.clinicalsummary.rule.EvaluableRule;
 import org.openmrs.module.clinicalsummary.rule.observation.ObsWithRestrictionRule;
 import org.openmrs.module.clinicalsummary.rule.observation.ObsWithStringRestrictionRule;
 import org.openmrs.util.OpenmrsUtil;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  */
@@ -112,27 +110,5 @@ public class EncounterBasedProblemAddedRule extends EvaluableRule {
 	@Override
 	protected String getEvaluableToken() {
 		return TOKEN;
-	}
-
-	/**
-	 * Whether the result of the rule should be cached or not
-	 *
-	 * @return true if the system should put the result into the caching system
-	 */
-	@Override
-	protected Boolean cacheable() {
-		return Boolean.TRUE;
-	}
-
-	/**
-	 * Get the definition of each parameter that should be passed to this rule execution
-	 *
-	 * @return all parameter that applicable for each rule execution
-	 */
-	@Override
-	public Set<EvaluableParameter> getEvaluationParameters() {
-		Set<EvaluableParameter> evaluableParameters = new HashSet<EvaluableParameter>();
-		evaluableParameters.add(EvaluableConstants.OPTIONAL_ENCOUNTER_TYPE_PARAMETER_DEFINITION);
-		return evaluableParameters;
 	}
 }

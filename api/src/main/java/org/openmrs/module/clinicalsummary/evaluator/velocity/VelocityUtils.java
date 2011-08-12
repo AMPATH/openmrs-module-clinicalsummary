@@ -14,6 +14,11 @@
 
 package org.openmrs.module.clinicalsummary.evaluator.velocity;
 
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Map;
+
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.CollectionUtils;
@@ -35,11 +40,6 @@ import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.clinicalsummary.rule.util.RuleUtils;
 import org.openmrs.module.clinicalsummary.service.EvaluatorService;
 import org.openmrs.util.OpenmrsUtil;
-
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Map;
 
 /**
  *
@@ -63,8 +63,18 @@ public class VelocityUtils {
 			return StringUtils.EMPTY;
 
 		// processing multi results
-		if (CollectionUtils.size(result) > 1)
-			return StringEscapeUtils.escapeXml(result.toString());
+		if (CollectionUtils.size(result) > 1) {
+			StringBuilder builder = new StringBuilder();
+			// iterate each result and format them
+			Integer counter = 0;
+			while (counter < CollectionUtils.size(result)) {
+				Result resultElement = result.get(counter++);
+				builder.append(format(resultElement));
+				if (counter < CollectionUtils.size(result))
+					builder.append(", ");
+			}
+			return builder.toString();
+		}
 
 		if (OpenmrsUtil.nullSafeEquals(result.getDatatype(), Result.Datatype.CODED))
 			return format(result.toConcept());
