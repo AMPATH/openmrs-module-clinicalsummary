@@ -312,8 +312,8 @@
 		#set($sputums = $fn.evaluate($patient, "Concept Set Based Obs", $params))
 		#foreach ($sputum in $sputums)
 			<result>
-				<datetime>$!{fn.format($sputum.get(0))}</datetime>
 				<value>$!{fn.format($sputum.get(1))}</value>
+				<datetime>$!{fn.format($sputum.get(0))}</datetime>
 				<sequence>$!{fn.format($sputum.get(2))}</sequence>
 				<order>$!{fn.format($sputum.get(3))}</order>
 			</result>
@@ -324,10 +324,10 @@
 		#set($encounters = $fn.evaluate($patient, "Encounter Diagnosis And Medication", {}))
 		#foreach ($encounter in $encounters)
 			<result>
-				<encounterType>$!{fn.format($encounter.get(0))}</encounterType>
-				<encounterDatetime>$!{fn.format($encounter.get(0).getResultDate())}</encounterDatetime>
-				<encounterDiagnosis>$!{fn.format($encounter.get(1))}</encounterDiagnosis>
-				<encounterMedication>$!{fn.format($encounter.get(2))}</encounterMedication>
+				<type>$!{fn.format($encounter.get(0))}</type>
+				<datetime>$!{fn.format($encounter.get(0).getResultDate())}</datetime>
+				<diagnosis>$!{fn.format($encounter.get(1))}</diagnosis>
+				<medication>$!{fn.format($encounter.get(2))}</medication>
 			</result>
 		#end
 	</encounters>

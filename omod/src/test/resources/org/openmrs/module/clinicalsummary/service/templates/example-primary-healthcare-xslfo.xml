@@ -263,6 +263,7 @@
 						</fo:table-body>
 					</fo:table>
 
+					<!-- Encounters Section -->
 					<fo:table table-layout="fixed" width="100%" space-before="6pt">
 						<fo:table-column column-width="20%" />
 						<fo:table-column column-width="40%" />
@@ -288,20 +289,20 @@
 									</xsl:attribute>
 									<fo:table-cell border-right="thin solid black" padding="2pt">
 										<fo:block>
-											<xsl:value-of select="encounterType" />
+											<xsl:value-of select="type" />
 											<fo:inline font-size="6pt">
-												(<xsl:value-of select="encounterDatetime" />)
+												(<xsl:value-of select="datetime" />)
 											</fo:inline>
 										</fo:block>
 									</fo:table-cell>
 									<fo:table-cell border-right="thin solid black" padding="2pt">
 										<fo:block>
-											<xsl:value-of select="encounterDiagnosis" />
+											<xsl:value-of select="diagnosis" />
 										</fo:block>
 									</fo:table-cell>
 									<fo:table-cell padding="2pt">
 										<fo:block>
-											<xsl:value-of select="encounterMedication" />
+											<xsl:value-of select="medication" />
 										</fo:block>
 									</fo:table-cell>
 								</fo:table-row>
@@ -421,7 +422,7 @@
 						</xsl:otherwise>
 					</xsl:choose>
 
-
+					<!-- Sputums Section -->
 					<fo:table table-layout="fixed" width="100%" space-before="6pt">
 						<fo:table-column column-width="20%" />
 						<fo:table-column column-width="40%" />
@@ -429,30 +430,38 @@
 						<fo:table-body font-size="10pt">
 							<fo:table-row text-align="center" border-bottom="thin solid black" font-weight="bold">
 								<fo:table-cell border-right="thin solid black" padding="2pt">
-									<fo:block>Encounter Type</fo:block>
+									<fo:block>Sputum AFB</fo:block>
 								</fo:table-cell>
 								<fo:table-cell border-right="thin solid black" padding="2pt">
-									<fo:block>Diagnosis</fo:block>
+									<fo:block>Sputum Sequence</fo:block>
 								</fo:table-cell>
 								<fo:table-cell padding="2pt">
-									<fo:block>Drugs / Vaccines</fo:block>
+									<fo:block>Sputum Order</fo:block>
 								</fo:table-cell>
 							</fo:table-row>
 							<xsl:for-each select="encounters/result">
-								<fo:table-row text-align="center" border-bottom="thin solid black" font-weight="bold">
+								<xsl:variable name="i" select="position()" />
+								<fo:table-row text-align="center" font-size="8pt">
+									<xsl:attribute name="background-color">
+										<xsl:if test="$i mod 2">#F8F8F8</xsl:if>
+										<xsl:if test="not($i mod 2)">#FFFFFF</xsl:if>
+									</xsl:attribute>
 									<fo:table-cell border-right="thin solid black" padding="2pt">
 										<fo:block>
-											<xsl:value-of select="encounterType" /> ( <xsl:value-of select="encounterDatetime" />)
+											<xsl:value-of select="value" />
+											<fo:inline font-size="6pt">
+												(<xsl:value-of select="datetime" />)
+											</fo:inline>
 										</fo:block>
 									</fo:table-cell>
 									<fo:table-cell border-right="thin solid black" padding="2pt">
 										<fo:block>
-											<xsl:value-of select="encounterDiagnosis" />
+											<xsl:value-of select="sequence" />
 										</fo:block>
 									</fo:table-cell>
 									<fo:table-cell padding="2pt">
 										<fo:block>
-											<xsl:value-of select="encounterMedication" />
+											<xsl:value-of select="order" />
 										</fo:block>
 									</fo:table-cell>
 								</fo:table-row>
