@@ -312,8 +312,8 @@
 		#set($sputums = $fn.evaluate($patient, "Concept Set Based Obs", $params))
 		#foreach ($sputum in $sputums)
 			<result>
-				<value>$!{fn.format($sputum.get(1))}</value>
 				<datetime>$!{fn.format($sputum.get(0))}</datetime>
+				<value>$!{fn.format($sputum.get(1))}</value>
 				<sequence>$!{fn.format($sputum.get(2))}</sequence>
 				<order>$!{fn.format($sputum.get(3))}</order>
 			</result>

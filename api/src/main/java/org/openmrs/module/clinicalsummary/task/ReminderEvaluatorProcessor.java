@@ -14,7 +14,11 @@
 
 package org.openmrs.module.clinicalsummary.task;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
@@ -30,9 +34,6 @@ import org.openmrs.module.clinicalsummary.evaluator.reminder.ReminderEvaluator;
 import org.openmrs.module.clinicalsummary.rule.ResultCacheInstance;
 import org.openmrs.module.clinicalsummary.service.CoreService;
 import org.openmrs.module.clinicalsummary.service.SummaryService;
-
-import java.util.Calendar;
-import java.util.Date;
 
 /**
  */
@@ -52,7 +53,7 @@ public class ReminderEvaluatorProcessor {
 				GlobalProperty initProperty = Context.getAdministrationService().getGlobalPropertyObject(TaskParameters.PROCESSOR_INITIALIZED);
 				String currentCluster = clusterName[clusterOffset];
 				// check whether all cluster have been initialized or not
-				Boolean initialized = Boolean.getBoolean(initProperty.getPropertyValue());
+				Boolean initialized = BooleanUtils.toBoolean(initProperty.getPropertyValue());
 
 				Cohort cohort;
 				String[] locationIds = StringUtils.split(currentCluster);

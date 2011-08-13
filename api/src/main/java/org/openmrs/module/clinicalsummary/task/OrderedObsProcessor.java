@@ -14,8 +14,18 @@
 
 package org.openmrs.module.clinicalsummary.task;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang.time.DateUtils;
@@ -40,15 +50,6 @@ import org.openmrs.module.clinicalsummary.util.FetchRestriction;
 import org.openmrs.module.clinicalsummary.util.obs.OrderedObs;
 import org.openmrs.module.clinicalsummary.util.obs.Status;
 import org.openmrs.util.OpenmrsUtil;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  */
@@ -106,7 +107,7 @@ public class OrderedObsProcessor {
 				GlobalProperty initProperty = Context.getAdministrationService().getGlobalPropertyObject(TaskParameters.PROCESSOR_INITIALIZED);
 				String currentCluster = clusterName[clusterOffset];
 				// check whether all cluster have been initialized or not
-				Boolean initialized = Boolean.getBoolean(initProperty.getPropertyValue());
+				Boolean initialized = BooleanUtils.toBoolean(initProperty.getPropertyValue());
 
 				Cohort cohort;
 				String[] locationIds = StringUtils.split(currentCluster);

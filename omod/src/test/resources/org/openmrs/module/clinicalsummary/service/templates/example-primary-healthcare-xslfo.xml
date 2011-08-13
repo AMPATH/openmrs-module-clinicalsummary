@@ -387,6 +387,53 @@
 						</fo:table-body>
 					</fo:table>
 
+					<!-- Sputums Section -->
+					<fo:table table-layout="fixed" width="100%" space-before="6pt">
+						<fo:table-column column-width="40%" />
+						<fo:table-column column-width="30%" />
+						<fo:table-column column-width="30%" />
+						<fo:table-body font-size="10pt">
+							<fo:table-row text-align="center" border-bottom="thin solid black" font-weight="bold">
+								<fo:table-cell border-right="thin solid black" padding="2pt">
+									<fo:block>Sputum AFB</fo:block>
+								</fo:table-cell>
+								<fo:table-cell border-right="thin solid black" padding="2pt">
+									<fo:block>Sputum Sequence</fo:block>
+								</fo:table-cell>
+								<fo:table-cell padding="2pt">
+									<fo:block>Sputum Order</fo:block>
+								</fo:table-cell>
+							</fo:table-row>
+							<xsl:for-each select="sputums/result">
+								<xsl:variable name="i" select="position()" />
+								<fo:table-row text-align="center" font-size="8pt">
+									<xsl:attribute name="background-color">
+										<xsl:if test="$i mod 2">#F8F8F8</xsl:if>
+										<xsl:if test="not($i mod 2)">#FFFFFF</xsl:if>
+									</xsl:attribute>
+									<fo:table-cell border-right="thin solid black" padding="2pt">
+										<fo:block>
+											<xsl:value-of select="value" />
+											<fo:inline font-size="6pt">
+												(<xsl:value-of select="datetime" />)
+											</fo:inline>
+										</fo:block>
+									</fo:table-cell>
+									<fo:table-cell border-right="thin solid black" padding="2pt">
+										<fo:block>
+											<xsl:value-of select="sequence" />
+										</fo:block>
+									</fo:table-cell>
+									<fo:table-cell padding="2pt">
+										<fo:block>
+											<xsl:value-of select="order" />
+										</fo:block>
+									</fo:table-cell>
+								</fo:table-row>
+							</xsl:for-each>
+						</fo:table-body>
+					</fo:table>
+
 					<!-- Chest X-ray -->
 					<fo:block font-size="12pt" space-before="12pt" font-weight="bold">
 						<fo:inline text-decoration="underline">Last 2 Chest X-Rays</fo:inline>
@@ -421,53 +468,6 @@
 							</fo:block>
 						</xsl:otherwise>
 					</xsl:choose>
-
-					<!-- Sputums Section -->
-					<fo:table table-layout="fixed" width="100%" space-before="6pt">
-						<fo:table-column column-width="20%" />
-						<fo:table-column column-width="40%" />
-						<fo:table-column column-width="40%" />
-						<fo:table-body font-size="10pt">
-							<fo:table-row text-align="center" border-bottom="thin solid black" font-weight="bold">
-								<fo:table-cell border-right="thin solid black" padding="2pt">
-									<fo:block>Sputum AFB</fo:block>
-								</fo:table-cell>
-								<fo:table-cell border-right="thin solid black" padding="2pt">
-									<fo:block>Sputum Sequence</fo:block>
-								</fo:table-cell>
-								<fo:table-cell padding="2pt">
-									<fo:block>Sputum Order</fo:block>
-								</fo:table-cell>
-							</fo:table-row>
-							<xsl:for-each select="encounters/result">
-								<xsl:variable name="i" select="position()" />
-								<fo:table-row text-align="center" font-size="8pt">
-									<xsl:attribute name="background-color">
-										<xsl:if test="$i mod 2">#F8F8F8</xsl:if>
-										<xsl:if test="not($i mod 2)">#FFFFFF</xsl:if>
-									</xsl:attribute>
-									<fo:table-cell border-right="thin solid black" padding="2pt">
-										<fo:block>
-											<xsl:value-of select="value" />
-											<fo:inline font-size="6pt">
-												(<xsl:value-of select="datetime" />)
-											</fo:inline>
-										</fo:block>
-									</fo:table-cell>
-									<fo:table-cell border-right="thin solid black" padding="2pt">
-										<fo:block>
-											<xsl:value-of select="sequence" />
-										</fo:block>
-									</fo:table-cell>
-									<fo:table-cell padding="2pt">
-										<fo:block>
-											<xsl:value-of select="order" />
-										</fo:block>
-									</fo:table-cell>
-								</fo:table-row>
-							</xsl:for-each>
-						</fo:table-body>
-					</fo:table>
 
 					<!-- Reminders -->
 					<fo:block space-before="6pt">
