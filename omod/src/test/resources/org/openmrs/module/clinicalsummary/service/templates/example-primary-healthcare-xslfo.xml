@@ -355,18 +355,19 @@
 												<xsl:attribute name="border-right">thin solid black</xsl:attribute>
 											</xsl:if>
 											<xsl:variable name="element" select="result[$i]"/>
-											<xsl:variable name="result_date" select="$element/datetime"/>
 											<fo:block font-size="10pt" space-after="0pt">
-												<xsl:value-of select="$element/value"/>
-												<xsl:if test="$result_name='CD4'">
-													<xsl:if test="$element/percentage != ''">
-														<fo:inline font-size="6pt" font-style="italic">
-															<xsl:text>(</xsl:text>
-															<xsl:value-of select="$element/percentage"/>
-															<xsl:text>%)</xsl:text>
-														</fo:inline>
-													</xsl:if>
-												</xsl:if>
+												<xsl:choose>
+													<xsl:when test="$result_name='BP'">
+														<xsl:value-of select="$element/dbp"/>
+														<xsl:if test="$element/sbp != '' or $element/dbp != ''">
+															<xsl:text> / </xsl:text>
+														</xsl:if>
+														<xsl:value-of select="$element/sbp"/>
+													</xsl:when>
+													<xsl:otherwise>
+														<xsl:value-of select="$element/value"/>
+													</xsl:otherwise>
+												</xsl:choose>
 											</fo:block>
 											<xsl:if test="$element/status != ''">
 												<fo:block font-size="6pt" font-style="italic" space-before="0pt">
@@ -479,8 +480,8 @@
 					</fo:block>
 					<fo:block font-size="8pt" font-style="italic">
 						<fo:inline>
-							1-Ordered Today, 2-Not Applicable (Explain), 3-Previously Ordered, 4-Pt Allergic, 5-Pt Refused, 6-I Disagree with Reminder (Explain),
-							7-Other(Explain)
+							1-Ordered Today, 2-Not Applicable (Explain), 3-Previously Ordered, 4-Pt Allergic, 5-Pt Refused,
+							6-I Disagree with Reminder (Explain), 7-Other(Explain)
 						</fo:inline>
 					</fo:block>
 					<xsl:if test="reminders/reminder">

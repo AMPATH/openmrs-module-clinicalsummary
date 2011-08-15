@@ -14,6 +14,13 @@
 
 package org.openmrs.module.clinicalsummary.rule.flowsheet;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.logging.Log;
@@ -29,13 +36,6 @@ import org.openmrs.module.clinicalsummary.rule.EvaluableRule;
 import org.openmrs.module.clinicalsummary.rule.observation.ObsWithRestrictionRule;
 import org.openmrs.module.clinicalsummary.rule.observation.ObsWithStringRestrictionRule;
 import org.openmrs.module.clinicalsummary.util.obs.Status;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Parameters: <ul> <li>[Required] concept: the result of the tests</li> <li>[Required] valueCoded: the answers for the tests
@@ -53,17 +53,16 @@ public class ObsOrderedFlowsheetRule extends EvaluableRule {
 	@Override
 	protected Result evaluate(final LogicContext context, final Integer patientId, final Map<String, Object> parameters) throws LogicException {
 		Result result = new Result();
+		ObsWithRestrictionRule obsWithRestrictionRule = new ObsWithStringRestrictionRule();
 
 		// remove the value coded first
 		Object codedValueObjects = parameters.remove(EvaluableConstants.OBS_VALUE_CODED);
-
 		// get the results
-		Result resultResults = searchResults(context, patientId, parameters);
-
+		Result resultResults = FlowsheetUtils.slice(obsWithRestrictionRule.eval(context, patientId, parameters));
 		// get the test ordered
 		parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(EvaluableNameConstants.TESTS_ORDERED));
 		parameters.put(EvaluableConstants.OBS_VALUE_CODED, codedValueObjects);
-		Result testResults = searchResults(context, patientId, parameters);
+		Result testResults = FlowsheetUtils.slice(obsWithRestrictionRule.eval(context, patientId, parameters));
 
 		Integer testCounter = 0;
 		Integer resultCounter = 0;
@@ -138,12 +137,6 @@ public class ObsOrderedFlowsheetRule extends EvaluableRule {
 		Obs obs = (Obs) result.getResultObject();
 		return new Result(obs.getObsDatetime(), null, obs.getValueAsBoolean(), obs.getValueCoded(),
 				obs.getValueDatetime(), obs.getValueNumeric(), obs.getValueText(), obs);
-	}
-
-	private Result searchResults(final LogicContext context, final Integer patientId, final Map<String, Object> parameters) {
-		ObsWithRestrictionRule obsWithRestrictionRule = new ObsWithStringRestrictionRule();
-		Result results = obsWithRestrictionRule.eval(context, patientId, parameters);
-		return FlowsheetUtils.slice(results);
 	}
 
 	/**

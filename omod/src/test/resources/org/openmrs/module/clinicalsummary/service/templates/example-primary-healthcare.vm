@@ -52,7 +52,7 @@
 	                "encounter.order": "asc",
 	                "encounter.size": 1})
 	#set($encounterResults = $fn.evaluate($patient, "Encounter String Restrictions", $params))
-	#set($earliestEncounter = $encounterResults.get(0))
+	#set($earliestEncounter = $encounterResults.latest())
 	<earliestEncounter>
 		<datetime>$!{fn.extractProperty($earliestEncounter.getResultObject(), "encounterDatetime")}</datetime>
 	</earliestEncounter>
@@ -60,7 +60,7 @@
 	#set($params = {"encounterType": ["ADULTINITIAL", "ADULTRETURN", "ADULTNONCLINICALMEDICATION"],
 	                "encounter.size": 1})
 	#set($encounterResults = $fn.evaluate($patient, "Encounter String Restrictions", $params))
-	#set($latestEncounter = $encounterResults.get(0))
+	#set($latestEncounter = $encounterResults.latest())
 	<latestEncounter>
 		<datetime>$!{fn.extractProperty($latestEncounter.getResultObject(), "encounterDatetime")}</datetime>
 		<location>$!{fn.extractProperty($latestEncounter.getResultObject(), "location")}</location>
@@ -154,23 +154,15 @@
 			</result>
 			#end
 		</results>
-		<results name="SBP">
-			#set($params = {"concept": ["SYSTOLIC BLOOD PRESSURE"]})
-			#set($sbp = $fn.evaluate($patient, "Obs Flowsheet", $params))
+		<results name="BP">
+			#set($params = {"concept": ["SYSTOLIC BLOOD PRESSURE"],
+			                "obs.merged": ["DIASTOLIC BLOOD PRESSURE"]})
+			#set($sbp = $fn.evaluate($patient, "Obs Merged Flowsheet", $params))
 			#foreach($element in $sbp)
 			<result>
 				<datetime>$!{fn.format($element.getResultDate())}</datetime>
-				<value>$!{element.toNumber()}</value>
-			</result>
-			#end
-		</results>
-		<results name="DBP">
-			#set($params = {"concept": ["DIASTOLIC BLOOD PRESSURE"]})
-			#set($dbp= $fn.evaluate($patient, "Obs Flowsheet", $params))
-			#foreach($element in $dbp)
-			<result>
-				<datetime>$!{fn.format($element.getResultDate())}</datetime>
-				<value>$!{element.toNumber()}</value>
+				<sbp>$!{fn.format($element.toNumber())}</sbp>
+				<dbp>$!{element.getResultObject()}</dbp>
 			</result>
 			#end
 		</results>
@@ -331,5 +323,430 @@
 			</result>
 		#end
 	</encounters>
+
+	#set($params = {"encounterType": ["ADULTINITIAL", "ADULTRETURN", "PEDSINITIAL", "PEDSRETURN", "ANCINITIAL", "ANCRETURN"],
+	                "encounter.size": 1})
+	#set($encounterResults = $fn.evaluate($patient, "Encounter String Restrictions", $params))
+	#set($latestEncounter = $encounterResults.latest())
+	#set($typeName = $fn.extractProperty($latestEncounter.getResultObject(), "encounterType.name"))
+	#if ($typeName == "ADULTINITIAL" || $typeName == "ADULTRETURN")
+
+	<reminders displayId="true" displayText="true">
+		#set($params = {"reminder": "Please check CD4. No CD4 result in system."})
+		#set($reminder = $fn.evaluate($patient, "Adult Cluster Reminder", $params))
+		#foreach($element in $reminder)
+		<reminder>
+			<id>18</id>
+			<token>Adult Cluster Reminder</token>
+			<value>$!{fn.format($element)}</value>
+		</reminder>
+		#end
+
+		#set($params = {"reminder": "Please check Creatinine. No Creatinine result in system."})
+		#set($reminder = $fn.evaluate($patient, "Adult Creatinine Reminder", $params))
+		#foreach($element in $reminder)
+		<reminder>
+			<id>19</id>
+			<token>Adult Creatinine Reminder</token>
+			<value>$!{fn.format($element)}</value>
+		</reminder>
+		#end
+
+		#set($params = {"reminder": "Please check Hemoglobin. No Hemoglobin result in system."})
+		#set($reminder = $fn.evaluate($patient, "Adult Hemoglobin Reminder", $params))
+		#foreach($element in $reminder)
+		<reminder>
+			<id>20</id>
+			<token>Adult Hemoglobin Reminder</token>
+			<value>$!{fn.format($element)}</value>
+		</reminder>
+		#end
+
+		#set($params = {"reminder": "Please check SGPT. No SGPT result in system."})
+		#set($reminder = $fn.evaluate($patient, "Adult SGPT Reminder", $params))
+		#foreach($element in $reminder)
+		<reminder>
+			<id>21</id>
+			<token>Adult SGPT Reminder</token>
+			<value>$!{fn.format($element)}</value>
+		</reminder>
+		#end
+
+		#set($params = {"reminder": "Please check Chest X-Ray. No Chest X-Ray result in system."})
+		#set($reminder = $fn.evaluate($patient, "Adult CXR Reminder", $params))
+		#foreach($element in $reminder)
+		<reminder>
+			<id>22</id>
+			<token>Adult CXR Reminder</token>
+			<value>$!{fn.format($element)}</value>
+		</reminder>
+		#end
+
+		#set($params = {"reminder": "Consider starting ARV Medications. CD4 count < 250."})
+		#set($reminder = $fn.evaluate($patient, "Cluster Anti Retro Viral Reminder", $params))
+		#foreach($element in $reminder)
+		<reminder>
+			<id>23</id>
+			<token>Cluster Anti Retro Viral Reminder</token>
+			<value>$!{fn.format($element)}</value>
+		</reminder>
+		#end
+
+		#set($params = {"reminder": "Consider ordering Syphilis/VDRL Test. Pt. with no Syphilis/VDRL results."})
+		#set($reminder = $fn.evaluate($patient, "Adult Syphilis Reminder", $params))
+		#foreach($element in $reminder)
+		<reminder>
+			<id>24</id>
+			<token>Adult Syphilis Reminder</token>
+			<value>$!{fn.format($element)}</value>
+		</reminder>
+		#end
+
+		#set($params = {"reminder": "Consider checking CD4 or Viral Load. Last CD4 count down by 25% in pt. on ARVs."})
+		#set($reminder = $fn.evaluate($patient, "Falling CD4 On Anti Retro Viral Reminder", $params))
+		#foreach($element in $reminder)
+		<reminder>
+			<id>25</id>
+			<token>Falling CD4 On Anti Retro Viral Reminder</token>
+			<value>$!{fn.format($element)}</value>
+		</reminder>
+		#end
+
+		#set($params = {"reminder": "Consider high risk EC referral.  New Pt, CD4 < 100 with no high risk EC referral."})
+		#set($reminder = $fn.evaluate($patient, "Adult High Risk Express Care Referral Reminder", $params))
+		#foreach($element in $reminder)
+		<reminder>
+			<id>26</id>
+			<token>Adult High Risk Express Care Referral Reminder</token>
+			<value>$!{fn.format($element)}</value>
+		</reminder>
+		#end
+
+		#set($params = {"reminder": "Consider starting Iron. Last MCV below 75."})
+		#set($reminder = $fn.evaluate($patient, "Low Corpuscular Volume Reminder", $params))
+		#foreach($element in $reminder)
+		<reminder>
+			<id>27</id>
+			<token>Low Corpuscular Volume Reminder</token>
+			<value>$!{fn.format($element)}</value>
+		</reminder>
+		#end
+
+		#set($params = {"reminder": "Consider repeat Creatinine. Cr > 200."})
+		#set($reminder = $fn.evaluate($patient, "Repeat Creatinine Reminder", $params))
+		#foreach($element in $reminder)
+		<reminder>
+			<id>28</id>
+			<token>Repeat Creatinine Reminder</token>
+			<value>$!{fn.format($element)}</value>
+		</reminder>
+		#end
+
+		#set($params = {"reminder": "Consider Consultant or MO referral for poor renal function (two Cr results > 200)."})
+		#set($reminder = $fn.evaluate($patient, "High Creatinine Referral Reminder", $params))
+		#foreach($element in $reminder)
+		<reminder>
+			<id>29</id>
+			<token>High Creatinine Referral Reminder</token>
+			<value>$!{fn.format($element)}</value>
+		</reminder>
+		#end
+
+		#set($params = {"reminder": "Over 10% or 5 kg wt loss. Look closer for cause."})
+		#set($reminder = $fn.evaluate($patient, "Falling Weight Reminder", $params))
+		#foreach($element in $reminder)
+		<reminder>
+			<id>30</id>
+			<token>Falling Weight Reminder</token>
+			<value>$!{fn.format($element)}</value>
+		</reminder>
+		#end
+
+		#set($params = {"reminder": "Please repeat CXR. Last CXR over 1 mo. ago, could not rule out TB."})
+		#set($reminder = $fn.evaluate($patient, "Abnormal CXR Reminder", $params))
+		#foreach($element in $reminder)
+		<reminder>
+			<id>31</id>
+			<token>Abnormal CXR Reminder</token>
+			<value>$!{fn.format($element)}</value>
+		</reminder>
+		#end
+
+		#set($params = {"reminder": "Please repeat CXR. Last CXR abnl in pt started on ARVs."})
+		#set($reminder = $fn.evaluate($patient, "Abnormal CXR On Anti Retro Viral Reminder", $params))
+		#foreach($element in $reminder)
+		<reminder>
+			<id>32</id>
+			<token>Abnormal CXR On Anti Retro Viral Reminder</token>
+			<value>$!{fn.format($element)}</value>
+		</reminder>
+		#end
+
+		#set($params = {"reminder": "Consider ordering Viral Load.  CD4 < 100 on ARVs for over a year."})
+		#set($reminder = $fn.evaluate($patient, "Low CD4 On Anti Retro Viral Reminder", $params))
+		#foreach($element in $reminder)
+		<reminder>
+			<id>33</id>
+			<token>Low CD4 On Anti Retro Viral Reminder</token>
+			<value>$!{fn.format($element)}</value>
+		</reminder>
+		#end
+
+		#set($params = {"reminder": "Consider stopping INH prophylaxis.  INH started over 9 months ago."})
+		#set($reminder = $fn.evaluate($patient, "Stop Izoniazid Reminder", $params))
+		#foreach($element in $reminder)
+		<reminder>
+			<id>34</id>
+			<token>Stop Izoniazid Reminder</token>
+			<value>$!{fn.format($element)}</value>
+		</reminder>
+		#end
+
+		#set($params = {"reminder": "Nevirapine and Rifampin (Rifampicin) not to be used together. Consider regimen change."})
+		#set($reminder = $fn.evaluate($patient, "Rifampin Nevirapine Contraindication Reminder", $params))
+		#foreach($element in $reminder)
+		<reminder>
+			<id>35</id>
+			<token>Rifampin Nevirapine Contraindication Reminder</token>
+			<value>$!{fn.format($element)}</value>
+		</reminder>
+		#end
+
+		#set($params = {"reminder": "Aluvia (Ritonavir / Lopinavir) and Rifampin (Rifampicin) not to be used together. Consider regimen change."})
+		#set($reminder = $fn.evaluate($patient, "Rifampin Aluvia Contraindication Reminder", $params))
+		#foreach($element in $reminder)
+		<reminder>
+			<id>36</id>
+			<token>Rifampin Aluvia Contraindication Reminder</token>
+			<value>$!{fn.format($element)}</value>
+		</reminder>
+		#end
+
+		#set($params = {"reminder": "Check Cr every 6 months for 1st year in patient on Tenofovir."})
+		#set($reminder = $fn.evaluate($patient, "Tenofovir Creatinine Monitoring Reminder", $params))
+		#foreach($element in $reminder)
+		<reminder>
+			<id>37</id>
+			<token>Tenofovir Creatinine Monitoring Reminder</token>
+			<value>$!{fn.format($element)}</value>
+		</reminder>
+		#end
+
+		#set($params = {"reminder": "Please order CD4 panel. Last CD4 (> 400) over 1 yr ago in pt on ARVs."})
+		#set($reminder = $fn.evaluate($patient, "Over 400 CD4 On Anti Retro Viral Reminder", $params))
+		#foreach($element in $reminder)
+		<reminder>
+			<id>38</id>
+			<token>Over 400 CD4 On Anti Retro Viral Reminder</token>
+			<value>$!{fn.format($element)}</value>
+		</reminder>
+		#end
+
+		#set($params = {"reminder": "Please order CD4 panel. Last CD4 (> 500) over 1 yr ago in pt NOT on ARVs."})
+		#set($reminder = $fn.evaluate($patient, "Over 500 CD4 No Anti Retro Viral Reminder", $params))
+		#foreach($element in $reminder)
+		<reminder>
+			<id>39</id>
+			<token>Over 500 CD4 No Anti Retro Viral Reminder</token>
+			<value>$!{fn.format($element)}</value>
+		</reminder>
+		#end
+
+		#set($params = {"reminder": "Please order CD4 panel. Last CD4 (< 400) over 6 mo. ago in pt on ARVs."})
+		#set($reminder = $fn.evaluate($patient, "Below 400 CD4 On Anti Retro Viral Reminder", $params))
+		#foreach($element in $reminder)
+		<reminder>
+			<id>40</id>
+			<token>Below 400 CD4 On Anti Retro Viral Reminder</token>
+			<value>$!{fn.format($element)}</value>
+		</reminder>
+		#end
+
+		#set($params = {"reminder": "Please order CD4 panel. Last CD4 (< 500) over 6 mo. ago in pt NOT on ARVs."})
+		#set($reminder = $fn.evaluate($patient, "Below 500 CD4 No Anti Retro Viral Reminder", $params))
+		#foreach($element in $reminder)
+		<reminder>
+			<id>41</id>
+			<token>Below 500 CD4 No Anti Retro Viral Reminder</token>
+			<value>$!{fn.format($element)}</value>
+		</reminder>
+		#end
+
+		#set($params = {"reminder": "Consider Low risk (Stable) EC referral. CD4 > 300 on ARVs."})
+		#set($reminder = $fn.evaluate($patient, "Over 300 CD4 Express Care Referral Reminder", $params))
+		#foreach($element in $reminder)
+		<reminder>
+			<id>42</id>
+			<token>Over 300 CD4 Express Care Referral Reminder</token>
+			<value>$!{fn.format($element)}</value>
+		</reminder>
+		#end
+
+	</reminders>
+	#elseif ($typeName ==  "PEDSINITIAL" || $typeName ==  "PEDSRETURN")
+
+	<reminders displayId="true" displayText="true">
+		#set($params = {"reminder": "Please order DNA PCR. Pt btn 6 wks &amp; 18 mo with no DNA PCR."})
+		#set($reminder = $fn.evaluate($patient, "Baseline Polymerase Reminder", $params))
+		#foreach($element in $reminder)
+			<reminder>
+				<id>1</id>
+				<token>Baseline Polymerase Reminder</token>
+				<value>$!{fn.format($element)}</value>
+			</reminder>
+		#end
+
+		#set($params = {"reminder": "Please check CD4. No CD4 result in system."})
+		#set($reminder = $fn.evaluate($patient, "Pediatric Cluster Reminder", $params))
+		#foreach($element in $reminder)
+			<reminder>
+				<id>2</id>
+				<token>Pediatric Cluster Reminder</token>
+				<value>$!{fn.format($element)}</value>
+			</reminder>
+		#end
+
+		#set($params = {"reminder": "Please check SGPT. No SGPT result in system."})
+		#set($reminder = $fn.evaluate($patient, "Pediatric SGPT Reminder", $params))
+		#foreach($element in $reminder)
+			<reminder>
+				<id>3</id>
+				<token>Pediatric SGPT Reminder</token>
+				<value>$!{fn.format($element)}</value>
+			</reminder>
+		#end
+
+		#set($params = {"reminder": "Please check Creatinine. No Creatinine result in system."})
+		#set($reminder = $fn.evaluate($patient, "Pediatric Creatinine Reminder", $params))
+		#foreach($element in $reminder)
+			<reminder>
+				<id>4</id>
+				<token>Pediatric Creatinine Reminder</token>
+				<value>$!{fn.format($element)}</value>
+			</reminder>
+		#end
+
+		#set($params = {"reminder": "Please check Hemoglobin. No Hemoglobin result in system."})
+		#set($reminder = $fn.evaluate($patient, "Pediatric Hemoglobin Reminder", $params))
+		#foreach($element in $reminder)
+			<reminder>
+				<id>5</id>
+				<token>Pediatric Hemoglobin Reminder</token>
+				<value>$!{fn.format($element)}</value>
+			</reminder>
+		#end
+
+		#set($params = {"reminder": "Please check Chest X-Ray. No Chest X-Ray result in system."})
+		#set($reminder = $fn.evaluate($patient, "Pediatric CXR Reminder", $params))
+		#foreach($element in $reminder)
+			<reminder>
+				<id>6</id>
+				<token>Pediatric CXR Reminder</token>
+				<value>$!{fn.format($element)}</value>
+			</reminder>
+		#end
+
+		#set($params = {"reminder": "Please order CD4 PANEL. Pt with positive PCR or ELISA but no CD4."})
+		#set($reminder = $fn.evaluate($patient, "Positive Without CD4 Reminder", $params))
+		#foreach($element in $reminder)
+			<reminder>
+				<id>8</id>
+				<token>Positive Without CD4 Reminder</token>
+				<value>$!{fn.format($element)}</value>
+			</reminder>
+		#end
+
+		#set($params = {})
+		#set($reminder = $fn.evaluate($patient, "Between Age Range ARV Reminder", $params))
+		#foreach($element in $reminder)
+			<reminder>
+				<id>9</id>
+				<token>Between Age Range ARV Reminder</token>
+				<value>$!{fn.format($element)}</value>
+			</reminder>
+		#end
+
+		#set($params = {"reminder": "Please order HIV ELISA. Pt > 18 mo old with no valid ELISA result done after age 18 mo."})
+		#set($reminder = $fn.evaluate($patient, "Baseline Elisa Reminder", $params))
+		#foreach($element in $reminder)
+			<reminder>
+				<id>10</id>
+				<token>Baseline Elisa Reminder</token>
+				<value>$!{fn.format($element)}</value>
+			</reminder>
+		#end
+
+		#set($params = {"reminder": "Please re-order DNA PCR if patient weaned. Pt aged 6 wks-18 mo with only one PCR."})
+		#set($reminder = $fn.evaluate($patient, "Repeat Polymerase Reminder", $params))
+		#foreach($element in $reminder)
+			<reminder>
+				<id>11</id>
+				<token>Repeat Polymerase Reminder</token>
+				<value>$!{fn.format($element)}</value>
+			</reminder>
+		#end
+
+		#set($params = {})
+		#set($reminder = $fn.evaluate($patient, "Above Age Range ARV Reminder", $params))
+		#foreach($element in $reminder)
+			<reminder>
+				<id>12</id>
+				<token>Above Age Range ARV Reminder</token>
+				<value>$!{fn.format($element)}</value>
+			</reminder>
+		#end
+
+		#set($params = {"reminder": "Consider starting PCP Prophylaxis. Pt with positive ELISA, older than 18 mo."})
+		#set($reminder = $fn.evaluate($patient, "Elisa Based PCP Reminder", $params))
+		#foreach($element in $reminder)
+			<reminder>
+				<id>13</id>
+				<token>Elisa Based PCP Reminder</token>
+				<value>$!{fn.format($element)}</value>
+			</reminder>
+		#end
+
+		#set($params = {"reminder": "Consider starting ARV Medications. Pt with positive HIV PCR."})
+		#set($reminder = $fn.evaluate($patient, "Under Age Range ARV Reminder", $params))
+		#foreach($element in $reminder)
+			<reminder>
+				<id>14</id>
+				<token>Under Age Range ARV Reminder</token>
+				<value>$!{fn.format($element)}</value>
+			</reminder>
+		#end
+
+		#set($params = {"reminder": "Consider starting PCP Prophylaxis. Pt with < 2 negative DNA PCR (age 6 wk - 18 mo)."})
+		#set($reminder = $fn.evaluate($patient, "Polymerase Based PCP Reminder", $params))
+		#foreach($element in $reminder)
+			<reminder>
+				<id>15</id>
+				<token>Polymerase Based PCP Reminder</token>
+				<value>$!{fn.format($element)}</value>
+			</reminder>
+		#end
+
+		#set($params = {"reminder": "Hospitalize for malnutrition. Last WT-for-Age Z-score in AMRS -3 or less."})
+		#set($reminder = $fn.evaluate($patient, "Hospital Referral Reminder", $params))
+		#foreach($element in $reminder)
+			<reminder>
+				<id>16</id>
+				<token>Hospital Referral Reminder</token>
+				<value>$!{fn.format($element)}</value>
+			</reminder>
+		#end
+
+		#set($params = {"reminder": "Refer for Nutritional Support. Last WT-for-Age Z-score in AMRS -1.5 or less."})
+		#set($reminder = $fn.evaluate($patient, "Nutritionist Referral Reminder", $params))
+		#foreach($element in $reminder)
+			<reminder>
+				<id>17</id>
+				<token>Nutritionist Referral Reminder</token>
+				<value>$!{fn.format($element)}</value>
+			</reminder>
+		#end
+
+	</reminders>
+	#end
 
 </clinicalSummary>

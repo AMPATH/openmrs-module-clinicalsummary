@@ -14,6 +14,14 @@
 
 package org.openmrs.module.clinicalsummary.web.controller.service;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
@@ -35,14 +43,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 @Controller
 @RequestMapping("/module/clinicalsummary/service/response")
@@ -73,9 +73,11 @@ public class ResponseController {
 						&& !StringUtils.equalsIgnoreCase(PASSWORD, String.valueOf(parameterName))) {
 
 					String patientId = String.valueOf(parameterName);
+					log.info("Patient ID: " + patientId);
 					Patient patient = Context.getPatientService().getPatient(NumberUtils.toInt(patientId));
 
 					String[] parameterValues = (String[]) parameterMap.get(parameterName);
+					log.info("Parameter Values: " + parameterValues);
 					for (String parameterValue : parameterValues) {
 						String[] parameter = StringUtils.split(parameterValue, "|");
 						if (StringUtils.equalsIgnoreCase(HEADER_REMINDER, parameter[0])) {

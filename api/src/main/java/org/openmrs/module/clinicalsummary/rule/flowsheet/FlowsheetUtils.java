@@ -14,14 +14,24 @@
 
 package org.openmrs.module.clinicalsummary.rule.flowsheet;
 
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Date;
+
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Concept;
+import org.openmrs.ConceptName;
+import org.openmrs.ConceptNumeric;
+import org.openmrs.Obs;
+import org.openmrs.api.context.Context;
 import org.openmrs.logic.result.Result;
+import org.openmrs.module.clinicalsummary.rule.util.RuleUtils;
 import org.openmrs.util.OpenmrsUtil;
-
-import java.util.Collections;
 
 /**
  */
@@ -74,5 +84,90 @@ public class FlowsheetUtils {
 		}
 
 		return slicedResults;
+	}
+
+	/**
+	 * Format the result based on the result data type
+	 *
+	 * @param result the result
+	 * @return the String representation of the result object
+	 */
+	public static String format(final Result result) {
+		if (result == null)
+			return StringUtils.EMPTY;
+
+		if (OpenmrsUtil.nullSafeEquals(result.getDatatype(), Result.Datatype.CODED))
+			return format(result.toConcept());
+		else if (OpenmrsUtil.nullSafeEquals(result.getDatatype(), Result.Datatype.DATETIME))
+			return format(result.toDatetime());
+		else if (OpenmrsUtil.nullSafeEquals(result.getDatatype(), Result.Datatype.NUMERIC)) {
+			Object object = result.getResultObject();
+			if (RuleUtils.isValidObsObject(object)) {
+				Concept concept = ((Obs) object).getConcept();
+				if (concept.isNumeric()) {
+					ConceptNumeric conceptNumeric = Context.getConceptService().getConceptNumeric(concept.getConceptId());
+					if (!conceptNumeric.isPrecise())
+						return format(result.toNumber());
+				}
+			}
+
+			DecimalFormat decimalFormat = new DecimalFormat("#.00");
+			return decimalFormat.format(result.toNumber());
+		}
+
+		// special case hack
+		if (result.getDatatype() == null && result.toDatetime() != null)
+			return format(result.toDatetime());
+
+		return result.toString();
+	}
+
+	/**
+	 * Format double object and remove the decimal section of the value
+	 *
+	 * @param value the decimal to be formatted
+	 * @return String representation of the decimal values
+	 */
+	public static String format(final Double value) {
+		if (value == null)
+			return StringUtils.EMPTY;
+		DecimalFormat decimalFormat = new DecimalFormat("#");
+		return decimalFormat.format(value);
+	}
+
+	/**
+	 * Format date to a string according to the date format
+	 *
+	 * @param date the date
+	 * @return string representation of the date
+	 */
+	public static String format(final Date date) {
+		if (date == null)
+			return StringUtils.EMPTY;
+		String format = "dd-MMM-yyyy";
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
+		return simpleDateFormat.format(date);
+	}
+
+	/**
+	 * Format the name of a concept with the best name for the locale or a shorter name for the concept
+	 *
+	 * @param concept the concept
+	 * @return concept name with a relatively shorter name
+	 */
+	public static String format(final Concept concept) {
+		if (concept == null)
+			return StringUtils.EMPTY;
+
+		// use the best name as the default name
+		String name = concept.getName(Context.getLocale()).getName();
+		// when the name is too long, then use the concept's short name for display
+		if (StringUtils.length(name) > 10) {
+			ConceptName conceptName = concept.getShortNameInLocale(Context.getLocale());
+			if (conceptName != null)
+				name = conceptName.getName();
+		}
+
+		return name;
 	}
 }
