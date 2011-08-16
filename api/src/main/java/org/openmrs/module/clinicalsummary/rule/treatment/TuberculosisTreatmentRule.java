@@ -14,6 +14,13 @@
 
 package org.openmrs.module.clinicalsummary.rule.treatment;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,13 +40,6 @@ import org.openmrs.module.clinicalsummary.rule.observation.ObsWithObjectRestrict
 import org.openmrs.module.clinicalsummary.rule.observation.ObsWithRestrictionRule;
 import org.openmrs.module.clinicalsummary.rule.observation.ObsWithStringRestrictionRule;
 import org.openmrs.util.OpenmrsUtil;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Parameters: <ul> <li>[Optional] encounterType: list of all applicable encounter types </ul>
@@ -175,7 +175,8 @@ public class TuberculosisTreatmentRule extends EvaluableRule {
 	@Override
 	public Set<EvaluableParameter> getEvaluationParameters() {
 		Set<EvaluableParameter> evaluableParameters = new HashSet<EvaluableParameter>();
-		evaluableParameters.add(EvaluableConstants.REQUIRED_ENCOUNTER_TYPE_PARAMETER_DEFINITION);
+		evaluableParameters.add(EvaluableConstants.OPTIONAL_ENCOUNTER_TYPE_PARAMETER_DEFINITION);
+		evaluableParameters.add(EvaluableConstants.OPTIONAL_OBS_ENCOUNTER_PARAMETER_DEFINITION);
 		return evaluableParameters;
 	}
 

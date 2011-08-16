@@ -14,12 +14,19 @@
 
 package org.openmrs.module.clinicalsummary.rule.reminder.adult.general;
 
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Concept;
 import org.openmrs.logic.LogicContext;
 import org.openmrs.logic.LogicException;
 import org.openmrs.logic.result.Result;
+import org.openmrs.module.clinicalsummary.cache.CacheUtils;
 import org.openmrs.module.clinicalsummary.rule.EvaluableConstants;
 import org.openmrs.module.clinicalsummary.rule.EvaluableNameConstants;
 import org.openmrs.module.clinicalsummary.rule.EvaluableRule;
@@ -28,10 +35,6 @@ import org.openmrs.module.clinicalsummary.rule.encounter.EncounterWithStringRest
 import org.openmrs.module.clinicalsummary.rule.observation.ObsWithRestrictionRule;
 import org.openmrs.module.clinicalsummary.rule.observation.ObsWithStringRestrictionRule;
 import org.openmrs.module.clinicalsummary.rule.reminder.ReminderParameters;
-
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Map;
 
 public class AbnormalCXROnARVReminderRule extends EvaluableRule {
 
@@ -47,8 +50,6 @@ public class AbnormalCXROnARVReminderRule extends EvaluableRule {
 		Result result = new Result();
 
 		ObsWithRestrictionRule obsWithRestrictionRule = new ObsWithStringRestrictionRule();
-		parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList(EvaluableNameConstants.CXR_PULMONARY_EFFUSION, EvaluableNameConstants.CXR_MILIARY_CHANGES,
-				EvaluableNameConstants.CXR_INFILTRATE, EvaluableNameConstants.CXR_DIFFUSE_NON_MILIARY_CHANGES, EvaluableNameConstants.CXR_CAVITARY_LESION));
 		parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(EvaluableNameConstants.CXR));
 		parameters.put(EvaluableConstants.OBS_FETCH_SIZE, 1);
 
@@ -56,12 +57,18 @@ public class AbnormalCXROnARVReminderRule extends EvaluableRule {
 		if (CollectionUtils.isNotEmpty(cxrResults)) {
 			Result cxrResult = cxrResults.latest();
 
+			List<Concept> concepts = Arrays.asList(CacheUtils.getConcept(EvaluableNameConstants.CXR_PULMONARY_EFFUSION),
+					CacheUtils.getConcept(EvaluableNameConstants.CXR_MILIARY_CHANGES),
+					CacheUtils.getConcept(EvaluableNameConstants.CXR_INFILTRATE),
+					CacheUtils.getConcept(EvaluableNameConstants.CXR_DIFFUSE_NON_MILIARY_CHANGES),
+					CacheUtils.getConcept(EvaluableNameConstants.CXR_CAVITARY_LESION));
+
 			parameters.put(EvaluableConstants.ENCOUNTER_FETCH_SIZE, 1);
 			parameters.put(EvaluableConstants.ENCOUNTER_TYPE, Arrays.asList(EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_INITIAL,
 					EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_RETURN, EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_NONCLINICALMEDICATION));
 			EncounterWithRestrictionRule encounterWithRestrictionRule = new EncounterWithStringRestrictionRule();
 			Result encounterResults = encounterWithRestrictionRule.eval(context, patientId, parameters);
-			if (CollectionUtils.isNotEmpty(encounterResults)) {
+			if (concepts.contains(cxrResult.toConcept()) && CollectionUtils.isNotEmpty(encounterResults)) {
 				Result latestResult = encounterResults.latest();
 				parameters.put(EvaluableConstants.OBS_ENCOUNTER, Arrays.asList(latestResult.getResultObject()));
 

@@ -14,6 +14,13 @@
 
 package org.openmrs.module.clinicalsummary.rule.observation;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,13 +35,6 @@ import org.openmrs.module.clinicalsummary.rule.EvaluableParameter;
 import org.openmrs.module.clinicalsummary.rule.util.RuleUtils;
 import org.openmrs.module.clinicalsummary.service.CoreService;
 import org.openmrs.module.clinicalsummary.util.FetchRestriction;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * This rule will pull encounter for a patient based on the restrictions parameters. Available restrictions are: <ul> <li>encounter: to restrict
@@ -100,6 +100,7 @@ public class ObsWithObjectRestrictionRule extends ObsWithRestrictionRule {
 	public Set<EvaluableParameter> getEvaluationParameters() {
 		Set<EvaluableParameter> evaluableParameters = new HashSet<EvaluableParameter>();
 		evaluableParameters.add(EvaluableConstants.OPTIONAL_OBS_CONCEPT_PARAMETER_DEFINITION);
+		evaluableParameters.add(EvaluableConstants.OPTIONAL_OBS_ENCOUNTER_PARAMETER_DEFINITION);
 		evaluableParameters.add(EvaluableConstants.OPTIONAL_OBS_VALUE_CODED_PARAMETER_DEFINITION);
 		evaluableParameters.add(EvaluableConstants.OPTIONAL_OBS_FETCH_ORDER_PARAMETER_DEFINITION);
 		evaluableParameters.add(EvaluableConstants.OPTIONAL_OBS_FETCH_SIZE_PARAMETER_DEFINITION);

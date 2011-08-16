@@ -14,6 +14,10 @@
 
 package org.openmrs.module.clinicalsummary.rule.primary;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,12 +36,7 @@ import org.openmrs.module.clinicalsummary.rule.medication.CryptococcalRule;
 import org.openmrs.module.clinicalsummary.rule.medication.PneumocystisCariniiRule;
 import org.openmrs.module.clinicalsummary.rule.medication.TuberculosisRule;
 import org.openmrs.module.clinicalsummary.rule.treatment.TuberculosisTreatmentRule;
-import org.openmrs.module.clinicalsummary.util.FetchOrdering;
 import org.openmrs.util.OpenmrsUtil;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
 public class EncounterDiagnosisAndMedicationRule extends EvaluableRule {
 
@@ -70,7 +69,6 @@ public class EncounterDiagnosisAndMedicationRule extends EvaluableRule {
 		EncounterType mosoriotPrimaryCareEncounterType = CacheUtils.getEncounterType(EvaluableNameConstants.ENCOUNTER_TYPE_MOSORIOT_PRIMARY_CARE);
 
 		parameters.put(EvaluableConstants.ENCOUNTER_TYPE, encounterTypeNames);
-		parameters.put(EvaluableConstants.ENCOUNTER_FETCH_ORDER, FetchOrdering.ORDER_ASCENDING.getValue());
 		parameters.put(EvaluableConstants.ENCOUNTER_FETCH_SIZE, 5);
 
 		EncounterWithRestrictionRule encounterWithRestrictionRule = new EncounterWithStringRestrictionRule();
@@ -87,9 +85,11 @@ public class EncounterDiagnosisAndMedicationRule extends EvaluableRule {
 						|| OpenmrsUtil.nullSafeEquals(encounterType, adultReturnEncounterType)
 						|| OpenmrsUtil.nullSafeEquals(encounterType, pediatricInitialEncounterType)
 						|| OpenmrsUtil.nullSafeEquals(encounterType, pediatricReturnEncounterType)) {
-					parameters.put(EvaluableConstants.OBS_ENCOUNTER, Arrays.asList(encounter));
 
 					Result problemResults = new Result();
+
+					parameters.clear();
+					parameters.put(EvaluableConstants.OBS_ENCOUNTER, Arrays.asList(encounter));
 					EncounterBasedProblemAddedRule problemAddedRule = new EncounterBasedProblemAddedRule();
 					Result problemAddedResults = problemAddedRule.eval(context, patientId, parameters);
 					if (CollectionUtils.isNotEmpty(problemAddedResults))
@@ -97,26 +97,37 @@ public class EncounterDiagnosisAndMedicationRule extends EvaluableRule {
 					perEncounterResult.add(problemResults);
 
 					Result medicationResults = new Result();
+
+					parameters.clear();
+					parameters.put(EvaluableConstants.OBS_ENCOUNTER, Arrays.asList(encounter));
 					AntiRetroViralRule antiRetroViralRule = new AntiRetroViralRule();
 					Result antiRetroViralResults = antiRetroViralRule.eval(context, patientId, parameters);
 					if (CollectionUtils.isNotEmpty(antiRetroViralResults))
 						medicationResults.addAll(antiRetroViralResults);
 
+					parameters.clear();
+					parameters.put(EvaluableConstants.OBS_ENCOUNTER, Arrays.asList(encounter));
 					CryptococcalRule cryptococcalRule = new CryptococcalRule();
 					Result cryptococcalResults = cryptococcalRule.eval(context, patientId, parameters);
 					if (CollectionUtils.isNotEmpty(cryptococcalResults))
 						medicationResults.addAll(cryptococcalResults);
 
+					parameters.clear();
+					parameters.put(EvaluableConstants.OBS_ENCOUNTER, Arrays.asList(encounter));
 					PneumocystisCariniiRule pneumocystisCariniiRule = new PneumocystisCariniiRule();
 					Result pneumocystisCariniiResults = pneumocystisCariniiRule.eval(context, patientId, parameters);
 					if (CollectionUtils.isNotEmpty(pneumocystisCariniiResults))
 						medicationResults.addAll(pneumocystisCariniiResults);
 
+					parameters.clear();
+					parameters.put(EvaluableConstants.OBS_ENCOUNTER, Arrays.asList(encounter));
 					TuberculosisRule tuberculosisRule = new TuberculosisRule();
 					Result tuberculosisResults = tuberculosisRule.eval(context, patientId, parameters);
 					if (CollectionUtils.isNotEmpty(tuberculosisResults))
 						medicationResults.addAll(tuberculosisResults);
 
+					parameters.clear();
+					parameters.put(EvaluableConstants.OBS_ENCOUNTER, Arrays.asList(encounter));
 					TuberculosisTreatmentRule tuberculosisTreatmentRule = new TuberculosisTreatmentRule();
 					Result tuberculosisTreatmentResults = tuberculosisTreatmentRule.eval(context, patientId, parameters);
 					if (CollectionUtils.isNotEmpty(tuberculosisTreatmentResults))
@@ -126,19 +137,25 @@ public class EncounterDiagnosisAndMedicationRule extends EvaluableRule {
 				}
 
 				if (OpenmrsUtil.nullSafeEquals(encounterType, mosoriotPerinatalEncounterType)) {
-					parameters.put(EvaluableConstants.OBS_ENCOUNTER, Arrays.asList(encounter));
 
 					Result problemResults = new Result();
+
+					parameters.clear();
+					parameters.put(EvaluableConstants.OBS_ENCOUNTER, Arrays.asList(encounter));
 					EncounterBasedProblemAddedRule problemAddedRule = new EncounterBasedProblemAddedRule();
 					Result problemAddedResults = problemAddedRule.eval(context, patientId, parameters);
 					if (CollectionUtils.isNotEmpty(problemAddedResults))
 						problemResults.addAll(problemAddedResults);
 
+					parameters.clear();
+					parameters.put(EvaluableConstants.OBS_ENCOUNTER, Arrays.asList(encounter));
 					EncounterBasedProblemReportedRule problemReportedRule = new EncounterBasedProblemReportedRule();
 					Result problemReportedResults = problemReportedRule.eval(context, patientId, parameters);
 					if (CollectionUtils.isNotEmpty(problemReportedResults))
 						problemResults.addAll(problemReportedResults);
 
+					parameters.clear();
+					parameters.put(EvaluableConstants.OBS_ENCOUNTER, Arrays.asList(encounter));
 					EncounterBasedPositiveHivRule positiveHivRule = new EncounterBasedPositiveHivRule();
 					Result positiveHivResults = positiveHivRule.eval(context, patientId, parameters);
 					if (CollectionUtils.isNotEmpty(positiveHivResults))
@@ -147,18 +164,26 @@ public class EncounterDiagnosisAndMedicationRule extends EvaluableRule {
 					perEncounterResult.add(problemResults);
 
 					Result medicationResults = new Result();
+
 					EncounterBasedObsCollectionRule obsCollectionRule = new EncounterBasedObsCollectionRule();
 
+					parameters.clear();
+					parameters.put(EvaluableConstants.OBS_ENCOUNTER, Arrays.asList(encounter));
 					parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(EvaluableNameConstants.MEDICATION_ADDED));
 					Result medicationAddedResults = obsCollectionRule.eval(context, patientId, parameters);
 					if (CollectionUtils.isNotEmpty(medicationAddedResults))
 						medicationResults.addAll(medicationAddedResults);
+
+					parameters.clear();
+					parameters.put(EvaluableConstants.OBS_ENCOUNTER, Arrays.asList(encounter));
 					parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(EvaluableNameConstants.RECIEVED_ANTENATAL_CARE_SERVICE_THIS_VISIT));
 					Result careVisitResults = obsCollectionRule.eval(context, patientId, parameters);
 					if (CollectionUtils.isNotEmpty(careVisitResults))
 						medicationResults.addAll(careVisitResults);
 					parameters.remove(EvaluableConstants.OBS_CONCEPT);
 
+					parameters.clear();
+					parameters.put(EvaluableConstants.OBS_ENCOUNTER, Arrays.asList(encounter));
 					EncounterBasedTetanusBoosterRule tetanusBoosterRule = new EncounterBasedTetanusBoosterRule();
 					Result tetanusBoosterResults = tetanusBoosterRule.eval(context, patientId, parameters);
 					if (CollectionUtils.isNotEmpty(tetanusBoosterResults))
@@ -167,19 +192,25 @@ public class EncounterDiagnosisAndMedicationRule extends EvaluableRule {
 				}
 
 				if (OpenmrsUtil.nullSafeEquals(encounterType, mosoriotPrimaryCareEncounterType)) {
-					parameters.put(EvaluableConstants.OBS_ENCOUNTER, Arrays.asList(encounter));
 
 					Result problemResults = new Result();
+
+					parameters.clear();
+					parameters.put(EvaluableConstants.OBS_ENCOUNTER, Arrays.asList(encounter));
 					EncounterBasedProblemAddedRule problemAddedRule = new EncounterBasedProblemAddedRule();
 					Result problemAddedResults = problemAddedRule.eval(context, patientId, parameters);
 					if (CollectionUtils.isNotEmpty(problemAddedResults))
 						problemResults.addAll(problemAddedResults);
 
+					parameters.clear();
+					parameters.put(EvaluableConstants.OBS_ENCOUNTER, Arrays.asList(encounter));
 					EncounterBasedProblemReportedRule problemReportedRule = new EncounterBasedProblemReportedRule();
 					Result problemReportedResults = problemReportedRule.eval(context, patientId, parameters);
 					if (CollectionUtils.isNotEmpty(problemReportedResults))
 						problemResults.addAll(problemReportedResults);
 
+					parameters.clear();
+					parameters.put(EvaluableConstants.OBS_ENCOUNTER, Arrays.asList(encounter));
 					EncounterBasedPositiveHivRule positiveHivRule = new EncounterBasedPositiveHivRule();
 					Result positiveHivResults = positiveHivRule.eval(context, patientId, parameters);
 					if (CollectionUtils.isNotEmpty(positiveHivResults))
@@ -187,28 +218,40 @@ public class EncounterDiagnosisAndMedicationRule extends EvaluableRule {
 					perEncounterResult.add(problemResults);
 
 					Result medicationResults = new Result();
+
 					EncounterBasedObsCollectionRule obsCollectionRule = new EncounterBasedObsCollectionRule();
 
+					parameters.clear();
+					parameters.put(EvaluableConstants.OBS_ENCOUNTER, Arrays.asList(encounter));
 					parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(EvaluableNameConstants.MEDICATION_ADDED));
 					Result medicationAddedResults = obsCollectionRule.eval(context, patientId, parameters);
 					if (CollectionUtils.isNotEmpty(medicationAddedResults))
 						medicationResults.addAll(medicationAddedResults);
+
+					parameters.clear();
+					parameters.put(EvaluableConstants.OBS_ENCOUNTER, Arrays.asList(encounter));
 					parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(EvaluableNameConstants.RECIEVED_ANTENATAL_CARE_SERVICE_THIS_VISIT));
 					Result careVisitResults = obsCollectionRule.eval(context, patientId, parameters);
 					if (CollectionUtils.isNotEmpty(careVisitResults))
 						medicationResults.addAll(careVisitResults);
 					parameters.remove(EvaluableConstants.OBS_CONCEPT);
 
+					parameters.clear();
+					parameters.put(EvaluableConstants.OBS_ENCOUNTER, Arrays.asList(encounter));
 					EncounterBasedImmunizationRule immunizationRule = new EncounterBasedImmunizationRule();
 					Result immunizationResults = immunizationRule.eval(context, patientId, parameters);
 					if (CollectionUtils.isNotEmpty(immunizationResults))
 						medicationResults.addAll(immunizationResults);
 
+					parameters.clear();
+					parameters.put(EvaluableConstants.OBS_ENCOUNTER, Arrays.asList(encounter));
 					EncounterBasedTetanusBoosterRule tetanusBoosterRule = new EncounterBasedTetanusBoosterRule();
 					Result tetanusBoosterResults = tetanusBoosterRule.eval(context, patientId, parameters);
 					if (CollectionUtils.isNotEmpty(tetanusBoosterResults))
 						medicationResults.addAll(tetanusBoosterResults);
 
+					parameters.clear();
+					parameters.put(EvaluableConstants.OBS_ENCOUNTER, Arrays.asList(encounter));
 					EncounterBasedFamilyPlanningRule familyPlanningRule = new EncounterBasedFamilyPlanningRule();
 					Result familyPlanningResults = familyPlanningRule.eval(context, patientId, parameters);
 					if (CollectionUtils.isNotEmpty(familyPlanningResults))

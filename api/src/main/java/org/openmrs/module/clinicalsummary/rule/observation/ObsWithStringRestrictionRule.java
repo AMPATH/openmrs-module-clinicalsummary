@@ -14,6 +14,13 @@
 
 package org.openmrs.module.clinicalsummary.rule.observation;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,13 +32,6 @@ import org.openmrs.module.clinicalsummary.cache.CacheUtils;
 import org.openmrs.module.clinicalsummary.rule.EvaluableConstants;
 import org.openmrs.module.clinicalsummary.rule.EvaluableParameter;
 import org.openmrs.module.clinicalsummary.rule.util.RuleUtils;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * @see ObsWithObjectRestrictionRule
@@ -93,6 +93,7 @@ public class ObsWithStringRestrictionRule extends ObsWithRestrictionRule {
 	public Set<EvaluableParameter> getEvaluationParameters() {
 		Set<EvaluableParameter> evaluableParameters = new HashSet<EvaluableParameter>();
 		evaluableParameters.add(EvaluableConstants.OPTIONAL_OBS_CONCEPT_PARAMETER_DEFINITION);
+		evaluableParameters.add(EvaluableConstants.OPTIONAL_OBS_ENCOUNTER_PARAMETER_DEFINITION);
 		evaluableParameters.add(EvaluableConstants.OPTIONAL_OBS_VALUE_CODED_PARAMETER_DEFINITION);
 		evaluableParameters.add(EvaluableConstants.OPTIONAL_OBS_FETCH_ORDER_PARAMETER_DEFINITION);
 		evaluableParameters.add(EvaluableConstants.OPTIONAL_OBS_FETCH_SIZE_PARAMETER_DEFINITION);

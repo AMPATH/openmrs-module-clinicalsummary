@@ -14,6 +14,11 @@
 
 package org.openmrs.module.clinicalsummary.rule.primary;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,10 +35,6 @@ import org.openmrs.module.clinicalsummary.rule.EvaluableRule;
 import org.openmrs.module.clinicalsummary.rule.observation.ObsWithRestrictionRule;
 import org.openmrs.module.clinicalsummary.rule.observation.ObsWithStringRestrictionRule;
 import org.openmrs.util.OpenmrsUtil;
-
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Set;
 
 /**
  */
@@ -73,21 +74,37 @@ public class EncounterBasedImmunizationRule extends EvaluableRule {
 
 			Concept noneConcept = CacheUtils.getConcept(EvaluableNameConstants.NONE);
 
+			Map<Concept, Double> immunizationAdministered = new HashMap<Concept, Double>();
+
 			for (Result immunizationResult : immunizationResults) {
 				Obs immunizationObs = (Obs) immunizationResult.getResultObject();
 				if (immunizationObs.isObsGrouping()) {
 					Set<Obs> immunizationObsMembers = immunizationObs.getGroupMembers();
+
+					Double dosesAdministered = null;
+					Concept administeredImmunization = null;
+
 					for (Obs immunizationObsMember : immunizationObsMembers) {
-						Result administeredResult = new Result();
 						Concept immunizationObsMemberConcept = immunizationObsMember.getConcept();
 						if (OpenmrsUtil.nullSafeEquals(immunizationObsMemberConcept, immunizationOrderedConcept)
 								&& !OpenmrsUtil.nullSafeEquals(immunizationObsMember.getValueCoded(), noneConcept))
-							administeredResult = new Result(immunizationObsMember.getValueCoded());
+							administeredImmunization = immunizationObsMember.getValueCoded();
 						if (OpenmrsUtil.nullSafeEquals(immunizationObsMemberConcept, dosesOrderedConcept))
-							administeredResult.setValueNumeric(immunizationObsMember.getValueNumeric());
-						result.add(administeredResult);
+							dosesAdministered = immunizationObsMember.getValueNumeric();
 					}
+
+					if (administeredImmunization != null)
+						immunizationAdministered.put(administeredImmunization, dosesAdministered);
 				}
+			}
+
+			for (Concept administered : immunizationAdministered.keySet()) {
+				Result administeredResult = new Result(administered);
+				Double doses = immunizationAdministered.get(administered);
+				if (doses == null)
+					administeredResult.setValueText("No Dosing");
+				administeredResult.setValueNumeric(doses);
+				result.add(administeredResult);
 			}
 		}
 

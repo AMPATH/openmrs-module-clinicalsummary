@@ -14,6 +14,13 @@
 
 package org.openmrs.module.clinicalsummary.evaluator.reminder;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -31,13 +38,6 @@ import org.openmrs.module.clinicalsummary.rule.encounter.EncounterWithStringRest
 import org.openmrs.module.clinicalsummary.service.EvaluatorService;
 import org.openmrs.module.clinicalsummary.service.ReminderService;
 import org.openmrs.module.clinicalsummary.service.SummaryService;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  */
@@ -60,7 +60,7 @@ public class ReminderUtils {
 	 * This evaluation method are meant to be used inside velocity template. The method will return empty result when any exception happens during the
 	 * execution of the rule.
 	 *
-	 * @see org.openmrs.module.clinicalsummary.service.EvaluatorService#evaluate(Patient, String, java.util.Map) )
+	 * @see org.openmrs.module.clinicalsummary.service.EvaluatorService#evaluate(Patient, String, java.util.Map)
 	 */
 	public void evaluate(final Patient patient, final String token, final Map<String, Object> parameters) {
 		try {
