@@ -14,7 +14,15 @@
 
 package org.openmrs.module.clinicalsummary.web.controller.service;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import javax.servlet.http.HttpServletResponse;
+
 import com.thoughtworks.xstream.XStream;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Location;
@@ -33,13 +41,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-
 /**
  */
 @Controller
@@ -47,6 +48,8 @@ import java.util.List;
 public class LocationCohortController {
 
 	private static final Log log = LogFactory.getLog(LocationCohortController.class);
+
+	public static final String CLINICALSUMMARY_SERVICE_TIMEFRAME = "clinicalsummary.service.timeframe";
 
 	@RequestMapping(method = RequestMethod.GET)
 	public void searchCohort(@RequestParam(required = false, value = "username") String username,
@@ -59,14 +62,17 @@ public class LocationCohortController {
 			if (!Context.isAuthenticated())
 				Context.authenticate(username, password);
 
+			String cohortTimeFrame = Context.getAdministrationService().getGlobalProperty(CLINICALSUMMARY_SERVICE_TIMEFRAME);
+			Integer timeFrame = NumberUtils.toInt(cohortTimeFrame, 5);
+
 			Location location = Context.getLocationService().getLocation(locationId);
 			Summary summary = Context.getService(SummaryService.class).getSummary(summaryId);
 
 			Calendar calendar = Calendar.getInstance();
-			calendar.add(Calendar.DATE, -5);
+			calendar.add(Calendar.DATE, timeFrame);
 			Date startDate = calendar.getTime();
 
-			calendar.add(Calendar.DATE, +5);
+			calendar.add(Calendar.DATE, timeFrame);
 			Date endDate = calendar.getTime();
 
 			List<Index> indexes = Context.getService(IndexService.class).getIndexes(location, summary, startDate, endDate);

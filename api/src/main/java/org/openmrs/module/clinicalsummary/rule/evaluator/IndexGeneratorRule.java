@@ -14,6 +14,11 @@
 
 package org.openmrs.module.clinicalsummary.rule.evaluator;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -22,6 +27,7 @@ import org.openmrs.logic.LogicContext;
 import org.openmrs.logic.LogicException;
 import org.openmrs.logic.result.Result;
 import org.openmrs.module.clinicalsummary.rule.EvaluableConstants;
+import org.openmrs.module.clinicalsummary.rule.EvaluableNameConstants;
 import org.openmrs.module.clinicalsummary.rule.EvaluableParameter;
 import org.openmrs.module.clinicalsummary.rule.EvaluableRule;
 import org.openmrs.module.clinicalsummary.rule.encounter.EncounterWithRestrictionRule;
@@ -29,18 +35,11 @@ import org.openmrs.module.clinicalsummary.rule.encounter.EncounterWithStringRest
 import org.openmrs.module.clinicalsummary.rule.observation.ObsWithRestrictionRule;
 import org.openmrs.module.clinicalsummary.rule.observation.ObsWithStringRestrictionRule;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 /**
  */
 public class IndexGeneratorRule extends EvaluableRule {
 
 	public static final String TOKEN = "Index Generator";
-
-	private static final String RETURN_VISIT_DATE = "RETURN VISIT DATE";
 
 	private static final Log log = LogFactory.getLog(IndexGeneratorRule.class);
 
@@ -66,7 +65,7 @@ public class IndexGeneratorRule extends EvaluableRule {
 
 			ObsWithRestrictionRule obsWithRestrictionRule = new ObsWithStringRestrictionRule();
 
-			parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(RETURN_VISIT_DATE));
+			parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(EvaluableNameConstants.RETURN_VISIT_DATE));
 			parameters.put(EvaluableConstants.OBS_ENCOUNTER, Arrays.asList(encounter));
 			parameters.put(EvaluableConstants.OBS_FETCH_SIZE, 1);
 			Result obsResults = obsWithRestrictionRule.eval(context, patientId, parameters);

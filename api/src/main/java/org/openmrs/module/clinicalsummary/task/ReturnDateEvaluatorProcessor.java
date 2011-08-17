@@ -14,6 +14,9 @@
 
 package org.openmrs.module.clinicalsummary.task;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -21,7 +24,6 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
-import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
@@ -34,15 +36,12 @@ import org.openmrs.module.clinicalsummary.service.CoreService;
 import org.openmrs.module.clinicalsummary.service.IndexService;
 import org.openmrs.module.clinicalsummary.service.SummaryService;
 
-import java.util.Calendar;
-import java.util.Date;
-
 /**
  *
  */
-public class EvaluatorProcessor {
+public class ReturnDateEvaluatorProcessor {
 
-	private static final Log log = LogFactory.getLog(EvaluatorTask.class);
+	private static final Log log = LogFactory.getLog(DateCreatedEvaluatorTask.class);
 
 
 	public void processSummary() {
@@ -53,14 +52,14 @@ public class EvaluatorProcessor {
 		String clusterNames = Context.getAdministrationService().getGlobalProperty(TaskParameters.LOCATION_GROUP_LIST);
 		if (clusterNames != null) {
 			String[] clusterName = StringUtils.split(clusterNames, TaskParameters.CLUSTER_SEPARATOR);
-			GlobalProperty globalProperty = Context.getAdministrationService().getGlobalPropertyObject(TaskParameters.PROCESSOR_COUNTER);
+			String processorCounter = Context.getAdministrationService().getGlobalProperty(TaskParameters.PROCESSOR_COUNTER);
 			// start with the first cluster (offset = 0) when the counter is not a number
-			Integer clusterOffset = NumberUtils.toInt(globalProperty.getPropertyValue(), 0);
+			Integer clusterOffset = NumberUtils.toInt(processorCounter, 0);
 			if (clusterOffset >= 0 && clusterOffset < ArrayUtils.getLength(clusterName)) {
-				GlobalProperty initProperty = Context.getAdministrationService().getGlobalPropertyObject(TaskParameters.PROCESSOR_INITIALIZED);
+				String initProperty = Context.getAdministrationService().getGlobalProperty(TaskParameters.PROCESSOR_INITIALIZED);
 				String currentCluster = clusterName[clusterOffset];
 				// check whether all cluster have been initialized or not
-				Boolean initialized = BooleanUtils.toBoolean(initProperty.getPropertyValue());
+				Boolean initialized = BooleanUtils.toBoolean(initProperty);
 
 				Cohort cohort;
 				String[] locationIds = StringUtils.split(currentCluster);
@@ -69,30 +68,17 @@ public class EvaluatorProcessor {
 					// default return to -1 because no such location with id -1
 					Location location = Context.getLocationService().getLocation(NumberUtils.toInt(locationIds[i], -1));
 					if (!initialized) {
-						cohort = Context.getService(CoreService.class).getCohort(location, null, null);
+						cohort = Context.getService(CoreService.class).getReturnDateCohort(null, null);
 					} else {
 						// regenerate when there's new obs
 						Calendar calendar = Calendar.getInstance();
-						calendar.add(Calendar.DATE, -(clusterName.length + 1));
+						calendar.add(Calendar.DATE, clusterName.length * 2);
 						Date date = calendar.getTime();
-
-						cohort = Context.getService(CoreService.class).getCohort(location, date, new Date());
+						cohort = Context.getService(CoreService.class).getReturnDateCohort(date, new Date());
 					}
 
 					evaluate(cohort);
 				}
-
-				clusterOffset++;
-				if (clusterOffset == ArrayUtils.getLength(clusterName)) {
-					clusterOffset = 0;
-					initialized = true;
-				}
-
-				globalProperty.setPropertyValue(String.valueOf(clusterOffset));
-				Context.getAdministrationService().saveGlobalProperty(globalProperty);
-
-				initProperty.setPropertyValue(String.valueOf(initialized));
-				Context.getAdministrationService().saveGlobalProperty(initProperty);
 			}
 		}
 	}

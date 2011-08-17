@@ -14,6 +14,11 @@
 
 package org.openmrs.module.clinicalsummary.service.impl;
 
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
@@ -26,11 +31,6 @@ import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.clinicalsummary.db.CoreDAO;
 import org.openmrs.module.clinicalsummary.service.CoreService;
 import org.openmrs.module.clinicalsummary.util.FetchRestriction;
-
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Actual implementation of the core service contract
@@ -59,6 +59,13 @@ public class CoreServiceImpl extends BaseOpenmrsService implements CoreService {
 	 */
 	public Cohort getCohort(final Location location, final Date startDate, final Date endDate) throws APIException {
 		return coreDAO.getCohort(location, startDate, endDate);
+	}
+
+	/**
+	 * @see CoreService#getReturnDateCohort(java.util.Date, java.util.Date)
+	 */
+	public Cohort getReturnDateCohort(final Date startDate, final Date endDate) throws APIException {
+		return coreDAO.getReturnDateCohort(startDate, endDate);
 	}
 
 	/**

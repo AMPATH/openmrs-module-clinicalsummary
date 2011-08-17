@@ -11,7 +11,6 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-
 package org.openmrs.module.clinicalsummary.task;
 
 import org.apache.commons.logging.Log;
@@ -19,17 +18,18 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.scheduler.StatefulTask;
 
 /**
+ *
  */
-public class ReminderEvaluatorTask extends StatefulTask {
+public class DateCreatedEvaluatorTask extends StatefulTask {
 
-	private static final Log log = LogFactory.getLog(ReminderEvaluatorTask.class);
+	private static final Log log = LogFactory.getLog(DateCreatedEvaluatorTask.class);
 
 	/**
 	 * @see org.openmrs.scheduler.tasks.AbstractTask#execute()
 	 */
 	@Override
 	public void execute() {
-		ReminderEvaluatorProcessor processor = new ReminderEvaluatorProcessor();
-		processor.processReminder();
+		DateCreatedEvaluatorProcessor processor = new DateCreatedEvaluatorProcessor();
+		processor.processSummary();
 	}
 }

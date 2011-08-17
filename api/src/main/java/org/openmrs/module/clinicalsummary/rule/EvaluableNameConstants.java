@@ -236,6 +236,8 @@ public interface EvaluableNameConstants {
 
 	String RHESUS_FACTOR = "RHESUS FACTOR";
 
+	String RETURN_VISIT_DATE = "RETURN VISIT DATE";
+
 	String RIFAMPICIN = "RIFAMPICIN";
 
 	String RITONAVIR = "RITONAVIR";

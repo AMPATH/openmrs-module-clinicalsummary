@@ -14,12 +14,11 @@
 
 package org.openmrs.module.clinicalsummary.task;
 
+import java.io.IOException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.api.context.Context;
 import org.openmrs.scheduler.StatefulTask;
-
-import java.io.IOException;
 
 /**
  */
@@ -33,11 +32,8 @@ public class OrderedObsTask extends StatefulTask {
 	@Override
 	public void execute() {
 		try {
-			Context.openSession();
-			authenticate();
 			OrderedObsProcessor processor = new OrderedObsProcessor();
 			processor.processObservations();
-			Context.closeSession();
 		} catch (IOException e) {
 			log.error("Running obs pairing process failed ...", e);
 		}

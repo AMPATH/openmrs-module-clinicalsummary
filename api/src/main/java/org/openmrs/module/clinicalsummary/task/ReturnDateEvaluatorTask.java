@@ -11,29 +11,26 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
+
 package org.openmrs.module.clinicalsummary.task;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.api.context.Context;
 import org.openmrs.scheduler.StatefulTask;
 
 /**
  *
  */
-public class EvaluatorTask extends StatefulTask {
+public class ReturnDateEvaluatorTask extends StatefulTask {
 
-	private static final Log log = LogFactory.getLog(EvaluatorTask.class);
+	private static final Log log = LogFactory.getLog(ReturnDateEvaluatorTask.class);
 
 	/**
 	 * @see org.openmrs.scheduler.tasks.AbstractTask#execute()
 	 */
 	@Override
 	public void execute() {
-		Context.openSession();
-		authenticate();
-		EvaluatorProcessor processor = new EvaluatorProcessor();
+		ReturnDateEvaluatorProcessor processor = new ReturnDateEvaluatorProcessor();
 		processor.processSummary();
-		Context.closeSession();
 	}
 }

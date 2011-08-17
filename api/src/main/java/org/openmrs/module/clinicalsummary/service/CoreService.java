@@ -14,6 +14,11 @@
 
 package org.openmrs.module.clinicalsummary.service;
 
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 import org.openmrs.Cohort;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
@@ -25,11 +30,6 @@ import org.openmrs.api.OpenmrsService;
 import org.openmrs.module.clinicalsummary.util.FetchRestriction;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Service contract for the core layer of OpenMRS
@@ -97,4 +97,22 @@ public interface CoreService extends OpenmrsService {
 	@Authorized({PrivilegeConstants.VIEW_OBS})
 	List<Obs> getPatientObservations(final Integer patientId, final Map<String, Collection<OpenmrsObject>> restrictions,
 	                                 final FetchRestriction fetchRestriction) throws APIException;
+
+	/**
+	 * Get all patient id attached to a certain location on their observations where the observations are created between the start
+	 * date and end date
+	 *
+	 * @param startDate
+	 * 		min date of the observation created date
+	 * @param endDate
+	 * 		max date of the observation created date
+	 *
+	 * @return cohort of patient with observation in from a certain location that fall between the date range. Return empty cohort
+	 *         when no patient id match the criteria.
+	 *
+	 * @throws APIException
+	 * @should return all patient id with certain location on their observations between certain date
+	 * @should return empty cohort when no patient match the criteria
+	 */
+	Cohort getReturnDateCohort(Date startDate, Date endDate) throws APIException;
 }

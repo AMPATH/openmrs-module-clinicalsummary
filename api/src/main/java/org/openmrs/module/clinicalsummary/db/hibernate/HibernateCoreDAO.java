@@ -39,7 +39,9 @@ import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.api.db.DAOException;
+import org.openmrs.module.clinicalsummary.cache.CacheUtils;
 import org.openmrs.module.clinicalsummary.db.CoreDAO;
+import org.openmrs.module.clinicalsummary.rule.EvaluableNameConstants;
 import org.openmrs.module.clinicalsummary.util.FetchOrdering;
 import org.openmrs.module.clinicalsummary.util.FetchRestriction;
 import org.openmrs.util.OpenmrsUtil;
@@ -189,6 +191,24 @@ public class HibernateCoreDAO implements CoreDAO {
 			criteria.add(Restrictions.eq("location", location));
 		else
 			criteria.add(Restrictions.isNull("location"));
+
+		if (startDate != null)
+			criteria.add(Restrictions.ge("dateCreated", startDate));
+
+		if (endDate != null)
+			criteria.add(Restrictions.le("dateCreated", endDate));
+
+		criteria.setProjection(Projections.property("person.personId"));
+		criteria.add(Restrictions.eq("voided", Boolean.FALSE));
+		return new Cohort(criteria.list());
+	}
+
+	/**
+	 * @see CoreDAO#getCohort(org.openmrs.Location, java.util.Date, java.util.Date)
+	 */
+	public Cohort getReturnDateCohort(final Date startDate, final Date endDate) throws DAOException {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Obs.class);
+		criteria.add(Restrictions.eq("concept", CacheUtils.getConcept(EvaluableNameConstants.RETURN_VISIT_DATE)));
 
 		if (startDate != null)
 			criteria.add(Restrictions.ge("dateCreated", startDate));

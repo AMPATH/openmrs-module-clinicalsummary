@@ -37,7 +37,6 @@ import org.codehaus.jackson.JsonToken;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
-import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.OpenmrsObject;
@@ -100,14 +99,14 @@ public class OrderedObsProcessor {
 		String clusterNames = Context.getAdministrationService().getGlobalProperty(TaskParameters.LOCATION_GROUP_LIST);
 		if (clusterNames != null) {
 			String[] clusterName = StringUtils.split(clusterNames, TaskParameters.CLUSTER_SEPARATOR);
-			GlobalProperty globalProperty = Context.getAdministrationService().getGlobalPropertyObject(TaskParameters.PROCESSOR_COUNTER);
+			String processorCounter = Context.getAdministrationService().getGlobalProperty(TaskParameters.PROCESSOR_COUNTER);
 			// start with the first cluster (offset = 0) when the counter is not a number
-			Integer clusterOffset = NumberUtils.toInt(globalProperty.getPropertyValue(), 0);
+			Integer clusterOffset = NumberUtils.toInt(processorCounter, 0);
 			if (clusterOffset >= 0 && clusterOffset < ArrayUtils.getLength(clusterName)) {
-				GlobalProperty initProperty = Context.getAdministrationService().getGlobalPropertyObject(TaskParameters.PROCESSOR_INITIALIZED);
+				String initProperty = Context.getAdministrationService().getGlobalProperty(TaskParameters.PROCESSOR_INITIALIZED);
 				String currentCluster = clusterName[clusterOffset];
 				// check whether all cluster have been initialized or not
-				Boolean initialized = BooleanUtils.toBoolean(initProperty.getPropertyValue());
+				Boolean initialized = BooleanUtils.toBoolean(initProperty);
 
 				Cohort cohort;
 				String[] locationIds = StringUtils.split(currentCluster);
