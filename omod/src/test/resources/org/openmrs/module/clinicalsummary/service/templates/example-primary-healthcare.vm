@@ -4,7 +4,7 @@
 	<moduleVersion>$!{fn.getModuleVersion("clinicalsummary")}</moduleVersion>
 	<templateRevision>$!{summary.getRevision()}</templateRevision>
 	<templateName>$!{summary.getName()}</templateName>
-	<id>$!{patient}</id>
+	<id>$!{patientId}</id>
 
 	#foreach($id in $!{patient.getActiveIdentifiers()})
 		#if ($velocityCount == 1)
@@ -31,7 +31,10 @@
 	#end
 	</gender>
 	<birthdate estimated="$!{patient.getBirthdateEstimated()}">$!{fn.format($!{patient.getBirthdate()})}</birthdate>
-	<age>$!{patient.getAge()} Years</age>
+
+	#set($params = {})
+	#set($ageWithUnitResult = $fn.evaluate($patient, "Age With Unit", $params))
+	<age>$!{ageWithUnitResult}</age>
 
 	#set($params = {"concept": ["PREGNANCY STATUS"],
 	                "obs.size": 1})
@@ -41,14 +44,14 @@
 		<datetime>$!{fn.format($pregnancyStatus.toDatetime())}</datetime>
 	</pregnancyStatus>
 
-	#set($params = {"encounterType": ["ADULTINITIAL", "ADULTRETURN", "ADULTNONCLINICALMEDICATION"],
+	#set($params = {"encounterType": ["ADULTINITIAL", "ADULTRETURN", "ADULTNONCLINICALMEDICATION", "MPerinatalInitial", "MRHCMain"],
 	                "encounter.size": 1,
 	                "concept": ["RETURN VISIT DATE"],
 	                "obs.size": 1})
 	#set($returnVisit = $fn.evaluate($patient, "Encounter Based Obs", $params))
 	<returnVisit>$!{fn.format($returnVisit.toDatetime())}</returnVisit>
 
-	#set($params = {"encounterType": ["ADULTINITIAL", "ADULTRETURN", "ADULTNONCLINICALMEDICATION"],
+	#set($params = {"encounterType": ["ADULTINITIAL", "ADULTRETURN", "ADULTNONCLINICALMEDICATION", "MPerinatalInitial", "MRHCMain"],
 	                "encounter.order": "asc",
 	                "encounter.size": 1})
 	#set($encounterResults = $fn.evaluate($patient, "Encounter String Restrictions", $params))
@@ -57,7 +60,7 @@
 		<datetime>$!{fn.extractProperty($earliestEncounter.getResultObject(), "encounterDatetime")}</datetime>
 	</earliestEncounter>
 
-	#set($params = {"encounterType": ["ADULTINITIAL", "ADULTRETURN", "ADULTNONCLINICALMEDICATION"],
+	#set($params = {"encounterType": ["ADULTINITIAL", "ADULTRETURN", "ADULTNONCLINICALMEDICATION", "MPerinatalInitial", "MRHCMain"],
 	                "encounter.size": 1})
 	#set($encounterResults = $fn.evaluate($patient, "Encounter String Restrictions", $params))
 	#set($latestEncounter = $encounterResults.latest())
@@ -324,7 +327,7 @@
 		#end
 	</encounters>
 
-	#set($params = {"encounterType": ["ADULTINITIAL", "ADULTRETURN", "PEDSINITIAL", "PEDSRETURN", "ANCINITIAL", "ANCRETURN"],
+	#set($params = {"encounterType": ["ADULTINITIAL", "ADULTRETURN", "PEDSINITIAL", "PEDSRETURN"],
 	                "encounter.size": 1})
 	#set($encounterResults = $fn.evaluate($patient, "Encounter String Restrictions", $params))
 	#set($latestEncounter = $encounterResults.latest())

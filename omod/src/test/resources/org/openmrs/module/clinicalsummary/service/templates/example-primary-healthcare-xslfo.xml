@@ -86,11 +86,29 @@
 				<fo:flow flow-name="xsl-region-body" font-family="Helvetica" font-size="14pt">
 
 					<fo:table table-layout="fixed" width="100%">
+						<fo:table-column column-width="20%"/>
+						<fo:table-column column-width="20%"/>
+						<fo:table-column column-width="20%"/>
+						<fo:table-column column-width="10%"/>
+						<fo:table-column column-width="30%"/>
 						<fo:table-body>
 							<fo:table-row font-weight="bold" font-size="20pt">
-								<fo:table-cell>
+								<fo:table-cell number-columns-spanned="3">
 									<fo:block font-style="italic">
 										<xsl:value-of select="name" />
+									</fo:block>
+								</fo:table-cell>
+								<fo:table-cell text-align="center">
+									<fo:block font-weight="bold" font-style="italic" font-size="8pt">
+										<xsl:if test="reminders/@displayId = 'true'">
+											<xsl:variable name="total" select="count(reminders/reminder)"/>
+											<xsl:for-each select="reminders/reminder">
+												<xsl:value-of select="id"/>
+												<xsl:if test="position() &lt; $total">
+													<xsl:text>,</xsl:text>
+												</xsl:if>
+											</xsl:for-each>
+										</xsl:if>
 									</fo:block>
 								</fo:table-cell>
 								<fo:table-cell text-align="right">
@@ -100,7 +118,7 @@
 								</fo:table-cell>
 							</fo:table-row>
 							<fo:table-row>
-								<fo:table-cell>
+								<fo:table-cell number-columns-spanned="4">
 									<fo:block font-size="10pt">
 										<xsl:value-of select="gender" />
 										<fo:inline>

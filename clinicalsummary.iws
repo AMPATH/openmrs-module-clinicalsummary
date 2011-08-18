@@ -5,22 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" readonly="true" id="b35bbdc3-ddcb-4118-9869-8451de34a1f9" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/task/ReturnDateEvaluatorTask.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/task/EvaluatorProcessor.java" afterPath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/task/DateCreatedEvaluatorProcessor.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/task/EvaluatorProcessor.java" afterPath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/task/ReturnDateEvaluatorProcessor.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/task/EvaluatorTask.java" afterPath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/task/DateCreatedEvaluatorTask.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/db/CoreDAO.java" afterPath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/db/CoreDAO.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/db/hibernate/HibernateCoreDAO.java" afterPath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/db/hibernate/HibernateCoreDAO.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/rule/EvaluableNameConstants.java" afterPath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/rule/EvaluableNameConstants.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/rule/evaluator/IndexGeneratorRule.java" afterPath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/rule/evaluator/IndexGeneratorRule.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/service/CoreService.java" afterPath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/service/CoreService.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/service/impl/CoreServiceImpl.java" afterPath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/service/impl/CoreServiceImpl.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/task/OrderedObsProcessor.java" afterPath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/task/OrderedObsProcessor.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/task/OrderedObsTask.java" afterPath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/task/OrderedObsTask.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/task/ReminderEvaluatorProcessor.java" afterPath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/task/ReminderEvaluatorProcessor.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/task/ReminderEvaluatorTask.java" afterPath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/task/ReminderEvaluatorTask.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/clinicalsummary.iws" afterPath="$PROJECT_DIR$/clinicalsummary.iws" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/service/LocationCohortController.java" afterPath="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/service/LocationCohortController.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/omod/src/test/resources/org/openmrs/module/clinicalsummary/service/templates/example-primary-healthcare-xslfo.xml" afterPath="$PROJECT_DIR$/omod/src/test/resources/org/openmrs/module/clinicalsummary/service/templates/example-primary-healthcare-xslfo.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/omod/src/test/resources/org/openmrs/module/clinicalsummary/service/templates/example-primary-healthcare.vm" afterPath="$PROJECT_DIR$/omod/src/test/resources/org/openmrs/module/clinicalsummary/service/templates/example-primary-healthcare.vm" />
     </list>
     <ignored path="clinicalsummary.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -103,8 +90,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/rule/primary/EncounterBasedImmunizationRule.java" />
-        <option value="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/rule/evaluator/IndexGeneratorRule.java" />
         <option value="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/rule/EvaluableNameConstants.java" />
         <option value="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/db/hibernate/HibernateCoreDAO.java" />
         <option value="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/db/CoreDAO.java" />
@@ -119,6 +104,8 @@
         <option value="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/task/OrderedObsProcessor.java" />
         <option value="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/task/ReminderEvaluatorProcessor.java" />
         <option value="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/service/LocationCohortController.java" />
+        <option value="$PROJECT_DIR$/omod/src/test/resources/org/openmrs/module/clinicalsummary/service/templates/example-primary-healthcare-xslfo.xml" />
+        <option value="$PROJECT_DIR$/omod/src/test/resources/org/openmrs/module/clinicalsummary/service/templates/example-primary-healthcare.vm" />
       </list>
     </option>
   </component>
@@ -178,7 +165,6 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="Favorites" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -726,6 +712,7 @@
         </subPane>
       </pane>
       <pane id="Scope" />
+      <pane id="Favorites" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -744,9 +731,9 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="MemberChooser.showClasses" value="true" />
     <property name="GoToClass.includeLibraries" value="false" />
-    <property name="dynamic.classpath" value="false" />
-    <property name="options.splitter.details.proportions" value="0.2" />
     <property name="options.searchVisible" value="true" />
+    <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="dynamic.classpath" value="false" />
   </component>
   <component name="RecentsManager">
     <key name="CopyClassDialog.RECENTS_KEY">
@@ -844,6 +831,25 @@
         <option name="PhingTarget" enabled="false" />
       </method>
     </configuration>
+    <configuration default="true" type="Applet" factoryName="Applet">
+      <module name="" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="HTML_FILE_NAME" />
+      <option name="HTML_USED" value="false" />
+      <option name="WIDTH" value="400" />
+      <option name="HEIGHT" value="300" />
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <option name="VM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <method>
+        <option name="AntTarget" enabled="false" />
+        <option name="BuildArtifacts" enabled="false" />
+        <option name="Make" enabled="true" />
+        <option name="Maven.BeforeRunTask" enabled="false" />
+        <option name="PhingTarget" enabled="false" />
+      </method>
+    </configuration>
     <configuration default="true" type="XSLT" factoryName="XSLT">
       <option name="myOutputFile" />
       <option name="myOpenOutputFile" value="false" />
@@ -858,25 +864,6 @@
       <OutputType value="CONSOLE" save-to-file="false" />
       <FileType name="XML" />
       <JdkChoice value="FROM_MODULE" />
-      <method>
-        <option name="AntTarget" enabled="false" />
-        <option name="BuildArtifacts" enabled="false" />
-        <option name="Make" enabled="true" />
-        <option name="Maven.BeforeRunTask" enabled="false" />
-        <option name="PhingTarget" enabled="false" />
-      </method>
-    </configuration>
-    <configuration default="true" type="Applet" factoryName="Applet">
-      <module name="" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="HTML_FILE_NAME" />
-      <option name="HTML_USED" value="false" />
-      <option name="WIDTH" value="400" />
-      <option name="HEIGHT" value="300" />
-      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
-      <option name="VM_PARAMETERS" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
       <method>
         <option name="AntTarget" enabled="false" />
         <option name="BuildArtifacts" enabled="false" />
@@ -1192,7 +1179,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1686" y="24" width="1908" height="1170" extended-state="0" />
+    <frame x="-6" y="-1" width="1692" height="1057" extended-state="6" />
     <editor active="false" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -1209,8 +1196,8 @@
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32992464" sideWeight="0.6891635" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3108365" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.37361965" sideWeight="0.0" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3108365" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.37942123" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -1291,31 +1278,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/service/impl/SummaryServiceImpl.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="89" column="54" selection-start="3227" selection-end="3227" vertical-scroll-proportion="0.41988418" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/service/SummaryService.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="90" column="0" selection-start="2954" selection-end="2954" vertical-scroll-proportion="0.3330116" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/db/hibernate/HibernateCoreDAO.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="208" column="0" selection-start="8611" selection-end="8611" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../openmrs--1.8.x/api/src/main/java/org/openmrs/scheduler/tasks/AbstractTask.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="102" column="19" selection-start="2520" selection-end="2520" vertical-scroll-proportion="0.85521233" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/task/ReminderEvaluatorTask.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="33" column="36" selection-start="1125" selection-end="1125" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/task/OrderedObsTask.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="29" column="83" selection-start="953" selection-end="953" vertical-scroll-proportion="0.0" />
@@ -1338,49 +1300,74 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/task/DateCreatedEvaluatorTask.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="32" column="35" selection-start="1098" selection-end="1098" vertical-scroll-proportion="0.43945312">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/task/DateCreatedEvaluatorProcessor.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="42" column="13" selection-start="1613" selection-end="1613" vertical-scroll-proportion="0.0146484375">
-          <folding />
-        </state>
+        <state line="32" column="35" selection-start="1098" selection-end="1098" vertical-scroll-proportion="0.43945312" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/task/ReturnDateEvaluatorTask.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="32" column="63" selection-start="1044" selection-end="1044" vertical-scroll-proportion="0.43945312">
-          <folding />
-        </state>
+        <state line="32" column="63" selection-start="1044" selection-end="1044" vertical-scroll-proportion="0.43945312" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/task/OrderedObsProcessor.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="109" column="73" selection-start="4280" selection-end="4280" vertical-scroll-proportion="0.38085938">
-          <folding />
-        </state>
+        <state line="109" column="73" selection-start="4280" selection-end="4280" vertical-scroll-proportion="0.38085938" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/task/ReminderEvaluatorProcessor.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="54" column="73" selection-start="2541" selection-end="2541" vertical-scroll-proportion="0.39941406">
-          <folding />
-        </state>
+        <state line="54" column="73" selection-start="2541" selection-end="2541" vertical-scroll-proportion="0.39941406" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/task/ReturnDateEvaluatorProcessor.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="61" column="73" selection-start="2784" selection-end="2784" vertical-scroll-proportion="0.234375">
+        <state line="61" column="73" selection-start="2784" selection-end="2784" vertical-scroll-proportion="0.234375" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/task/DateCreatedEvaluatorProcessor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="60" column="16" selection-start="2688" selection-end="2688" vertical-scroll-proportion="0.016816143">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/service/LocationCohortController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="65" column="68" selection-start="2969" selection-end="2969" vertical-scroll-proportion="0.4580078">
+        <state line="51" column="101" selection-start="2157" selection-end="2190" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/omod/src/test/resources/org/openmrs/module/clinicalsummary/service/templates/example-adult-xslfo.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="85" column="99" selection-start="3422" selection-end="6074" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/omod/src/test/resources/org/openmrs/module/clinicalsummary/service/templates/example-primary-healthcare-xslfo.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="138" column="16" selection-start="5540" selection-end="5540" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/omod/src/test/resources/org/openmrs/module/clinicalsummary/service/templates/example-primary-healthcare.vm">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="30" column="55" selection-start="755" selection-end="755" vertical-scroll-proportion="0.4124424">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/rule/EvaluableNameConstants.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="314" column="59" selection-start="9447" selection-end="9455" vertical-scroll-proportion="0.8654708">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/omod/src/test/resources/org/openmrs/module/clinicalsummary/service/templates/example-pediatric.vm">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="32" column="116" selection-start="880" selection-end="1012" vertical-scroll-proportion="0.5448354">
           <folding />
         </state>
       </provider>
