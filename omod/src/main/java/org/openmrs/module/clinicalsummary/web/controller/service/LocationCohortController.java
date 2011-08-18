@@ -69,7 +69,7 @@ public class LocationCohortController {
 			Summary summary = Context.getService(SummaryService.class).getSummary(summaryId);
 
 			Calendar calendar = Calendar.getInstance();
-			calendar.add(Calendar.DATE, timeFrame);
+			calendar.add(Calendar.DATE, -timeFrame);
 			Date startDate = calendar.getTime();
 
 			calendar.add(Calendar.DATE, timeFrame);

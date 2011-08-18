@@ -74,7 +74,7 @@ public class ReturnDateEvaluatorProcessor {
 						Calendar calendar = Calendar.getInstance();
 						calendar.add(Calendar.DATE, clusterName.length * 2);
 						Date date = calendar.getTime();
-						cohort = Context.getService(CoreService.class).getReturnDateCohort(date, new Date());
+						cohort = Context.getService(CoreService.class).getReturnDateCohort(new Date(), date);
 					}
 
 					evaluate(cohort);

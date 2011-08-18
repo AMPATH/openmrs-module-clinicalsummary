@@ -211,10 +211,10 @@ public class HibernateCoreDAO implements CoreDAO {
 		criteria.add(Restrictions.eq("concept", CacheUtils.getConcept(EvaluableNameConstants.RETURN_VISIT_DATE)));
 
 		if (startDate != null)
-			criteria.add(Restrictions.ge("dateCreated", startDate));
+			criteria.add(Restrictions.ge("valueDatetime", startDate));
 
 		if (endDate != null)
-			criteria.add(Restrictions.le("dateCreated", endDate));
+			criteria.add(Restrictions.le("valueDatetime", endDate));
 
 		criteria.setProjection(Projections.property("person.personId"));
 		criteria.add(Restrictions.eq("voided", Boolean.FALSE));
