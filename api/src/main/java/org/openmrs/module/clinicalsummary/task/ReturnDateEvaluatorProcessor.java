@@ -68,13 +68,13 @@ public class ReturnDateEvaluatorProcessor {
 					// default return to -1 because no such location with id -1
 					Location location = Context.getLocationService().getLocation(NumberUtils.toInt(locationIds[i], -1));
 					if (!initialized) {
-						cohort = Context.getService(CoreService.class).getReturnDateCohort(null, null);
+						cohort = Context.getService(CoreService.class).getReturnDateCohort(location, null, null);
 					} else {
 						// regenerate when there's new obs
 						Calendar calendar = Calendar.getInstance();
 						calendar.add(Calendar.DATE, clusterName.length * 2);
 						Date date = calendar.getTime();
-						cohort = Context.getService(CoreService.class).getReturnDateCohort(new Date(), date);
+						cohort = Context.getService(CoreService.class).getReturnDateCohort(location, new Date(), date);
 					}
 
 					evaluate(cohort);

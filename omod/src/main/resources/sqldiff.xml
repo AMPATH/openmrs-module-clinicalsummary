@@ -1163,5 +1163,30 @@
 		</sql>
 	</diff>
 
+	<diff>
+		<version>4.1.9</version>
+		<author>Nyoman Ribeka</author>
+		<date>June 27 2011</date>
+		<description>
+			Create unique on summary index on patient and summary
+		</description>
+		<sql>
+			ALTER TABLE clinical_summary_index ADD UNIQUE unique_patient_summary (patient, summary)
+		</sql>
+	</diff>
+
+	<diff>
+		<version>4.2.0</version>
+		<author>Nyoman Ribeka</author>
+		<date>June 27 2011</date>
+		<description>
+			Create unique on summary index on patient and summary
+		</description>
+		<sql>
+			ALTER TABLE clinical_summary_ordered_observation MODIFY COLUMN location INTEGER  DEFAULT NULL;
+			ALTER TABLE clinical_summary_ordered_observation MODIFY COLUMN provider INTEGER  DEFAULT NULL;
+		</sql>
+	</diff>
+
 
 </sqldiff>

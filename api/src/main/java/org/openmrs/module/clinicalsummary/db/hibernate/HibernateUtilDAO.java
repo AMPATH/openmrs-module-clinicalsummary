@@ -14,6 +14,11 @@
 
 package org.openmrs.module.clinicalsummary.db.hibernate;
 
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
@@ -29,7 +34,9 @@ import org.openmrs.BaseOpenmrsData;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.Patient;
 import org.openmrs.api.db.DAOException;
+import org.openmrs.module.clinicalsummary.cache.CacheUtils;
 import org.openmrs.module.clinicalsummary.db.UtilDAO;
+import org.openmrs.module.clinicalsummary.rule.EvaluableNameConstants;
 import org.openmrs.module.clinicalsummary.util.obs.OrderedObs;
 import org.openmrs.module.clinicalsummary.util.obs.Status;
 import org.openmrs.module.clinicalsummary.util.response.MedicationResponse;
@@ -37,11 +44,6 @@ import org.openmrs.module.clinicalsummary.util.response.ReminderResponse;
 import org.openmrs.module.clinicalsummary.util.weight.AgeUnit;
 import org.openmrs.module.clinicalsummary.util.weight.Gender;
 import org.openmrs.module.clinicalsummary.util.weight.WeightStandard;
-
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 /**
  *
@@ -158,6 +160,10 @@ public class HibernateUtilDAO implements UtilDAO {
 	                                          final Status status, final Date startTime, final Date endTime) throws DAOException {
 
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(OrderedObs.class);
+
+		// hack to prevent results for tests ordered concept when grouping results on concept
+		if (groupingProperties.contains("concept"))
+			criteria.add(Restrictions.not(Restrictions.eq("concept", CacheUtils.getConcept(EvaluableNameConstants.TESTS_ORDERED))));
 
 		if (MapUtils.isNotEmpty(restrictions)) {
 			OrderedObs orderedObs = new OrderedObs();

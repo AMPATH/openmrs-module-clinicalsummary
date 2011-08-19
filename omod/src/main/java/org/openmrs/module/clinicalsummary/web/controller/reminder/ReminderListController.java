@@ -14,6 +14,14 @@
 
 package org.openmrs.module.clinicalsummary.web.controller.reminder;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,14 +41,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-
 /**
  */
 @Controller
@@ -56,8 +56,7 @@ public class ReminderListController {
 
 	@RequestMapping(method = RequestMethod.GET)
 	public void populatePage(final ModelMap map) {
-		map.addAttribute("displayTypes", Arrays.asList(ReportDisplayType.DISPLAY_REPORT_BY_PATIENT,
-				ReportDisplayType.DISPLAY_REPORT_BY_PROVIDER,
+		map.addAttribute("displayTypes", Arrays.asList(ReportDisplayType.DISPLAY_REPORT_BY_PROVIDER,
 				ReportDisplayType.DISPLAY_REPORT_BY_LOCATION));
 	}
 
@@ -70,8 +69,7 @@ public class ReminderListController {
 	                             final @RequestParam(required = false, value = "startTime") String startTime,
 	                             final @RequestParam(required = false, value = "endTime") String endTime, final ModelMap map) {
 
-		map.addAttribute("displayTypes", Arrays.asList(ReportDisplayType.DISPLAY_REPORT_BY_PATIENT,
-				ReportDisplayType.DISPLAY_REPORT_BY_PROVIDER,
+		map.addAttribute("displayTypes", Arrays.asList(ReportDisplayType.DISPLAY_REPORT_BY_PROVIDER,
 				ReportDisplayType.DISPLAY_REPORT_BY_LOCATION));
 
 		Date startDate = null;
@@ -106,9 +104,6 @@ public class ReminderListController {
 	private Collection<String> getGroupingProperties(final ReportDisplayType displayType) {
 		Collection<String> groupingProperties = new ArrayList<String>();
 		switch (displayType) {
-			case DISPLAY_REPORT_BY_PATIENT:
-				groupingProperties.add("patient");
-				break;
 			case DISPLAY_REPORT_BY_PROVIDER:
 				groupingProperties.add("provider");
 				break;

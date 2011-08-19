@@ -204,18 +204,7 @@ public class OrderedObsProcessor {
 					if (OpenmrsUtil.nullSafeEquals(referredObs.getValueNumeric(), currentObs.getValueNumeric())
 							|| OpenmrsUtil.nullSafeEquals(referredObs.getValueCoded(), currentObs.getValueCoded())) {
 						Obs removedObs = observations.remove(counter);
-						OrderedObs orderedObs = new OrderedObs();
-						orderedObs.setObs(removedObs);
-						orderedObs.setPerson(removedObs.getPerson());
-						orderedObs.setStatus(Status.STATUS_DUPLICATE_RESULTS);
-						// if the obs have encounter, then pull some info from the encounter
-						Encounter encounter = removedObs.getEncounter();
-						if (encounter != null) {
-							encounter = Context.getEncounterService().getEncounter(encounter.getEncounterId());
-							orderedObs.setLocation(encounter.getLocation());
-							orderedObs.setProvider(encounter.getProvider());
-						}
-						Context.getService(UtilService.class).saveOrderedObs(orderedObs);
+						saveOrderedObs(removedObs, Status.STATUS_DUPLICATE_RESULTS);
 						continue;
 					}
 				}
@@ -237,84 +226,62 @@ public class OrderedObsProcessor {
 	 */
 	private void pair(final List<Obs> testObservations, final List<Obs> resultObservations) {
 
-		while (CollectionUtils.isNotEmpty(testObservations) && CollectionUtils.isNotEmpty(resultObservations)) {
-			Obs testObservation = testObservations.get(0);
-			Obs resultObservation = resultObservations.get(0);
-
-			Date testDate = testObservation.getObsDatetime();
-			Date resultDate = resultObservation.getObsDatetime();
+		Integer testCounter = 0;
+		Integer resultCounter = 0;
+		while (resultCounter < testObservations.size() && testCounter < resultObservations.size()) {
+			Date testDate = testObservations.get(testCounter).getObsDatetime();
+			Date resultDate = resultObservations.get(resultCounter).getObsDatetime();
 
 			OrderedObs orderedObs = new OrderedObs();
 
 			Obs removedObs = null;
-			if (testDate.before(resultDate)) {
-				// test ordered obs created before the result comes from the lab system
-				if (resultDate.after(DateUtils.addDays(testDate, 1))) {
-					// test ordered and obs result from the lab system are more than a day apart, make the status no order
-					removedObs = resultObservations.remove(0);
-					orderedObs.setStatus(Status.STATUS_NO_ORDER);
-				} else {
-					// the test order and obs result from lab are less than a day apart, remove the test and display the obs result
-					testObservations.remove(0);
-					resultObservations.remove(0);
-				}
+			if (testDate.after(resultDate)) {
+				removedObs = testObservations.get(testCounter++);
+				orderedObs.setStatus(Status.STATUS_NO_RESULT);
 			} else {
-				// test ordered obs created after or on the same day the lab result comes from the lab system
-				if (testDate.after(resultDate)) {
-					// the test ordered comes after the result, make the status no result
-					removedObs = testObservations.remove(0);
-					orderedObs.setStatus(Status.STATUS_NO_RESULT);
-				} else {
-					// the test order and obs result from lab are on the same day, remove the test and display the obs result
-					testObservations.remove(0);
-					resultObservations.remove(0);
-				}
+				removedObs = resultObservations.get(resultCounter++);
+				if (resultDate.after(DateUtils.addDays(testDate, 1)))
+					orderedObs.setStatus(Status.STATUS_NO_ORDER);
+				else
+					testCounter++;
 			}
 
-			if (removedObs != null) {
-				orderedObs.setObs(removedObs);
-				// if the obs have encounter, then pull some info from the encounter
-				Encounter encounter = removedObs.getEncounter();
-				if (encounter != null) {
-					encounter = Context.getEncounterService().getEncounter(encounter.getEncounterId());
-					orderedObs.setLocation(encounter.getLocation());
-					orderedObs.setProvider(encounter.getProvider());
-				}
-				Context.getService(UtilService.class).saveOrderedObs(orderedObs);
-			}
+			saveOrderedObs(removedObs, null);
 		}
 
 		while (CollectionUtils.isNotEmpty(resultObservations)) {
-			Obs removedObs = resultObservations.remove(0);
-			OrderedObs orderedObs = new OrderedObs();
-			orderedObs.setObs(removedObs);
-			orderedObs.setStatus(Status.STATUS_NO_ORDER);
-			// if the obs have encounter, then pull some info from the encounter
-			Encounter encounter = removedObs.getEncounter();
-			if (encounter != null) {
-				encounter = Context.getEncounterService().getEncounter(encounter.getEncounterId());
-				orderedObs.setLocation(encounter.getLocation());
-				orderedObs.setProvider(encounter.getProvider());
-			}
-			Context.getService(UtilService.class).saveOrderedObs(orderedObs);
+			Obs removedObs = resultObservations.get(resultCounter++);
+			saveOrderedObs(removedObs, Status.STATUS_NO_ORDER);
 		}
 
 		while (CollectionUtils.isNotEmpty(testObservations)) {
 			Obs removedObs = testObservations.remove(0);
-			OrderedObs orderedObs = new OrderedObs();
-			orderedObs.setObs(removedObs);
-			orderedObs.setStatus(Status.STATUS_NO_RESULT);
-			// if the obs have encounter, then pull some info from the encounter
-			Encounter encounter = removedObs.getEncounter();
-			if (encounter != null) {
-				encounter = Context.getEncounterService().getEncounter(encounter.getEncounterId());
-				orderedObs.setLocation(encounter.getLocation());
-				orderedObs.setProvider(encounter.getProvider());
-			}
-			Context.getService(UtilService.class).saveOrderedObs(orderedObs);
+			saveOrderedObs(removedObs, Status.STATUS_NO_RESULT);
 		}
 
 		Context.flushSession();
 		Context.clearSession();
+	}
+
+	/**
+	 * Save ordered obs with the specified status
+	 *
+	 * @param obs
+	 * @param status
+	 */
+	private void saveOrderedObs(Obs obs, Status status) {
+		OrderedObs orderedObs = new OrderedObs();
+		orderedObs.setObs(obs);
+		// set status if the status is in the parameter
+		if (status != null)
+			orderedObs.setStatus(status);
+		// if the obs have encounter, then pull some info from the encounter
+		Encounter encounter = obs.getEncounter();
+		if (encounter != null) {
+			encounter = Context.getEncounterService().getEncounter(encounter.getEncounterId());
+			orderedObs.setLocation(encounter.getLocation());
+			orderedObs.setProvider(encounter.getProvider());
+		}
+		Context.getService(UtilService.class).saveOrderedObs(orderedObs);
 	}
 }

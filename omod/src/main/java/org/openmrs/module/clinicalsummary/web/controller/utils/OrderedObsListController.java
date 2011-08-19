@@ -14,6 +14,15 @@
 
 package org.openmrs.module.clinicalsummary.web.controller.utils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -35,15 +44,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 /**
  */
@@ -132,7 +132,7 @@ public class OrderedObsListController {
 				if (groupedObjects.containsKey(status)) {
 					Object[] object = groupedObjects.get(status);
 					// total number of the element in the grouping
-					strings[strings.length - 1] = WebUtils.getStringValue(object.length - 1);
+					strings[strings.length - 1] = WebUtils.getStringValue(object[object.length - 1]);
 				}
 				CollectionUtils.addIgnoreNull(serialized, strings);
 			}
@@ -149,9 +149,9 @@ public class OrderedObsListController {
 		statusDescriptionMap.put(Status.STATUS_NO_RESULT, "Test Ordered Without Result");
 		statusDescriptionMap.put(Status.STATUS_NO_ORDER, "Result Without Order");
 
-		map.addAttribute("displayTypes", Arrays.asList(ReportDisplayType.DISPLAY_REPORT_BY_PATIENT,
-				ReportDisplayType.DISPLAY_REPORT_BY_TEST, ReportDisplayType.DISPLAY_REPORT_BY_RESULT,
-				ReportDisplayType.DISPLAY_REPORT_BY_PROVIDER, ReportDisplayType.DISPLAY_REPORT_BY_LOCATION));
+		map.addAttribute("displayTypes", Arrays.asList(ReportDisplayType.DISPLAY_REPORT_BY_TEST,
+				ReportDisplayType.DISPLAY_REPORT_BY_RESULT, ReportDisplayType.DISPLAY_REPORT_BY_PROVIDER,
+				ReportDisplayType.DISPLAY_REPORT_BY_LOCATION));
 		map.addAttribute("statuses", statusDescriptionMap);
 	}
 
@@ -162,9 +162,6 @@ public class OrderedObsListController {
 	private Collection<String> getGroupingProperties(final ReportDisplayType displayType) {
 		Collection<String> groupingProperties = new ArrayList<String>();
 		switch (displayType) {
-			case DISPLAY_REPORT_BY_PATIENT:
-				groupingProperties.add("person");
-				break;
 			case DISPLAY_REPORT_BY_RESULT:
 				groupingProperties.add("concept");
 				break;

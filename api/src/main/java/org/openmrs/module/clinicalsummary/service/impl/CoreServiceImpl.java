@@ -62,10 +62,10 @@ public class CoreServiceImpl extends BaseOpenmrsService implements CoreService {
 	}
 
 	/**
-	 * @see CoreService#getReturnDateCohort(java.util.Date, java.util.Date)
+	 * @see CoreService#getReturnDateCohort(org.openmrs.Location, java.util.Date, java.util.Date)
 	 */
-	public Cohort getReturnDateCohort(final Date startDate, final Date endDate) throws APIException {
-		return coreDAO.getReturnDateCohort(startDate, endDate);
+	public Cohort getReturnDateCohort(final Location location, final Date startDate, final Date endDate) throws APIException {
+		return coreDAO.getReturnDateCohort(location, startDate, endDate);
 	}
 
 	/**

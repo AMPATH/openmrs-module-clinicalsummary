@@ -42,7 +42,7 @@ public interface CoreService extends OpenmrsService {
 	 * date and end date
 	 *
 	 * @param location
-	 * 		location id of the patient observation
+	 * 		location of the patient observation
 	 * @param startDate
 	 * 		min date of the observation created date
 	 * @param endDate
@@ -57,6 +57,26 @@ public interface CoreService extends OpenmrsService {
 	 */
 	@Authorized({PrivilegeConstants.VIEW_LOCATIONS, PrivilegeConstants.VIEW_PATIENTS})
 	Cohort getCohort(final Location location, final Date startDate, final Date endDate) throws APIException;
+
+	/**
+	 * Get all patient id attached to a certain location on their observations where the observations are created between the start
+	 * date and end date
+	 *
+	 * @param location
+	 * 		location of the patient observation
+	 * @param startDate
+	 * 		min date of the observation created date
+	 * @param endDate
+	 * 		max date of the observation created date
+	 *
+	 * @return cohort of patient with observation in from a certain location that fall between the date range. Return empty cohort
+	 *         when no patient id match the criteria.
+	 *
+	 * @throws APIException
+	 * @should return all patient id with certain location on their observations between certain date
+	 * @should return empty cohort when no patient match the criteria
+	 */
+	Cohort getReturnDateCohort(final Location location, final Date startDate, final Date endDate) throws APIException;
 
 	/**
 	 * Get all patient encounters that match the encounter types, locations and providers criteria
@@ -97,22 +117,4 @@ public interface CoreService extends OpenmrsService {
 	@Authorized({PrivilegeConstants.VIEW_OBS})
 	List<Obs> getPatientObservations(final Integer patientId, final Map<String, Collection<OpenmrsObject>> restrictions,
 	                                 final FetchRestriction fetchRestriction) throws APIException;
-
-	/**
-	 * Get all patient id attached to a certain location on their observations where the observations are created between the start
-	 * date and end date
-	 *
-	 * @param startDate
-	 * 		min date of the observation created date
-	 * @param endDate
-	 * 		max date of the observation created date
-	 *
-	 * @return cohort of patient with observation in from a certain location that fall between the date range. Return empty cohort
-	 *         when no patient id match the criteria.
-	 *
-	 * @throws APIException
-	 * @should return all patient id with certain location on their observations between certain date
-	 * @should return empty cohort when no patient match the criteria
-	 */
-	Cohort getReturnDateCohort(Date startDate, Date endDate) throws APIException;
 }

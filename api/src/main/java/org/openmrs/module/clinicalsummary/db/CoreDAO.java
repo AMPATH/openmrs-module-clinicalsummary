@@ -33,11 +33,11 @@ public interface CoreDAO {
 
 	Cohort getCohort(final Location location, final Date startDate, Date endDate) throws DAOException;
 
+	Cohort getReturnDateCohort(final Location location, final Date startDate, final Date endDate) throws DAOException;
+
 	List<Encounter> getPatientEncounters(final Integer patientId, final Map<String, Collection<OpenmrsObject>> restrictions,
 	                                     final FetchRestriction fetchRestriction) throws DAOException;
 
 	List<Obs> getPatientObservations(final Integer patientId, final Map<String, Collection<OpenmrsObject>> restrictions,
 	                                 final FetchRestriction fetchRestriction) throws DAOException;
-
-	Cohort getReturnDateCohort(final Date startDate, final Date endDate) throws DAOException;
 }
