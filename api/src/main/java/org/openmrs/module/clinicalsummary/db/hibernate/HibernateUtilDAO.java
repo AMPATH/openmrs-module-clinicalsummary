@@ -36,13 +36,13 @@ import org.openmrs.Patient;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.module.clinicalsummary.cache.CacheUtils;
 import org.openmrs.module.clinicalsummary.db.UtilDAO;
+import org.openmrs.module.clinicalsummary.enumeration.AgeUnit;
+import org.openmrs.module.clinicalsummary.enumeration.Gender;
+import org.openmrs.module.clinicalsummary.enumeration.StatusType;
 import org.openmrs.module.clinicalsummary.rule.EvaluableNameConstants;
 import org.openmrs.module.clinicalsummary.util.obs.OrderedObs;
-import org.openmrs.module.clinicalsummary.util.obs.Status;
 import org.openmrs.module.clinicalsummary.util.response.MedicationResponse;
 import org.openmrs.module.clinicalsummary.util.response.ReminderResponse;
-import org.openmrs.module.clinicalsummary.util.weight.AgeUnit;
-import org.openmrs.module.clinicalsummary.util.weight.Gender;
 import org.openmrs.module.clinicalsummary.util.weight.WeightStandard;
 
 /**
@@ -77,7 +77,7 @@ public class HibernateUtilDAO implements UtilDAO {
 	}
 
 	/**
-	 * @see UtilDAO#getWeightStandard(org.openmrs.module.clinicalsummary.util.weight.Gender, org.openmrs.module.clinicalsummary.util.weight.AgeUnit,
+	 * @see UtilDAO#getWeightStandard(org.openmrs.module.clinicalsummary.enumeration.Gender, org.openmrs.module.clinicalsummary.enumeration.AgeUnit,
 	 *      Integer)
 	 */
 	public WeightStandard getWeightStandard(final Gender gender, final AgeUnit ageUnit, final Integer age) throws DAOException {
@@ -157,7 +157,7 @@ public class HibernateUtilDAO implements UtilDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Object[]> aggregateOrderedObs(final Map<String, Collection<OpenmrsObject>> restrictions, final Collection<String> groupingProperties,
-	                                          final Status status, final Date startTime, final Date endTime) throws DAOException {
+	                                          final StatusType statusType, final Date startTime, final Date endTime) throws DAOException {
 
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(OrderedObs.class);
 
@@ -174,8 +174,8 @@ public class HibernateUtilDAO implements UtilDAO {
 			}
 		}
 
-		if (status != null)
-			criteria.add(Restrictions.eq("status", status));
+		if (statusType != null)
+			criteria.add(Restrictions.eq("status", statusType));
 
 		if (startTime != null)
 			criteria.add(Restrictions.ge("orderedDatetime", startTime));

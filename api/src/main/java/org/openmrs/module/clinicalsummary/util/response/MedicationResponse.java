@@ -14,14 +14,16 @@
 
 package org.openmrs.module.clinicalsummary.util.response;
 
+import java.util.Date;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.BaseOpenmrsData;
 import org.openmrs.Concept;
 import org.openmrs.Patient;
 import org.openmrs.Person;
-
-import java.util.Date;
+import org.openmrs.module.clinicalsummary.enumeration.ActionType;
+import org.openmrs.module.clinicalsummary.enumeration.MedicationType;
 
 public class MedicationResponse extends BaseOpenmrsData {
 
@@ -40,6 +42,8 @@ public class MedicationResponse extends BaseOpenmrsData {
 	private Date medicationDatetime;
 
 	private Integer status;
+
+	private ActionType actionType;
 
 	/**
 	 * @return id - The unique Identifier for the object
@@ -137,5 +141,19 @@ public class MedicationResponse extends BaseOpenmrsData {
 	 */
 	public void setStatus(final Integer status) {
 		this.status = status;
+	}
+
+	/**
+	 * @return
+	 */
+	public ActionType getActionType() {
+		return actionType;
+	}
+
+	/**
+	 * @param actionType
+	 */
+	public void setActionType(final ActionType actionType) {
+		this.actionType = actionType;
 	}
 }

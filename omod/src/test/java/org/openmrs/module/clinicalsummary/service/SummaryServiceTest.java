@@ -1,5 +1,8 @@
 package org.openmrs.module.clinicalsummary.service;
 
+import java.util.Date;
+import java.util.List;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -10,12 +13,9 @@ import org.junit.Test;
 import org.openmrs.EncounterType;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.clinicalsummary.Mapping;
-import org.openmrs.module.clinicalsummary.MappingType;
 import org.openmrs.module.clinicalsummary.Summary;
+import org.openmrs.module.clinicalsummary.enumeration.MappingType;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
-
-import java.util.Date;
-import java.util.List;
 
 /**
  */
@@ -201,7 +201,7 @@ public class SummaryServiceTest extends BaseModuleContextSensitiveTest {
 	/**
 	 * @verifies return all mappings for a certain summary
 	 * @see SummaryService#getMappings(org.openmrs.module.clinicalsummary.Summary, org.openmrs.EncounterType,
-	 *      org.openmrs.module.clinicalsummary.MappingType)
+	 *      org.openmrs.module.clinicalsummary.enumeration.MappingType)
 	 */
 	@Test
 	public void getMappings_shouldReturnAllMappingsForACertainSummary() {
@@ -219,7 +219,7 @@ public class SummaryServiceTest extends BaseModuleContextSensitiveTest {
 	/**
 	 * @verifies return all mappings for the encounter type
 	 * @see SummaryService#getMappings(org.openmrs.module.clinicalsummary.Summary, org.openmrs.EncounterType,
-	 *      org.openmrs.module.clinicalsummary.MappingType) )
+	 *      org.openmrs.module.clinicalsummary.enumeration.MappingType) )
 	 */
 	@Test
 	public void getMappings_shouldReturnAllMappingsForTheEncounterType() {

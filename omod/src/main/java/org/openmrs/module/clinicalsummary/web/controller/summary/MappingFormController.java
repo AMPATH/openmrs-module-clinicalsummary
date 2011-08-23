@@ -15,13 +15,14 @@
 package org.openmrs.module.clinicalsummary.web.controller.summary;
 
 import javax.servlet.http.HttpSession;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.EncounterType;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.clinicalsummary.Mapping;
-import org.openmrs.module.clinicalsummary.MappingType;
 import org.openmrs.module.clinicalsummary.Summary;
+import org.openmrs.module.clinicalsummary.enumeration.MappingType;
 import org.openmrs.module.clinicalsummary.service.SummaryService;
 import org.openmrs.module.clinicalsummary.web.editor.EncounterTypeEditor;
 import org.openmrs.module.clinicalsummary.web.editor.SummaryEditor;

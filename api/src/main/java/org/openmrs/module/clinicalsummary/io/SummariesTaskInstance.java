@@ -15,7 +15,7 @@
 package org.openmrs.module.clinicalsummary.io;
 
 import org.apache.commons.lang.StringUtils;
-import org.openmrs.module.clinicalsummary.io.utils.TaskStatus;
+import org.openmrs.module.clinicalsummary.enumeration.TaskStatus;
 import org.openmrs.util.OpenmrsUtil;
 
 /**

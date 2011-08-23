@@ -14,6 +14,11 @@
 
 package org.openmrs.module.clinicalsummary.service.impl;
 
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.BaseOpenmrsData;
@@ -22,19 +27,14 @@ import org.openmrs.Patient;
 import org.openmrs.api.APIException;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.clinicalsummary.db.UtilDAO;
+import org.openmrs.module.clinicalsummary.enumeration.AgeUnit;
+import org.openmrs.module.clinicalsummary.enumeration.Gender;
+import org.openmrs.module.clinicalsummary.enumeration.StatusType;
 import org.openmrs.module.clinicalsummary.service.UtilService;
 import org.openmrs.module.clinicalsummary.util.obs.OrderedObs;
-import org.openmrs.module.clinicalsummary.util.obs.Status;
 import org.openmrs.module.clinicalsummary.util.response.MedicationResponse;
 import org.openmrs.module.clinicalsummary.util.response.ReminderResponse;
-import org.openmrs.module.clinicalsummary.util.weight.AgeUnit;
-import org.openmrs.module.clinicalsummary.util.weight.Gender;
 import org.openmrs.module.clinicalsummary.util.weight.WeightStandard;
-
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 /**
  */
@@ -72,7 +72,7 @@ public class UtilServiceImpl extends BaseOpenmrsService implements UtilService {
 	}
 
 	/**
-	 * @see UtilService#getWeightStandard(org.openmrs.module.clinicalsummary.util.weight.Gender, org.openmrs.module.clinicalsummary.util.weight.AgeUnit,
+	 * @see UtilService#getWeightStandard(org.openmrs.module.clinicalsummary.enumeration.Gender, org.openmrs.module.clinicalsummary.enumeration.AgeUnit,
 	 *      Integer)
 	 */
 	public WeightStandard getWeightStandard(final Gender gender, final AgeUnit ageUnit, final Integer age) throws APIException {
@@ -116,11 +116,11 @@ public class UtilServiceImpl extends BaseOpenmrsService implements UtilService {
 	}
 
 	/**
-	 * @see UtilService#aggregateOrderedObs(java.util.Map, java.util.Collection, org.openmrs.module.clinicalsummary.util.obs.Status, java.util.Date, java.util.Date)
+	 * @see UtilService#aggregateOrderedObs(java.util.Map, java.util.Collection, org.openmrs.module.clinicalsummary.enumeration.StatusType, java.util.Date, java.util.Date)
 	 */
 	public List<Object[]> aggregateOrderedObs(final Map<String, Collection<OpenmrsObject>> restrictions, final Collection<String> groupingProperties,
-	                                          final Status status, final Date startTime, final Date endTime) throws APIException {
-		return utilDAO.aggregateOrderedObs(restrictions, groupingProperties, status, startTime, endTime);
+	                                          final StatusType statusType, final Date startTime, final Date endTime) throws APIException {
+		return utilDAO.aggregateOrderedObs(restrictions, groupingProperties, statusType, startTime, endTime);
 	}
 
 	/**

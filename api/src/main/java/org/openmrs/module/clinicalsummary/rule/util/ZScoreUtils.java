@@ -14,19 +14,19 @@
 
 package org.openmrs.module.clinicalsummary.rule.util;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.clinicalsummary.enumeration.AgeUnit;
+import org.openmrs.module.clinicalsummary.enumeration.Gender;
 import org.openmrs.module.clinicalsummary.service.UtilService;
-import org.openmrs.module.clinicalsummary.util.weight.AgeUnit;
-import org.openmrs.module.clinicalsummary.util.weight.Gender;
 import org.openmrs.module.clinicalsummary.util.weight.WeightStandard;
-
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 
 /**
  */

@@ -12,20 +12,18 @@
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
 
-package org.openmrs.module.clinicalsummary.util;
+package org.openmrs.module.clinicalsummary.enumeration;
 
 import org.openmrs.module.clinicalsummary.db.hibernate.type.StringEnum;
 
 /**
  */
-public enum ReportDisplayType implements StringEnum {
-
-	DISPLAY_REPORT_BY_PATIENT("Group By Patient"), DISPLAY_REPORT_BY_LOCATION("Group By Location"),
-	DISPLAY_REPORT_BY_PROVIDER("Group By Provider"), DISPLAY_REPORT_BY_TEST("Group By Test"), DISPLAY_REPORT_BY_RESULT("Group By Result");
+public enum StatusType implements StringEnum {
+	STATUS_NO_ORDER("No Order"), STATUS_NO_RESULT("Test Ordered"), STATUS_DUPLICATE_RESULTS("Duplicate Results");
 
 	private final String value;
 
-	private ReportDisplayType(final String value) {
+	private StatusType(final String value) {
 		this.value = value;
 	}
 

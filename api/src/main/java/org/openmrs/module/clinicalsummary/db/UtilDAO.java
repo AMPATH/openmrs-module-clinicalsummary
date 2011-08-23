@@ -13,22 +13,22 @@
  */
 package org.openmrs.module.clinicalsummary.db;
 
-import org.openmrs.BaseOpenmrsData;
-import org.openmrs.OpenmrsObject;
-import org.openmrs.Patient;
-import org.openmrs.api.db.DAOException;
-import org.openmrs.module.clinicalsummary.util.obs.OrderedObs;
-import org.openmrs.module.clinicalsummary.util.obs.Status;
-import org.openmrs.module.clinicalsummary.util.response.MedicationResponse;
-import org.openmrs.module.clinicalsummary.util.response.ReminderResponse;
-import org.openmrs.module.clinicalsummary.util.weight.AgeUnit;
-import org.openmrs.module.clinicalsummary.util.weight.Gender;
-import org.openmrs.module.clinicalsummary.util.weight.WeightStandard;
-
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import org.openmrs.BaseOpenmrsData;
+import org.openmrs.OpenmrsObject;
+import org.openmrs.Patient;
+import org.openmrs.api.db.DAOException;
+import org.openmrs.module.clinicalsummary.enumeration.AgeUnit;
+import org.openmrs.module.clinicalsummary.enumeration.Gender;
+import org.openmrs.module.clinicalsummary.enumeration.StatusType;
+import org.openmrs.module.clinicalsummary.util.obs.OrderedObs;
+import org.openmrs.module.clinicalsummary.util.response.MedicationResponse;
+import org.openmrs.module.clinicalsummary.util.response.ReminderResponse;
+import org.openmrs.module.clinicalsummary.util.weight.WeightStandard;
 
 /**
  *
@@ -53,7 +53,7 @@ public interface UtilDAO {
 	Integer deleteOrderedObs(final List<Patient> patients) throws DAOException;
 
 	List<Object[]> aggregateOrderedObs(final Map<String, Collection<OpenmrsObject>> restrictions, final Collection<String> groupingProperties,
-	                                   final Status status, final Date startTime, final Date endTime) throws DAOException;
+	                                   final StatusType statusType, final Date startTime, final Date endTime) throws DAOException;
 
 	List<? extends BaseOpenmrsData> saveResponses(List<? extends BaseOpenmrsData> responses);
 

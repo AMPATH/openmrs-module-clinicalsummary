@@ -29,13 +29,13 @@ import org.openmrs.Obs;
 import org.openmrs.logic.LogicContext;
 import org.openmrs.logic.LogicException;
 import org.openmrs.logic.result.Result;
+import org.openmrs.module.clinicalsummary.enumeration.StatusType;
 import org.openmrs.module.clinicalsummary.rule.EvaluableConstants;
 import org.openmrs.module.clinicalsummary.rule.EvaluableNameConstants;
 import org.openmrs.module.clinicalsummary.rule.EvaluableParameter;
 import org.openmrs.module.clinicalsummary.rule.EvaluableRule;
 import org.openmrs.module.clinicalsummary.rule.observation.ObsWithRestrictionRule;
 import org.openmrs.module.clinicalsummary.rule.observation.ObsWithStringRestrictionRule;
-import org.openmrs.module.clinicalsummary.util.obs.Status;
 
 /**
  * Parameters: <ul> <li>[Required] concept: the result of the tests</li> <li>[Required] valueCoded: the answers for the tests
@@ -81,7 +81,7 @@ public class ObsOrderedFlowsheetRule extends EvaluableRule {
 				StringBuilder statusBuilder = new StringBuilder();
 				if (StringUtils.isNotEmpty(flowsheetResult.toString()))
 					statusBuilder.append(flowsheetResult.toString()).append(" ");
-				statusBuilder.append(Status.STATUS_NO_RESULT.getValue());
+				statusBuilder.append(StatusType.STATUS_NO_RESULT.getValue());
 				// create a copy of the same result as the test result above
 				flowsheetResult.setValueText(statusBuilder.toString());
 			} else {
@@ -93,7 +93,7 @@ public class ObsOrderedFlowsheetRule extends EvaluableRule {
 					StringBuilder statusBuilder = new StringBuilder();
 					if (StringUtils.isNotEmpty(flowsheetResult.toString()))
 						statusBuilder.append(flowsheetResult.toString()).append(" ");
-					statusBuilder.append(Status.STATUS_NO_ORDER.getValue());
+					statusBuilder.append(StatusType.STATUS_NO_ORDER.getValue());
 					flowsheetResult.setValueText(statusBuilder.toString());
 				} else
 					testCounter++;
@@ -108,7 +108,7 @@ public class ObsOrderedFlowsheetRule extends EvaluableRule {
 			StringBuilder statusBuilder = new StringBuilder();
 			if (StringUtils.isNotEmpty(flowsheetResult.toString()))
 				statusBuilder.append(flowsheetResult.toString()).append(" ");
-			statusBuilder.append(Status.STATUS_NO_ORDER.getValue());
+			statusBuilder.append(StatusType.STATUS_NO_ORDER.getValue());
 			flowsheetResult.setValueText(statusBuilder.toString());
 			result.add(flowsheetResult);
 		}
@@ -122,7 +122,7 @@ public class ObsOrderedFlowsheetRule extends EvaluableRule {
 			StringBuilder statusBuilder = new StringBuilder();
 			if (StringUtils.isNotEmpty(flowsheetResult.toString()))
 				statusBuilder.append(flowsheetResult.toString()).append(" ");
-			statusBuilder.append(Status.STATUS_NO_RESULT.getValue());
+			statusBuilder.append(StatusType.STATUS_NO_RESULT.getValue());
 			// create a copy of the same result as the test result above
 			flowsheetResult.setValueText(statusBuilder.toString());
 			result.add(flowsheetResult);

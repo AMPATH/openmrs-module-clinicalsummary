@@ -31,9 +31,9 @@ import org.openmrs.Concept;
 import org.openmrs.Location;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.clinicalsummary.enumeration.ReportDisplayType;
+import org.openmrs.module.clinicalsummary.enumeration.StatusType;
 import org.openmrs.module.clinicalsummary.service.UtilService;
-import org.openmrs.module.clinicalsummary.util.ReportDisplayType;
-import org.openmrs.module.clinicalsummary.util.obs.Status;
 import org.openmrs.module.clinicalsummary.web.controller.WebUtils;
 import org.openmrs.module.clinicalsummary.web.editor.ListStringEditor;
 import org.springframework.stereotype.Controller;
@@ -68,7 +68,7 @@ public class OrderedObsListController {
 	@ResponseBody
 	List<String[]> processSubmit(final @RequestParam(required = true, value = "displayType") ReportDisplayType displayType,
 	                             final @RequestParam(required = false, value = "locations") Collection<String> locationNames,
-	                             final @RequestParam(required = false, value = "status") Status status,
+	                             final @RequestParam(required = false, value = "status") StatusType statusType,
 	                             final @RequestParam(required = false, value = "concepts") Collection<String> conceptNames,
 	                             final @RequestParam(required = false, value = "codedValues") Collection<String> codedValueNames,
 	                             final @RequestParam(required = false, value = "startTime") String startTime,
@@ -89,8 +89,8 @@ public class OrderedObsListController {
 		Collection<String> groupingProperties = getGroupingProperties(displayType);
 
 		UtilService service = Context.getService(UtilService.class);
-		List<Object[]> objects = service.aggregateOrderedObs(restrictions, groupingProperties, status, startDate, endDate);
-		return serialize(process(objects), status);
+		List<Object[]> objects = service.aggregateOrderedObs(restrictions, groupingProperties, statusType, startDate, endDate);
+		return serialize(process(objects), statusType);
 	}
 
 	private Map<Object, Map<Object, Object[]>> process(final List<Object[]> objects) {
@@ -109,28 +109,28 @@ public class OrderedObsListController {
 
 	/**
 	 * @param firstMapping
-	 * @param selectedStatus
+	 * @param selectedStatusType
 	 * @return
 	 */
-	private List<String[]> serialize(final Map<Object, Map<Object, Object[]>> firstMapping, final Status selectedStatus) {
+	private List<String[]> serialize(final Map<Object, Map<Object, Object[]>> firstMapping, final StatusType selectedStatusType) {
 
-		List<Status> statuses = Arrays.asList(Status.values());
-		if (selectedStatus != null)
-			statuses = Arrays.asList(selectedStatus);
+		List<StatusType> statuses = Arrays.asList(StatusType.values());
+		if (selectedStatusType != null)
+			statuses = Arrays.asList(selectedStatusType);
 
 		List<String[]> serialized = new ArrayList<String[]> ();
 		for (Object groupingObject : firstMapping.keySet()) {
 			Map<Object, Object[]> groupedObjects = firstMapping.get(groupingObject);
 			// when user don't pick any status, some grouping for a certain status might not have data
-			for (Status status : statuses) {
+			for (StatusType statusType : statuses) {
 				// name of the grouping element (ex: concept name, location name, person name)
 				String groupingName = WebUtils.getStringValue(groupingObject);
 				// id of the grouping element (ex: concept id, location id, person id)
 				String groupingId = WebUtils.getIdValue(groupingObject);
 				// the data is not there and we need to fill the missing values
-				String[] strings = new String[]{groupingName, groupingId, status.getValue(), String.valueOf(0)};
-				if (groupedObjects.containsKey(status)) {
-					Object[] object = groupedObjects.get(status);
+				String[] strings = new String[]{groupingName, groupingId, statusType.getValue(), String.valueOf(0)};
+				if (groupedObjects.containsKey(statusType)) {
+					Object[] object = groupedObjects.get(statusType);
 					// total number of the element in the grouping
 					strings[strings.length - 1] = WebUtils.getStringValue(object[object.length - 1]);
 				}
@@ -144,10 +144,10 @@ public class OrderedObsListController {
 	 * @param map
 	 */
 	private void preparePage(final ModelMap map) {
-		Map<Status, String> statusDescriptionMap = new TreeMap<Status, String>();
-		statusDescriptionMap.put(Status.STATUS_DUPLICATE_RESULTS, "Duplicate Result For Test");
-		statusDescriptionMap.put(Status.STATUS_NO_RESULT, "Test Ordered Without Result");
-		statusDescriptionMap.put(Status.STATUS_NO_ORDER, "Result Without Order");
+		Map<StatusType, String> statusDescriptionMap = new TreeMap<StatusType, String>();
+		statusDescriptionMap.put(StatusType.STATUS_DUPLICATE_RESULTS, "Duplicate Result For Test");
+		statusDescriptionMap.put(StatusType.STATUS_NO_RESULT, "Test Ordered Without Result");
+		statusDescriptionMap.put(StatusType.STATUS_NO_ORDER, "Result Without Order");
 
 		map.addAttribute("displayTypes", Arrays.asList(ReportDisplayType.DISPLAY_REPORT_BY_TEST,
 				ReportDisplayType.DISPLAY_REPORT_BY_RESULT, ReportDisplayType.DISPLAY_REPORT_BY_PROVIDER,

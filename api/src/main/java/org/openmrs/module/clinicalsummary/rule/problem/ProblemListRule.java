@@ -14,27 +14,6 @@
 
 package org.openmrs.module.clinicalsummary.rule.problem;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.openmrs.Concept;
-import org.openmrs.ConceptSet;
-import org.openmrs.Obs;
-import org.openmrs.logic.LogicContext;
-import org.openmrs.logic.LogicException;
-import org.openmrs.logic.result.Result;
-import org.openmrs.module.clinicalsummary.cache.CacheUtils;
-import org.openmrs.module.clinicalsummary.rule.EvaluableConstants;
-import org.openmrs.module.clinicalsummary.rule.EvaluableNameConstants;
-import org.openmrs.module.clinicalsummary.rule.EvaluableParameter;
-import org.openmrs.module.clinicalsummary.rule.EvaluableRule;
-import org.openmrs.module.clinicalsummary.rule.encounter.EncounterWithRestrictionRule;
-import org.openmrs.module.clinicalsummary.rule.encounter.EncounterWithStringRestrictionRule;
-import org.openmrs.module.clinicalsummary.rule.observation.ObsWithRestrictionRule;
-import org.openmrs.module.clinicalsummary.rule.observation.ObsWithStringRestrictionRule;
-import org.openmrs.module.clinicalsummary.util.FetchOrdering;
-import org.openmrs.util.OpenmrsUtil;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -45,6 +24,27 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.openmrs.Concept;
+import org.openmrs.ConceptSet;
+import org.openmrs.Obs;
+import org.openmrs.logic.LogicContext;
+import org.openmrs.logic.LogicException;
+import org.openmrs.logic.result.Result;
+import org.openmrs.module.clinicalsummary.cache.CacheUtils;
+import org.openmrs.module.clinicalsummary.enumeration.FetchOrdering;
+import org.openmrs.module.clinicalsummary.rule.EvaluableConstants;
+import org.openmrs.module.clinicalsummary.rule.EvaluableNameConstants;
+import org.openmrs.module.clinicalsummary.rule.EvaluableParameter;
+import org.openmrs.module.clinicalsummary.rule.EvaluableRule;
+import org.openmrs.module.clinicalsummary.rule.encounter.EncounterWithRestrictionRule;
+import org.openmrs.module.clinicalsummary.rule.encounter.EncounterWithStringRestrictionRule;
+import org.openmrs.module.clinicalsummary.rule.observation.ObsWithRestrictionRule;
+import org.openmrs.module.clinicalsummary.rule.observation.ObsWithStringRestrictionRule;
+import org.openmrs.util.OpenmrsUtil;
 
 /**
  */

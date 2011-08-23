@@ -13,6 +13,8 @@
  */
 package org.openmrs.module.clinicalsummary.service;
 
+import java.util.List;
+
 import org.openmrs.EncounterType;
 import org.openmrs.Patient;
 import org.openmrs.annotation.Authorized;
@@ -20,11 +22,9 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.module.clinicalsummary.Constants;
 import org.openmrs.module.clinicalsummary.Mapping;
-import org.openmrs.module.clinicalsummary.MappingType;
 import org.openmrs.module.clinicalsummary.Summary;
+import org.openmrs.module.clinicalsummary.enumeration.MappingType;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 /**
  * Service contract for operation on Summary object

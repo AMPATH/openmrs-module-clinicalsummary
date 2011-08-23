@@ -22,8 +22,8 @@ import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.clinicalsummary.enumeration.FetchOrdering;
 import org.openmrs.module.clinicalsummary.rule.EvaluableConstants;
-import org.openmrs.module.clinicalsummary.util.FetchOrdering;
 import org.openmrs.module.clinicalsummary.util.FetchRestriction;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 

@@ -12,22 +12,22 @@
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
 
-package org.openmrs.module.clinicalsummary.util.obs;
+package org.openmrs.module.clinicalsummary.enumeration;
 
 import org.openmrs.module.clinicalsummary.db.hibernate.type.StringEnum;
 
-/**
- */
-public enum Status implements StringEnum {
-	STATUS_NO_ORDER("No Order"), STATUS_NO_RESULT("Test Ordered"), STATUS_DUPLICATE_RESULTS("Duplicate Results");
+public enum ActionType implements StringEnum {
+
+	ACTION_IGNORED("Ignored"), ACTION_ACCEPT("Accept");
 
 	private final String value;
 
-	private Status(final String value) {
+	private ActionType(String value) {
 		this.value = value;
 	}
 
 	public String getValue() {
 		return value;
 	}
+
 }

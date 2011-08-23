@@ -42,12 +42,12 @@ import org.openmrs.Obs;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.clinicalsummary.cache.CacheUtils;
+import org.openmrs.module.clinicalsummary.enumeration.StatusType;
 import org.openmrs.module.clinicalsummary.rule.EvaluableConstants;
 import org.openmrs.module.clinicalsummary.service.CoreService;
 import org.openmrs.module.clinicalsummary.service.UtilService;
 import org.openmrs.module.clinicalsummary.util.FetchRestriction;
 import org.openmrs.module.clinicalsummary.util.obs.OrderedObs;
-import org.openmrs.module.clinicalsummary.util.obs.Status;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -204,7 +204,7 @@ public class OrderedObsProcessor {
 					if (OpenmrsUtil.nullSafeEquals(referredObs.getValueNumeric(), currentObs.getValueNumeric())
 							|| OpenmrsUtil.nullSafeEquals(referredObs.getValueCoded(), currentObs.getValueCoded())) {
 						Obs removedObs = observations.remove(counter);
-						saveOrderedObs(removedObs, Status.STATUS_DUPLICATE_RESULTS);
+						saveOrderedObs(removedObs, StatusType.STATUS_DUPLICATE_RESULTS);
 						continue;
 					}
 				}
@@ -237,26 +237,36 @@ public class OrderedObsProcessor {
 			Obs removedObs = null;
 			if (testDate.after(resultDate)) {
 				removedObs = testObservations.get(testCounter++);
-				orderedObs.setStatus(Status.STATUS_NO_RESULT);
+				orderedObs.setStatusType(StatusType.STATUS_NO_RESULT);
 			} else {
 				removedObs = resultObservations.get(resultCounter++);
 				if (resultDate.after(DateUtils.addDays(testDate, 1)))
-					orderedObs.setStatus(Status.STATUS_NO_ORDER);
+					orderedObs.setStatusType(StatusType.STATUS_NO_ORDER);
 				else
 					testCounter++;
 			}
 
-			saveOrderedObs(removedObs, null);
+			if (removedObs != null) {
+				orderedObs.setObs(removedObs);
+				// if the obs have encounter, then pull some info from the encounter
+				Encounter encounter = removedObs.getEncounter();
+				if (encounter != null) {
+					encounter = Context.getEncounterService().getEncounter(encounter.getEncounterId());
+					orderedObs.setLocation(encounter.getLocation());
+					orderedObs.setProvider(encounter.getProvider());
+				}
+				Context.getService(UtilService.class).saveOrderedObs(orderedObs);
+			}
 		}
 
 		while (CollectionUtils.isNotEmpty(resultObservations)) {
 			Obs removedObs = resultObservations.get(resultCounter++);
-			saveOrderedObs(removedObs, Status.STATUS_NO_ORDER);
+			saveOrderedObs(removedObs, StatusType.STATUS_NO_ORDER);
 		}
 
 		while (CollectionUtils.isNotEmpty(testObservations)) {
 			Obs removedObs = testObservations.remove(0);
-			saveOrderedObs(removedObs, Status.STATUS_NO_RESULT);
+			saveOrderedObs(removedObs, StatusType.STATUS_NO_RESULT);
 		}
 
 		Context.flushSession();
@@ -267,14 +277,14 @@ public class OrderedObsProcessor {
 	 * Save ordered obs with the specified status
 	 *
 	 * @param obs
-	 * @param status
+	 * @param statusType
 	 */
-	private void saveOrderedObs(Obs obs, Status status) {
+	private void saveOrderedObs(Obs obs, StatusType statusType) {
 		OrderedObs orderedObs = new OrderedObs();
 		orderedObs.setObs(obs);
 		// set status if the status is in the parameter
-		if (status != null)
-			orderedObs.setStatus(status);
+		if (statusType != null)
+			orderedObs.setStatusType(statusType);
 		// if the obs have encounter, then pull some info from the encounter
 		Encounter encounter = obs.getEncounter();
 		if (encounter != null) {

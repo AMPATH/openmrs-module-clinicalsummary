@@ -13,17 +13,17 @@
  */
 package org.openmrs.module.clinicalsummary.io;
 
+import java.io.File;
+import java.util.Properties;
+import javax.crypto.Cipher;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.clinicalsummary.Constants;
-import org.openmrs.module.clinicalsummary.io.utils.TaskStatus;
+import org.openmrs.module.clinicalsummary.enumeration.TaskStatus;
 import org.openmrs.util.OpenmrsUtil;
-
-import javax.crypto.Cipher;
-import java.io.File;
-import java.util.Properties;
 
 /**
  *

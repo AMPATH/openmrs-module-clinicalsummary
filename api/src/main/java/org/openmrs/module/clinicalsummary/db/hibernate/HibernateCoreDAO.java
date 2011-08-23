@@ -41,8 +41,8 @@ import org.openmrs.OpenmrsObject;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.module.clinicalsummary.cache.CacheUtils;
 import org.openmrs.module.clinicalsummary.db.CoreDAO;
+import org.openmrs.module.clinicalsummary.enumeration.FetchOrdering;
 import org.openmrs.module.clinicalsummary.rule.EvaluableNameConstants;
-import org.openmrs.module.clinicalsummary.util.FetchOrdering;
 import org.openmrs.module.clinicalsummary.util.FetchRestriction;
 import org.openmrs.util.OpenmrsUtil;
 

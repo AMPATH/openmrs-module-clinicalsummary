@@ -14,17 +14,17 @@
 
 package org.openmrs.module.clinicalsummary.db.hibernate;
 
+import java.util.List;
+
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.EncounterType;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.module.clinicalsummary.Mapping;
-import org.openmrs.module.clinicalsummary.MappingType;
 import org.openmrs.module.clinicalsummary.Summary;
 import org.openmrs.module.clinicalsummary.db.SummaryDAO;
-
-import java.util.List;
+import org.openmrs.module.clinicalsummary.enumeration.MappingType;
 
 /**
  * Hibernate operation from the summary module
@@ -94,7 +94,7 @@ public class HibernateSummaryDAO implements SummaryDAO {
 
 	/**
 	 * @see org.openmrs.module.clinicalsummary.db.SummaryDAO#getMappings(org.openmrs.module.clinicalsummary.Summary,
-	 *      org.openmrs.EncounterType, org.openmrs.module.clinicalsummary.MappingType)
+	 *      org.openmrs.EncounterType, org.openmrs.module.clinicalsummary.enumeration.MappingType)
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Mapping> getMappings(final Summary summary, final EncounterType encounterType, final MappingType mappingType) throws DAOException {

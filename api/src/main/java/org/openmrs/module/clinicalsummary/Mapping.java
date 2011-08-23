@@ -15,6 +15,7 @@ package org.openmrs.module.clinicalsummary;
 
 import org.openmrs.BaseOpenmrsMetadata;
 import org.openmrs.EncounterType;
+import org.openmrs.module.clinicalsummary.enumeration.MappingType;
 
 /**
  *

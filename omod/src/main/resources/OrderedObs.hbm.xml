@@ -6,7 +6,7 @@
 <hibernate-mapping>
 
 	<typedef name="status" class="org.openmrs.module.clinicalsummary.db.hibernate.type.StringEnumType">
-		<param name="enum">org.openmrs.module.clinicalsummary.util.obs.Status</param>
+		<param name="enum">org.openmrs.module.clinicalsummary.enumeration.StatusType</param>
 	</typedef>
 
 	<class name="org.openmrs.module.clinicalsummary.util.obs.OrderedObs" table="clinical_summary_ordered_observation">
@@ -31,7 +31,7 @@
 
 		<many-to-one name="obs" column="obs" class="org.openmrs.Obs" lazy="false" />
 
-		<property name="status" column="status" type="status" />
+		<property name="statusType" column="status" type="status" />
 
 		<many-to-one name="creator" class="org.openmrs.User" not-null="true">
 			<column name="creator" />

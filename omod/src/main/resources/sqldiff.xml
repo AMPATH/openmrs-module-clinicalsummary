@@ -1189,4 +1189,16 @@
 	</diff>
 
 
+	<diff>
+		<version>4.2.0</version>
+		<author>Nyoman Ribeka</author>
+		<date>June 27 2011</date>
+		<description>
+			Create unique on summary index on patient and summary
+		</description>
+		<sql>
+			ALTER TABLE clinical_summary_medication_response ADD COLUMN action_type varchar(255) DEFAULT NULL AFTER status;
+		</sql>
+	</diff>
+
 </sqldiff>

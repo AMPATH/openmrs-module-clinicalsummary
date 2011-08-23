@@ -12,7 +12,7 @@
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
 
-package org.openmrs.module.clinicalsummary.util;
+package org.openmrs.module.clinicalsummary.enumeration;
 
 import org.openmrs.module.clinicalsummary.db.hibernate.type.StringEnum;
 

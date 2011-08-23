@@ -14,6 +14,8 @@
 
 package org.openmrs.module.clinicalsummary.util.obs;
 
+import java.util.Date;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.BaseOpenmrsData;
@@ -21,8 +23,7 @@ import org.openmrs.Concept;
 import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Person;
-
-import java.util.Date;
+import org.openmrs.module.clinicalsummary.enumeration.StatusType;
 
 /**
  */
@@ -48,7 +49,7 @@ public class OrderedObs extends BaseOpenmrsData {
 
 	private Obs obs;
 
-	private Status status;
+	private StatusType statusType;
 
 	/**
 	 * @return id - The unique Identifier for the object
@@ -185,14 +186,14 @@ public class OrderedObs extends BaseOpenmrsData {
 	/**
 	 * @return
 	 */
-	public Status getStatus() {
-		return status;
+	public StatusType getStatusType() {
+		return statusType;
 	}
 
 	/**
-	 * @param status
+	 * @param statusType
 	 */
-	public void setStatus(final Status status) {
-		this.status = status;
+	public void setStatusType(final StatusType statusType) {
+		this.statusType = statusType;
 	}
 }

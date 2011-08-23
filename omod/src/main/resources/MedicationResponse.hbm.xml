@@ -6,7 +6,11 @@
 <hibernate-mapping>
 
 	<typedef name="medicationType" class="org.openmrs.module.clinicalsummary.db.hibernate.type.StringEnumType">
-		<param name="enum">org.openmrs.module.clinicalsummary.util.response.MedicationType</param>
+		<param name="enum">org.openmrs.module.clinicalsummary.enumeration.MedicationType</param>
+	</typedef>
+
+	<typedef name="actionType" class="org.openmrs.module.clinicalsummary.db.hibernate.type.StringEnumType">
+		<param name="enum">org.openmrs.module.clinicalsummary.enumeration.ActionType</param>
 	</typedef>
 
 	<class name="org.openmrs.module.clinicalsummary.util.response.MedicationResponse" table="clinical_summary_medication_response">
@@ -26,6 +30,8 @@
 		<property name="medicationDatetime" type="java.util.Date" column="medication_datetime" not-null="true" length="19" />
 
 		<property name="status" column="status" type="java.lang.Integer" />
+
+		<property name="actionType" column="action_type" type="actionType" />
 
 		<many-to-one name="creator" class="org.openmrs.User" not-null="true">
 			<column name="creator" />

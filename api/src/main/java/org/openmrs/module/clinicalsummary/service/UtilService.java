@@ -14,24 +14,24 @@
 
 package org.openmrs.module.clinicalsummary.service;
 
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 import org.openmrs.BaseOpenmrsData;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.Patient;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OpenmrsService;
+import org.openmrs.module.clinicalsummary.enumeration.AgeUnit;
+import org.openmrs.module.clinicalsummary.enumeration.Gender;
+import org.openmrs.module.clinicalsummary.enumeration.StatusType;
 import org.openmrs.module.clinicalsummary.util.obs.OrderedObs;
-import org.openmrs.module.clinicalsummary.util.obs.Status;
 import org.openmrs.module.clinicalsummary.util.response.MedicationResponse;
 import org.openmrs.module.clinicalsummary.util.response.ReminderResponse;
-import org.openmrs.module.clinicalsummary.util.weight.AgeUnit;
-import org.openmrs.module.clinicalsummary.util.weight.Gender;
 import org.openmrs.module.clinicalsummary.util.weight.WeightStandard;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 /**
  */
@@ -117,7 +117,7 @@ public interface UtilService extends OpenmrsService {
 	 *
 	 * @param restrictions       the map between ordered obs property to the list of values
 	 * @param groupingProperties list of property on which the projection should be performed
-	 * @param status
+	 * @param statusType
 	 * @param startTime          the start time of the ordered obs
 	 * @param endTime            the end time of the ordered obs
 	 * @return list of object array for the specific projection
@@ -125,7 +125,7 @@ public interface UtilService extends OpenmrsService {
 	 */
 	@Transactional(readOnly = true)
 	List<Object[]> aggregateOrderedObs(final Map<String, Collection<OpenmrsObject>> restrictions, final Collection<String> groupingProperties,
-	                                   final Status status, final Date startTime, final Date endTime) throws APIException;
+	                                   final StatusType statusType, final Date startTime, final Date endTime) throws APIException;
 
 	/**
 	 * Search and aggregate the ordered obs based on the projection property specified in the parameter

@@ -6,7 +6,7 @@
 <hibernate-mapping>
 
 	<typedef name="type" class="org.openmrs.module.clinicalsummary.db.hibernate.type.StringEnumType">
-		<param name="enum">org.openmrs.module.clinicalsummary.MappingType</param>
+		<param name="enum">org.openmrs.module.clinicalsummary.enumeration.MappingType</param>
 		<param name="defaultValue">Any Encounter</param>
 	</typedef>
 

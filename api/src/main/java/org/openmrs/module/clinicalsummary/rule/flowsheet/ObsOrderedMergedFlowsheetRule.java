@@ -30,6 +30,7 @@ import org.openmrs.Obs;
 import org.openmrs.logic.LogicContext;
 import org.openmrs.logic.LogicException;
 import org.openmrs.logic.result.Result;
+import org.openmrs.module.clinicalsummary.enumeration.StatusType;
 import org.openmrs.module.clinicalsummary.rule.EvaluableConstants;
 import org.openmrs.module.clinicalsummary.rule.EvaluableNameConstants;
 import org.openmrs.module.clinicalsummary.rule.EvaluableParameter;
@@ -37,7 +38,6 @@ import org.openmrs.module.clinicalsummary.rule.EvaluableRule;
 import org.openmrs.module.clinicalsummary.rule.encounter.EncounterWithStringRestrictionRule;
 import org.openmrs.module.clinicalsummary.rule.observation.ObsWithRestrictionRule;
 import org.openmrs.module.clinicalsummary.rule.observation.ObsWithStringRestrictionRule;
-import org.openmrs.module.clinicalsummary.util.obs.Status;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -88,7 +88,7 @@ public class ObsOrderedMergedFlowsheetRule extends EvaluableRule {
 				StringBuilder statusBuilder = new StringBuilder();
 				if (StringUtils.isNotEmpty(flowsheetResult.toString()))
 					statusBuilder.append(flowsheetResult.toString()).append(" ");
-				statusBuilder.append(Status.STATUS_NO_RESULT.getValue());
+				statusBuilder.append(StatusType.STATUS_NO_RESULT.getValue());
 				// create a copy of the same result as the test result above
 				flowsheetResult.setValueText(statusBuilder.toString());
 			} else {
@@ -108,7 +108,7 @@ public class ObsOrderedMergedFlowsheetRule extends EvaluableRule {
 					StringBuilder statusBuilder = new StringBuilder();
 					if (StringUtils.isNotEmpty(flowsheetResult.toString()))
 						statusBuilder.append(flowsheetResult.toString()).append(" ");
-					statusBuilder.append(Status.STATUS_NO_ORDER.getValue());
+					statusBuilder.append(StatusType.STATUS_NO_ORDER.getValue());
 					flowsheetResult.setValueText(statusBuilder.toString());
 				} else
 					testCounter++;
@@ -124,7 +124,7 @@ public class ObsOrderedMergedFlowsheetRule extends EvaluableRule {
 			StringBuilder statusBuilder = new StringBuilder();
 			if (StringUtils.isNotEmpty(flowsheetResult.toString()))
 				statusBuilder.append(flowsheetResult.toString()).append(" ");
-			statusBuilder.append(Status.STATUS_NO_ORDER.getValue());
+			statusBuilder.append(StatusType.STATUS_NO_ORDER.getValue());
 			flowsheetResult.setValueText(statusBuilder.toString());
 			// get the result to be merged
 			Date mergedDate = null;
@@ -145,7 +145,7 @@ public class ObsOrderedMergedFlowsheetRule extends EvaluableRule {
 			StringBuilder statusBuilder = new StringBuilder();
 			if (StringUtils.isNotEmpty(flowsheetResult.toString()))
 				statusBuilder.append(flowsheetResult.toString()).append(" ");
-			statusBuilder.append(Status.STATUS_NO_RESULT.getValue());
+			statusBuilder.append(StatusType.STATUS_NO_RESULT.getValue());
 			// create a copy of the same result as the test result above
 			flowsheetResult.setValueText(statusBuilder.toString());
 			// remove the value coded because we don't want to display the name of the test ordered

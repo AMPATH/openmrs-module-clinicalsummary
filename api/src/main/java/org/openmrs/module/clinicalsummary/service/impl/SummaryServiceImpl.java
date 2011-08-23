@@ -14,6 +14,11 @@
 
 package org.openmrs.module.clinicalsummary.service.impl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.EncounterType;
@@ -23,17 +28,12 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.logic.result.Result;
 import org.openmrs.module.clinicalsummary.Mapping;
-import org.openmrs.module.clinicalsummary.MappingType;
 import org.openmrs.module.clinicalsummary.Summary;
 import org.openmrs.module.clinicalsummary.db.SummaryDAO;
+import org.openmrs.module.clinicalsummary.enumeration.MappingType;
 import org.openmrs.module.clinicalsummary.rule.evaluator.SummaryValidatorRule;
 import org.openmrs.module.clinicalsummary.service.EvaluatorService;
 import org.openmrs.module.clinicalsummary.service.SummaryService;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  */
@@ -117,7 +117,7 @@ public class SummaryServiceImpl extends BaseOpenmrsService implements SummarySer
 
 	/**
 	 * @see org.openmrs.module.clinicalsummary.service.SummaryService#getMappings(org.openmrs.module.clinicalsummary.Summary,
-	 *      org.openmrs.EncounterType, org.openmrs.module.clinicalsummary.MappingType)
+	 *      org.openmrs.EncounterType, org.openmrs.module.clinicalsummary.enumeration.MappingType)
 	 */
 	public List<Mapping> getMappings(final Summary summary, final EncounterType encounterType, final MappingType mappingType) throws APIException {
 		return summaryDAO.getMappings(summary, encounterType, mappingType);

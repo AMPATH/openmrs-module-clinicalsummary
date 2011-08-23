@@ -13,13 +13,13 @@
  */
 package org.openmrs.module.clinicalsummary.db;
 
+import java.util.List;
+
 import org.openmrs.EncounterType;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.module.clinicalsummary.Mapping;
-import org.openmrs.module.clinicalsummary.MappingType;
 import org.openmrs.module.clinicalsummary.Summary;
-
-import java.util.List;
+import org.openmrs.module.clinicalsummary.enumeration.MappingType;
 
 public interface SummaryDAO {
 

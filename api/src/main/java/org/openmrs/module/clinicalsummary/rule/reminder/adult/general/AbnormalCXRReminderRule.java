@@ -16,6 +16,7 @@ package org.openmrs.module.clinicalsummary.rule.reminder.adult.general;
 
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -64,9 +65,15 @@ public class AbnormalCXRReminderRule extends EvaluableRule {
 			// check the date of the latest result
 			Calendar calendar = Calendar.getInstance();
 			calendar.add(Calendar.MONTH, -1);
+			Date oneMonthAgo = calendar.getTime();
+
+			calendar = Calendar.getInstance();
+			calendar.add(Calendar.MONTH, -12);
+			Date oneYearAgo = calendar.getTime();
 
 			// if the result is more than 1 month ago, then check the test to see if any was ordered before
-			if (concepts.contains(cxrResult.toConcept()) && cxrResult.getResultDate().before(calendar.getTime())) {
+			if (concepts.contains(cxrResult.toConcept())
+					&& cxrResult.getResultDate().before(oneMonthAgo) && cxrResult.getResultDate().after(oneYearAgo)) {
 
 				Boolean displayReminder = Boolean.TRUE;
 
@@ -76,7 +83,8 @@ public class AbnormalCXRReminderRule extends EvaluableRule {
 				if (CollectionUtils.isNotEmpty(testOrderedResults)) {
 					Result testOrderedResult = testOrderedResults.latest();
 					// check the test ordered date
-					calendar.add(Calendar.MONTH, -5);
+					calendar = Calendar.getInstance();
+					calendar.add(Calendar.MONTH, -6);
 					// test ordered after 6 months ago and comes after the latest cxr result
 					if (testOrderedResult.getResultDate().after(calendar.getTime())
 							&& testOrderedResult.getResultDate().after(cxrResult.getResultDate()))
