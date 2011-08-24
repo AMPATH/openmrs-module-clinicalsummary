@@ -14,15 +14,15 @@
 
 package org.openmrs.module.clinicalsummary.util.response;
 
+import java.util.Date;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.BaseOpenmrsData;
+import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 
-import java.util.Date;
-
-public class ReminderResponse extends BaseOpenmrsData {
+public class ReminderResponse extends Response {
 
 	private static final Log log = LogFactory.getLog(ReminderResponse.class);
 
@@ -31,6 +31,8 @@ public class ReminderResponse extends BaseOpenmrsData {
 	private Patient patient;
 
 	private Person provider;
+
+	private Location location;
 
 	private String token;
 
@@ -78,6 +80,20 @@ public class ReminderResponse extends BaseOpenmrsData {
 	 */
 	public void setProvider(final Person provider) {
 		this.provider = provider;
+	}
+
+	/**
+	 * @return
+	 */
+	public Location getLocation () {
+		return location;
+	}
+
+	/**
+	 * @param location
+	 */
+	public void setLocation(final Location location) {
+		this.location = location;
 	}
 
 	/**

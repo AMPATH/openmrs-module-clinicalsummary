@@ -15,6 +15,8 @@
 
 		<many-to-one name="provider" column="provider" class="org.openmrs.Person" lazy="false" />
 
+		<many-to-one name="location" column="location" class="org.openmrs.Location" lazy="false" />
+
 		<property name="token" column="token" type="java.lang.String" />
 
 		<property name="response" column="response" type="java.lang.String" />

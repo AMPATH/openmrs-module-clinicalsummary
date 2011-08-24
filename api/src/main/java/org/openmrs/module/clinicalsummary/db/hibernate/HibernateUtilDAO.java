@@ -31,6 +31,7 @@ import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.BaseOpenmrsData;
+import org.openmrs.Location;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.Patient;
 import org.openmrs.api.db.DAOException;
@@ -41,8 +42,7 @@ import org.openmrs.module.clinicalsummary.enumeration.Gender;
 import org.openmrs.module.clinicalsummary.enumeration.StatusType;
 import org.openmrs.module.clinicalsummary.rule.EvaluableNameConstants;
 import org.openmrs.module.clinicalsummary.util.obs.OrderedObs;
-import org.openmrs.module.clinicalsummary.util.response.MedicationResponse;
-import org.openmrs.module.clinicalsummary.util.response.ReminderResponse;
+import org.openmrs.module.clinicalsummary.util.response.Response;
 import org.openmrs.module.clinicalsummary.util.weight.WeightStandard;
 
 /**
@@ -198,10 +198,25 @@ public class HibernateUtilDAO implements UtilDAO {
 	}
 
 	/**
-	 * @see UtilDAO#saveResponses(java.util.List)
-	 * @param responses
+	 * @see UtilDAO#saveResponse(org.openmrs.module.clinicalsummary.util.response.Response)
 	 */
-	public List<? extends BaseOpenmrsData> saveResponses(final List<? extends BaseOpenmrsData> responses) {
+	public <T extends Response> T saveResponse(final T response) throws DAOException {
+		sessionFactory.getCurrentSession().saveOrUpdate(response);
+		return response;
+	}
+
+	/**
+	 * @see UtilDAO#getResponse(Class, Integer)
+	 */
+	@SuppressWarnings("unchecked")
+	public <T extends Response> T getResponse(final Class<? extends Response> clazz, final Integer id) throws DAOException {
+		return (T) sessionFactory.getCurrentSession().get(clazz, id);
+	}
+
+	/**
+	 * @see UtilDAO#saveResponses(java.util.List)
+	 */
+	public List<? extends Response> saveResponses(final List<? extends Response> responses) throws DAOException {
 		int counter = 0;
 		Session session = sessionFactory.getCurrentSession();
 		for (BaseOpenmrsData response : responses) {
@@ -216,11 +231,11 @@ public class HibernateUtilDAO implements UtilDAO {
 	}
 
 	/**
-	 * @see UtilDAO#getMedicationResponses(org.openmrs.Patient)
+	 * @see UtilDAO#getResponses(Class, org.openmrs.Patient)
 	 */
 	@SuppressWarnings("unchecked")
-	public List<MedicationResponse> getMedicationResponses(final Patient patient) {
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(MedicationResponse.class);
+	public List<? extends Response> getResponses(final Class<? extends Response> clasz, final Patient patient) throws DAOException {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(clasz);
 
 		criteria.add(Restrictions.eq("patient", patient));
 		criteria.add(Restrictions.eq("voided", Boolean.FALSE));
@@ -229,13 +244,21 @@ public class HibernateUtilDAO implements UtilDAO {
 	}
 
 	/**
-	 * @see UtilDAO#getMedicationResponses(org.openmrs.Patient)
+	 * @see UtilDAO#getResponses(Class, org.openmrs.Location, java.util.Date, java.util.Date)
 	 */
 	@SuppressWarnings("unchecked")
-	public List<ReminderResponse> getReminderResponses(final Patient patient) {
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ReminderResponse.class);
+	public List<? extends Response> getResponses(final Class<? extends Response> clasz, final Location location,
+	                                             final Date startDate, final Date endDate) throws DAOException {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(clasz);
 
-		criteria.add(Restrictions.eq("patient", patient));
+		criteria.add(Restrictions.eq("location", location));
+
+		if (startDate != null)
+			criteria.add(Restrictions.ge("dateCreated", startDate));
+
+		if (endDate != null)
+			criteria.add(Restrictions.le("dateCreated", endDate));
+
 		criteria.add(Restrictions.eq("voided", Boolean.FALSE));
 
 		return criteria.list();

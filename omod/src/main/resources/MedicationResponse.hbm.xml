@@ -23,13 +23,19 @@
 
 		<many-to-one name="provider" column="provider" class="org.openmrs.Person" lazy="false" />
 
-		<many-to-one name="concept" column="concept" class="org.openmrs.Concept" lazy="false" />
+		<many-to-one name="location" column="location" class="org.openmrs.Location" lazy="false" />
+
+		<many-to-one name="medication" column="medication" class="org.openmrs.Concept" lazy="false" />
 
 		<property name="medicationType" column="medication_type" type="medicationType" />
 
 		<property name="medicationDatetime" type="java.util.Date" column="medication_datetime" not-null="true" length="19" />
 
 		<property name="status" column="status" type="java.lang.Integer" />
+
+		<many-to-one name="reviewer" column="reviewer" class="org.openmrs.Person" lazy="false" />
+
+		<property name="dateReviewed" type="java.util.Date" column="date_reviewed" not-null="true" length="19" />
 
 		<property name="actionType" column="action_type" type="actionType" />
 

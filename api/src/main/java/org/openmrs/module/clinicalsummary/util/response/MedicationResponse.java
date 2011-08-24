@@ -18,14 +18,14 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.BaseOpenmrsData;
 import org.openmrs.Concept;
+import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.module.clinicalsummary.enumeration.ActionType;
 import org.openmrs.module.clinicalsummary.enumeration.MedicationType;
 
-public class MedicationResponse extends BaseOpenmrsData {
+public class MedicationResponse extends Response {
 
 	private static final Log log = LogFactory.getLog(MedicationResponse.class);
 
@@ -35,13 +35,19 @@ public class MedicationResponse extends BaseOpenmrsData {
 
 	private Person provider;
 
-	private Concept concept;
+	private Location location;
+
+	private Concept medication;
 
 	private MedicationType medicationType;
 
 	private Date medicationDatetime;
 
 	private Integer status;
+
+	private Person reviewer;
+
+	private Date dateReviewed;
 
 	private ActionType actionType;
 
@@ -90,15 +96,29 @@ public class MedicationResponse extends BaseOpenmrsData {
 	/**
 	 * @return
 	 */
-	public Concept getConcept() {
-		return concept;
+	public Location getLocation() {
+		return location;
 	}
 
 	/**
-	 * @param concept
+	 * @param location
 	 */
-	public void setConcept(final Concept concept) {
-		this.concept = concept;
+	public void setLocation(final Location location) {
+		this.location = location;
+	}
+
+	/**
+	 * @return
+	 */
+	public Concept getMedication() {
+		return medication;
+	}
+
+	/**
+	 * @param medication
+	 */
+	public void setMedication(final Concept medication) {
+		this.medication = medication;
 	}
 
 	/**
@@ -141,6 +161,34 @@ public class MedicationResponse extends BaseOpenmrsData {
 	 */
 	public void setStatus(final Integer status) {
 		this.status = status;
+	}
+
+	/**
+	 * @return
+	 */
+	public Person getReviewer() {
+		return reviewer;
+	}
+
+	/**
+	 * @param reviewer
+	 */
+	public void setReviewer(final Person reviewer) {
+		this.reviewer = reviewer;
+	}
+
+	/**
+	 * @return
+	 */
+	public Date getDateReviewed() {
+		return dateReviewed;
+	}
+
+	/**
+	 * @param dateReviewed
+	 */
+	public void setDateReviewed(final Date dateReviewed) {
+		this.dateReviewed = dateReviewed;
 	}
 
 	/**

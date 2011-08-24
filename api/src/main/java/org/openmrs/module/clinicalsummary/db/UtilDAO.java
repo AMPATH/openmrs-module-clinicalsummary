@@ -18,7 +18,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.openmrs.BaseOpenmrsData;
+import org.openmrs.Location;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.Patient;
 import org.openmrs.api.db.DAOException;
@@ -26,8 +26,7 @@ import org.openmrs.module.clinicalsummary.enumeration.AgeUnit;
 import org.openmrs.module.clinicalsummary.enumeration.Gender;
 import org.openmrs.module.clinicalsummary.enumeration.StatusType;
 import org.openmrs.module.clinicalsummary.util.obs.OrderedObs;
-import org.openmrs.module.clinicalsummary.util.response.MedicationResponse;
-import org.openmrs.module.clinicalsummary.util.response.ReminderResponse;
+import org.openmrs.module.clinicalsummary.util.response.Response;
 import org.openmrs.module.clinicalsummary.util.weight.WeightStandard;
 
 /**
@@ -55,9 +54,14 @@ public interface UtilDAO {
 	List<Object[]> aggregateOrderedObs(final Map<String, Collection<OpenmrsObject>> restrictions, final Collection<String> groupingProperties,
 	                                   final StatusType statusType, final Date startTime, final Date endTime) throws DAOException;
 
-	List<? extends BaseOpenmrsData> saveResponses(List<? extends BaseOpenmrsData> responses);
+	<T extends Response> T saveResponse(final T response) throws DAOException;
 
-	List<MedicationResponse> getMedicationResponses(Patient patient);
+	<T extends Response> T getResponse(final Class<? extends Response> clazz, final Integer id) throws DAOException;
 
-	List<ReminderResponse> getReminderResponses(Patient patient);
+	List<? extends Response> saveResponses(List<? extends Response> responses) throws DAOException;
+
+	List<? extends Response> getResponses(final Class<? extends Response> clazz, final Patient patient) throws DAOException;
+
+	List<? extends Response> getResponses(final Class<? extends Response> clazz, final Location location,
+	                                      final Date startDate, final Date endDate) throws DAOException;
 }

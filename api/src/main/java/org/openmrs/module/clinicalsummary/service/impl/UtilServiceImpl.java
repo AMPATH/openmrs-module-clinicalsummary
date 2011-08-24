@@ -21,7 +21,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.BaseOpenmrsData;
+import org.openmrs.Location;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.Patient;
 import org.openmrs.api.APIException;
@@ -32,8 +32,7 @@ import org.openmrs.module.clinicalsummary.enumeration.Gender;
 import org.openmrs.module.clinicalsummary.enumeration.StatusType;
 import org.openmrs.module.clinicalsummary.service.UtilService;
 import org.openmrs.module.clinicalsummary.util.obs.OrderedObs;
-import org.openmrs.module.clinicalsummary.util.response.MedicationResponse;
-import org.openmrs.module.clinicalsummary.util.response.ReminderResponse;
+import org.openmrs.module.clinicalsummary.util.response.Response;
 import org.openmrs.module.clinicalsummary.util.weight.WeightStandard;
 
 /**
@@ -133,23 +132,36 @@ public class UtilServiceImpl extends BaseOpenmrsService implements UtilService {
 
 	/**
 	 * @see UtilService#saveResponses(java.util.List)
-	 * @param responses
 	 */
-	public List<? extends BaseOpenmrsData> saveResponses(final List<? extends BaseOpenmrsData> responses) {
+	public List<? extends Response> saveResponses(final List<? extends Response> responses) {
 		return utilDAO.saveResponses(responses);
 	}
 
 	/**
-	 * @see UtilService#getMedicationResponses(org.openmrs.Patient)
+	 * @see UtilService#saveResponse(org.openmrs.module.clinicalsummary.util.response.Response)
 	 */
-	public List<MedicationResponse> getMedicationResponses(final Patient patient) {
-		return utilDAO.getMedicationResponses(patient);
+	public <T extends Response> T saveResponse(final T response) throws APIException {
+		return utilDAO.saveResponse(response);
 	}
 
 	/**
-	 * @see UtilService#getMedicationResponses(org.openmrs.Patient)
+	 * @see UtilService#getResponse(Class, Integer)
 	 */
-	public List<ReminderResponse> getReminderResponses(final Patient patient) {
-		return utilDAO.getReminderResponses(patient);
+	public <T extends Response> T getResponse(final Class<? extends Response> clazz, final Integer id) throws APIException {
+		return utilDAO.getResponse(clazz, id);
+	}
+
+	/**
+	 * @see UtilService#getResponses(Class, org.openmrs.Patient)
+	 */
+	public List<? extends Response> getResponses(final Class<? extends Response> clazz, final Patient patient) throws APIException {
+		return utilDAO.getResponses(clazz, patient);
+	}
+
+	/**
+	 * @see UtilService#getResponses(Class, org.openmrs.Location, java.util.Date, java.util.Date)
+	 */
+	public List<? extends Response> getResponses(final Class<? extends Response> clazz, final Location location, final Date startDate, final Date endDate) throws APIException {
+		return null;  //To change body of implemented methods use File | Settings | File Templates.
 	}
 }
