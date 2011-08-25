@@ -51,6 +51,8 @@ public class MedicationResponse extends Response {
 
 	private ActionType actionType;
 
+	private String reviewComment;
+
 	/**
 	 * @return id - The unique Identifier for the object
 	 */
@@ -189,6 +191,20 @@ public class MedicationResponse extends Response {
 	 */
 	public void setDateReviewed(final Date dateReviewed) {
 		this.dateReviewed = dateReviewed;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getReviewComment() {
+		return reviewComment;
+	}
+
+	/**
+	 * @param reviewComment
+	 */
+	public void setReviewComment(final String reviewComment) {
+		this.reviewComment = reviewComment;
 	}
 
 	/**

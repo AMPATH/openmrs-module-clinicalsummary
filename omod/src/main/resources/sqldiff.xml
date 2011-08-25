@@ -1228,4 +1228,16 @@
 		</sql>
 	</diff>
 
+	<diff>
+		<version>4.2.4</version>
+		<author>Nyoman Ribeka</author>
+		<date>June 27 2011</date>
+		<description>
+			Added more column on the response table
+		</description>
+		<sql>
+			ALTER TABLE clinical_summary_medication_response ADD COLUMN review_comment VARCHAR(255) DEFAULT NULL AFTER date_reviewed;
+		</sql>
+	</diff>
+
 </sqldiff>

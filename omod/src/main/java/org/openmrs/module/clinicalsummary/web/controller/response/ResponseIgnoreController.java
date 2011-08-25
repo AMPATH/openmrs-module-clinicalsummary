@@ -14,8 +14,14 @@
 
 package org.openmrs.module.clinicalsummary.web.controller.response;
 
+import java.util.Date;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.context.Context;
+import org.openmrs.module.clinicalsummary.enumeration.ActionType;
+import org.openmrs.module.clinicalsummary.service.UtilService;
+import org.openmrs.module.clinicalsummary.util.response.MedicationResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,9 +32,19 @@ public class ResponseIgnoreController {
 
 	private static final Log log = LogFactory.getLog(ResponseIgnoreController.class);
 
-	@RequestMapping(method = RequestMethod.GET, value = "/module/clinicalsummary/response/responseIgnore")
-	public void processIgnore(final @RequestParam(required = true, value = "id") Integer responseId) {
-		log.info("Save the reason and return nothing");
+	@RequestMapping(method = RequestMethod.POST, value = "/module/clinicalsummary/response/responseIgnore")
+	public void processIgnore(final @RequestParam(required = true, value = "id") Integer responseId,
+	                          final @RequestParam(required = true, value = "comment") String comment) {
+
+		if (Context.isAuthenticated()) {
+			UtilService service = Context.getService(UtilService.class);
+			MedicationResponse medicationResponse = service.getResponse(MedicationResponse.class, responseId);
+			medicationResponse.setReviewer(Context.getAuthenticatedUser().getPerson());
+			medicationResponse.setDateReviewed(new Date());
+			medicationResponse.setReviewComment(comment);
+			medicationResponse.setActionType(ActionType.ACTION_IGNORED);
+			service.saveResponse(medicationResponse);
+		}
 	}
 
 }
