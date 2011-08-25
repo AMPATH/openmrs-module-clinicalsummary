@@ -14,24 +14,21 @@
 
 package org.openmrs.module.clinicalsummary.web.controller.response;
 
-import java.util.Arrays;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.module.clinicalsummary.enumeration.ResponseDisplayType;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
-public class ResponseListController {
+public class ResponseAcceptController {
 
-	private static final Log log = LogFactory.getLog(ResponseListController.class);
+	private static final Log log = LogFactory.getLog(ResponseAcceptController.class);
 
-	@RequestMapping(method = RequestMethod.GET, value = "/module/clinicalsummary/response/responseList")
-	public void populatePage(final ModelMap map) {
-		map.addAttribute("displayTypes", Arrays.asList(ResponseDisplayType.DISPLAY_THIS_WEEK_RESPONSES,
-				ResponseDisplayType.DISPLAY_THIS_WEEK_RESPONSES));
+	@RequestMapping(method = RequestMethod.POST, value = "/module/clinicalsummary/response/responseAccept")
+	public void processAccept(final @RequestParam(required = true, value = "id") Integer responseId) {
+		log.info("Save the reason and return nothing");
 	}
+
 }

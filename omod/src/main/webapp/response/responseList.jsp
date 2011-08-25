@@ -15,6 +15,8 @@
 	$j(function() {
 
 		$j("#search").click(function() {
+			$j("#searchcontainer").show();
+			$j("#searchcontainer tr").remove();
 			var data = $j("#form").serialize();
 			$j.ajax({
 				url: "responseSearch.form",
@@ -26,7 +28,7 @@
 						var header = null;
 						jQuery.each(responses, function() {
 							if (header == null) {
-							    header = "<tr><td colspan='3'><span style='font-weight: bold'>Patient Name: <span>" + this.patientName + "</td></tr>";
+							    header = "<tr><td colspan='3'><span style='font-weight: bold'>Patient Name: " + this.patientName + " </span></td></tr>";
 								$j("#result").append(header);
 							}
 
@@ -35,7 +37,7 @@
 								data += "<td>Please remove " + this.medicationName + " from encounter on " + this.medicationDatetime + "</td>";
 							else if (this.status == 0)
 								data += "<td>Please add " + this.medicationName + " to encounter on " + this.medicationDatetime + "</td>";
-							data += "<td> Accept | Ignore </td></tr>";
+							data += "<td> <a href='responseAccept.form?id=" + this.id + "'>Accept</a> | <a href='responseIgnore.form?id=" + this.id + "'>Ignore</a> </td></tr>";
 							$j("#result").append(data);
 						});
 					});
@@ -87,15 +89,17 @@
 				</fieldset>
 			</form>
 		</div>
-		<div id="rightcontent">
-			<table cellpadding="0" cellspacing="0" border="0" class="display">
-				<thead>
-					<tr>
-						<th class="header" colspan="3">Response Results</th>
-					</tr>
-				</thead>
-				<tbody id="result"></tbody>
-			</table>
+		<div id="maincontent">
+			<fieldset id="searchcontainer" style="display: none">
+				<ol>
+					<li>
+						<label for="search"><span style="font-weight: bold; font-size=1em"><spring:message code="clinicalsummary.response.search"/></span></label>
+						<table cellpadding="0" cellspacing="0" border="0" class="display">
+							<tbody id="result"></tbody>
+						</table>
+					</li>
+				</ol>
+			</fieldset>
 		</div>
 		<div id="clear"></div>
 	</div>

@@ -46,7 +46,7 @@ public class SearchResponseController {
 	public
 	@ResponseBody
 	Map<Integer, List<MedicationResponseForm>> searchResponses(final @RequestParam(required = true, value = "locationId") String locationId,
-	                                             final @RequestParam(required = false, value = "displayType") ResponseDisplayType displayType) {
+	                                                           final @RequestParam(required = false, value = "displayType") ResponseDisplayType displayType) {
 
 		Map<Integer, List<MedicationResponseForm>> responseMap = new HashMap<Integer, List<MedicationResponseForm>>();
 		if (Context.isAuthenticated()) {
