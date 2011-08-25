@@ -11,6 +11,7 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
+
 package org.openmrs.module.clinicalsummary.db;
 
 import java.util.Collection;
@@ -56,12 +57,12 @@ public interface UtilDAO {
 
 	<T extends Response> T saveResponse(final T response) throws DAOException;
 
-	<T extends Response> T getResponse(final Class<? extends Response> clazz, final Integer id) throws DAOException;
+	<T extends Response> T getResponse(final Class<T> clazz, final Integer id) throws DAOException;
 
-	List<? extends Response> saveResponses(List<? extends Response> responses) throws DAOException;
+	<T extends Response> List<T> saveResponses(List<T> responses) throws DAOException;
 
-	List<? extends Response> getResponses(final Class<? extends Response> clazz, final Patient patient) throws DAOException;
+	<T extends Response> List<T> getResponses(final Class<T> clazz, final Patient patient) throws DAOException;
 
-	List<? extends Response> getResponses(final Class<? extends Response> clazz, final Location location,
-	                                      final Date startDate, final Date endDate) throws DAOException;
+	<T extends Response> List<T> getResponses(final Class<T> clazz, final Location location,
+	                                          final Date startDate, final Date endDate) throws DAOException;
 }

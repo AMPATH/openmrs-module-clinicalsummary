@@ -153,7 +153,7 @@ public interface UtilService extends OpenmrsService {
 	 * @return list of all saved medication responses
 	 * @throws APIException
 	 */
-	List<? extends Response> saveResponses(final List<? extends Response> responses) throws APIException;
+	<T extends Response> List<T> saveResponses(final List<T> responses) throws APIException;
 
 	/**
 	 * Get an ordered observation based on the id
@@ -174,7 +174,7 @@ public interface UtilService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
-	<T extends Response> T getResponse(final Class<? extends Response> clazz, final Integer id) throws APIException;
+	<T extends Response> T getResponse(final Class<T> clazz, final Integer id) throws APIException;
 
 	/**
 	 * Search medication responses by patient
@@ -185,17 +185,19 @@ public interface UtilService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
-	List<? extends Response> getResponses(final Class<? extends Response> clazz, final Patient patient) throws APIException;
+	<T extends Response> List<T> getResponses(final Class<T> clazz, final Patient patient) throws APIException;
 
 	/**
 	 * Search medication responses by patient
 	 *
-	 * @param clazz    the class to be retrieved
-	 * @param location the location
+	 * @param clazz     the class to be retrieved
+	 * @param location  the location
+	 * @param startDate the earliest date of when the response was created
+	 * @param endDate   the latest date of when the response was created
 	 * @return list of all medication responses for the particular patient
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
-	List<? extends Response> getResponses(final Class<? extends Response> clazz, final Location location,
-	                                      final Date startDate, final Date endDate) throws APIException;
+	<T extends Response> List<T> getResponses(final Class<T> clazz, final Location location,
+	                                          final Date startDate, final Date endDate) throws APIException;
 }

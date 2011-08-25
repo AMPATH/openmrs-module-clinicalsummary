@@ -26,7 +26,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.BaseOpenmrsData;
 import org.openmrs.Concept;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
@@ -38,6 +37,7 @@ import org.openmrs.module.clinicalsummary.service.LoggableService;
 import org.openmrs.module.clinicalsummary.service.UtilService;
 import org.openmrs.module.clinicalsummary.util.response.MedicationResponse;
 import org.openmrs.module.clinicalsummary.util.response.ReminderResponse;
+import org.openmrs.module.clinicalsummary.util.response.Response;
 import org.openmrs.module.clinicalsummary.web.controller.WebUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -64,7 +64,7 @@ public class ResponseController {
 			if (!Context.isAuthenticated())
 				Context.authenticate(username, password);
 
-			List<BaseOpenmrsData> responses = new ArrayList<BaseOpenmrsData>();
+			List<Response> responses = new ArrayList<Response>();
 
 			Map parameterMap = request.getParameterMap();
 			for (Object parameterName : parameterMap.keySet()) {
@@ -73,11 +73,15 @@ public class ResponseController {
 						&& !StringUtils.equalsIgnoreCase(PASSWORD, String.valueOf(parameterName))) {
 
 					String patientId = String.valueOf(parameterName);
-					log.info("Patient ID: " + patientId);
 					Patient patient = Context.getPatientService().getPatient(NumberUtils.toInt(patientId));
 
 					String[] parameterValues = (String[]) parameterMap.get(parameterName);
-					log.info("Parameter Values: " + parameterValues);
+
+					if (log.isDebugEnabled()) {
+						log.debug("Patient ID: " + patientId);
+						log.debug("Parameter Values: " + String.valueOf(parameterValues));
+					}
+
 					for (String parameterValue : parameterValues) {
 						String[] parameter = StringUtils.split(parameterValue, "|");
 						if (StringUtils.equalsIgnoreCase(HEADER_REMINDER, parameter[0])) {
@@ -90,28 +94,27 @@ public class ResponseController {
 							// add to the list
 							responses.add(reminderResponse);
 						} else {
-							MedicationResponse medicationResponse = new MedicationResponse();
-							medicationResponse.setPatient(patient);
-							medicationResponse.setProvider(Context.getAuthenticatedUser().getPerson());
-
-							for (MedicationType medicationType : MedicationType.values())
-								if (StringUtils.equals(medicationType.getValue(), parameter[0]))
-									medicationResponse.setMedicationType(medicationType);
-
 							// get the concept from the cache or search the database when the concept is not in the cache
 							Concept concept = CacheUtils.getConcept(parameter[1]);
 							// if we still can't find the concept, the log this as an error
 							if (concept == null) {
-								Loggable loggable = new Loggable(patient, "Concept name: " + parameter[1] + " not found in the database");
+								Loggable loggable = new Loggable(patient, "Unable to find concept with name: " + parameter[1] + " in the database.");
 								Context.getService(LoggableService.class).saveLoggable(loggable);
-								continue;
-							}
-							medicationResponse.setConcept(concept);
+							} else {
+								MedicationResponse medicationResponse = new MedicationResponse();
+								medicationResponse.setPatient(patient);
+								medicationResponse.setProvider(Context.getAuthenticatedUser().getPerson());
 
-							medicationResponse.setMedicationDatetime(WebUtils.parse(parameter[2], new Date()));
-							medicationResponse.setStatus(NumberUtils.toInt(parameter[3]));
-							// add to the list
-							responses.add(medicationResponse);
+								for (MedicationType medicationType : MedicationType.values())
+									if (StringUtils.equals(medicationType.getValue(), parameter[0]))
+										medicationResponse.setMedicationType(medicationType);
+								medicationResponse.setMedication(concept);
+
+								medicationResponse.setMedicationDatetime(WebUtils.parse(parameter[2], new Date()));
+								medicationResponse.setStatus(NumberUtils.toInt(parameter[3]));
+								// add to the list
+								responses.add(medicationResponse);
+							}
 						}
 					}
 					Context.getService(UtilService.class).saveResponses(responses);

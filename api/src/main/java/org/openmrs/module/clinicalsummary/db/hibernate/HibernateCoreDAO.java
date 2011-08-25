@@ -182,9 +182,9 @@ public class HibernateCoreDAO implements CoreDAO {
 	}
 
 	/**
-	 * @see CoreDAO#getCohort(org.openmrs.Location, java.util.Date, java.util.Date)
+	 * @see CoreDAO#getDateCreatedCohort(org.openmrs.Location, java.util.Date, java.util.Date)
 	 */
-	public Cohort getCohort(final Location location, final Date startDate, final Date endDate) throws DAOException {
+	public Cohort getDateCreatedCohort(final Location location, final Date startDate, final Date endDate) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Obs.class);
 
 		if (location != null)
@@ -204,7 +204,7 @@ public class HibernateCoreDAO implements CoreDAO {
 	}
 
 	/**
-	 * @see CoreDAO#getCohort(org.openmrs.Location, java.util.Date, java.util.Date)
+	 * @see CoreDAO#getDateCreatedCohort(org.openmrs.Location, java.util.Date, java.util.Date)
 	 */
 	public Cohort getReturnDateCohort(final Location location, final Date startDate, final Date endDate) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Obs.class);

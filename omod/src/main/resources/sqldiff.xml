@@ -1190,7 +1190,7 @@
 
 
 	<diff>
-		<version>4.2.0</version>
+		<version>4.2.1</version>
 		<author>Nyoman Ribeka</author>
 		<date>June 27 2011</date>
 		<description>
@@ -1202,7 +1202,19 @@
 	</diff>
 
 	<diff>
-		<version>4.2.1</version>
+		<version>4.2.2</version>
+		<author>Nyoman Ribeka</author>
+		<date>June 27 2011</date>
+		<description>
+			Added more column on the response table
+		</description>
+		<sql>
+			ALTER TABLE clinical_summary_reminder_response ADD COLUMN location INTEGER DEFAULT NULL AFTER provider;
+		</sql>
+	</diff>
+
+	<diff>
+		<version>4.2.3</version>
 		<author>Nyoman Ribeka</author>
 		<date>June 27 2011</date>
 		<description>
@@ -1213,18 +1225,6 @@
 			ALTER TABLE clinical_summary_medication_response ADD COLUMN location INTEGER DEFAULT NULL AFTER provider;
 			ALTER TABLE clinical_summary_medication_response ADD COLUMN reviewer INTEGER DEFAULT NULL AFTER status;
 			ALTER TABLE clinical_summary_medication_response ADD COLUMN date_reviewed DATETIME DEFAULT '0000-00-00 00:00:00' AFTER reviewer;
-		</sql>
-	</diff>
-
-	<diff>
-		<version>4.2.1</version>
-		<author>Nyoman Ribeka</author>
-		<date>June 27 2011</date>
-		<description>
-			Added more column on the response table
-		</description>
-		<sql>
-			ALTER TABLE clinical_summary_reminder_response ADD COLUMN location INTEGER DEFAULT NULL AFTER provider;
 		</sql>
 	</diff>
 

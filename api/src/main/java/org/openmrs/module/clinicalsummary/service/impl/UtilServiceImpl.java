@@ -133,7 +133,7 @@ public class UtilServiceImpl extends BaseOpenmrsService implements UtilService {
 	/**
 	 * @see UtilService#saveResponses(java.util.List)
 	 */
-	public List<? extends Response> saveResponses(final List<? extends Response> responses) {
+	public <T extends Response> List<T> saveResponses(final List<T> responses) {
 		return utilDAO.saveResponses(responses);
 	}
 
@@ -147,21 +147,22 @@ public class UtilServiceImpl extends BaseOpenmrsService implements UtilService {
 	/**
 	 * @see UtilService#getResponse(Class, Integer)
 	 */
-	public <T extends Response> T getResponse(final Class<? extends Response> clazz, final Integer id) throws APIException {
+	public <T extends Response> T getResponse(final Class<T> clazz, final Integer id) throws APIException {
 		return utilDAO.getResponse(clazz, id);
 	}
 
 	/**
 	 * @see UtilService#getResponses(Class, org.openmrs.Patient)
 	 */
-	public List<? extends Response> getResponses(final Class<? extends Response> clazz, final Patient patient) throws APIException {
+	public <T extends Response> List<T> getResponses(final Class<T> clazz, final Patient patient) throws APIException {
 		return utilDAO.getResponses(clazz, patient);
 	}
 
 	/**
 	 * @see UtilService#getResponses(Class, org.openmrs.Location, java.util.Date, java.util.Date)
 	 */
-	public List<? extends Response> getResponses(final Class<? extends Response> clazz, final Location location, final Date startDate, final Date endDate) throws APIException {
-		return null;  //To change body of implemented methods use File | Settings | File Templates.
+	public <T extends Response> List<T> getResponses(final Class<T> clazz, final Location location,
+	                                             final Date startDate, final Date endDate) throws APIException {
+		return utilDAO.getResponses(clazz, location, startDate, endDate);
 	}
 }

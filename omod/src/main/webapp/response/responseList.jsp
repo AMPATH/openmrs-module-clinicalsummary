@@ -8,12 +8,31 @@
 <openmrs:htmlInclude file="/scripts/calendar/calendar.js"/>
 <openmrs:htmlInclude file="/moduleResources/clinicalsummary/css/form.css"/>
 
+
+<script>
+	$j = jQuery.noConflict();
+
+	$j(function() {
+
+		$j("#search").click(function() {
+			var data = $j("#form").serialize();
+			$j.ajax({
+				url: "responseSearch.form",
+				type: "POST",
+				dataType: 'json',
+				data: data
+			});
+		});
+
+	});
+</script>
+
 <div id="container">
 	<h3 id="header"><spring:message code="clinicalsummary.response.header"/></h3>
 
 	<div id="main">
 		<div id="sidebar">
-			<form method="post" action="">
+			<form method="post" id="form" action="">
 				<fieldset>
 					<ol>
 						<li>
@@ -30,7 +49,7 @@
 						</li>
 						<li />
 						<li>
-							<input id="submit" type="submit" value="<spring:message code="clinicalsummary.response"/>"/>
+							<input type="button" id="search" value="<spring:message code="clinicalsummary.response.search"/>"/>
 						</li>
 					</ol>
 				</fieldset>

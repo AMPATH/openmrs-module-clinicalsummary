@@ -209,14 +209,14 @@ public class HibernateUtilDAO implements UtilDAO {
 	 * @see UtilDAO#getResponse(Class, Integer)
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends Response> T getResponse(final Class<? extends Response> clazz, final Integer id) throws DAOException {
+	public <T extends Response> T getResponse(final Class<T> clazz, final Integer id) throws DAOException {
 		return (T) sessionFactory.getCurrentSession().get(clazz, id);
 	}
 
 	/**
 	 * @see UtilDAO#saveResponses(java.util.List)
 	 */
-	public List<? extends Response> saveResponses(final List<? extends Response> responses) throws DAOException {
+	public <T extends Response> List<T> saveResponses(final List<T> responses) throws DAOException {
 		int counter = 0;
 		Session session = sessionFactory.getCurrentSession();
 		for (BaseOpenmrsData response : responses) {
@@ -234,11 +234,11 @@ public class HibernateUtilDAO implements UtilDAO {
 	 * @see UtilDAO#getResponses(Class, org.openmrs.Patient)
 	 */
 	@SuppressWarnings("unchecked")
-	public List<? extends Response> getResponses(final Class<? extends Response> clasz, final Patient patient) throws DAOException {
+	public <T extends Response> List<T> getResponses(final Class<T> clasz, final Patient patient) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(clasz);
 
 		criteria.add(Restrictions.eq("patient", patient));
-		criteria.add(Restrictions.eq("voided", Boolean.FALSE));
+		criteria.addOrder(Order.asc("patient"));
 
 		return criteria.list();
 	}
@@ -247,20 +247,17 @@ public class HibernateUtilDAO implements UtilDAO {
 	 * @see UtilDAO#getResponses(Class, org.openmrs.Location, java.util.Date, java.util.Date)
 	 */
 	@SuppressWarnings("unchecked")
-	public List<? extends Response> getResponses(final Class<? extends Response> clasz, final Location location,
-	                                             final Date startDate, final Date endDate) throws DAOException {
+	public <T extends Response> List<T> getResponses(final Class<T> clasz, final Location location,
+	                                                 final Date startDate, final Date endDate) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(clasz);
 
 		criteria.add(Restrictions.eq("location", location));
-
 		if (startDate != null)
 			criteria.add(Restrictions.ge("dateCreated", startDate));
-
 		if (endDate != null)
 			criteria.add(Restrictions.le("dateCreated", endDate));
 
-		criteria.add(Restrictions.eq("voided", Boolean.FALSE));
-
+		criteria.addOrder(Order.asc("patient"));
 		return criteria.list();
 	}
 }

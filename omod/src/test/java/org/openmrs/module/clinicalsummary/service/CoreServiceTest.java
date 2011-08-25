@@ -40,7 +40,7 @@ public class CoreServiceTest extends BaseModuleContextSensitiveTest {
 
 	/**
 	 * @verifies return all patient id with certain location on their observations between certain date
-	 * @see CoreService#getCohort(org.openmrs.Location, java.util.Date, java.util.Date)
+	 * @see CoreService#getDateCreatedCohort(org.openmrs.Location, java.util.Date, java.util.Date)
 	 */
 	@Test
 	public void getCohortByLocation_shouldReturnAllPatientIdWithCertainLocationOnTheirObservationsBetweenCertainDate() {
@@ -51,7 +51,7 @@ public class CoreServiceTest extends BaseModuleContextSensitiveTest {
 			Date endDate = Context.getDateFormat().parse("01/01/2011");
 
 			CoreService coreService = Context.getService(CoreService.class);
-			Cohort cohort = coreService.getCohort(location, startDate, endDate);
+			Cohort cohort = coreService.getDateCreatedCohort(location, startDate, endDate);
 
 			Assert.assertNotNull(cohort);
 			Assert.assertTrue(CollectionUtils.isNotEmpty(cohort.getMemberIds()));
@@ -64,7 +64,7 @@ public class CoreServiceTest extends BaseModuleContextSensitiveTest {
 
 	/**
 	 * @verifies return empty cohort when no patient match the criteria
-	 * @see CoreService#getCohort(org.openmrs.Location, java.util.Date, java.util.Date)
+	 * @see CoreService#getDateCreatedCohort(org.openmrs.Location, java.util.Date, java.util.Date)
 	 */
 	@Test
 	public void getCohortByLocation_shouldReturnEmptyCohortWhenNoPatientMatchTheCriteria() {
@@ -75,7 +75,7 @@ public class CoreServiceTest extends BaseModuleContextSensitiveTest {
 			Date endDate = Context.getDateFormat().parse("01/01/2007");
 
 			CoreService coreService = Context.getService(CoreService.class);
-			Cohort cohort = coreService.getCohort(location, startDate, endDate);
+			Cohort cohort = coreService.getDateCreatedCohort(location, startDate, endDate);
 
 			Assert.assertNotNull(cohort);
 			Assert.assertTrue(CollectionUtils.isEmpty(cohort.getMemberIds()));

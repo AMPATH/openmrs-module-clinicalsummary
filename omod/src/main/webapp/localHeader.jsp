@@ -72,4 +72,11 @@
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
+	<openmrs:hasPrivilege privilege="Manage Summaries">
+		<li <c:if test='<%= request.getRequestURI().contains("responseList") %>'>class="active"</c:if>>
+			<a href="${pageContext.request.contextPath}/module/clinicalsummary/response/responseList.list">
+				<spring:message code="clinicalsummary.response"/>
+			</a>
+		</li>
+	</openmrs:hasPrivilege>
 </ul>

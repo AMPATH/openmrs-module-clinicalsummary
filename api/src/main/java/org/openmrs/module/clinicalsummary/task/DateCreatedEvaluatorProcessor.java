@@ -69,14 +69,14 @@ public class DateCreatedEvaluatorProcessor {
 					// default return to -1 because no such location with id -1
 					Location location = Context.getLocationService().getLocation(NumberUtils.toInt(locationIds[i], -1));
 					if (!initialized) {
-						cohort = Context.getService(CoreService.class).getCohort(location, null, null);
+						cohort = Context.getService(CoreService.class).getDateCreatedCohort(location, null, null);
 					} else {
 						// regenerate when there's new obs
 						Calendar calendar = Calendar.getInstance();
 						calendar.add(Calendar.DATE, -(clusterName.length + 1));
 						Date date = calendar.getTime();
 
-						cohort = Context.getService(CoreService.class).getCohort(location, date, new Date());
+						cohort = Context.getService(CoreService.class).getDateCreatedCohort(location, date, new Date());
 					}
 
 					evaluate(cohort);

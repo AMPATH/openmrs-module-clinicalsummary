@@ -14,6 +14,10 @@
 
 package org.openmrs.module.clinicalsummary.web.controller.evaluator;
 
+import java.util.Arrays;
+import java.util.Date;
+import javax.servlet.http.HttpSession;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
@@ -30,10 +34,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import javax.servlet.http.HttpSession;
-import java.util.Arrays;
-import java.util.Date;
 
 /**
  */
@@ -68,7 +68,7 @@ public class EvaluateCohortController {
 				Location location = Context.getLocationService().getLocation(NumberUtils.toInt(locationId, -1));
 				Date startDate = WebUtils.parse(obsStartDate, null);
 				Date endDate = WebUtils.parse(obsEndDate, null);
-				cohort = Context.getService(CoreService.class).getCohort(location, startDate, endDate);
+				cohort = Context.getService(CoreService.class).getDateCreatedCohort(location, startDate, endDate);
 			}
 			CohortEvaluatorInstance.getInstance().evaluate(cohort);
 		}

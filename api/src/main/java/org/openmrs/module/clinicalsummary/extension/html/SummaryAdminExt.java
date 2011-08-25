@@ -13,13 +13,13 @@
  */
 package org.openmrs.module.clinicalsummary.extension.html;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.openmrs.api.context.Context;
 import org.openmrs.module.Extension;
 import org.openmrs.module.clinicalsummary.Constants;
 import org.openmrs.module.web.extension.AdministrationSectionExt;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class SummaryAdminExt extends AdministrationSectionExt {
 
@@ -56,6 +56,7 @@ public class SummaryAdminExt extends AdministrationSectionExt {
 			map.put("module/clinicalsummary/utils/initialSummaries.form", "clinicalsummary.initial");
 			map.put("module/clinicalsummary/utils/orderedObsList.list", "clinicalsummary.ordered");
 			map.put("module/clinicalsummary/reminder/reminderList.list", "clinicalsummary.reminder");
+			map.put("module/clinicalsummary/response/responseList.list", "clinicalsummary.response");
 		}
 
 		return map;

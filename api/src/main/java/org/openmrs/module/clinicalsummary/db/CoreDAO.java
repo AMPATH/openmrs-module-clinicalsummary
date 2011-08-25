@@ -31,7 +31,7 @@ import org.openmrs.module.clinicalsummary.util.FetchRestriction;
  */
 public interface CoreDAO {
 
-	Cohort getCohort(final Location location, final Date startDate, Date endDate) throws DAOException;
+	Cohort getDateCreatedCohort(final Location location, final Date startDate, Date endDate) throws DAOException;
 
 	Cohort getReturnDateCohort(final Location location, final Date startDate, final Date endDate) throws DAOException;
 
