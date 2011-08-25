@@ -76,8 +76,11 @@ public class SearchResponseController {
 					Integer patientId = response.getPatient().getPatientId();
 					// search if the medication forms for teh patient is already in the map or not
 					List<MedicationResponseForm> responseForms = responseMap.get(patientId);
-					if (responseForms == null)
-						responseForms = responseMap.put(patientId, new ArrayList<MedicationResponseForm>());
+					if (responseForms == null) {
+						// initialize when we don't have the list yet
+						responseForms = new ArrayList<MedicationResponseForm>();
+						responseMap.put(patientId, responseForms);
+					}
 					// add the current response to the list
 					MedicationResponseForm responseForm = new MedicationResponseForm();
 					BeanUtils.copyProperties(responseForm, response);

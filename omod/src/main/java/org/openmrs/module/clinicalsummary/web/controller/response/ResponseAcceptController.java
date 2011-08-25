@@ -26,7 +26,7 @@ public class ResponseAcceptController {
 
 	private static final Log log = LogFactory.getLog(ResponseAcceptController.class);
 
-	@RequestMapping(method = RequestMethod.POST, value = "/module/clinicalsummary/response/responseAccept")
+	@RequestMapping(method = RequestMethod.GET, value = "/module/clinicalsummary/response/responseAccept")
 	public void processAccept(final @RequestParam(required = true, value = "id") Integer responseId) {
 		log.info("Save the reason and return nothing");
 	}

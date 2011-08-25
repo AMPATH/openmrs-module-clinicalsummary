@@ -12,6 +12,14 @@
 <script>
 	$j = jQuery.noConflict();
 
+	function accept(id) {
+		$j("#operation_" + id).html("Accepted");
+	}
+
+	function ignore(id) {
+		$j("#operation_" + id).html("Ignored");
+	}
+
 	$j(function() {
 
 		$j("#search").click(function() {
@@ -26,19 +34,24 @@
 				success: function(server) {
 					jQuery.each(server, function(key, responses) {
 						var header = null;
+						var counter = 1;
 						jQuery.each(responses, function() {
 							if (header == null) {
 							    header = "<tr><td colspan='3'><span style='font-weight: bold'>Patient Name: " + this.patientName + " </span></td></tr>";
 								$j("#result").append(header);
 							}
 
-							var data = "<tr><td>&nbsp;</td>";
+							var description = "<tr><td>" + counter++ + ".</td>";
 							if (this.status == 1)
-								data += "<td>Please remove " + this.medicationName + " from encounter on " + this.medicationDatetime + "</td>";
+								description += "<td>Please remove " + this.medicationName + " from encounter on " + this.medicationDatetime + "</td></tr>";
 							else if (this.status == 0)
-								data += "<td>Please add " + this.medicationName + " to encounter on " + this.medicationDatetime + "</td>";
-							data += "<td> <a href='responseAccept.form?id=" + this.id + "'>Accept</a> | <a href='responseIgnore.form?id=" + this.id + "'>Ignore</a> </td></tr>";
-							$j("#result").append(data);
+								description += "<td>Please add " + this.medicationName + " to encounter on " + this.medicationDatetime + "</td></tr>";
+							$j("#result").append(description);
+
+							var id = "reason_" + this.id;
+							var operation = "<tr><td></td><td><label for='" + id + "'><spring:message code='clinicalsummary.response.comment'/></label><input id='" + id + "' type='text' name='" + id + "' /></td>";
+								operation += "<td style='text-align: right;' id='operation_" + this.id + "'> <a href='#' onclick='view(" + this.id + ")'>View Encounter</a> | <a href='#' onclick='accept(" + this.id + ")'>Accept</a> | <a href='#' onclick='ignore(" + this.id + ")'>Ignore</a> </td></tr>";
+							$j("#result").append(operation);
 						});
 					});
 				}
@@ -52,7 +65,7 @@
 
 	td, th {
 		color: #333333;
-		padding: 5px;
+		padding: 3px;
 	}
 
 	td {
@@ -65,7 +78,7 @@
 	<h3 id="header"><spring:message code="clinicalsummary.response.header"/></h3>
 
 	<div id="main">
-		<div id="leftcontent">
+		<div id="leftcontent" style="width: 35%">
 			<form method="post" id="form" action="">
 				<fieldset>
 					<ol>

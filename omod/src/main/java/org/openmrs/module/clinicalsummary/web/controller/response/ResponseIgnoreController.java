@@ -26,7 +26,7 @@ public class ResponseIgnoreController {
 
 	private static final Log log = LogFactory.getLog(ResponseIgnoreController.class);
 
-	@RequestMapping(method = RequestMethod.POST, value = "/module/clinicalsummary/response/responseIgnore")
+	@RequestMapping(method = RequestMethod.GET, value = "/module/clinicalsummary/response/responseIgnore")
 	public void processIgnore(final @RequestParam(required = true, value = "id") Integer responseId) {
 		log.info("Save the reason and return nothing");
 	}

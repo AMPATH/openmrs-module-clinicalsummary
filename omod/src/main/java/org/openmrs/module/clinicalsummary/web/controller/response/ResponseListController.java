@@ -32,6 +32,6 @@ public class ResponseListController {
 	@RequestMapping(method = RequestMethod.GET, value = "/module/clinicalsummary/response/responseList")
 	public void populatePage(final ModelMap map) {
 		map.addAttribute("displayTypes", Arrays.asList(ResponseDisplayType.DISPLAY_THIS_WEEK_RESPONSES,
-				ResponseDisplayType.DISPLAY_THIS_WEEK_RESPONSES));
+				ResponseDisplayType.DISPLAY_THIS_MONTH_RESPONSES));
 	}
 }
