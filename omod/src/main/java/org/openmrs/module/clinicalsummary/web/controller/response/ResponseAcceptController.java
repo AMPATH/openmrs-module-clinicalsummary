@@ -32,15 +32,18 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class ResponseAcceptController {
 
 	private static final Log log = LogFactory.getLog(ResponseAcceptController.class);
 
-	@RequestMapping(method = RequestMethod.GET, value = "/module/clinicalsummary/response/responseAccept")
-	public void processAccept(final @RequestParam(required = true, value = "id") Integer responseId,
-	                          final @RequestParam(required = true, value = "comment") String comment) {
+	@RequestMapping(method = RequestMethod.POST, value = "/module/clinicalsummary/response/acceptResponse")
+	public
+	@ResponseBody
+	Boolean processAccept(final @RequestParam(required = true, value = "id") Integer responseId,
+	                      final @RequestParam(required = true, value = "comment") String comment) {
 		log.info("Save the reason and return nothing");
 
 		if (Context.isAuthenticated()) {
@@ -76,6 +79,7 @@ public class ResponseAcceptController {
 					medicationResponse.setActionType(ActionType.ACTION_ACCEPT);
 					service.saveResponse(medicationResponse);
 
+					return Boolean.TRUE;
 				}
 
 			} else if (medicationResponse.getStatus() == 1) {
@@ -84,8 +88,12 @@ public class ResponseAcceptController {
 				medicationResponse.setReviewComment(comment);
 				medicationResponse.setActionType(ActionType.ACTION_IGNORED);
 				service.saveResponse(medicationResponse);
+
+				return Boolean.TRUE;
 			}
 		}
+
+		return Boolean.FALSE;
 	}
 
 }

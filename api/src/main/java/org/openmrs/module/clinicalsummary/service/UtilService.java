@@ -162,7 +162,6 @@ public interface UtilService extends OpenmrsService {
 	 * @return the matching ordered observation or null if there's no matching record in the database
 	 * @throws APIException
 	 */
-	@Transactional(readOnly = true)
 	<T extends Response> T saveResponse(final T response) throws APIException;
 
 	/**

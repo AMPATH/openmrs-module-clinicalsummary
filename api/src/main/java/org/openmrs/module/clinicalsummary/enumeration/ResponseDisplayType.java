@@ -18,7 +18,9 @@ import org.openmrs.module.clinicalsummary.db.hibernate.type.StringEnum;
 
 public enum ResponseDisplayType implements StringEnum {
 
-	DISPLAY_THIS_WEEK_RESPONSES("This Week Responses"), DISPLAY_THIS_MONTH_RESPONSES("This Month Responses");
+	DISPLAY_PAST_WEEK_RESPONSES("Past week"), DISPLAY_PAST_MONTH_RESPONSES("Past 1 month"),
+	DISPLAY_PAST_2_MONTHS_RESPONSES("Past 2 months"), DISPLAY_PAST_6_MONTHS_RESPONSES("Past 6 months"),
+	DISPLAY_PAST_12_MONTHS_RESPONSES("Past 12 months"), DISPLAY_ALL_RESPONSES("Any time");
 
 	private final String value;
 

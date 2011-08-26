@@ -18,83 +18,16 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Location;
-import org.openmrs.Patient;
-import org.openmrs.Person;
 
 public class ReminderResponse extends Response {
 
 	private static final Log log = LogFactory.getLog(ReminderResponse.class);
-
-	private Integer id;
-
-	private Patient patient;
-
-	private Person provider;
-
-	private Location location;
 
 	private String token;
 
 	private String response;
 
 	private Date reminderDatetime;
-
-	/**
-	 * @return id - The unique Identifier for the object
-	 */
-	public Integer getId() {
-		return id;
-	}
-
-	/**
-	 * @param id - The unique Identifier for the object
-	 */
-	public void setId(final Integer id) {
-		this.id = id;
-	}
-
-	/**
-	 * @return
-	 */
-	public Patient getPatient() {
-		return patient;
-	}
-
-	/**
-	 * @param patient
-	 */
-	public void setPatient(final Patient patient) {
-		this.patient = patient;
-	}
-
-	/**
-	 * @return
-	 */
-	public Person getProvider() {
-		return provider;
-	}
-
-	/**
-	 * @param provider
-	 */
-	public void setProvider(final Person provider) {
-		this.provider = provider;
-	}
-
-	/**
-	 * @return
-	 */
-	public Location getLocation () {
-		return location;
-	}
-
-	/**
-	 * @param location
-	 */
-	public void setLocation(final Location location) {
-		this.location = location;
-	}
 
 	/**
 	 * @return

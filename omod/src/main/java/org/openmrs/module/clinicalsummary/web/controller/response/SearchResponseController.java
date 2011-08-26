@@ -55,16 +55,28 @@ public class SearchResponseController {
 			// end date are determined by the parameter value passed by the user
 			Date startDate;
 			switch (displayType) {
-				case DISPLAY_THIS_WEEK_RESPONSES:
+				case DISPLAY_PAST_WEEK_RESPONSES:
 					calendar.add(Calendar.DATE, -7);
 					startDate = calendar.getTime();
 					break;
-				case DISPLAY_THIS_MONTH_RESPONSES:
+				case DISPLAY_PAST_MONTH_RESPONSES:
+					calendar.add(Calendar.MONTH, -1);
+					startDate = calendar.getTime();
+					break;
+				case DISPLAY_PAST_2_MONTHS_RESPONSES:
+					calendar.add(Calendar.MONTH, -1);
+					startDate = calendar.getTime();
+					break;
+				case DISPLAY_PAST_6_MONTHS_RESPONSES:
+					calendar.add(Calendar.MONTH, -1);
+					startDate = calendar.getTime();
+					break;
+				case DISPLAY_PAST_12_MONTHS_RESPONSES:
 					calendar.add(Calendar.MONTH, -1);
 					startDate = calendar.getTime();
 					break;
 				default:
-					startDate = new Date();
+					startDate = null;
 			}
 			// search for the location passed by the user
 			Location location = Context.getLocationService().getLocation(NumberUtils.toInt(locationId, 0));
@@ -86,13 +98,15 @@ public class SearchResponseController {
 					BeanUtils.copyProperties(responseForm, response);
 					responseForm.setPatientId(response.getPatient().getPatientId());
 					responseForm.setPatientName(response.getPatient().getPersonName().getFullName());
+					responseForm.setProviderName(response.getProvider().getPersonName().getFullName());
 					responseForm.setLocationName(response.getLocation().getName());
 					responseForm.setMedicationName(response.getMedication().getName(Context.getLocale()).getName());
 					responseForm.setMedicationDatetime(Context.getDateFormat().format(response.getMedicationDatetime()));
+					responseForm.setAction(response.getActionType().getValue());
 					// add to the output list
 					responseForms.add(responseForm);
 				} catch (Exception e) {
-					log.error("Exception thrown when trying to copy response object.");
+					log.error("Exception thrown when trying to copy response object.", e);
 				}
 			}
 		}

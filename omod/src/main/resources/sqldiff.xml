@@ -1224,7 +1224,7 @@
 			ALTER TABLE clinical_summary_medication_response CHANGE COLUMN concept medication INTEGER DEFAULT NULL;
 			ALTER TABLE clinical_summary_medication_response ADD COLUMN location INTEGER DEFAULT NULL AFTER provider;
 			ALTER TABLE clinical_summary_medication_response ADD COLUMN reviewer INTEGER DEFAULT NULL AFTER status;
-			ALTER TABLE clinical_summary_medication_response ADD COLUMN date_reviewed DATETIME DEFAULT '0000-00-00 00:00:00' AFTER reviewer;
+			ALTER TABLE clinical_summary_medication_response ADD COLUMN date_reviewed DATETIME DEFAULT NULL AFTER reviewer;
 		</sql>
 	</diff>
 
@@ -1237,6 +1237,9 @@
 		</description>
 		<sql>
 			ALTER TABLE clinical_summary_medication_response ADD COLUMN review_comment VARCHAR(255) DEFAULT NULL AFTER date_reviewed;
+			ALTER TABLE clinical_summary_medication_response ADD COLUMN datetime DATETIME DEFAULT NULL AFTER location;
+
+			ALTER TABLE clinical_summary_reminder_response ADD COLUMN datetime DATETIME DEFAULT NULL AFTER location;
 		</sql>
 	</diff>
 

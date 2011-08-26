@@ -27,11 +27,15 @@ public class MedicationResponseForm {
 
 	private String patientName;
 
+	private String providerName;
+
 	private String locationName;
 
 	private String medicationName;
 
 	private String medicationDatetime;
+
+	private String action;
 
 	private Integer status;
 
@@ -80,6 +84,20 @@ public class MedicationResponseForm {
 	/**
 	 * @return
 	 */
+	public String getProviderName() {
+		return providerName;
+	}
+
+	/**
+	 * @param providerName
+	 */
+	public void setProviderName(final String providerName) {
+		this.providerName = providerName;
+	}
+
+	/**
+	 * @return
+	 */
 	public String getLocationName() {
 		return locationName;
 	}
@@ -117,6 +135,20 @@ public class MedicationResponseForm {
 	 */
 	public void setMedicationDatetime(final String medicationDatetime) {
 		this.medicationDatetime = medicationDatetime;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getAction() {
+		return action;
+	}
+
+	/**
+	 * @param action
+	 */
+	public void setAction(final String action) {
+		this.action = action;
 	}
 
 	/**

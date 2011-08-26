@@ -13,18 +13,36 @@
 	$j = jQuery.noConflict();
 
 	function accept(id) {
-		$j("#operation_" + id).html("Accepted");
+		var data = "comment=" + $j("#reason_" + id).attr("value") + "&id=" + id;
+		$j.ajax({
+			url: "acceptResponse.form",
+			type: "POST",
+			dataType: 'json',
+			data: data,
+			success: function(data) {
+				if (data)
+					$j("#operation_" + id).html("Accepted");
+			}
+		});
 	}
 
 	function ignore(id) {
-		$j("#operation_" + id).html("Ignored");
+		var data = "comment=" + $j("#reason_" + id).attr("value") + "&id=" + id;
+		$j.ajax({
+			url: "ignoreResponse.form",
+			type: "POST",
+			dataType: 'json',
+			data: data,
+			success: function(data) {
+				if (data)
+					$j("#operation_" + id).html("Ignored");
+			}
+		});
 	}
 
 	$j(function() {
 
 		$j("#search").click(function() {
-			$j("#searchcontainer").show();
-			$j("#searchcontainer tr").remove();
 			var data = $j("#form").serialize();
 			$j.ajax({
 				url: "responseSearch.form",
@@ -32,28 +50,44 @@
 				dataType: 'json',
 				data: data,
 				success: function(server) {
-					jQuery.each(server, function(key, responses) {
-						var header = null;
-						var counter = 1;
-						jQuery.each(responses, function() {
-							if (header == null) {
-							    header = "<tr><td colspan='3'><span style='font-weight: bold'>Patient Name: " + this.patientName + " </span></td></tr>";
-								$j("#result").append(header);
-							}
 
-							var description = "<tr><td>" + counter++ + ".</td>";
-							if (this.status == 1)
-								description += "<td>Please remove " + this.medicationName + " from encounter on " + this.medicationDatetime + "</td></tr>";
-							else if (this.status == 0)
-								description += "<td>Please add " + this.medicationName + " to encounter on " + this.medicationDatetime + "</td></tr>";
-							$j("#result").append(description);
+					if (!jQuery.isEmptyObject(server)) {
+						$j("#searchcontainer").show();
+						$j("#result tr").remove();
 
-							var id = "reason_" + this.id;
-							var operation = "<tr><td></td><td><label for='" + id + "'><spring:message code='clinicalsummary.response.comment'/></label><input id='" + id + "' type='text' name='" + id + "' /></td>";
-								operation += "<td style='text-align: right;' id='operation_" + this.id + "'> <a href='#' onclick='view(" + this.id + ")'>View Encounter</a> | <a href='#' onclick='accept(" + this.id + ")'>Accept</a> | <a href='#' onclick='ignore(" + this.id + ")'>Ignore</a> </td></tr>";
-							$j("#result").append(operation);
+						jQuery.each(server, function(key, responses) {
+							var header = null;
+							var counter = 1;
+							jQuery.each(responses, function() {
+								if (header == null) {
+									header = "<tr><td colspan='3'><span style='font-weight: bold'>" + this.patientName + " ( Requested by " + this.providerName + " )</span></td></tr>";
+									$j("#result").append(header);
+								}
+
+								var description = "<tr><td>" + counter++ + ".</td>";
+								if (this.status == 1)
+									description += "<td>Please remove " + this.medicationName + " from encounter on " + this.medicationDatetime + "</td>";
+								else if (this.status == 0)
+									description += "<td>Please add " + this.medicationName + " to encounter on " + this.medicationDatetime + "</td>";
+
+								description +=  "<td><a href='#' onclick='view(" + this.id + ")'>View Encounter</a> |</td>";
+
+								var comment = '';
+								if (this.comment != undefined)
+									comment = this.comment;
+								var id = "reason_" + this.id;
+								description +=  "<td><spring:message code='clinicalsummary.response.comment'/></td>";
+								description +=  "<td><input id='" + id + "' type='text' name='" + id + "' value='" + comment + "'/></td>";
+
+								description +=  "<td style='text-align: right;' id='operation_" + this.id + "'>" +
+													"<a href='#' onclick='accept(" + this.id + ")'>Accept</a> | " +
+													"<a href='#' onclick='ignore(" + this.id + ")'>Ignore</a>" +
+												"</td></tr>";
+								$j("#result").append(description);
+							});
 						});
-					});
+
+					}
 				}
 			});
 		});
@@ -65,7 +99,8 @@
 
 	td, th {
 		color: #333333;
-		padding: 3px;
+		padding-top: 3px;
+		padding-right: 5px;
 	}
 
 	td {
@@ -78,7 +113,7 @@
 	<h3 id="header"><spring:message code="clinicalsummary.response.header"/></h3>
 
 	<div id="main">
-		<div id="leftcontent" style="width: 35%">
+		<div id="leftcontent" style="width: 25%">
 			<form method="post" id="form" action="">
 				<fieldset>
 					<ol>
@@ -106,8 +141,13 @@
 			<fieldset id="searchcontainer" style="display: none">
 				<ol>
 					<li>
-						<label for="search"><span style="font-weight: bold; font-size=1em"><spring:message code="clinicalsummary.response.search"/></span></label>
 						<table cellpadding="0" cellspacing="0" border="0" class="display">
+							<thead>
+								<tr>
+									<th colspan="3"></th>
+									<th colspan="3" style="text-align: center;"><spring:message code="clinicalsummary.response.operation"/></th>
+								</tr>
+							</thead>
 							<tbody id="result"></tbody>
 						</table>
 					</li>

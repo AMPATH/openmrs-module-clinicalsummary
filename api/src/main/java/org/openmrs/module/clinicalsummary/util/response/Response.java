@@ -14,8 +14,93 @@
 
 package org.openmrs.module.clinicalsummary.util.response;
 
+import java.util.Date;
+
 import org.openmrs.BaseOpenmrsData;
+import org.openmrs.Location;
+import org.openmrs.Patient;
+import org.openmrs.Person;
 
 public abstract class Response extends BaseOpenmrsData {
 	// dummy class that will act as the superclass of all response classes
+
+	protected Integer id;
+
+	protected Patient patient;
+
+	protected Person provider;
+
+	protected Location location;
+
+	protected Date datetime;
+
+	/**
+	 * @return id - The unique Identifier for the object
+	 */
+	public Integer getId() {
+		return id;
+	}
+
+	/**
+	 * @param id - The unique Identifier for the object
+	 */
+	public void setId(final Integer id) {
+		this.id = id;
+	}
+
+	/**
+	 * @return
+	 */
+	public Patient getPatient() {
+		return patient;
+	}
+
+	/**
+	 * @param patient
+	 */
+	public void setPatient(final Patient patient) {
+		this.patient = patient;
+	}
+
+	/**
+	 * @return
+	 */
+	public Person getProvider() {
+		return provider;
+	}
+
+	/**
+	 * @param provider
+	 */
+	public void setProvider(final Person provider) {
+		this.provider = provider;
+	}
+
+	/**
+	 * @return
+	 */
+	public Location getLocation() {
+		return location;
+	}
+
+	/**
+	 * @param location
+	 */
+	public void setLocation(final Location location) {
+		this.location = location;
+	}
+
+	/**
+	 * @return
+	 */
+	public Date getDatetime() {
+		return datetime;
+	}
+
+	/**
+	 * @param datetime
+	 */
+	public void setDatetime(final Date datetime) {
+		this.datetime = datetime;
+	}
 }

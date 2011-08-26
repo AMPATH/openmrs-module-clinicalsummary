@@ -26,15 +26,18 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class ResponseIgnoreController {
 
 	private static final Log log = LogFactory.getLog(ResponseIgnoreController.class);
 
-	@RequestMapping(method = RequestMethod.POST, value = "/module/clinicalsummary/response/responseIgnore")
-	public void processIgnore(final @RequestParam(required = true, value = "id") Integer responseId,
-	                          final @RequestParam(required = true, value = "comment") String comment) {
+	@RequestMapping(method = RequestMethod.POST, value = "/module/clinicalsummary/response/ignoreResponse")
+	public
+	@ResponseBody
+	Boolean processIgnore(final @RequestParam(required = true, value = "id") Integer responseId,
+	                      final @RequestParam(required = true, value = "comment") String comment) {
 
 		if (Context.isAuthenticated()) {
 			UtilService service = Context.getService(UtilService.class);
@@ -44,7 +47,11 @@ public class ResponseIgnoreController {
 			medicationResponse.setReviewComment(comment);
 			medicationResponse.setActionType(ActionType.ACTION_IGNORED);
 			service.saveResponse(medicationResponse);
+
+			return Boolean.TRUE;
 		}
+
+		return Boolean.FALSE;
 	}
 
 }

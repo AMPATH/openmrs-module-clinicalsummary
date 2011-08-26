@@ -60,6 +60,9 @@ public class ResponseController {
 	public void processResponse(@RequestParam(required = false, value = USERNAME) String username,
 	                            @RequestParam(required = false, value = PASSWORD) String password,
 	                            HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+		log.info("Processing responses x    from the android devices ...");
+
 		try {
 			if (!Context.isAuthenticated())
 				Context.authenticate(username, password);
@@ -77,10 +80,9 @@ public class ResponseController {
 
 					String[] parameterValues = (String[]) parameterMap.get(parameterName);
 
-					if (log.isDebugEnabled()) {
-						log.debug("Patient ID: " + patientId);
-						log.debug("Parameter Values: " + String.valueOf(parameterValues));
-					}
+					log.info("Patient ID: " + patientId);
+					for (String parameterValue : parameterValues)
+						log.info("Parameter Values: " + String.valueOf(parameterValue));
 
 					for (String parameterValue : parameterValues) {
 						String[] parameter = StringUtils.split(parameterValue, "|");
@@ -90,7 +92,9 @@ public class ResponseController {
 							reminderResponse.setProvider(Context.getAuthenticatedUser().getPerson());
 							reminderResponse.setToken(parameter[1]);
 							reminderResponse.setResponse(parameter[2]);
-							reminderResponse.setReminderDatetime(WebUtils.parse(parameter[2], new Date()));
+							reminderResponse.setReminderDatetime(WebUtils.parse(parameter[3], new Date()));
+							reminderResponse.setLocation(Context.getLocationService().getLocation(parameter[4]));
+							reminderResponse.setDatetime(WebUtils.parse(parameter[5], new Date()));
 							// add to the list
 							responses.add(reminderResponse);
 						} else {
@@ -112,6 +116,8 @@ public class ResponseController {
 
 								medicationResponse.setMedicationDatetime(WebUtils.parse(parameter[2], new Date()));
 								medicationResponse.setStatus(NumberUtils.toInt(parameter[3]));
+								medicationResponse.setLocation(Context.getLocationService().getLocation(parameter[4]));
+								medicationResponse.setDatetime(WebUtils.parse(parameter[5], new Date()));
 								// add to the list
 								responses.add(medicationResponse);
 							}

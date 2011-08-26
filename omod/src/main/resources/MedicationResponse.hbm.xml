@@ -25,6 +25,8 @@
 
 		<many-to-one name="location" column="location" class="org.openmrs.Location" lazy="false" />
 
+		<property name="datetime" type="java.util.Date" column="datetime" not-null="true" length="19" />
+
 		<many-to-one name="medication" column="medication" class="org.openmrs.Concept" lazy="false" />
 
 		<property name="medicationType" column="medication_type" type="medicationType" />
@@ -35,7 +37,7 @@
 
 		<many-to-one name="reviewer" column="reviewer" class="org.openmrs.Person" lazy="false" />
 
-		<property name="dateReviewed" type="java.util.Date" column="date_reviewed" not-null="true" length="19" />
+		<property name="dateReviewed" type="java.util.Date" column="date_reviewed" length="19" />
 
 		<property name="reviewComment" column="review_comment" type="java.lang.String" />
 
