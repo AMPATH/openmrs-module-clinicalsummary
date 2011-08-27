@@ -23,7 +23,7 @@
 
 		<property name="response" column="response" type="java.lang.String" />
 
-		<property name="reminderDatetime" type="java.util.Date" column="reminder_datetime" not-null="true" length="19" />
+		<property name="comment" type="java.lang.String" column="comment" length="19" />
 
 		<many-to-one name="creator" class="org.openmrs.User" not-null="true">
 			<column name="creator" />

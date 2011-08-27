@@ -101,7 +101,7 @@ public class SearchResponseController {
 					responseForm.setProviderName(response.getProvider().getPersonName().getFullName());
 					responseForm.setLocationName(response.getLocation().getName());
 					responseForm.setMedicationName(response.getMedication().getName(Context.getLocale()).getName());
-					responseForm.setMedicationDatetime(Context.getDateFormat().format(response.getMedicationDatetime()));
+					responseForm.setDatetime(Context.getDateFormat().format(response.getDatetime()));
 					if (response.getActionType() != null)
 						responseForm.setAction(response.getActionType().getValue());
 					// add to the output list

@@ -58,7 +58,7 @@ public class ResponseAcceptController {
 				Encounter medicationEncounter = null;
 				while (counter < encounters.size() && medicationEncounter == null) {
 					Encounter encounter = encounters.get(counter++);
-					if (DateUtils.isSameDay(encounter.getEncounterDatetime(), medicationResponse.getMedicationDatetime()))
+					if (DateUtils.isSameDay(encounter.getEncounterDatetime(), medicationResponse.getDatetime()))
 						medicationEncounter = encounter;
 				}
 

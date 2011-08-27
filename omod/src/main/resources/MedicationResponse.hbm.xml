@@ -31,8 +31,6 @@
 
 		<property name="medicationType" column="medication_type" type="medicationType" />
 
-		<property name="medicationDatetime" type="java.util.Date" column="medication_datetime" not-null="true" length="19" />
-
 		<property name="status" column="status" type="java.lang.Integer" />
 
 		<many-to-one name="reviewer" column="reviewer" class="org.openmrs.Person" lazy="false" />

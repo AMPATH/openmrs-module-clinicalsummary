@@ -14,8 +14,6 @@
 
 package org.openmrs.module.clinicalsummary.util.response;
 
-import java.util.Date;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -27,7 +25,7 @@ public class ReminderResponse extends Response {
 
 	private String response;
 
-	private Date reminderDatetime;
+	private String comment;
 
 	/**
 	 * @return
@@ -60,14 +58,14 @@ public class ReminderResponse extends Response {
 	/**
 	 * @return
 	 */
-	public Date getReminderDatetime() {
-		return reminderDatetime;
+	public String getComment() {
+		return comment;
 	}
 
 	/**
-	 * @param reminderDatetime
+	 * @param comment
 	 */
-	public void setReminderDatetime(final Date reminderDatetime) {
-		this.reminderDatetime = reminderDatetime;
+	public void setComment(final String comment) {
+		this.comment = comment;
 	}
 }

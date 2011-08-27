@@ -1231,7 +1231,7 @@
 	<diff>
 		<version>4.2.4</version>
 		<author>Nyoman Ribeka</author>
-		<date>June 27 2011</date>
+		<date>August 26 2011</date>
 		<description>
 			Added more column on the response table
 		</description>
@@ -1240,6 +1240,21 @@
 			ALTER TABLE clinical_summary_medication_response ADD COLUMN datetime DATETIME DEFAULT NULL AFTER location;
 
 			ALTER TABLE clinical_summary_reminder_response ADD COLUMN datetime DATETIME DEFAULT NULL AFTER location;
+		</sql>
+	</diff>
+
+	<diff>
+		<version>4.2.5</version>
+		<author>Nyoman Ribeka</author>
+		<date>August 27 2011</date>
+		<description>
+			Added more column on the response table
+		</description>
+		<sql>
+			ALTER TABLE clinical_summary_medication_response DROP COLUMN medication_datetime;
+
+			ALTER TABLE clinical_summary_reminder_response DROP COLUMN reminder_datetime;
+			ALTER TABLE clinical_summary_reminder_response ADD COLUMN comment VARCHAR(512) DEFAULT NULL AFTER response;
 		</sql>
 	</diff>
 

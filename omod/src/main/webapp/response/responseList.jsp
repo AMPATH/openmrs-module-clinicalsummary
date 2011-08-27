@@ -13,29 +13,35 @@
 	$j = jQuery.noConflict();
 
 	function accept(id) {
-		var data = "comment=" + $j("#reason_" + id).attr("value") + "&id=" + id;
+		var data = "comment=" + $j("#comment_" + id).attr("value") + "&id=" + id;
 		$j.ajax({
 			url: "acceptResponse.form",
 			type: "POST",
 			dataType: 'json',
 			data: data,
 			success: function(data) {
-				if (data)
-					$j("#operation_" + id).html("Accepted");
+				if (data) {
+					var parent = $j("#operation_" + id).parent();
+					parent.append("<td style='text-align: right;' colspan='3'>Accepted</td>")
+					$j(".operation_" + id).remove();
+				}
 			}
 		});
 	}
 
 	function ignore(id) {
-		var data = "comment=" + $j("#reason_" + id).attr("value") + "&id=" + id;
+		var data = "comment=" + $j("#comment_" + id).attr("value") + "&id=" + id;
 		$j.ajax({
 			url: "ignoreResponse.form",
 			type: "POST",
 			dataType: 'json',
 			data: data,
 			success: function(data) {
-				if (data)
-					$j("#operation_" + id).html("Ignored");
+				if (data) {
+					var parent = $j("#operation_" + id).parent();
+					parent.append("<td style='text-align: right;' colspan='3'>Ignored</td>")
+					$j(".operation_" + id).remove();
+				}
 			}
 		});
 	}
@@ -51,6 +57,9 @@
 				data: data,
 				success: function(server) {
 
+					if (jQuery.isEmptyObject(server))
+						$j("#searchcontainer").hide();
+
 					if (!jQuery.isEmptyObject(server)) {
 						$j("#searchcontainer").show();
 						$j("#result tr").remove();
@@ -59,36 +68,37 @@
 							var header = null;
 							var counter = 1;
 							jQuery.each(responses, function() {
-								if (header == null) {
-									header = "<tr><td colspan='3'><span style='font-weight: bold'>" + this.patientName + " ( Requested by " + this.providerName + " )</span></td></tr>";
-									$j("#result").append(header);
+								if (this.status == 1 || this.status == -1) {
+									if (header == null) {
+										header = "<tr><td colspan='3'><span style='font-weight: bold'>" + this.patientName + " ( Requested by " + this.providerName + " )</span></td></tr>";
+										$j("#result").append(header);
+									}
+
+									var description = "<tr><td>" + counter++ + ".</td>";
+									if (this.status == -1)
+										description += "<td>Please remove " + this.medicationName + " from encounter on " + this.datetime + "</td>";
+									else if (this.status == 1)
+										description += "<td>Please add " + this.medicationName + " to encounter on " + this.datetime + "</td>";
+
+									description +=  "<td><a href='#' onclick='view(" + this.id + ")'>View Encounter</a> |</td>";
+
+									if (this.action == undefined) {
+										var comment = '';
+										if (this.comment != undefined)
+											comment = this.comment;
+										description +=  "<td class='operation_" + this.id + "'><spring:message code='clinicalsummary.response.comment'/></td>";
+										description +=  "<td class='operation_" + this.id + "'><input id='comment_" + this.id + "' type='text' name='comment_" + this.id + "' value='" + comment + "'/></td>";
+										description +=  "<td class='operation_" + this.id + "' style='text-align: right;' id='operation_" + this.id + "'>" +
+															"<a href='#' onclick='accept(" + this.id + ")'>Accept</a> | " +
+															"<a href='#' onclick='ignore(" + this.id + ")'>Ignore</a>" +
+														"</td></tr>";
+									} else if (this.action == 'Ignore')
+										description +=  "<td style='text-align: right;' colspan='3'>Ignored</td>";
+									else if (this.action == 'Accept')
+										description +=  "<td style='text-align: right;' colspan='3'>Accepted</td>";
+
+									$j("#result").append(description);
 								}
-
-								var description = "<tr><td>" + counter++ + ".</td>";
-								if (this.status == 1)
-									description += "<td>Please remove " + this.medicationName + " from encounter on " + this.medicationDatetime + "</td>";
-								else if (this.status == 0)
-									description += "<td>Please add " + this.medicationName + " to encounter on " + this.medicationDatetime + "</td>";
-
-								description +=  "<td><a href='#' onclick='view(" + this.id + ")'>View Encounter</a> |</td>";
-
-								if (this.action == undefined) {
-									var comment = '';
-									if (this.comment != undefined)
-										comment = this.comment;
-									var id = "reason_" + this.id;
-									description +=  "<td><spring:message code='clinicalsummary.response.comment'/></td>";
-									description +=  "<td><input id='" + id + "' type='text' name='reason_" + this.id + "' value='" + comment + "'/></td>";
-									description +=  "<td style='text-align: right;' id='operation_" + this.id + "'>" +
-														"<a href='#' onclick='accept(" + this.id + ")'>Accept</a> | " +
-														"<a href='#' onclick='ignore(" + this.id + ")'>Ignore</a>" +
-													"</td></tr>";
-								} else if (this.action == 'Ignore')
-									description +=  "<td style='text-align: right;' colspan='3'>Ignored</td>";
-								else if (this.action == 'Accept')
-									description +=  "<td style='text-align: right;' colspan='3'>Accepted</td>";
-
-								$j("#result").append(description);
 							});
 						});
 

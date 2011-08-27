@@ -33,7 +33,7 @@ public class MedicationResponseForm {
 
 	private String medicationName;
 
-	private String medicationDatetime;
+	private String datetime;
 
 	private String action;
 
@@ -126,15 +126,15 @@ public class MedicationResponseForm {
 	/**
 	 * @return
 	 */
-	public String getMedicationDatetime() {
-		return medicationDatetime;
+	public String getDatetime() {
+		return datetime;
 	}
 
 	/**
-	 * @param medicationDatetime
+	 * @param datetime
 	 */
-	public void setMedicationDatetime(final String medicationDatetime) {
-		this.medicationDatetime = medicationDatetime;
+	public void setDatetime(final String datetime) {
+		this.datetime = datetime;
 	}
 
 	/**

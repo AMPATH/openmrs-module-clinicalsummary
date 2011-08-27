@@ -31,8 +31,6 @@ public class MedicationResponse extends Response {
 
 	private MedicationType medicationType;
 
-	private Date medicationDatetime;
-
 	private Integer status;
 
 	private Person reviewer;
@@ -69,20 +67,6 @@ public class MedicationResponse extends Response {
 	 */
 	public void setMedicationType(final MedicationType medicationType) {
 		this.medicationType = medicationType;
-	}
-
-	/**
-	 * @return
-	 */
-	public Date getMedicationDatetime() {
-		return medicationDatetime;
-	}
-
-	/**
-	 * @param medicationDatetime
-	 */
-	public void setMedicationDatetime(final Date medicationDatetime) {
-		this.medicationDatetime = medicationDatetime;
 	}
 
 	/**

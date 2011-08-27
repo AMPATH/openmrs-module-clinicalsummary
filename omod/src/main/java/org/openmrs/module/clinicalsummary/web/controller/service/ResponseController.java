@@ -15,6 +15,8 @@
 package org.openmrs.module.clinicalsummary.web.controller.service;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -38,7 +40,6 @@ import org.openmrs.module.clinicalsummary.service.UtilService;
 import org.openmrs.module.clinicalsummary.util.response.MedicationResponse;
 import org.openmrs.module.clinicalsummary.util.response.ReminderResponse;
 import org.openmrs.module.clinicalsummary.util.response.Response;
-import org.openmrs.module.clinicalsummary.web.controller.WebUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -61,7 +62,7 @@ public class ResponseController {
 	                            @RequestParam(required = false, value = PASSWORD) String password,
 	                            HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-		log.info("Processing responses x    from the android devices ...");
+		log.info("Processing responses from the android devices ...");
 
 		try {
 			if (!Context.isAuthenticated())
@@ -92,9 +93,9 @@ public class ResponseController {
 							reminderResponse.setProvider(Context.getAuthenticatedUser().getPerson());
 							reminderResponse.setToken(parameter[1]);
 							reminderResponse.setResponse(parameter[2]);
-							reminderResponse.setReminderDatetime(WebUtils.parse(parameter[3], new Date()));
+							reminderResponse.setComment(parameter[3]);
 							reminderResponse.setLocation(Context.getLocationService().getLocation(parameter[4]));
-							reminderResponse.setDatetime(WebUtils.parse(parameter[5], new Date()));
+							reminderResponse.setDatetime(parse(parameter[5]));
 							// add to the list
 							responses.add(reminderResponse);
 						} else {
@@ -113,11 +114,9 @@ public class ResponseController {
 									if (StringUtils.equals(medicationType.getValue(), parameter[0]))
 										medicationResponse.setMedicationType(medicationType);
 								medicationResponse.setMedication(concept);
-
-								medicationResponse.setMedicationDatetime(WebUtils.parse(parameter[2], new Date()));
-								medicationResponse.setStatus(NumberUtils.toInt(parameter[3]));
-								medicationResponse.setLocation(Context.getLocationService().getLocation(parameter[4]));
-								medicationResponse.setDatetime(WebUtils.parse(parameter[5], new Date()));
+								medicationResponse.setStatus(NumberUtils.toInt(parameter[2]));
+								medicationResponse.setLocation(Context.getLocationService().getLocation(parameter[3]));
+								medicationResponse.setDatetime(parse(parameter[4]));
 								// add to the list
 								responses.add(medicationResponse);
 							}
@@ -130,6 +129,17 @@ public class ResponseController {
 		} catch (ContextAuthenticationException e) {
 			response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
 		}
+	}
+
+	private Date parse(String dateString) {
+		Date date = null;
+		try {
+			SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy");
+			date = dateFormat.parse(dateString);
+		} catch (ParseException e) {
+			log.error("Parsing " + dateString + " to Date object failed.");
+		}
+		return date;
 	}
 
 }
