@@ -18,7 +18,7 @@ import org.openmrs.module.clinicalsummary.db.hibernate.type.StringEnum;
 
 public enum ActionType implements StringEnum {
 
-	ACTION_IGNORED("Ignored"), ACTION_ACCEPT("Accept");
+	ACTION_IGNORED("Ignore"), ACTION_ACCEPT("Accept");
 
 	private final String value;
 

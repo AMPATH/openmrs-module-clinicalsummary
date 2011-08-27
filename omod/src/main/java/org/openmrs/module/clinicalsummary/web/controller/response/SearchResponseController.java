@@ -102,7 +102,8 @@ public class SearchResponseController {
 					responseForm.setLocationName(response.getLocation().getName());
 					responseForm.setMedicationName(response.getMedication().getName(Context.getLocale()).getName());
 					responseForm.setMedicationDatetime(Context.getDateFormat().format(response.getMedicationDatetime()));
-					responseForm.setAction(response.getActionType().getValue());
+					if (response.getActionType() != null)
+						responseForm.setAction(response.getActionType().getValue());
 					// add to the output list
 					responseForms.add(responseForm);
 				} catch (Exception e) {

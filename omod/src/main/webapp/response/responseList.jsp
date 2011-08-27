@@ -72,17 +72,22 @@
 
 								description +=  "<td><a href='#' onclick='view(" + this.id + ")'>View Encounter</a> |</td>";
 
-								var comment = '';
-								if (this.comment != undefined)
-									comment = this.comment;
-								var id = "reason_" + this.id;
-								description +=  "<td><spring:message code='clinicalsummary.response.comment'/></td>";
-								description +=  "<td><input id='" + id + "' type='text' name='" + id + "' value='" + comment + "'/></td>";
+								if (this.action == undefined) {
+									var comment = '';
+									if (this.comment != undefined)
+										comment = this.comment;
+									var id = "reason_" + this.id;
+									description +=  "<td><spring:message code='clinicalsummary.response.comment'/></td>";
+									description +=  "<td><input id='" + id + "' type='text' name='reason_" + this.id + "' value='" + comment + "'/></td>";
+									description +=  "<td style='text-align: right;' id='operation_" + this.id + "'>" +
+														"<a href='#' onclick='accept(" + this.id + ")'>Accept</a> | " +
+														"<a href='#' onclick='ignore(" + this.id + ")'>Ignore</a>" +
+													"</td></tr>";
+								} else if (this.action == 'Ignore')
+									description +=  "<td style='text-align: right;' colspan='3'>Ignored</td>";
+								else if (this.action == 'Accept')
+									description +=  "<td style='text-align: right;' colspan='3'>Accepted</td>";
 
-								description +=  "<td style='text-align: right;' id='operation_" + this.id + "'>" +
-													"<a href='#' onclick='accept(" + this.id + ")'>Accept</a> | " +
-													"<a href='#' onclick='ignore(" + this.id + ")'>Ignore</a>" +
-												"</td></tr>";
 								$j("#result").append(description);
 							});
 						});
