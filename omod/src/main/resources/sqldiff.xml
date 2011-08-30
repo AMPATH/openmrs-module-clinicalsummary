@@ -1258,4 +1258,49 @@
 		</sql>
 	</diff>
 
+	<diff>
+		<version>4.2.6</version>
+		<author>Nyoman Ribeka</author>
+		<date>August 27 2011</date>
+		<description>
+			Added more column on the response table
+		</description>
+		<sql>
+			ALTER TABLE clinical_summary_index ADD CONSTRAINT indexed_patient FOREIGN KEY (patient) REFERENCES patient (patient_id);
+			ALTER TABLE clinical_summary_index ADD CONSTRAINT indexed_patient_location FOREIGN KEY (location) REFERENCES location (location_id);
+
+			ALTER TABLE clinical_summary_loggable CHANGE COLUMN summary_error_id id INTEGER  NOT NULL AUTO_INCREMENT;
+			ALTER TABLE clinical_summary_loggable ADD CONSTRAINT logged_patient FOREIGN KEY (patient) REFERENCES patient (patient_id);
+
+			ALTER TABLE clinical_summary_mapping ADD CONSTRAINT mapped_summary FOREIGN KEY (summary) REFERENCES clinical_summary (id);
+			ALTER TABLE clinical_summary_mapping ADD CONSTRAINT mapped_encounter_type FOREIGN KEY (encounter_type) REFERENCES encounter_type (encounter_type_id);
+
+			ALTER TABLE clinical_summary_medication_response ADD CONSTRAINT medication_response_patient FOREIGN KEY (patient) REFERENCES patient (patient_id);
+			ALTER TABLE clinical_summary_medication_response ADD CONSTRAINT medication_response_provider FOREIGN KEY (provider) REFERENCES person (person_id);
+			ALTER TABLE clinical_summary_medication_response ADD CONSTRAINT medication_response_location FOREIGN KEY (location) REFERENCES location (location_id);
+			ALTER TABLE clinical_summary_medication_response ADD CONSTRAINT medication_response_concept FOREIGN KEY (medication) REFERENCES concept (concept_id);
+			ALTER TABLE clinical_summary_medication_response ADD CONSTRAINT medication_response_reviewer FOREIGN KEY (reviewer) REFERENCES person (person_id);
+			ALTER TABLE clinical_summary_medication_response ADD CONSTRAINT medication_response_creator FOREIGN KEY (creator) REFERENCES users (user_id);
+
+			ALTER TABLE clinical_summary_ordered_observation ADD CONSTRAINT ordered_observation_person FOREIGN KEY (person) REFERENCES person (person_id);
+			ALTER TABLE clinical_summary_ordered_observation ADD CONSTRAINT ordered_observation_provider FOREIGN KEY (provider) REFERENCES person (person_id);
+			ALTER TABLE clinical_summary_ordered_observation ADD CONSTRAINT ordered_observation_location FOREIGN KEY (location) REFERENCES location (location_id);
+			ALTER TABLE clinical_summary_ordered_observation ADD CONSTRAINT ordered_observation_concept FOREIGN KEY (concept) REFERENCES concept (concept_id);
+			ALTER TABLE clinical_summary_ordered_observation ADD CONSTRAINT ordered_observation_value_coded FOREIGN KEY (value_coded) REFERENCES concept (concept_id);
+			ALTER TABLE clinical_summary_ordered_observation ADD CONSTRAINT ordered_observation_obs FOREIGN KEY (obs) REFERENCES obs (obs_id);
+			ALTER TABLE clinical_summary_ordered_observation ADD CONSTRAINT ordered_observation_creator FOREIGN KEY (creator) REFERENCES users (user_id);
+
+			ALTER TABLE clinical_summary_reminder ADD CONSTRAINT reminder_person FOREIGN KEY (patient) REFERENCES patient (patient_id);
+			ALTER TABLE clinical_summary_reminder ADD CONSTRAINT reminder_provider FOREIGN KEY (provider) REFERENCES person (person_id);
+			ALTER TABLE clinical_summary_reminder ADD CONSTRAINT reminder_location FOREIGN KEY (location) REFERENCES location (location_id);
+			ALTER TABLE clinical_summary_reminder ADD CONSTRAINT reminder_encounter FOREIGN KEY (encounter) REFERENCES encounter (encounter_id);
+
+
+			ALTER TABLE clinical_summary_reminder_response ADD CONSTRAINT reminder_response_patient FOREIGN KEY (patient) REFERENCES patient (patient_id);
+			ALTER TABLE clinical_summary_reminder_response ADD CONSTRAINT reminder_response_provider FOREIGN KEY (provider) REFERENCES person (person_id);
+			ALTER TABLE clinical_summary_reminder_response ADD CONSTRAINT reminder_response_location FOREIGN KEY (location) REFERENCES location (location_id);
+			ALTER TABLE clinical_summary_reminder_response ADD CONSTRAINT reminder_response_creator FOREIGN KEY (creator) REFERENCES users (user_id);
+		</sql>
+	</diff>
+
 </sqldiff>
