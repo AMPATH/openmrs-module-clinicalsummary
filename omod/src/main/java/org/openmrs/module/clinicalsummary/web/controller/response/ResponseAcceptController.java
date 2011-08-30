@@ -44,13 +44,12 @@ public class ResponseAcceptController {
 	@ResponseBody
 	Boolean processAccept(final @RequestParam(required = true, value = "id") Integer responseId,
 	                      final @RequestParam(required = true, value = "comment") String comment) {
-		log.info("Save the reason and return nothing");
 
 		if (Context.isAuthenticated()) {
 			UtilService service = Context.getService(UtilService.class);
 			MedicationResponse medicationResponse = service.getResponse(MedicationResponse.class, responseId);
 
-			if (medicationResponse.getStatus() == 0) {
+			if (medicationResponse.getStatus() == 1) {
 				// search for the encounter
 				List<Encounter> encounters = Context.getEncounterService().getEncountersByPatient(medicationResponse.getPatient());
 
@@ -66,6 +65,7 @@ public class ResponseAcceptController {
 					Obs obs = new Obs();
 					obs.setObsDatetime(new Date());
 					obs.setEncounter(medicationEncounter);
+					obs.setPerson(medicationEncounter.getPatient());
 					obs.setConcept(CacheUtils.getConcept(EvaluableNameConstants.MEDICATION_ADDED));
 					obs.setValueCoded(medicationResponse.getMedication());
 					obs.setLocation(medicationEncounter.getLocation());
@@ -82,11 +82,11 @@ public class ResponseAcceptController {
 					return Boolean.TRUE;
 				}
 
-			} else if (medicationResponse.getStatus() == 1) {
+			} else if (medicationResponse.getStatus() == -1) {
 				medicationResponse.setReviewer(Context.getAuthenticatedUser().getPerson());
 				medicationResponse.setDateReviewed(new Date());
 				medicationResponse.setReviewComment(comment);
-				medicationResponse.setActionType(ActionType.ACTION_IGNORED);
+				medicationResponse.setActionType(ActionType.ACTION_ACCEPT);
 				service.saveResponse(medicationResponse);
 
 				return Boolean.TRUE;

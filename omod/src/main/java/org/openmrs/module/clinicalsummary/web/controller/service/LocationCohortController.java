@@ -72,6 +72,7 @@ public class LocationCohortController {
 			calendar.add(Calendar.DATE, -timeFrame);
 			Date startDate = calendar.getTime();
 
+			calendar = Calendar.getInstance();
 			calendar.add(Calendar.DATE, timeFrame);
 			Date endDate = calendar.getTime();
 

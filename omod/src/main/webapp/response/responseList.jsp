@@ -12,6 +12,26 @@
 <script>
 	$j = jQuery.noConflict();
 
+	function view(id, title) {
+		var data = "id=" + id;
+		$j.ajax({
+			url: "viewEncounter.form",
+			type: "POST",
+			dataType: 'json',
+			data: data,
+			success: function(data) {
+				if (data != undefined) {
+					var url = "${pageContext.request.contextPath}/admin/encounters/encounterDisplay.list?encounterId=" + data;
+					$j("#displayEncounterPopupIframe").attr("src", url);
+					$j('#displayEncounterPopup')
+						.dialog('option', 'title', title)
+						.dialog('option', 'height', $j(window).height() - 50)
+						.dialog('open');
+				}
+			}
+		});
+	}
+
 	function accept(id) {
 		var data = "comment=" + $j("#comment_" + id).attr("value") + "&id=" + id;
 		$j.ajax({
@@ -48,6 +68,16 @@
 
 	$j(function() {
 
+		$j('#displayEncounterPopup').dialog({
+			title: 'dynamic',
+			autoOpen: false,
+			draggable: false,
+			resizable: false,
+			width: '80%',
+			modal: true,
+			open: function(a, b) { $j('#displayEncounterPopupLoading').show();}
+		});
+
 		$j("#search").click(function() {
 			var data = $j("#form").serialize();
 			$j.ajax({
@@ -57,8 +87,13 @@
 				data: data,
 				success: function(server) {
 
-					if (jQuery.isEmptyObject(server))
-						$j("#searchcontainer").hide();
+					if (jQuery.isEmptyObject(server)) {
+						$j("#searchcontainer").show();
+						$j("#result tr").remove();
+
+						var empty = "<tr><td>No drug changes found</td></tr>"
+						$j("#result").append(empty);
+					}
 
 					if (!jQuery.isEmptyObject(server)) {
 						$j("#searchcontainer").show();
@@ -70,34 +105,41 @@
 							jQuery.each(responses, function() {
 								if (this.status == 1 || this.status == -1) {
 									if (header == null) {
-										header = "<tr><td colspan='3'><span style='font-weight: bold'>" + this.patientName + " ( Requested by " + this.providerName + " )</span></td></tr>";
+										header = "<tr style='margin-top: 5px;'><td colspan='5'><span style='font-weight: bold'>" + this.patientName + " ( Requested by " + this.providerName + " )</span></td></tr>";
 										$j("#result").append(header);
 									}
 
-									var description = "<tr><td>" + counter++ + ".</td>";
-									if (this.status == -1)
-										description += "<td>Please remove " + this.medicationName + " from encounter on " + this.datetime + "</td>";
-									else if (this.status == 1)
-										description += "<td>Please add " + this.medicationName + " to encounter on " + this.datetime + "</td>";
+									var colored = "<tr>";
+									if (counter % 2 == 1)
+										colored = "<tr style='background-color: #F3F3F3;'>"
 
-									description +=  "<td><a href='#' onclick='view(" + this.id + ")'>View Encounter</a> |</td>";
+									var description = colored + "<td>" + counter++ + ".</td>";
+									if (this.status == -1)
+										description += "<td colspan='4'>Please remove " + this.medicationName + " from encounter on " + this.datetime + "</td>";
+									else if (this.status == 1)
+										description += "<td colspan='4'>Please add " + this.medicationName + " to encounter on " + this.datetime + "</td>";
+									description += "</tr>";
+
+									var operation =  colored + "<td></td><td><a href='#' onclick='view(" + this.id + ", \"Encounter with " + this.providerName + " on " + this.datetime + "\")'>View Encounter</a> |</td>";
 
 									if (this.action == undefined) {
 										var comment = '';
 										if (this.comment != undefined)
 											comment = this.comment;
-										description +=  "<td class='operation_" + this.id + "'><spring:message code='clinicalsummary.response.comment'/></td>";
-										description +=  "<td class='operation_" + this.id + "'><input id='comment_" + this.id + "' type='text' name='comment_" + this.id + "' value='" + comment + "'/></td>";
-										description +=  "<td class='operation_" + this.id + "' style='text-align: right;' id='operation_" + this.id + "'>" +
+										operation +=    "<td class='operation_" + this.id + "'><spring:message code='clinicalsummary.response.comment'/></td>";
+										operation +=    "<td class='operation_" + this.id + "'><input id='comment_" + this.id + "' type='text' name='comment_" + this.id + "' value='" + comment + "'/></td>";
+										operation +=    "<td class='operation_" + this.id + "' style='text-align: right;' id='operation_" + this.id + "'>" +
 															"<a href='#' onclick='accept(" + this.id + ")'>Accept</a> | " +
 															"<a href='#' onclick='ignore(" + this.id + ")'>Ignore</a>" +
-														"</td></tr>";
+														"</td>";
 									} else if (this.action == 'Ignore')
-										description +=  "<td style='text-align: right;' colspan='3'>Ignored</td>";
+										operation +=  "<td style='text-align: right;' colspan='3'>Ignored</td>";
 									else if (this.action == 'Accept')
-										description +=  "<td style='text-align: right;' colspan='3'>Accepted</td>";
+										operation +=  "<td style='text-align: right;' colspan='3'>Accepted</td>";
+									operation += "</tr>";
 
 									$j("#result").append(description);
+									$j("#result").append(operation);
 								}
 							});
 						});
@@ -107,8 +149,14 @@
 			});
 		});
 
+		$j("#displayEncounterPopupIframe").load(function() { $j('#displayEncounterPopupLoading').hide(); });
 	});
 </script>
+
+<div id="displayEncounterPopup">
+	<div id="displayEncounterPopupLoading"><spring:message code="general.loading"/></div>
+	<iframe id="displayEncounterPopupIframe" width="100%" height="100%" marginWidth="0" marginHeight="0" frameBorder="0" scrolling="auto"></iframe>
+</div>
 
 <style type="text/css">
 
@@ -157,12 +205,6 @@
 				<ol>
 					<li>
 						<table cellpadding="0" cellspacing="0" border="0" class="display">
-							<thead>
-								<tr>
-									<th colspan="3"></th>
-									<th colspan="3" style="text-align: center;"><spring:message code="clinicalsummary.response.operation"/></th>
-								</tr>
-							</thead>
 							<tbody id="result"></tbody>
 						</table>
 					</li>
