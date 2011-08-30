@@ -129,18 +129,18 @@
 										description += "<td colspan='4'>Please add " + this.medicationName + " to encounter on " + this.datetime + "</td>";
 									description += "</tr>";
 
-									var operation =  colored + "<td></td><td><a href='#' onclick='view(" + this.id + ", \"Encounter with " + this.providerName + " on " + this.datetime + "\")'>View Encounter</a> |</td>";
+									var operation =  colored + "<td></td><td><a href='#' onclick='view(" + this.id + ", \"Encounter with " + this.providerName + " on " + this.datetime + "\")'>View Encounter</a>|</td>";
 
 									if (this.action == undefined) {
 										var comment = '';
 										if (this.comment != undefined)
 											comment = this.comment;
-										operation +=    "<td class='operation_" + this.id + "'><spring:message code='clinicalsummary.response.comment'/></td>";
-										operation +=    "<td class='operation_" + this.id + "'>" +
+										operation +=    "<td class='operation_" + this.id + "' colspan='2'>";
+										operation +=        "<span style='margin-right: 3px'><spring:message code='clinicalsummary.response.comment'/></span>" +
 															"<input id='comment_" + this.id + "' type='text' name='comment_" + this.id + "' value='" + comment + "'/>" +
 															"<span class='error' id='status_" + this.id + "' style='display: none;'></span>" +
 														"</td>";
-										operation +=    "<td class='operation_" + this.id + "' style='text-align: right;' id='operation_" + this.id + "'>" +
+										operation +=    "<td class='operation_" + this.id + "' style='text-align: right; padding-right: 3px;' id='operation_" + this.id + "'>" +
 															"<a href='#' onclick='accept(" + this.id + ")'>Accept</a> | " +
 															"<a href='#' onclick='ignore(" + this.id + ")'>Ignore</a>" +
 														"</td>";
@@ -215,7 +215,7 @@
 			<fieldset id="searchcontainer" style="display: none">
 				<ol>
 					<li>
-						<table cellpadding="0" cellspacing="0" border="0" class="display">
+						<table cellpadding="0" cellspacing="0" border="0" class="display" width="100%">
 							<tbody id="result"></tbody>
 						</table>
 					</li>
