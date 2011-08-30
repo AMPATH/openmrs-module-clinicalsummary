@@ -14,8 +14,11 @@
 
 package org.openmrs.module.clinicalsummary.web.controller.response;
 
+import java.io.IOException;
 import java.util.Date;
+import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
@@ -26,7 +29,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class ResponseIgnoreController {
@@ -34,24 +36,24 @@ public class ResponseIgnoreController {
 	private static final Log log = LogFactory.getLog(ResponseIgnoreController.class);
 
 	@RequestMapping(method = RequestMethod.POST, value = "/module/clinicalsummary/response/ignoreResponse")
-	public
-	@ResponseBody
-	Boolean processIgnore(final @RequestParam(required = true, value = "id") Integer responseId,
-	                      final @RequestParam(required = true, value = "comment") String comment) {
+	public void processIgnore(final @RequestParam(required = true, value = "id") Integer responseId,
+	                          final @RequestParam(required = true, value = "comment") String comment,
+	                          final HttpServletResponse response) throws IOException {
 
 		if (Context.isAuthenticated()) {
-			UtilService service = Context.getService(UtilService.class);
-			MedicationResponse medicationResponse = service.getResponse(MedicationResponse.class, responseId);
-			medicationResponse.setReviewer(Context.getAuthenticatedUser().getPerson());
-			medicationResponse.setDateReviewed(new Date());
-			medicationResponse.setReviewComment(comment);
-			medicationResponse.setActionType(ActionType.ACTION_IGNORED);
-			service.saveResponse(medicationResponse);
-
-			return Boolean.TRUE;
+			if (StringUtils.isNotBlank(comment)) {
+				UtilService service = Context.getService(UtilService.class);
+				MedicationResponse medicationResponse = service.getResponse(MedicationResponse.class, responseId);
+				medicationResponse.setReviewer(Context.getAuthenticatedUser().getPerson());
+				medicationResponse.setDateReviewed(new Date());
+				medicationResponse.setReviewComment(comment);
+				medicationResponse.setActionType(ActionType.ACTION_IGNORED);
+				service.saveResponse(medicationResponse);
+			} else {
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST,
+						Context.getMessageSourceService().getMessage("clinicalsummary.response.required"));
+			}
 		}
-
-		return Boolean.FALSE;
 	}
 
 }

@@ -20,14 +20,13 @@
 			dataType: 'json',
 			data: data,
 			success: function(data) {
-				if (data != undefined) {
-					var url = "${pageContext.request.contextPath}/admin/encounters/encounterDisplay.list?encounterId=" + data;
-					$j("#displayEncounterPopupIframe").attr("src", url);
-					$j('#displayEncounterPopup')
-						.dialog('option', 'title', title)
-						.dialog('option', 'height', $j(window).height() - 50)
-						.dialog('open');
-				}
+				$j("#status").hide();
+				var url = "${pageContext.request.contextPath}/admin/encounters/encounterDisplay.list?encounterId=" + data;
+				$j("#displayEncounterPopupIframe").attr("src", url);
+				$j('#displayEncounterPopup')
+					.dialog('option', 'title', title)
+					.dialog('option', 'height', $j(window).height() - 50)
+					.dialog('open');
 			}
 		});
 	}
@@ -39,12 +38,16 @@
 			type: "POST",
 			dataType: 'json',
 			data: data,
-			success: function(data) {
-				if (data) {
-					var parent = $j("#operation_" + id).parent();
-					parent.append("<td style='text-align: right;' colspan='3'>Accepted</td>")
-					$j(".operation_" + id).remove();
-				}
+			success: function(data, status, jqXHR) {
+				var parent = $j("#operation_" + id).parent();
+				parent.append("<td style='text-align: right;' colspan='3'>Accepted</td>");
+				$j(".operation_" + id).remove();
+				$j(".error").hide();
+			},
+			error: function(jqXHR, status, error) {
+				var status = jqXHR.statusText;
+				$j("#status_" + id).html(status);
+				$j("#status_" + id).show();
 			}
 		});
 	}
@@ -56,12 +59,16 @@
 			type: "POST",
 			dataType: 'json',
 			data: data,
-			success: function(data) {
-				if (data) {
-					var parent = $j("#operation_" + id).parent();
-					parent.append("<td style='text-align: right;' colspan='3'>Ignored</td>")
-					$j(".operation_" + id).remove();
-				}
+			success: function(data, status, jqXHR) {
+				var parent = $j("#operation_" + id).parent();
+				parent.append("<td style='text-align: right;' colspan='3'>Ignored</td>");
+				$j(".operation_" + id).remove();
+				$j(".error").hide();
+			},
+			error: function(jqXHR, status, error) {
+				var status = jqXHR.statusText;
+				$j("#status_" + id).html(status);
+				$j("#status_" + id).show();
 			}
 		});
 	}
@@ -86,6 +93,8 @@
 				dataType: 'json',
 				data: data,
 				success: function(server) {
+
+					$j("#status").hide();
 
 					if (jQuery.isEmptyObject(server)) {
 						$j("#searchcontainer").show();
@@ -127,7 +136,10 @@
 										if (this.comment != undefined)
 											comment = this.comment;
 										operation +=    "<td class='operation_" + this.id + "'><spring:message code='clinicalsummary.response.comment'/></td>";
-										operation +=    "<td class='operation_" + this.id + "'><input id='comment_" + this.id + "' type='text' name='comment_" + this.id + "' value='" + comment + "'/></td>";
+										operation +=    "<td class='operation_" + this.id + "'>" +
+															"<input id='comment_" + this.id + "' type='text' name='comment_" + this.id + "' value='" + comment + "'/>" +
+															"<span class='error' id='status_" + this.id + "' style='display: none;'></span>" +
+														"</td>";
 										operation +=    "<td class='operation_" + this.id + "' style='text-align: right;' id='operation_" + this.id + "'>" +
 															"<a href='#' onclick='accept(" + this.id + ")'>Accept</a> | " +
 															"<a href='#' onclick='ignore(" + this.id + ")'>Ignore</a>" +
@@ -163,7 +175,6 @@
 	td, th {
 		color: #333333;
 		padding-top: 3px;
-		padding-right: 5px;
 	}
 
 	td {
