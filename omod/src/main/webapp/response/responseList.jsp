@@ -114,7 +114,7 @@
 							jQuery.each(responses, function() {
 								if (this.status == 1 || this.status == -1) {
 									if (header == null) {
-										header = "<tr style='margin-top: 5px;'><td colspan='5'><span style='font-weight: bold'>" + this.patientName + " ( Requested by " + this.providerName + " )</span></td></tr>";
+										header = "<tr style='padding-top: 5px;'><td colspan='5'><span style='font-weight: bold'>" + this.patientName + " ( Requested by " + this.providerName + " )</span></td></tr>";
 										$j("#result").append(header);
 									}
 
@@ -129,18 +129,18 @@
 										description += "<td colspan='4'>Please add " + this.medicationName + " to encounter on " + this.datetime + "</td>";
 									description += "</tr>";
 
-									var operation =  colored + "<td></td><td><a href='#' onclick='view(" + this.id + ", \"Encounter with " + this.providerName + " on " + this.datetime + "\")'>View Encounter</a>|</td>";
+									var operation =  colored + "<td></td><td style='padding: 0px; margin: 0px'><a href='#' onclick='view(" + this.id + ", \"Encounter with " + this.providerName + " on " + this.datetime + "\")'>View Encounter</a></td>";
 
 									if (this.action == undefined) {
 										var comment = '';
 										if (this.comment != undefined)
 											comment = this.comment;
-										operation +=    "<td class='operation_" + this.id + "' colspan='2'>";
+										operation +=    "<td style='text-align: right;' class='operation_" + this.id + "' colspan='2'>";
 										operation +=        "<span style='margin-right: 3px'><spring:message code='clinicalsummary.response.comment'/></span>" +
 															"<input id='comment_" + this.id + "' type='text' name='comment_" + this.id + "' value='" + comment + "'/>" +
 															"<span class='error' id='status_" + this.id + "' style='display: none;'></span>" +
-														"</td>";
-										operation +=    "<td class='operation_" + this.id + "' style='text-align: right; padding-right: 3px;' id='operation_" + this.id + "'>" +
+														"|</td>";
+										operation +=    "<td class='operation_" + this.id + "' style='text-align: right;' id='operation_" + this.id + "'>" +
 															"<a href='#' onclick='accept(" + this.id + ")'>Accept</a> | " +
 															"<a href='#' onclick='ignore(" + this.id + ")'>Ignore</a>" +
 														"</td>";

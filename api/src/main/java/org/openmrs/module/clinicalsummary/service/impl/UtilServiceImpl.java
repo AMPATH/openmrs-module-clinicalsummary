@@ -32,6 +32,7 @@ import org.openmrs.module.clinicalsummary.enumeration.Gender;
 import org.openmrs.module.clinicalsummary.enumeration.StatusType;
 import org.openmrs.module.clinicalsummary.service.UtilService;
 import org.openmrs.module.clinicalsummary.util.obs.OrderedObs;
+import org.openmrs.module.clinicalsummary.util.response.DeviceLog;
 import org.openmrs.module.clinicalsummary.util.response.Response;
 import org.openmrs.module.clinicalsummary.util.weight.WeightStandard;
 
@@ -164,5 +165,13 @@ public class UtilServiceImpl extends BaseOpenmrsService implements UtilService {
 	public <T extends Response> List<T> getResponses(final Class<T> clazz, final Location location,
 	                                             final Date startDate, final Date endDate) throws APIException {
 		return utilDAO.getResponses(clazz, location, startDate, endDate);
+	}
+
+	/**
+	 * @see UtilService#saveDeviceLogs(java.util.List)
+	 */
+	@Override
+	public List<DeviceLog> saveDeviceLogs(final List<DeviceLog> deviceLogs) {
+		return utilDAO.saveDeviceLogs(deviceLogs);
 	}
 }

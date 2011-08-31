@@ -28,6 +28,7 @@ import org.openmrs.module.clinicalsummary.enumeration.AgeUnit;
 import org.openmrs.module.clinicalsummary.enumeration.Gender;
 import org.openmrs.module.clinicalsummary.enumeration.StatusType;
 import org.openmrs.module.clinicalsummary.util.obs.OrderedObs;
+import org.openmrs.module.clinicalsummary.util.response.DeviceLog;
 import org.openmrs.module.clinicalsummary.util.response.Response;
 import org.openmrs.module.clinicalsummary.util.weight.WeightStandard;
 import org.springframework.transaction.annotation.Transactional;
@@ -199,4 +200,14 @@ public interface UtilService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	<T extends Response> List<T> getResponses(final Class<T> clazz, final Location location,
 	                                          final Date startDate, final Date endDate) throws APIException;
+
+
+	/**
+	 * Save list of device log to the database
+	 *
+	 * @param deviceLogs the device
+	 * @return list of all saved device log
+	 * @throws APIException
+	 */
+	List<DeviceLog> saveDeviceLogs(List<DeviceLog> deviceLogs);
 }

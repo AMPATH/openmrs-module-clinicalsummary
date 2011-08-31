@@ -27,6 +27,7 @@ import org.openmrs.module.clinicalsummary.enumeration.AgeUnit;
 import org.openmrs.module.clinicalsummary.enumeration.Gender;
 import org.openmrs.module.clinicalsummary.enumeration.StatusType;
 import org.openmrs.module.clinicalsummary.util.obs.OrderedObs;
+import org.openmrs.module.clinicalsummary.util.response.DeviceLog;
 import org.openmrs.module.clinicalsummary.util.response.Response;
 import org.openmrs.module.clinicalsummary.util.weight.WeightStandard;
 
@@ -65,4 +66,6 @@ public interface UtilDAO {
 
 	<T extends Response> List<T> getResponses(final Class<T> clazz, final Location location,
 	                                          final Date startDate, final Date endDate) throws DAOException;
+
+	List<DeviceLog> saveDeviceLogs(List<DeviceLog> deviceLogs);
 }

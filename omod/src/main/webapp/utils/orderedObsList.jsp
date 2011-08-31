@@ -204,8 +204,8 @@
 	<h3 id="header"><spring:message code="clinicalsummary.ordered.title"/></h3>
 
 	<div id="main">
-		<form id="form" method="post" action="">
-			<div id="sidebar">
+		<div id="sidebar">
+			<form id="form" method="post" action="">
 				<fieldset>
 					<legend><spring:message code="clinicalsummary.ordered.parameter"/></legend>
 					<ol>
@@ -255,10 +255,10 @@
 						</li>
 					</ol>
 				</fieldset>
-			</div>
-		</form>
-		<div id="rightcontent">
-			<table cellpadding="0" cellspacing="0" border="0" class="display" id="result">
+			</form>
+		</div>
+		<div id="maincontent">
+			<table cellpadding="0" cellspacing="0" border="0" class="display" id="result" width="100%">
 				<thead>
 					<tr>
 						<th class="header"><spring:message code="clinicalsummary.ordered.report.grouping"/></th>

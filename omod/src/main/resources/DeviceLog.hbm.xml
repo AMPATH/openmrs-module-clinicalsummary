@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+		"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+		"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+
+	<class name="org.openmrs.module.clinicalsummary.util.response.DeviceLog" table="clinical_summary_device_log">
+
+		<id name="id" type="java.lang.Integer" column="id" unsaved-value="0">
+			<generator class="org.openmrs.api.db.hibernate.NativeIfNotAssignedIdentityGenerator" />
+		</id>
+
+		<property name="deviceId" column="device_id" type="java.lang.String" />
+
+		<property name="key" column="device_key" type="java.lang.String" />
+
+		<property name="value" column="device_value" type="java.lang.String" />
+
+		<property name="timestamp" column="device_timestamp" type="java.lang.String" />
+
+		<many-to-one name="user" column="device_user" class="org.openmrs.Person" lazy="false" />
+
+		<many-to-one name="creator" class="org.openmrs.User" not-null="true">
+			<column name="creator" />
+		</many-to-one>
+
+		<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" length="19" />
+
+		<property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" />
+	</class>
+</hibernate-mapping>

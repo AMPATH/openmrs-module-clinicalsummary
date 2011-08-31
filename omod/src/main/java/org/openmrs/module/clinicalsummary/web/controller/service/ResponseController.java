@@ -37,6 +37,7 @@ import org.openmrs.module.clinicalsummary.cache.CacheUtils;
 import org.openmrs.module.clinicalsummary.enumeration.MedicationType;
 import org.openmrs.module.clinicalsummary.service.LoggableService;
 import org.openmrs.module.clinicalsummary.service.UtilService;
+import org.openmrs.module.clinicalsummary.util.response.DeviceLog;
 import org.openmrs.module.clinicalsummary.util.response.MedicationResponse;
 import org.openmrs.module.clinicalsummary.util.response.ReminderResponse;
 import org.openmrs.module.clinicalsummary.util.response.Response;
@@ -57,6 +58,8 @@ public class ResponseController {
 
 	private static final String HEADER_REMINDER = "reminder";
 
+	private static final String HEADER_LOG = "log";
+
 	@RequestMapping(method = RequestMethod.POST)
 	public void processResponse(@RequestParam(required = false, value = USERNAME) String username,
 	                            @RequestParam(required = false, value = PASSWORD) String password,
@@ -68,61 +71,78 @@ public class ResponseController {
 			if (!Context.isAuthenticated())
 				Context.authenticate(username, password);
 
-			List<Response> responses = new ArrayList<Response>();
-
 			Map parameterMap = request.getParameterMap();
 			for (Object parameterName : parameterMap.keySet()) {
 				// skip the username and password request parameter
 				if (!StringUtils.equalsIgnoreCase(USERNAME, String.valueOf(parameterName))
 						&& !StringUtils.equalsIgnoreCase(PASSWORD, String.valueOf(parameterName))) {
 
-					String patientId = String.valueOf(parameterName);
-					Patient patient = Context.getPatientService().getPatient(NumberUtils.toInt(patientId));
+					String id = String.valueOf(parameterName);
+					String[] parameterValues = (String[]) parameterMap.get(id);
 
-					String[] parameterValues = (String[]) parameterMap.get(parameterName);
-
-					log.info("Patient ID: " + patientId);
+					log.info("ID: " + id);
 					for (String parameterValue : parameterValues)
 						log.info("Parameter Values: " + String.valueOf(parameterValue));
 
-					for (String parameterValue : parameterValues) {
-						String[] parameter = StringUtils.split(parameterValue, "|");
-						if (StringUtils.equalsIgnoreCase(HEADER_REMINDER, parameter[0])) {
-							ReminderResponse reminderResponse = new ReminderResponse();
-							reminderResponse.setPatient(patient);
-							reminderResponse.setProvider(Context.getAuthenticatedUser().getPerson());
-							reminderResponse.setToken(parameter[1]);
-							reminderResponse.setResponse(parameter[2]);
-							reminderResponse.setComment(parameter[3]);
-							reminderResponse.setLocation(Context.getLocationService().getLocation(parameter[4]));
-							reminderResponse.setDatetime(parse(parameter[5]));
-							// add to the list
-							responses.add(reminderResponse);
-						} else {
-							// get the concept from the cache or search the database when the concept is not in the cache
-							Concept concept = CacheUtils.getConcept(parameter[1]);
-							// if we still can't find the concept, the log this as an error
-							if (concept == null) {
-								Loggable loggable = new Loggable(patient, "Unable to find concept with name: " + parameter[1] + " in the database.");
-								Context.getService(LoggableService.class).saveLoggable(loggable);
-							} else {
-								MedicationResponse medicationResponse = new MedicationResponse();
-								medicationResponse.setPatient(patient);
-								medicationResponse.setProvider(Context.getAuthenticatedUser().getPerson());
+					Patient patient = Context.getPatientService().getPatient(NumberUtils.toInt(id));
 
-								for (MedicationType medicationType : MedicationType.values())
-									if (StringUtils.equals(medicationType.getValue(), parameter[0]))
-										medicationResponse.setMedicationType(medicationType);
-								medicationResponse.setMedication(concept);
-								medicationResponse.setStatus(NumberUtils.toInt(parameter[2]));
-								medicationResponse.setLocation(Context.getLocationService().getLocation(parameter[3]));
-								medicationResponse.setDatetime(parse(parameter[4]));
+					if (patient != null) {
+						List<Response> responses = new ArrayList<Response>();
+						for (String parameterValue : parameterValues) {
+							String[] parameter = StringUtils.split(parameterValue, "|");
+							if (StringUtils.equalsIgnoreCase(HEADER_REMINDER, parameter[0])) {
+								ReminderResponse reminderResponse = new ReminderResponse();
+								reminderResponse.setPatient(patient);
+								reminderResponse.setProvider(Context.getAuthenticatedUser().getPerson());
+								reminderResponse.setToken(parameter[1]);
+								reminderResponse.setResponse(parameter[2]);
+								reminderResponse.setComment(parameter[3]);
+								reminderResponse.setLocation(Context.getLocationService().getLocation(parameter[4]));
+								reminderResponse.setDatetime(parse(parameter[5]));
 								// add to the list
-								responses.add(medicationResponse);
+								responses.add(reminderResponse);
+							} else {
+								// get the concept from the cache or search the database when the concept is not in the cache
+								Concept concept = CacheUtils.getConcept(parameter[1]);
+								// if we still can't find the concept, the log this as an error
+								if (concept == null) {
+									Loggable loggable = new Loggable(patient, "Unable to find concept with name: " + parameter[1] + " in the database.");
+									Context.getService(LoggableService.class).saveLoggable(loggable);
+								} else {
+									MedicationResponse medicationResponse = new MedicationResponse();
+									medicationResponse.setPatient(patient);
+									medicationResponse.setProvider(Context.getAuthenticatedUser().getPerson());
+									// get the correct medication type
+									for (MedicationType medicationType : MedicationType.values())
+										if (StringUtils.equals(medicationType.getValue(), parameter[0]))
+											medicationResponse.setMedicationType(medicationType);
+									medicationResponse.setMedication(concept);
+									medicationResponse.setStatus(NumberUtils.toInt(parameter[2]));
+									medicationResponse.setLocation(Context.getLocationService().getLocation(parameter[3]));
+									medicationResponse.setDatetime(parse(parameter[4]));
+									// add to the list
+									responses.add(medicationResponse);
+								}
 							}
 						}
+						Context.getService(UtilService.class).saveResponses(responses);
+					} else {
+						// the id is not patient id but it's a device id
+						List<DeviceLog> deviceLogs = new ArrayList<DeviceLog>();
+						for (String parameterValue : parameterValues) {
+							String[] parameter = StringUtils.split(parameterValue, "|");
+							if (StringUtils.equalsIgnoreCase(HEADER_LOG, parameter[0])) {
+								DeviceLog deviceLog = new DeviceLog();
+								deviceLog.setDeviceId(id);
+								deviceLog.setKey(parameter[1]);
+								deviceLog.setValue(parameter[2]);
+								deviceLog.setTimestamp(parameter[3]);
+								deviceLog.setUser(Context.getAuthenticatedUser().getPerson());
+								deviceLogs.add(deviceLog);
+							}
+							Context.getService(UtilService.class).saveDeviceLogs(deviceLogs);
+						}
 					}
-					Context.getService(UtilService.class).saveResponses(responses);
 				}
 			}
 			response.setStatus(HttpServletResponse.SC_OK);

@@ -42,6 +42,7 @@ import org.openmrs.module.clinicalsummary.enumeration.Gender;
 import org.openmrs.module.clinicalsummary.enumeration.StatusType;
 import org.openmrs.module.clinicalsummary.rule.EvaluableNameConstants;
 import org.openmrs.module.clinicalsummary.util.obs.OrderedObs;
+import org.openmrs.module.clinicalsummary.util.response.DeviceLog;
 import org.openmrs.module.clinicalsummary.util.response.Response;
 import org.openmrs.module.clinicalsummary.util.weight.WeightStandard;
 
@@ -259,5 +260,23 @@ public class HibernateUtilDAO implements UtilDAO {
 
 		criteria.addOrder(Order.asc("patient"));
 		return criteria.list();
+	}
+
+	/**
+	 * @see UtilDAO#saveDeviceLogs(java.util.List)
+	 */
+	@Override
+	public List<DeviceLog> saveDeviceLogs(final List<DeviceLog> deviceLogs) {
+		int counter = 0;
+		Session session = sessionFactory.getCurrentSession();
+		for (DeviceLog deviceLog : deviceLogs) {
+			session.saveOrUpdate(deviceLog);
+			if (counter % 20 == 0) {
+				session.flush();
+				session.clear();
+			}
+			counter++;
+		}
+		return deviceLogs;
 	}
 }

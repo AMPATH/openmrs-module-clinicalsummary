@@ -1303,4 +1303,30 @@
 		</sql>
 	</diff>
 
+	<diff>
+		<version>4.2.7</version>
+		<author>Nyoman Ribeka</author>
+		<date>August 27 2011</date>
+		<description>
+			Added more column on the response table
+		</description>
+		<sql>
+			CREATE TABLE clinical_summary_device_log (
+			  id INTEGER NOT NULL AUTO_INCREMENT,
+			  device_id VARCHAR(255) NOT NULL,
+			  device_key VARCHAR(255) NOT NULL,
+			  device_value VARCHAR(255) NOT NULL,
+			  device_timestamp VARCHAR(255) NOT NULL,
+			  device_user INTEGER  NOT NULL,
+			  creator INTEGER  NOT NULL,
+			  date_created DATETIME NOT NULL,
+			  uuid varchar(38) NOT NULL,
+			  PRIMARY KEY (id),
+			  UNIQUE KEY uuid_clinical_summary_device_log (uuid),
+			  CONSTRAINT user_who_created_device_log FOREIGN KEY (creator) REFERENCES users (user_id),
+			  CONSTRAINT user_who_use_device FOREIGN KEY (device_user) REFERENCES person (person_id)
+			);
+		</sql>
+	</diff>
+
 </sqldiff>
