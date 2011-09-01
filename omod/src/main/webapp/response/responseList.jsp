@@ -12,7 +12,15 @@
 <script>
 	$j = jQuery.noConflict();
 
+	var default_border = "1px solid cadetblue";
+
+	function clearMessage(id) {
+		console.log("Clearing error message");
+		$j("#comment_" + id).css("border", default_border);
+	}
+
 	function view(id, title) {
+		console.log("Viewing encounter");
 		var data = "id=" + id;
 		$j.ajax({
 			url: "viewEncounter.form",
@@ -32,6 +40,7 @@
 	}
 
 	function accept(id) {
+		console.log("Accepting drug changes");
 		var data = "comment=" + $j("#comment_" + id).attr("value") + "&id=" + id;
 		$j.ajax({
 			url: "acceptResponse.form",
@@ -42,17 +51,16 @@
 				var parent = $j("#operation_" + id).parent();
 				parent.append("<td style='text-align: right;' colspan='3'>Accepted</td>");
 				$j(".operation_" + id).remove();
-				$j(".error").hide();
 			},
 			error: function(jqXHR, status, error) {
 				var status = jqXHR.statusText;
-				$j("#status_" + id).html(status);
-				$j("#status_" + id).show();
+				$j("#comment_" + id).css("border", "1px solid red");
 			}
 		});
 	}
 
 	function ignore(id) {
+		console.log("Ignore drug changes");
 		var data = "comment=" + $j("#comment_" + id).attr("value") + "&id=" + id;
 		$j.ajax({
 			url: "ignoreResponse.form",
@@ -63,17 +71,17 @@
 				var parent = $j("#operation_" + id).parent();
 				parent.append("<td style='text-align: right;' colspan='3'>Ignored</td>");
 				$j(".operation_" + id).remove();
-				$j(".error").hide();
 			},
 			error: function(jqXHR, status, error) {
 				var status = jqXHR.statusText;
-				$j("#status_" + id).html(status);
-				$j("#status_" + id).show();
+				$j("#comment_" + id).css("border", "1px solid red");
 			}
 		});
 	}
 
 	$j(function() {
+		
+		default_border = $j("input").css("border");
 
 		$j('#displayEncounterPopup').dialog({
 			title: 'dynamic',
@@ -100,7 +108,7 @@
 						$j("#searchcontainer").show();
 						$j("#result tr").remove();
 
-						var empty = "<tr><td>No drug changes found</td></tr>"
+						var empty = "<tr><td>No drug changes found</td></tr>";
 						$j("#result").append(empty);
 					}
 
@@ -114,22 +122,22 @@
 							jQuery.each(responses, function() {
 								if (this.status == 1 || this.status == -1) {
 									if (header == null) {
-										header = "<tr style='padding-top: 5px;'><td colspan='5'><span style='font-weight: bold'>" + this.patientName + " ( Requested by " + this.providerName + " )</span></td></tr>";
+										header = "<tr><td colspan='5' style='padding-top: 10px;'><span style='font-weight: bold'>" + this.patientName + " ( Requested by " + this.providerName + " )</span></td></tr>";
 										$j("#result").append(header);
 									}
 
 									var colored = "<tr>";
 									if (counter % 2 == 1)
-										colored = "<tr style='background-color: #F3F3F3;'>"
+										colored = "<tr style='background-color: #F3F3F3;'>";
 
-									var description = colored + "<td>" + counter++ + ".</td>";
+									var description = colored + "<td style='padding-top: 5px;'>" + counter++ + ".</td>";
 									if (this.status == -1)
 										description += "<td colspan='4'>Please remove " + this.medicationName + " from encounter on " + this.datetime + "</td>";
 									else if (this.status == 1)
 										description += "<td colspan='4'>Please add " + this.medicationName + " to encounter on " + this.datetime + "</td>";
 									description += "</tr>";
 
-									var operation =  colored + "<td></td><td style='padding: 0px; margin: 0px'><a href='#' onclick='view(" + this.id + ", \"Encounter with " + this.providerName + " on " + this.datetime + "\")'>View Encounter</a></td>";
+									var operation =  colored + "<td></td><td><a href='#' onclick='view(" + this.id + ", \"Encounter with " + this.providerName + " on " + this.datetime + "\")'>View Encounter</a></td>";
 
 									if (this.action == undefined) {
 										var comment = '';
@@ -137,10 +145,7 @@
 											comment = this.comment;
 										operation +=    "<td style='text-align: right;' class='operation_" + this.id + "' colspan='2'>";
 										operation +=        "<span style='margin-right: 3px'><spring:message code='clinicalsummary.response.comment'/></span>" +
-															"<input id='comment_" + this.id + "' type='text' name='comment_" + this.id + "' value='" + comment + "'/>" +
-															"<span class='error' id='status_" + this.id + "' style='display: none;'></span>" +
-														"|</td>";
-										operation +=    "<td class='operation_" + this.id + "' style='text-align: right;' id='operation_" + this.id + "'>" +
+															"<input id='comment_" + this.id + "' type='text' name='comment_" + this.id + "' value='" + comment + "' onclick='clearMessage(" + this.id + ");'/>|" +
 															"<a href='#' onclick='accept(" + this.id + ")'>Accept</a> | " +
 															"<a href='#' onclick='ignore(" + this.id + ")'>Ignore</a>" +
 														"</td>";
