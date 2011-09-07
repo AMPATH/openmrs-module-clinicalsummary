@@ -37,10 +37,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
-@RequestMapping("/module/clinicalsummary/response/responseSearch")
-public class SearchResponseController {
+@RequestMapping("/module/clinicalsummary/response/medicationResponseSearch")
+public class SearchMedicationResponseController {
 
-	private static final Log log = LogFactory.getLog(SearchResponseController.class);
+	private static final Log log = LogFactory.getLog(SearchMedicationResponseController.class);
 
 	@RequestMapping(method = RequestMethod.POST)
 	public

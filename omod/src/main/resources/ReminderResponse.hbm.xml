@@ -25,6 +25,8 @@
 
 		<property name="comment" type="java.lang.String" column="comment" length="19" />
 
+		<property name="present" type="java.lang.Integer" column="present"/>
+
 		<many-to-one name="creator" class="org.openmrs.User" not-null="true">
 			<column name="creator" />
 		</many-to-one>

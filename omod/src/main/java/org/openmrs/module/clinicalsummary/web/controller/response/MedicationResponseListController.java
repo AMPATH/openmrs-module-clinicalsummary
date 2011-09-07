@@ -25,11 +25,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
-public class ResponseListController {
+public class MedicationResponseListController {
 
-	private static final Log log = LogFactory.getLog(ResponseListController.class);
+	private static final Log log = LogFactory.getLog(MedicationResponseListController.class);
 
-	@RequestMapping(method = RequestMethod.GET, value = "/module/clinicalsummary/response/responseList")
+	@RequestMapping(method = RequestMethod.GET, value = "/module/clinicalsummary/response/medicationResponseList")
 	public void populatePage(final ModelMap map) {
 		map.addAttribute("displayTypes", Arrays.asList(ResponseDisplayType.values()));
 	}

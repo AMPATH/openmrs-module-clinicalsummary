@@ -73,9 +73,16 @@
 		</li>
 	</openmrs:hasPrivilege>
 	<openmrs:hasPrivilege privilege="Manage Summaries">
-		<li <c:if test='<%= request.getRequestURI().contains("responseList") %>'>class="active"</c:if>>
-			<a href="${pageContext.request.contextPath}/module/clinicalsummary/response/responseList.list">
-				<spring:message code="clinicalsummary.response"/>
+		<li <c:if test='<%= request.getRequestURI().contains("medicationResponseList") %>'>class="active"</c:if>>
+			<a href="${pageContext.request.contextPath}/module/clinicalsummary/response/medicationResponseList.list">
+				<spring:message code="clinicalsummary.response.medication"/>
+			</a>
+		</li>
+	</openmrs:hasPrivilege>
+	<openmrs:hasPrivilege privilege="Manage Summaries">
+		<li <c:if test='<%= request.getRequestURI().contains("reminderResponseList") %>'>class="active"</c:if>>
+			<a href="${pageContext.request.contextPath}/module/clinicalsummary/response/reminderResponseList.list">
+				<spring:message code="clinicalsummary.response.reminder"/>
 			</a>
 		</li>
 	</openmrs:hasPrivilege>

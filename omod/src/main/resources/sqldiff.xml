@@ -1295,7 +1295,6 @@
 			ALTER TABLE clinical_summary_reminder ADD CONSTRAINT reminder_location FOREIGN KEY (location) REFERENCES location (location_id);
 			ALTER TABLE clinical_summary_reminder ADD CONSTRAINT reminder_encounter FOREIGN KEY (encounter) REFERENCES encounter (encounter_id);
 
-
 			ALTER TABLE clinical_summary_reminder_response ADD CONSTRAINT reminder_response_patient FOREIGN KEY (patient) REFERENCES patient (patient_id);
 			ALTER TABLE clinical_summary_reminder_response ADD CONSTRAINT reminder_response_provider FOREIGN KEY (provider) REFERENCES person (person_id);
 			ALTER TABLE clinical_summary_reminder_response ADD CONSTRAINT reminder_response_location FOREIGN KEY (location) REFERENCES location (location_id);
@@ -1317,8 +1316,8 @@
 			  device_key VARCHAR(255) NOT NULL,
 			  device_value VARCHAR(255) NOT NULL,
 			  device_timestamp VARCHAR(255) NOT NULL,
-			  device_user INTEGER  NOT NULL,
-			  creator INTEGER  NOT NULL,
+			  device_user INTEGER NOT NULL,
+			  creator INTEGER NOT NULL,
 			  date_created DATETIME NOT NULL,
 			  uuid varchar(38) NOT NULL,
 			  PRIMARY KEY (id),
@@ -1326,6 +1325,18 @@
 			  CONSTRAINT user_who_created_device_log FOREIGN KEY (creator) REFERENCES users (user_id),
 			  CONSTRAINT user_who_use_device FOREIGN KEY (device_user) REFERENCES person (person_id)
 			);
+		</sql>
+	</diff>
+
+	<diff>
+		<version>4.2.8</version>
+		<author>Nyoman Ribeka</author>
+		<date>Sept 07 2011</date>
+		<description>
+			Added more column on the reminder response table
+		</description>
+		<sql>
+			ALTER TABLE clinical_summary_reminder_response ADD COLUMN present INTEGER DEFAULT NULL AFTER comment;
 		</sql>
 	</diff>
 

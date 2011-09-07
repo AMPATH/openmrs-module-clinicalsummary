@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<openmrs:require privilege="Manage Summaries" otherwise="/login.htm" redirect="/module/clinicalsummary/response/responseList.list"/>
+<openmrs:require privilege="Manage Summaries" otherwise="/login.htm" redirect="/module/clinicalsummary/response/medicationResponseList.list"/>
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="../localHeader.jsp" %>
@@ -43,7 +43,7 @@
 		console.log("Accepting drug changes");
 		var data = "comment=" + $j("#comment_" + id).attr("value") + "&id=" + id;
 		$j.ajax({
-			url: "acceptResponse.form",
+			url: "acceptMedication.form",
 			type: "POST",
 			dataType: 'json',
 			data: data,
@@ -63,7 +63,7 @@
 		console.log("Ignore drug changes");
 		var data = "comment=" + $j("#comment_" + id).attr("value") + "&id=" + id;
 		$j.ajax({
-			url: "ignoreResponse.form",
+			url: "ignoreMedication.form",
 			type: "POST",
 			dataType: 'json',
 			data: data,
@@ -96,7 +96,7 @@
 		$j("#search").click(function() {
 			var data = $j("#form").serialize();
 			$j.ajax({
-				url: "responseSearch.form",
+				url: "medicationResponseSearch.form",
 				type: "POST",
 				dataType: 'json',
 				data: data,
@@ -143,7 +143,7 @@
 										var comment = '';
 										if (this.comment != undefined)
 											comment = this.comment;
-										operation +=    "<td style='text-align: right;' class='operation_" + this.id + "' colspan='2'>";
+										operation +=    "<td style='text-align: right; padding-right: 3px;' class='operation_" + this.id + "' colspan='2'>";
 										operation +=        "<span style='margin-right: 3px'><spring:message code='clinicalsummary.response.comment'/></span>" +
 															"<input id='comment_" + this.id + "' type='text' name='comment_" + this.id + "' value='" + comment + "' onclick='clearMessage(" + this.id + ");'/>|" +
 															"<a href='#' onclick='accept(" + this.id + ")'>Accept</a> | " +
@@ -189,7 +189,7 @@
 </style>
 
 <div id="container">
-	<h3 id="header"><spring:message code="clinicalsummary.response.header"/></h3>
+	<h3 id="header"><spring:message code="clinicalsummary.response.medication.header"/></h3>
 
 	<div id="main">
 		<div id="leftcontent" style="width: 25%">
@@ -197,11 +197,11 @@
 				<fieldset>
 					<ol>
 						<li>
-							<label for="locationId"><spring:message code="clinicalsummary.response.location"/></label>
+							<label for="locationId"><spring:message code="clinicalsummary.response.medication.location"/></label>
 							<openmrs:fieldGen type="org.openmrs.Location" formFieldName="locationId" val="" parameters="optionHeader=[blank]"/>
 						</li>
 						<li>
-							<label for="displayType"><spring:message code="clinicalsummary.response.displayType"/></label>
+							<label for="displayType"><spring:message code="clinicalsummary.response.medication.displayType"/></label>
 							<select name="displayType" id="displayType">
 								<c:forEach var="displayType" items="${displayTypes}" varStatus="varStatus">
 									<option value="${displayType}">${displayType.value}</option>
@@ -210,14 +210,14 @@
 						</li>
 						<li />
 						<li>
-							<input type="button" id="search" value="<spring:message code="clinicalsummary.response.search"/>"/>
+							<input type="button" id="search" value="<spring:message code="clinicalsummary.response.medication.search"/>"/>
 						</li>
 					</ol>
 				</fieldset>
 			</form>
 		</div>
 		<div id="maincontent">
-			<fieldset id="searchcontainer" style="display: none">
+			<fieldset id="searchcontainer" style="display: none; padding-right: 8px;">
 				<ol>
 					<li>
 						<table cellpadding="0" cellspacing="0" border="0" class="display" width="100%">

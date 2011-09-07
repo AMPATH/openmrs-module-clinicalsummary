@@ -27,6 +27,8 @@ public class ReminderResponse extends Response {
 
 	private String comment;
 
+	private Integer present;
+
 	/**
 	 * @return
 	 */
@@ -67,5 +69,19 @@ public class ReminderResponse extends Response {
 	 */
 	public void setComment(final String comment) {
 		this.comment = comment;
+	}
+
+	/**
+	 * @return
+	 */
+	public Integer getPresent() {
+		return present;
+	}
+
+	/**
+	 * @param present
+	 */
+	public void setPresent(final Integer present) {
+		this.present = present;
 	}
 }

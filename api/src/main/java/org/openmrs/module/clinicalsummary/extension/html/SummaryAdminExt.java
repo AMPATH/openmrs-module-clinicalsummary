@@ -56,7 +56,8 @@ public class SummaryAdminExt extends AdministrationSectionExt {
 			map.put("module/clinicalsummary/utils/initialSummaries.form", "clinicalsummary.initial");
 			map.put("module/clinicalsummary/utils/orderedObsList.list", "clinicalsummary.ordered");
 			map.put("module/clinicalsummary/reminder/reminderList.list", "clinicalsummary.reminder");
-			map.put("module/clinicalsummary/response/responseList.list", "clinicalsummary.response");
+			map.put("module/clinicalsummary/response/medicationResponseList.list", "clinicalsummary.response.medication");
+			map.put("module/clinicalsummary/response/reminderResponseList.list", "clinicalsummary.response.reminder");
 		}
 
 		return map;

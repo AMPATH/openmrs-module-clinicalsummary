@@ -14,6 +14,11 @@
 
 package org.openmrs.module.clinicalsummary.service;
 
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 import org.openmrs.OpenmrsObject;
 import org.openmrs.Patient;
 import org.openmrs.api.APIException;
@@ -21,11 +26,6 @@ import org.openmrs.api.OpenmrsService;
 import org.openmrs.module.clinicalsummary.Reminder;
 import org.openmrs.module.clinicalsummary.Summary;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 /**
  */
@@ -79,6 +79,7 @@ public interface ReminderService extends OpenmrsService {
 	 * @param reminderStart the reminder generated start time
 	 * @param reminderEnd   the reminder generated end time
 	 * @return all reminders with matching criteria
+	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
 	List<Reminder> getReminders(final Map<String, Collection<OpenmrsObject>> restrictions,
@@ -88,10 +89,12 @@ public interface ReminderService extends OpenmrsService {
 	/**
 	 * Search reminder records with certain restrictions on providers, locations and reminder datetime
 	 *
-	 * @param restrictions  map of the property name and the list of accepted objects
-	 * @param reminderStart the reminder generated start time
-	 * @param reminderEnd   the reminder generated end time
+	 * @param restrictions       map of the property name and the list of accepted objects
+	 * @param groupingProperties
+	 * @param reminderStart      the reminder generated start time
+	 * @param reminderEnd        the reminder generated end time
 	 * @return all reminders with matching criteria
+	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
 	List<Object[]> aggregateReminders(final Map<String, Collection<OpenmrsObject>> restrictions, final Collection<String> groupingProperties,

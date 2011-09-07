@@ -31,11 +31,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
-public class ResponseIgnoreController {
+public class MedicationIgnoredController {
 
-	private static final Log log = LogFactory.getLog(ResponseIgnoreController.class);
+	private static final Log log = LogFactory.getLog(MedicationIgnoredController.class);
 
-	@RequestMapping(method = RequestMethod.POST, value = "/module/clinicalsummary/response/ignoreResponse")
+	@RequestMapping(method = RequestMethod.POST, value = "/module/clinicalsummary/response/ignoreMedication")
 	public void processIgnore(final @RequestParam(required = true, value = "id") Integer responseId,
 	                          final @RequestParam(required = true, value = "comment") String comment,
 	                          final HttpServletResponse response) throws IOException {

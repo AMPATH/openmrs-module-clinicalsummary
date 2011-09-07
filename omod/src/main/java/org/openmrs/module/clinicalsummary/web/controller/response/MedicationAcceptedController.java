@@ -37,11 +37,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
-public class ResponseAcceptController {
+public class MedicationAcceptedController {
 
-	private static final Log log = LogFactory.getLog(ResponseAcceptController.class);
+	private static final Log log = LogFactory.getLog(MedicationAcceptedController.class);
 
-	@RequestMapping(method = RequestMethod.POST, value = "/module/clinicalsummary/response/acceptResponse")
+	@RequestMapping(method = RequestMethod.POST, value = "/module/clinicalsummary/response/acceptMedication")
 	public void processAccept(final @RequestParam(required = true, value = "id") Integer responseId,
 	                          final @RequestParam(required = true, value = "comment") String comment,
 	                          final HttpServletResponse response) throws IOException {

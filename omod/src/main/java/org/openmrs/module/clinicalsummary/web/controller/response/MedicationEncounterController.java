@@ -30,9 +30,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
-public class ViewEncounterController {
+public class MedicationEncounterController {
 
-	private static final Log log = LogFactory.getLog(ViewEncounterController.class);
+	private static final Log log = LogFactory.getLog(MedicationEncounterController.class);
 
 	@RequestMapping(method = RequestMethod.POST, value = "/module/clinicalsummary/response/viewEncounter")
 	public

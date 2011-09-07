@@ -743,28 +743,6 @@
 		#end
 
 		#set($params = {"encounterType" : ["ANCINITIAL", "ANCRETURN"],
-	                    "reminder": "Please give IPT1. Woman in 2nd trimester and has not received IPT"})
-		#set($reminder = $fn.evaluate($patient, "First Intermittent Preventive Treatment Reminder", $params))
-		#foreach($element in $reminder)
-			<reminder>
-				<id>55</id>
-				<token>First Intermittent Preventive Treatment Reminder</token>
-				<value>$!{fn.format($element)}</value>
-			</reminder>
-		#end
-
-		#set($params = {"encounterType" : ["ANCINITIAL", "ANCRETURN"],
-	                    "reminder": "Please give IPT2. Woman in 3rd trimester and has not received IPT"})
-		#set($reminder = $fn.evaluate($patient, "Second Intermittent Preventive Treatment Reminder", $params))
-		#foreach($element in $reminder)
-			<reminder>
-				<id>56</id>
-				<token>Second Intermittent Preventive Treatment Reminder</token>
-				<value>$!{fn.format($element)}</value>
-			</reminder>
-		#end
-
-		#set($params = {"encounterType" : ["ANCINITIAL", "ANCRETURN"],
 	                    "reminder": "Please record whether TT was given today [ ]Yes [ ]No"})
 		#set($reminder = $fn.evaluate($patient, "Record Tetanus Booster Reminder", $params))
 		#foreach($element in $reminder)
