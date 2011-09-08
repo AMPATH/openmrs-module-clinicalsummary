@@ -4,24 +4,20 @@
     <option name="ANALYSIS_IN_BACKGROUND" value="true" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" readonly="true" id="b35bbdc3-ddcb-4118-9869-8451de34a1f9" name="Default" comment="clinicalsummary: update on the review page ui">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/response/SearchReminderResponseController.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/response/ResponseAcceptController.java" afterPath="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/response/MedicationAcceptedController.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/response/ResponseIgnoreController.java" afterPath="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/response/MedicationIgnoredController.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/response/ResponseListController.java" afterPath="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/response/MedicationResponseListController.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/response/ResponseListController.java" afterPath="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/response/ReminderResponseListController.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/response/SearchResponseController.java" afterPath="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/response/SearchMedicationResponseController.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/response/ViewEncounterController.java" afterPath="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/response/MedicationEncounterController.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/omod/src/main/webapp/response/responseList.jsp" afterPath="$PROJECT_DIR$/omod/src/main/webapp/response/medicationResponseList.jsp" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/omod/src/main/webapp/response/responseList.jsp" afterPath="$PROJECT_DIR$/omod/src/main/webapp/response/reminderResponseList.jsp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/extension/html/SummaryAdminExt.java" afterPath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/extension/html/SummaryAdminExt.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/service/ReminderService.java" afterPath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/service/ReminderService.java" />
+    <list default="true" readonly="true" id="b35bbdc3-ddcb-4118-9869-8451de34a1f9" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/response/ReminderResponseForm.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/util/response/ReminderResponse.java" afterPath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/util/response/ReminderResponse.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/util/response/Response.java" afterPath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/util/response/Response.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/clinicalsummary.iws" afterPath="$PROJECT_DIR$/clinicalsummary.iws" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/omod/src/main/resources/ReminderResponse.hbm.xml" afterPath="$PROJECT_DIR$/omod/src/main/resources/ReminderResponse.hbm.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/response/MedicationResponseForm.java" afterPath="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/response/MedicationResponseForm.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/response/SearchMedicationResponseController.java" afterPath="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/response/SearchMedicationResponseController.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/response/SearchReminderResponseController.java" afterPath="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/response/SearchReminderResponseController.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/service/ResponseController.java" afterPath="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/service/ResponseController.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/omod/src/main/resources/MedicationResponse.hbm.xml" afterPath="$PROJECT_DIR$/omod/src/main/resources/MedicationResponse.hbm.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/omod/src/main/resources/messages.properties" afterPath="$PROJECT_DIR$/omod/src/main/resources/messages.properties" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/omod/src/main/resources/sqldiff.xml" afterPath="$PROJECT_DIR$/omod/src/main/resources/sqldiff.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/omod/src/main/webapp/localHeader.jsp" afterPath="$PROJECT_DIR$/omod/src/main/webapp/localHeader.jsp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/omod/src/test/resources/org/openmrs/module/clinicalsummary/service/templates/example-anc.vm" afterPath="$PROJECT_DIR$/omod/src/test/resources/org/openmrs/module/clinicalsummary/service/templates/example-anc.vm" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/omod/src/main/webapp/response/medicationResponseList.jsp" afterPath="$PROJECT_DIR$/omod/src/main/webapp/response/medicationResponseList.jsp" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/omod/src/main/webapp/response/reminderResponseList.jsp" afterPath="$PROJECT_DIR$/omod/src/main/webapp/response/reminderResponseList.jsp" />
     </list>
     <ignored path="clinicalsummary.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -89,22 +85,22 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/omod/src/main/webapp/reminder/responseList.jsp" />
-        <option value="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/response/MedicationAcceptedController.java" />
-        <option value="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/response/MedicationIgnoredController.java" />
-        <option value="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/response/MedicationListController.java" />
-        <option value="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/response/SearchMedicationController.java" />
-        <option value="$PROJECT_DIR$/omod/src/main/webapp/response/medicationList.jsp" />
-        <option value="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/response/ReminderListController.java" />
         <option value="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/response/MedicationResponseListController.java" />
         <option value="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/response/ReminderResponseListController.java" />
-        <option value="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/response/SearchMedicationResponseController.java" />
-        <option value="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/response/SearchReminderResponseController.java" />
-        <option value="$PROJECT_DIR$/omod/src/main/webapp/response/medicationResponseList.jsp" />
-        <option value="$PROJECT_DIR$/omod/src/main/webapp/response/reminderResponseList.jsp" />
         <option value="$PROJECT_DIR$/omod/src/main/webapp/localHeader.jsp" />
         <option value="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/extension/html/SummaryAdminExt.java" />
         <option value="$PROJECT_DIR$/omod/src/main/webapp/resources/css/form.css" />
+        <option value="$PROJECT_DIR$/omod/src/main/resources/sqldiff.xml" />
+        <option value="$PROJECT_DIR$/omod/src/main/resources/MedicationResponse.hbm.xml" />
+        <option value="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/util/response/ReminderResponse.java" />
+        <option value="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/response/MedicationResponseForm.java" />
+        <option value="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/response/ReminderResponseForm.java" />
+        <option value="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/response/SearchMedicationResponseController.java" />
+        <option value="$PROJECT_DIR$/omod/src/main/webapp/response/medicationResponseList.jsp" />
+        <option value="$PROJECT_DIR$/omod/src/main/resources/messages.properties" />
+        <option value="$PROJECT_DIR$/omod/src/main/webapp/response/reminderResponseList.jsp" />
+        <option value="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/response/SearchReminderResponseController.java" />
+        <option value="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/service/ResponseController.java" />
       </list>
     </option>
   </component>
@@ -164,6 +160,18 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="Favorites" />
+      <pane id="Scope" />
+      <pane id="PackagesPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="clinicalsummary" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -870,30 +878,18 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="PackagesPane">
-        <subPane>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="clinicalsummary" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
-      </pane>
-      <pane id="Scope" />
-      <pane id="Favorites" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_flatWidth1" value="222" />
-    <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_flatWidth0" value="205" />
     <property name="project.structure.last.edited" value="Modules" />
+    <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_flatWidth0" value="205" />
     <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_flatWidth3" value="51" />
-    <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_flatWidth2" value="227" />
-    <property name="OverrideImplement.combined" value="true" />
     <property name="project.structure.proportion" value="0.15" />
-    <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_flatOrder1" value="1" />
+    <property name="OverrideImplement.combined" value="true" />
+    <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_flatWidth2" value="227" />
     <property name="options.splitter.main.proportions" value="0.3" />
+    <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_flatOrder1" value="1" />
     <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_flatOrder0" value="0" />
     <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_flatOrder3" value="3" />
     <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_flatOrder2" value="2" />
@@ -917,12 +913,12 @@
     <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_treeOrder3" value="3" />
     <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_treeOrder4" value="4" />
     <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_treeOrder1" value="1" />
-    <property name="project.structure.side.proportion" value="0.2" />
     <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_treeOrder2" value="2" />
-    <property name="MemberChooser.copyJavadoc" value="false" />
+    <property name="project.structure.side.proportion" value="0.2" />
     <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_treeOrder0" value="0" />
-    <property name="options.searchVisible" value="true" />
+    <property name="MemberChooser.copyJavadoc" value="false" />
     <property name="dynamic.classpath" value="false" />
+    <property name="options.searchVisible" value="true" />
   </component>
   <component name="RecentsManager">
     <key name="CopyClassDialog.RECENTS_KEY">
@@ -939,16 +935,16 @@
       <recent name="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/rule/reminder/adult/baseline" />
       <recent name="$PROJECT_DIR$/omod/src/test/resources/org/openmrs/module/clinicalsummary/service/templates" />
     </key>
+    <key name="MoveMembersDialog.RECENTS_KEY">
+      <recent name="org.openmrs.module.clinicalsummary.rule.EvaluableNameConstants" />
+      <recent name="org.openmrs.module.clinicalsummary.rule.reminder.anc.baseline.PregnancyParameters" />
+    </key>
     <key name="IntroduceConstantDialog.RECENTS_KEY">
       <recent name="org.openmrs.module.clinicalsummary.rule.reminder.anc.gestation.IndirectCoombsAntiDReminderRule" />
       <recent name="org.openmrs.module.clinicalsummary.rule.reminder.anc.gestation.IndirectCoombsTestReminderRule" />
       <recent name="org.openmrs.module.clinicalsummary.rule.reminder.anc.baseline.PregnancyRhesusRule" />
       <recent name="org.openmrs.module.clinicalsummary.rule.reminder.anc.baseline.PregnancySyphilisRule" />
       <recent name="org.openmrs.module.clinicalsummary.rule.reminder.anc.baseline.PregnancyBloodGroupRule" />
-    </key>
-    <key name="MoveMembersDialog.RECENTS_KEY">
-      <recent name="org.openmrs.module.clinicalsummary.rule.EvaluableNameConstants" />
-      <recent name="org.openmrs.module.clinicalsummary.rule.reminder.anc.baseline.PregnancyParameters" />
     </key>
     <key name="CreateClassDialog.RecentsKey">
       <recent name="org.openmrs.module.clinicalsummary.web.controller.reminder" />
@@ -1024,6 +1020,25 @@
         <option name="PhingTarget" enabled="false" />
       </method>
     </configuration>
+    <configuration default="true" type="Applet" factoryName="Applet">
+      <module name="" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="HTML_FILE_NAME" />
+      <option name="HTML_USED" value="false" />
+      <option name="WIDTH" value="400" />
+      <option name="HEIGHT" value="300" />
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <option name="VM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <method>
+        <option name="AntTarget" enabled="false" />
+        <option name="BuildArtifacts" enabled="false" />
+        <option name="Make" enabled="true" />
+        <option name="Maven.BeforeRunTask" enabled="false" />
+        <option name="PhingTarget" enabled="false" />
+      </method>
+    </configuration>
     <configuration default="true" type="XSLT" factoryName="XSLT">
       <option name="myOutputFile" />
       <option name="myOpenOutputFile" value="false" />
@@ -1038,25 +1053,6 @@
       <OutputType value="CONSOLE" save-to-file="false" />
       <FileType name="XML" />
       <JdkChoice value="FROM_MODULE" />
-      <method>
-        <option name="AntTarget" enabled="false" />
-        <option name="BuildArtifacts" enabled="false" />
-        <option name="Make" enabled="true" />
-        <option name="Maven.BeforeRunTask" enabled="false" />
-        <option name="PhingTarget" enabled="false" />
-      </method>
-    </configuration>
-    <configuration default="true" type="Applet" factoryName="Applet">
-      <module name="" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="HTML_FILE_NAME" />
-      <option name="HTML_USED" value="false" />
-      <option name="WIDTH" value="400" />
-      <option name="HEIGHT" value="300" />
-      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
-      <option name="VM_PARAMETERS" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
       <method>
         <option name="AntTarget" enabled="false" />
         <option name="BuildArtifacts" enabled="false" />
@@ -1373,13 +1369,14 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1674" y="-1" width="1932" height="1207" extended-state="6" />
+    <frame x="-6" y="-1" width="1692" height="1057" extended-state="6" />
     <editor active="false" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Persistence" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Phing Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3767313" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.31832796" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
@@ -1390,11 +1387,10 @@
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32994652" sideWeight="0.0" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3056325" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32944787" sideWeight="0.68167204" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.30546623" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3767313" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32686982" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3869239" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -1472,135 +1468,114 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/rule/adherence/DrugAdherenceRule.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="69" column="89" selection-start="2841" selection-end="2841" vertical-scroll-proportion="0.016574586">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/service/UtilService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="187" column="33" selection-start="7301" selection-end="7301" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/omod/src/main/resources/sqldiff.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="1350" column="118" selection-start="97682" selection-end="97682" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/omod/src/main/resources/ReminderResponse.hbm.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="25" column="88" selection-start="1093" selection-end="1165" vertical-scroll-proportion="0.41436464">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/omod/src/main/resources/MedicationResponse.hbm.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="43" column="76" selection-start="1959" selection-end="1959" vertical-scroll-proportion="0.71270716">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/util/response/Response.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="23" column="22" selection-start="773" selection-end="773" vertical-scroll-proportion="0.29834256">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/response/MedicationResponseForm.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="19" column="13" selection-start="715" selection-end="715" vertical-scroll-proportion="0.0" />
+        <state line="120" column="30" selection-start="2182" selection-end="2182" vertical-scroll-proportion="0.022099448">
+          <folding />
+        </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/response/MedicationAcceptedController.java">
+    <entry file="file://$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/response/ReminderResponseForm.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="43" column="107" selection-start="1830" selection-end="1830" vertical-scroll-proportion="0.11848341" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/response/MedicationEncounterController.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="32" column="13" selection-start="1304" selection-end="1304" vertical-scroll-proportion="0.27014217" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/response/MedicationIgnoredController.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="37" column="107" selection-start="1573" selection-end="1573" vertical-scroll-proportion="0.3270142" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/response/MedicationResponseListController.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="31" column="100" selection-start="1268" selection-end="1276" vertical-scroll-proportion="0.3270142" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/response/SearchMedicationResponseController.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="38" column="81" selection-start="1539" selection-end="1616" vertical-scroll-proportion="0.17061612" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/omod/src/main/webapp/response/medicationResponseList.jsp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="98" column="40" selection-start="2834" selection-end="2834" vertical-scroll-proportion="1.4440079" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/omod/src/main/webapp/response/reminderResponseList.jsp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="1" column="111" selection-start="163" selection-end="163" vertical-scroll-proportion="0.014548982" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/omod/src/main/webapp/localHeader.jsp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="82" column="82" selection-start="4100" selection-end="4100" vertical-scroll-proportion="0.8341416" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/extension/html/SummaryAdminExt.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="59" column="69" selection-start="2578" selection-end="2578" vertical-scroll-proportion="1.0980663" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/omod/src/main/webapp/resources/css/form.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="17" column="27" selection-start="346" selection-end="346" vertical-scroll-proportion="0.014218009">
+        <state line="126" column="26" selection-start="2266" selection-end="2266" vertical-scroll-proportion="0.055248618">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/response/ReminderResponseListController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="28" column="106" selection-start="1169" selection-end="1169" vertical-scroll-proportion="0.0" />
+        <state line="24" column="13" selection-start="942" selection-end="942" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
       </provider>
     </entry>
-    <entry file="uml://JAVA/org.openmrs.module.clinicalsummary.web.controller.response.ReminderResponseListController">
-      <provider selected="true" editor-type-id="UmlEditorProvider">
-        <state>
-          <ID>JAVA</ID>
-          <OriginalElement>org.openmrs.module.clinicalsummary.web.controller.response.ReminderResponseListController</OriginalElement>
-          <nodes>
-            <node x="0.0" y="79.0">org.openmrs.module.clinicalsummary.web.controller.response.ReminderResponseListController</node>
-            <node x="37.75" y="0.0">java.lang.Object</node>
-            <node x="137.75" y="0.0">org.springframework.stereotype.Controller</node>
-          </nodes>
-          <notes />
-          <edges>
-            <edge source="org.openmrs.module.clinicalsummary.web.controller.response.ReminderResponseListController" target="org.springframework.stereotype.Controller">
-              <point x="67.0" y="-14.5" />
-              <point x="201.0" y="54.0" />
-              <point x="190.25" y="54.0" />
-              <point x="0.0" y="14.5" />
-            </edge>
-            <edge source="org.openmrs.module.clinicalsummary.web.controller.response.ReminderResponseListController" target="java.lang.Object">
-              <point x="-67.0" y="-14.5" />
-              <point x="67.0" y="54.0" />
-              <point x="77.75" y="54.0" />
-              <point x="0.0" y="14.5" />
-            </edge>
-          </edges>
-          <settings layout="Hierarchic Group" zoom="1.0" x="-251.5" y="-221.0" />
-          <SelectedNodes>
-            <node>org.springframework.stereotype.Controller</node>
-          </SelectedNodes>
-          <Categories />
-          <SCOPE>All</SCOPE>
-          <VISIBILITY>private</VISIBILITY>
+    <entry file="file://$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/util/response/ReminderResponse.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="19" column="41" selection-start="733" selection-end="733" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/response/SearchMedicationResponseController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="73" column="79" selection-start="3108" selection-end="3108" vertical-scroll-proportion="0.43163097">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/omod/src/main/webapp/response/medicationResponseList.jsp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="21" column="27" selection-start="680" selection-end="685" vertical-scroll-proportion="45.69388">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/omod/src/main/resources/messages.properties">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="167" column="48" selection-start="6785" selection-end="6785" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/service/ResponseController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="109" column="96" selection-start="4926" selection-end="4926" vertical-scroll-proportion="-0.112026356">
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/response/SearchReminderResponseController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="34" column="58" selection-start="1395" selection-end="1395" vertical-scroll-proportion="0.27014217">
+        <state line="70" column="0" selection-start="3580" selection-end="3580" vertical-scroll-proportion="0.62932456">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="uml://JAVA/org.openmrs.module.clinicalsummary.rule.medication.AntiRetroViralRule">
-      <provider selected="true" editor-type-id="UmlEditorProvider">
-        <state>
-          <ID>JAVA</ID>
-          <OriginalElement>org.openmrs.module.clinicalsummary.rule.medication.AntiRetroViralRule</OriginalElement>
-          <nodes>
-            <node x="" y="">org.openmrs.logic.rule.AbstractRule</node>
-            <node x="" y="">org.openmrs.module.clinicalsummary.rule.medication.AntiRetroViralRule</node>
-            <node x="" y="">java.lang.Object</node>
-            <node x="" y="">org.openmrs.logic.Rule</node>
-            <node x="" y="">org.openmrs.module.clinicalsummary.rule.EvaluableRule</node>
-          </nodes>
-          <notes />
-          <edges />
-          <settings layout="Hierarchic Group" zoom="1.0" x="84.5" y="133.0" />
-          <SelectedNodes />
-          <Categories />
-          <SCOPE>All</SCOPE>
-          <VISIBILITY>private</VISIBILITY>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/rule/medication/AntiRetroViralRule.java">
+    <entry file="file://$PROJECT_DIR$/omod/src/main/webapp/response/reminderResponseList.jsp">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="46" column="13" selection-start="2002" selection-end="2002" vertical-scroll-proportion="0.2985782">
+        <state line="90" column="85" selection-start="3076" selection-end="3076" vertical-scroll-proportion="1.4408233">
           <folding />
         </state>
       </provider>

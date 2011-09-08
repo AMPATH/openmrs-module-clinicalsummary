@@ -99,6 +99,7 @@ public class ResponseController {
 								reminderResponse.setComment(parameter[3]);
 								reminderResponse.setLocation(Context.getLocationService().getLocation(parameter[4]));
 								reminderResponse.setDatetime(parse(parameter[5]));
+								reminderResponse.setPresent(NumberUtils.toInt(parameter[6]));
 								// add to the list
 								responses.add(reminderResponse);
 							} else {
@@ -120,6 +121,7 @@ public class ResponseController {
 									medicationResponse.setStatus(NumberUtils.toInt(parameter[2]));
 									medicationResponse.setLocation(Context.getLocationService().getLocation(parameter[3]));
 									medicationResponse.setDatetime(parse(parameter[4]));
+									medicationResponse.setPresent(NumberUtils.toInt(parameter[5]));
 									// add to the list
 									responses.add(medicationResponse);
 								}

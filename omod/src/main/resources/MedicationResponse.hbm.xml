@@ -41,6 +41,8 @@
 
 		<property name="actionType" column="action_type" type="actionType" />
 
+		<property name="present" type="java.lang.Integer" column="present"/>
+
 		<many-to-one name="creator" class="org.openmrs.User" not-null="true">
 			<column name="creator" />
 		</many-to-one>

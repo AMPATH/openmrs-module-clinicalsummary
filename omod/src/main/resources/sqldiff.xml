@@ -1340,4 +1340,16 @@
 		</sql>
 	</diff>
 
+	<diff>
+		<version>4.2.9</version>
+		<author>Nyoman Ribeka</author>
+		<date>Sept 08 2011</date>
+		<description>
+			Added more column on the medication response table
+		</description>
+		<sql>
+			ALTER TABLE clinical_summary_medication_response ADD COLUMN present INTEGER DEFAULT NULL AFTER action_type;
+		</sql>
+	</diff>
+
 </sqldiff>

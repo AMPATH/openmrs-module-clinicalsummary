@@ -34,6 +34,8 @@ public abstract class Response extends BaseOpenmrsData {
 
 	protected Date datetime;
 
+	protected Integer present;
+
 	/**
 	 * @return id - The unique Identifier for the object
 	 */
@@ -102,5 +104,19 @@ public abstract class Response extends BaseOpenmrsData {
 	 */
 	public void setDatetime(final Date datetime) {
 		this.datetime = datetime;
+	}
+
+	/**
+	 * @return
+	 */
+	public Integer getPresent() {
+		return present;
+	}
+
+	/**
+	 * @param present
+	 */
+	public void setPresent(final Integer present) {
+		this.present = present;
 	}
 }

@@ -14,13 +14,18 @@
 
 package org.openmrs.module.clinicalsummary.web.controller.response;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Cohort;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.clinicalsummary.service.UtilService;
@@ -40,14 +45,33 @@ public class SearchReminderResponseController {
 	@RequestMapping(method = RequestMethod.POST)
 	public
 	@ResponseBody
-	Map<Integer, List<ReminderResponse>> searchResponses(final @RequestParam(required = true, value = "patientId") String patientId) {
-		Map<Integer, List<ReminderResponse>> responseMap = new HashMap<Integer, List<ReminderResponse>>();
+	Map<Integer, List<ReminderResponseForm>> searchResponses(final @RequestParam(required = true, value = "patientIdentifiers") String patientIdentifiers)
+			throws InvocationTargetException, IllegalAccessException {
 
-		Patient patient = Context.getPatientService().getPatient(NumberUtils.toInt(patientId));
+		Map<Integer, List<ReminderResponseForm>> responseMap = new HashMap<Integer, List<ReminderResponseForm>>();
+
+		String[] patientIdentifier = StringUtils.split(patientIdentifiers);
 
 		UtilService service = Context.getService(UtilService.class);
-		List<ReminderResponse> responses = service.getResponses(ReminderResponse.class, patient);
-		responseMap.put(patient.getPatientId(), responses);
+		Cohort cohort = Context.getPatientSetService().convertPatientIdentifier(Arrays.asList(patientIdentifier));
+		for (Integer patientId : cohort.getMemberIds()) {
+			Patient patient = Context.getPatientService().getPatient(patientId);
+			List<ReminderResponseForm> reminderResponseForms = new ArrayList<ReminderResponseForm>();
+			for (ReminderResponse reminderResponse : service.getResponses(ReminderResponse.class, patient)) {
+				ReminderResponseForm reminderResponseForm = new ReminderResponseForm();
+				BeanUtils.copyProperties(reminderResponseForm, reminderResponse);
+				reminderResponseForm.setPatientId(reminderResponse.getPatient().getPatientId());
+				reminderResponseForm.setPatientName(reminderResponse.getPatient().getPersonName().getFullName());
+				reminderResponseForm.setProviderName(reminderResponse.getProvider().getPersonName().getFullName());
+				reminderResponseForm.setLocationName(reminderResponse.getLocation().getName());
+				reminderResponseForm.setDatetime(Context.getDateFormat().format(reminderResponse.getDatetime()));
+				reminderResponseForm.setToken(reminderResponse.getToken());
+				reminderResponseForm.setResponse(reminderResponse.getResponse());
+				reminderResponseForm.setComment(StringUtils.isEmpty(reminderResponse.getComment()) ? StringUtils.EMPTY : reminderResponse.getComment());
+				reminderResponseForms.add(reminderResponseForm);
+			}
+			responseMap.put(patient.getPatientId(), reminderResponseForms);
+		}
 
 		return responseMap;
 	}

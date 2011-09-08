@@ -9,7 +9,7 @@
 <openmrs:htmlInclude file="/moduleResources/clinicalsummary/css/form.css"/>
 
 
-<script>
+<script language="javascript">
 	$j = jQuery.noConflict();
 
 	var default_border = "1px solid cadetblue";
@@ -130,7 +130,7 @@
 									if (counter % 2 == 1)
 										colored = "<tr style='background-color: #F3F3F3;'>";
 
-									var description = colored + "<td style='padding-top: 5px;'>" + counter++ + ".</td>";
+									var description = colored + "<td>" + counter++ + ".&nbsp;</td>";
 									if (this.status == -1)
 										description += "<td colspan='4'>Please remove " + this.medicationName + " from encounter on " + this.datetime + "</td>";
 									else if (this.status == 1)

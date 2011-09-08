@@ -17,9 +17,9 @@ package org.openmrs.module.clinicalsummary.web.controller.response;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public class MedicationResponseForm {
+public class ReminderResponseForm {
 
-	private static final Log log = LogFactory.getLog(MedicationResponseForm.class);
+	private static final Log log = LogFactory.getLog(ReminderResponseForm.class);
 
 	private Integer id;
 
@@ -31,13 +31,13 @@ public class MedicationResponseForm {
 
 	private String locationName;
 
-	private String medicationName;
-
 	private String datetime;
 
-	private Integer status;
+	private String token;
 
-	private String action;
+	private String response;
+
+	private String comment;
 
 	private Integer present;
 
@@ -114,20 +114,6 @@ public class MedicationResponseForm {
 	/**
 	 * @return
 	 */
-	public String getMedicationName() {
-		return medicationName;
-	}
-
-	/**
-	 * @param medicationName
-	 */
-	public void setMedicationName(final String medicationName) {
-		this.medicationName = medicationName;
-	}
-
-	/**
-	 * @return
-	 */
 	public String getDatetime() {
 		return datetime;
 	}
@@ -142,29 +128,43 @@ public class MedicationResponseForm {
 	/**
 	 * @return
 	 */
-	public Integer getStatus() {
-		return status;
+	public String getToken() {
+		return token;
 	}
 
 	/**
-	 * @param status
+	 * @param token
 	 */
-	public void setStatus(final Integer status) {
-		this.status = status;
+	public void setToken(final String token) {
+		this.token = token;
 	}
 
 	/**
 	 * @return
 	 */
-	public String getAction() {
-		return action;
+	public String getResponse() {
+		return response;
 	}
 
 	/**
-	 * @param action
+	 * @param response
 	 */
-	public void setAction(final String action) {
-		this.action = action;
+	public void setResponse(final String response) {
+		this.response = response;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getComment() {
+		return comment;
+	}
+
+	/**
+	 * @param comment
+	 */
+	public void setComment(final String comment) {
+		this.comment = comment;
 	}
 
 	/**
