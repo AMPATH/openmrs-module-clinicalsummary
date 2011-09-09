@@ -89,7 +89,7 @@ public class ResponseController {
 					if (patient != null) {
 						List<Response> responses = new ArrayList<Response>();
 						for (String parameterValue : parameterValues) {
-							String[] parameter = StringUtils.split(parameterValue, "|");
+							String[] parameter = StringUtils.splitPreserveAllTokens(parameterValue, "|");
 							if (StringUtils.equalsIgnoreCase(HEADER_REMINDER, parameter[0])) {
 								ReminderResponse reminderResponse = new ReminderResponse();
 								reminderResponse.setPatient(patient);
@@ -132,7 +132,7 @@ public class ResponseController {
 						// the id is not patient id but it's a device id
 						List<DeviceLog> deviceLogs = new ArrayList<DeviceLog>();
 						for (String parameterValue : parameterValues) {
-							String[] parameter = StringUtils.split(parameterValue, "|");
+							String[] parameter = StringUtils.splitPreserveAllTokens(parameterValue, "|");
 							if (StringUtils.equalsIgnoreCase(HEADER_LOG, parameter[0])) {
 								DeviceLog deviceLog = new DeviceLog();
 								deviceLog.setDeviceId(id);
