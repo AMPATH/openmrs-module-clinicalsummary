@@ -80,8 +80,8 @@
 		</li>
 	</openmrs:hasPrivilege>
 	<openmrs:hasPrivilege privilege="Manage Summaries">
-		<li <c:if test='<%= request.getRequestURI().contains("reminderResponseList") %>'>class="active"</c:if>>
-			<a href="${pageContext.request.contextPath}/module/clinicalsummary/response/reminderResponseList.list">
+		<li <c:if test='<%= request.getRequestURI().contains("patientReminderList") %>'>class="active"</c:if>>
+			<a href="${pageContext.request.contextPath}/module/clinicalsummary/reminder/patientReminderList.list">
 				<spring:message code="clinicalsummary.response.reminder"/>
 			</a>
 		</li>

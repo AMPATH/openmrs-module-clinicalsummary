@@ -53,7 +53,6 @@
 				$j(".operation_" + id).remove();
 			},
 			error: function(jqXHR, status, error) {
-				var status = jqXHR.statusText;
 				$j("#comment_" + id).css("border", "1px solid red");
 			}
 		});
@@ -73,7 +72,6 @@
 				$j(".operation_" + id).remove();
 			},
 			error: function(jqXHR, status, error) {
-				var status = jqXHR.statusText;
 				$j("#comment_" + id).css("border", "1px solid red");
 			}
 		});
@@ -100,23 +98,19 @@
 				type: "POST",
 				dataType: 'json',
 				data: data,
-				success: function(server) {
-
-					$j("#status").hide();
-
-					if (jQuery.isEmptyObject(server)) {
-						$j("#searchcontainer").show();
-						$j("#result tr").remove();
-
-						var empty = "<tr><td>No drug changes found</td></tr>";
-						$j("#result").append(empty);
-					}
-
-					if (!jQuery.isEmptyObject(server)) {
-						$j("#searchcontainer").show();
-						$j("#result tr").remove();
-
-						jQuery.each(server, function(key, responses) {
+				beforeSend: function(jqXHR, settings) {
+					$j("#result tr").remove();
+					$j("#searchcontainer").show();
+					$j("#result").append("<tr><td style='font-weight: bold;'>Loading ...</td></tr>");
+				},
+				success: function(data, status, jqXHR) {
+					$j("#result tr").remove();
+					$j("#searchcontainer").show();
+					if (jQuery.isEmptyObject(data)) {
+						// write and empty status in the page
+						$j("#result").append("<tr><td>No drug changes found</td></tr>");
+					} else {
+						jQuery.each(data, function(key, responses) {
 							var header = null;
 							var counter = 1;
 							jQuery.each(responses, function() {
@@ -160,8 +154,12 @@
 								}
 							});
 						});
-
 					}
+				},
+				error: function(jqXHR, status, error) {
+					$j("#result tr").remove();
+					$j("#result").append("<tr><td style='font-weight: bold;'>Error searching for medication responses. Please try again later!</td></tr>");
+					$j("#searchcontainer").show();
 				}
 			});
 		});

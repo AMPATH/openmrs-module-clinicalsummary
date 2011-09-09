@@ -12,7 +12,7 @@
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
 
-package org.openmrs.module.clinicalsummary.web.controller.response;
+package org.openmrs.module.clinicalsummary.web.controller.reminder;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -22,11 +22,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
-public class ReminderResponseListController {
+public class PatientReminderListController {
 
-	private static final Log log = LogFactory.getLog(ReminderResponseListController.class);
+	private static final Log log = LogFactory.getLog(PatientReminderListController.class);
 
-	@RequestMapping(method = RequestMethod.GET, value = "/module/clinicalsummary/response/reminderResponseList")
+	@RequestMapping(method = RequestMethod.GET, value = "/module/clinicalsummary/reminder/patientReminderList")
 	public void populatePage(final ModelMap map) {
 	}
 

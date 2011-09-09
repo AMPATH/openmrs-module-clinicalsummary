@@ -12,14 +12,14 @@
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
 
-package org.openmrs.module.clinicalsummary.web.controller.response;
+package org.openmrs.module.clinicalsummary.web.controller.reminder;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public class ReminderResponseForm {
+public class PatientReminderForm {
 
-	private static final Log log = LogFactory.getLog(ReminderResponseForm.class);
+	private static final Log log = LogFactory.getLog(PatientReminderForm.class);
 
 	private Integer id;
 
@@ -31,15 +31,11 @@ public class ReminderResponseForm {
 
 	private String locationName;
 
-	private String datetime;
+	private Integer reminderId;
 
 	private String token;
 
-	private String response;
-
-	private String comment;
-
-	private Integer present;
+	private String datetime;
 
 	/**
 	 * @return
@@ -114,20 +110,6 @@ public class ReminderResponseForm {
 	/**
 	 * @return
 	 */
-	public String getDatetime() {
-		return datetime;
-	}
-
-	/**
-	 * @param datetime
-	 */
-	public void setDatetime(final String datetime) {
-		this.datetime = datetime;
-	}
-
-	/**
-	 * @return
-	 */
 	public String getToken() {
 		return token;
 	}
@@ -142,42 +124,28 @@ public class ReminderResponseForm {
 	/**
 	 * @return
 	 */
-	public String getResponse() {
-		return response;
+	public Integer getReminderId() {
+		return reminderId;
 	}
 
 	/**
-	 * @param response
+	 * @param reminderId
 	 */
-	public void setResponse(final String response) {
-		this.response = response;
-	}
-
-	/**
-	 * @return
-	 */
-	public String getComment() {
-		return comment;
-	}
-
-	/**
-	 * @param comment
-	 */
-	public void setComment(final String comment) {
-		this.comment = comment;
+	public void setReminderId(final Integer reminderId) {
+		this.reminderId = reminderId;
 	}
 
 	/**
 	 * @return
 	 */
-	public Integer getPresent() {
-		return present;
+	public String getDatetime() {
+		return datetime;
 	}
 
 	/**
-	 * @param present
+	 * @param datetime
 	 */
-	public void setPresent(final Integer present) {
-		this.present = present;
+	public void setDatetime(final String datetime) {
+		this.datetime = datetime;
 	}
 }

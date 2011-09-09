@@ -1,5 +1,5 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
-<openmrs:require privilege="Manage Summaries" otherwise="/login.htm" redirect="/module/clinicalsummary/response/reminderResponseList.list"/>
+<openmrs:require privilege="Manage Summaries" otherwise="/login.htm" redirect="/module/clinicalsummary/reminder/patientReminderList.list"/>
 
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
@@ -15,40 +15,36 @@
 		$j("#search").click(function() {
 			var data = $j("#form").serialize();
 			$j.ajax({
-				url: "reminderResponseSearch.form",
+				url: "searchPatientReminder.form",
 				type: "POST",
 				dataType: 'json',
 				data: data,
-				success: function(server) {
-
-					$j("#status").hide();
-
-					if (jQuery.isEmptyObject(server)) {
-						$j("#searchcontainer").show();
+				beforeSend: function(jqXHR, settings) {
+					$j("#searchResult tr").remove();
+					$j("#searchcontainer").show();
+					$j("#searchResult ").append("<tr><td style='font-weight: bold;'>Loading ...</td></tr>");
+				},
+				success: function(data, status, jqXHR) {
+					$j("#searchResult tr").remove();
+					$j("#searchcontainer").show();
+					if (jQuery.isEmptyObject(data, status, jqXHR)) {
+						$j("#searchResult").append("<tr><td>No reminder response found</td></tr>");
+					} else {
 						$j("#searchResult tr").remove();
-
-						var empty = "<tr><td>No reminder response found</td></tr>";
-						$j("#searchResult").append(empty);
-					}
-
-					if (!jQuery.isEmptyObject(server)) {
 						$j("#searchcontainer").show();
-						$j("#searchResult tr").remove();
-
-						jQuery.each(server, function(key, responses) {
+						jQuery.each(data, function(key, responses) {
 							var counter = 1;
 							jQuery.each(responses, function() {
 								if (counter == 1) {
 									var header =    "<tr>" +
 														"<th></th>" +
 														"<th><spring:message code='clinicalsummary.response.reminder.token'/></th>" +
-														"<th><spring:message code='clinicalsummary.response.reminder.response'/></th>" +
-														"<th><spring:message code='clinicalsummary.response.reminder.comment'/></th>" +
+														"<th><spring:message code='clinicalsummary.response.reminder.id'/></th>" +
 														"<th><spring:message code='clinicalsummary.response.reminder.datetime'/></th>" +
 													"</tr>";
 									var patient =   "<tr>" +
 														"<td colspan='5' style='padding-top: 10px; font-weight: bold;'>" +
-															"<span>" + this.patientName + " ( Responded by " + this.providerName + " )</span>" +
+															"<span>" + this.patientName + "</span>" +
 														"</td>" +
 													"</tr>";
 									$j("#searchResult").append(patient);
@@ -61,15 +57,18 @@
 
 								var description = colored + "<td>" + counter++ + ".&nbsp;</td>";
 									description += "<td>" + this.token + "</td>";
-									description += "<td style='text-align: center;'>" + this.response + "</td>";
-									description += "<td>" + this.comment + "</td>";
+									description += "<td style='text-align: center;'>" + this.reminderId + "</td>";
 									description += "<td style='text-align: center;'>" + this.datetime + "</td>";
 									description += "</tr>";
 								$j("#searchResult").append(description);
 							});
 						});
-
 					}
+				},
+				beforeSend: function(jqXHR, status, error) {
+					$j("#searchResult tr").remove();
+					$j("#searchcontainer").show();
+					$j("#searchResult ").append("<tr><td style='font-weight: bold;'>Searching reminder returned unknown error.</td></tr>");
 				}
 			});
 		});
@@ -88,7 +87,7 @@
 					<ol>
 						<li>
 							<label for="patientIdentifier"><spring:message code="clinicalsummary.response.reminder.patients"/></label>
-							<textarea id="patientIdentifier" name="patientIdentifiers" row="40" cols="35"></textarea>
+							<textarea id="patientIdentifier" name="patientIdentifier" row="40" cols="35"></textarea>
 						</li>
 						<li/>
 						<li>
