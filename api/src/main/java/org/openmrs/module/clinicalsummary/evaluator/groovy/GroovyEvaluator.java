@@ -30,9 +30,10 @@ public class GroovyEvaluator implements Evaluator {
 	 * Evaluate a summary template
 	 *
 	 * @param summary      the summary template
-	 * @param patientId
+	 * @param patient
 	 * @param keepArtifact
 	 */
+	@Override
 	public void evaluate(final Summary summary, final Patient patient, final Boolean keepArtifact) {
 	}
 }

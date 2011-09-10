@@ -28,6 +28,7 @@ public enum AgeUnit implements StringEnum {
 		this.value = value;
 	}
 
+	@Override
 	public String getValue() {
 		return value;
 	}

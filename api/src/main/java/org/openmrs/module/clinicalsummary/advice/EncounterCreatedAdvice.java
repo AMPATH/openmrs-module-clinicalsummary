@@ -13,12 +13,12 @@
  */
 package org.openmrs.module.clinicalsummary.advice;
 
+import java.lang.reflect.Method;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
 import org.springframework.aop.AfterReturningAdvice;
-
-import java.lang.reflect.Method;
 
 /**
  * 
@@ -26,7 +26,8 @@ import java.lang.reflect.Method;
 public class EncounterCreatedAdvice implements AfterReturningAdvice {
 	
 	private static final Log log = LogFactory.getLog(EncounterCreatedAdvice.class);
-	
+
+	@Override
 	public void afterReturning(final Object returnValue, final Method method, final Object[] args, final Object target) throws Throwable {
 		if (method.getName().equals("saveEncounter")) {
 			Encounter encounter = (Encounter) args[0];

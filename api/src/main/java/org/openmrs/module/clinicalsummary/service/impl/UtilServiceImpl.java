@@ -60,6 +60,7 @@ public class UtilServiceImpl extends BaseOpenmrsService implements UtilService {
 	/**
 	 * @see UtilService#saveWeightStandard(org.openmrs.module.clinicalsummary.util.weight.WeightStandard)
 	 */
+	@Override
 	public WeightStandard saveWeightStandard(final WeightStandard weightStandard) throws APIException {
 		return utilDAO.saveWeightStandard(weightStandard);
 	}
@@ -67,6 +68,7 @@ public class UtilServiceImpl extends BaseOpenmrsService implements UtilService {
 	/**
 	 * @see UtilService#getWeightStandard(Integer)
 	 */
+	@Override
 	public WeightStandard getWeightStandard(final Integer id) throws APIException {
 		return utilDAO.getWeightStandard(id);
 	}
@@ -75,6 +77,7 @@ public class UtilServiceImpl extends BaseOpenmrsService implements UtilService {
 	 * @see UtilService#getWeightStandard(org.openmrs.module.clinicalsummary.enumeration.Gender, org.openmrs.module.clinicalsummary.enumeration.AgeUnit,
 	 *      Integer)
 	 */
+	@Override
 	public WeightStandard getWeightStandard(final Gender gender, final AgeUnit ageUnit, final Integer age) throws APIException {
 		return utilDAO.getWeightStandard(gender, ageUnit, age);
 	}
@@ -82,6 +85,7 @@ public class UtilServiceImpl extends BaseOpenmrsService implements UtilService {
 	/**
 	 * @see UtilService#saveOrderedObs(org.openmrs.module.clinicalsummary.util.obs.OrderedObs)
 	 */
+	@Override
 	public OrderedObs saveOrderedObs(final OrderedObs orderedObs) throws APIException {
 		return utilDAO.saveOrderedObs(orderedObs);
 	}
@@ -89,6 +93,7 @@ public class UtilServiceImpl extends BaseOpenmrsService implements UtilService {
 	/**
 	 * @see UtilService#getOrderedObs(Integer)
 	 */
+	@Override
 	public OrderedObs getOrderedObs(final Integer id) throws APIException {
 		return utilDAO.getOrderedObs(id);
 	}
@@ -96,6 +101,7 @@ public class UtilServiceImpl extends BaseOpenmrsService implements UtilService {
 	/**
 	 * @see UtilService#getOrderedObs(org.openmrs.Patient)
 	 */
+	@Override
 	public List<OrderedObs> getOrderedObs(final Patient patient) throws APIException {
 		return utilDAO.getOrderedObs(patient);
 	}
@@ -103,6 +109,7 @@ public class UtilServiceImpl extends BaseOpenmrsService implements UtilService {
 	/**
 	 * @see UtilService#getOrderedObs(java.util.Map, java.util.Date, java.util.Date)
 	 */
+	@Override
 	public List<OrderedObs> getOrderedObs(final Map<String, Collection<OpenmrsObject>> restrictions,
 	                                      final Date startTime, final Date endTime) throws APIException {
 		return utilDAO.getOrderedObs(restrictions, startTime, endTime);
@@ -111,6 +118,7 @@ public class UtilServiceImpl extends BaseOpenmrsService implements UtilService {
 	/**
 	 * @see UtilService#deleteOrderedObs(java.util.List
 	 */
+	@Override
 	public Integer deleteOrderedObs(final List<Patient> patients) throws APIException {
 		return utilDAO.deleteOrderedObs(patients);
 	}
@@ -118,6 +126,7 @@ public class UtilServiceImpl extends BaseOpenmrsService implements UtilService {
 	/**
 	 * @see UtilService#aggregateOrderedObs(java.util.Map, java.util.Collection, org.openmrs.module.clinicalsummary.enumeration.StatusType, java.util.Date, java.util.Date)
 	 */
+	@Override
 	public List<Object[]> aggregateOrderedObs(final Map<String, Collection<OpenmrsObject>> restrictions, final Collection<String> groupingProperties,
 	                                          final StatusType statusType, final Date startTime, final Date endTime) throws APIException {
 		return utilDAO.aggregateOrderedObs(restrictions, groupingProperties, statusType, startTime, endTime);
@@ -126,6 +135,7 @@ public class UtilServiceImpl extends BaseOpenmrsService implements UtilService {
 	/**
 	 * @see UtilService#aggregateOrderedObs(java.util.Map, java.util.Collection)
 	 */
+	@Override
 	public List<Object[]> aggregateOrderedObs(Map<String, Collection<OpenmrsObject>> restrictions, Collection<String> groupingProperty)
 			throws APIException {
 		return aggregateOrderedObs(restrictions, groupingProperty, null, null, null);
@@ -134,6 +144,7 @@ public class UtilServiceImpl extends BaseOpenmrsService implements UtilService {
 	/**
 	 * @see UtilService#saveResponses(java.util.List)
 	 */
+	@Override
 	public <T extends Response> List<T> saveResponses(final List<T> responses) {
 		return utilDAO.saveResponses(responses);
 	}
@@ -141,6 +152,7 @@ public class UtilServiceImpl extends BaseOpenmrsService implements UtilService {
 	/**
 	 * @see UtilService#saveResponse(org.openmrs.module.clinicalsummary.util.response.Response)
 	 */
+	@Override
 	public <T extends Response> T saveResponse(final T response) throws APIException {
 		return utilDAO.saveResponse(response);
 	}
@@ -148,6 +160,7 @@ public class UtilServiceImpl extends BaseOpenmrsService implements UtilService {
 	/**
 	 * @see UtilService#getResponse(Class, Integer)
 	 */
+	@Override
 	public <T extends Response> T getResponse(final Class<T> clazz, final Integer id) throws APIException {
 		return utilDAO.getResponse(clazz, id);
 	}
@@ -155,6 +168,7 @@ public class UtilServiceImpl extends BaseOpenmrsService implements UtilService {
 	/**
 	 * @see UtilService#getResponses(Class, org.openmrs.Patient)
 	 */
+	@Override
 	public <T extends Response> List<T> getResponses(final Class<T> clazz, final Patient patient) throws APIException {
 		return utilDAO.getResponses(clazz, patient);
 	}
@@ -162,6 +176,7 @@ public class UtilServiceImpl extends BaseOpenmrsService implements UtilService {
 	/**
 	 * @see UtilService#getResponses(Class, org.openmrs.Location, java.util.Date, java.util.Date)
 	 */
+	@Override
 	public <T extends Response> List<T> getResponses(final Class<T> clazz, final Location location,
 	                                             final Date startDate, final Date endDate) throws APIException {
 		return utilDAO.getResponses(clazz, location, startDate, endDate);

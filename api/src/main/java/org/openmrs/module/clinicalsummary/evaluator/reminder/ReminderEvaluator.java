@@ -14,6 +14,8 @@
 
 package org.openmrs.module.clinicalsummary.evaluator.reminder;
 
+import java.io.StringWriter;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.velocity.VelocityContext;
@@ -23,8 +25,6 @@ import org.apache.velocity.runtime.log.Log4JLogChute;
 import org.openmrs.Patient;
 import org.openmrs.module.clinicalsummary.Summary;
 import org.openmrs.module.clinicalsummary.evaluator.Evaluator;
-
-import java.io.StringWriter;
 
 /**
  */
@@ -39,6 +39,7 @@ public class ReminderEvaluator implements Evaluator {
 	 * @param patient
 	 * @param keepArtifact
 	 */
+	@Override
 	public void evaluate(final Summary summary, final Patient patient, final Boolean keepArtifact) {
 		try {
 			// http://velocity.apache.org/evaluator/releases/velocity-1.6.2/developer-guide.html#Configuring_Logging

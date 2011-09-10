@@ -25,6 +25,7 @@ public enum MedicationType implements StringEnum {
 		this.value = value;
 	}
 
+	@Override
 	public String getValue() {
 		return value;
 	}

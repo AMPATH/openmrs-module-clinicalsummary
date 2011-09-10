@@ -14,13 +14,13 @@
 
 package org.openmrs.module.clinicalsummary.io.utils;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Class to handle the stream output of executing a command in the shell or command line.
@@ -41,6 +41,7 @@ public class StreamHandler implements Runnable {
 	/**
 	 * @see Runnable#run()
 	 */
+	@Override
 	public void run() {
 		try {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(stream));

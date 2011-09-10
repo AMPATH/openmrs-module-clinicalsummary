@@ -15,6 +15,10 @@
 package org.openmrs.module.clinicalsummary.db.hibernate;
 
 
+import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.List;
+
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
@@ -28,10 +32,6 @@ import org.openmrs.api.db.DAOException;
 import org.openmrs.module.clinicalsummary.Index;
 import org.openmrs.module.clinicalsummary.Summary;
 import org.openmrs.module.clinicalsummary.db.IndexDAO;
-
-import java.util.Date;
-import java.util.LinkedHashSet;
-import java.util.List;
 
 /**
  *
@@ -52,6 +52,7 @@ public class HibernateIndexDAO implements IndexDAO {
 	/**
 	 * @see IndexDAO#saveIndex(org.openmrs.module.clinicalsummary.Index)
 	 */
+	@Override
 	public Index saveIndex(final Index index) throws DAOException {
 		sessionFactory.getCurrentSession().saveOrUpdate(index);
 		return index;
@@ -60,6 +61,7 @@ public class HibernateIndexDAO implements IndexDAO {
 	/**
 	 * @see IndexDAO#getIndex(Integer)
 	 */
+	@Override
 	public Index getIndex(final Integer id) throws DAOException {
 		return (Index) sessionFactory.getCurrentSession().get(Index.class, id);
 	}
@@ -67,6 +69,7 @@ public class HibernateIndexDAO implements IndexDAO {
 	/**
 	 * @see IndexDAO#getIndex(org.openmrs.Patient, org.openmrs.module.clinicalsummary.Summary)
 	 */
+	@Override
 	public Index getIndex(final Patient patient, final Summary summary) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Index.class);
 		criteria.add(Restrictions.eq("patient", patient));
@@ -77,6 +80,7 @@ public class HibernateIndexDAO implements IndexDAO {
 	/**
 	 * @see IndexDAO#getIndexes(org.openmrs.Patient)
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<Index> getIndexes(final Patient patient) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Index.class);
@@ -87,6 +91,7 @@ public class HibernateIndexDAO implements IndexDAO {
 	/**
 	 * @see IndexDAO#getIndexes(org.openmrs.Location, org.openmrs.module.clinicalsummary.Summary, java.util.Date, java.util.Date)
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<Index> getIndexes(final Location location, final Summary summary, final Date startVisitDate, final Date endVisitDate) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Index.class);
@@ -108,6 +113,7 @@ public class HibernateIndexDAO implements IndexDAO {
 	/**
 	 * @see IndexDAO#getIndexCohort(org.openmrs.Location, org.openmrs.module.clinicalsummary.Summary, java.util.Date, java.util.Date)
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public Cohort getIndexCohort(final Location location, final Summary summary, final Date startVisitDate, final Date endVisitDate) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Index.class);
@@ -136,6 +142,7 @@ public class HibernateIndexDAO implements IndexDAO {
 	/**
 	 * @see IndexDAO#saveInitialDate(org.openmrs.Location, java.util.Date)
 	 */
+	@Override
 	public Integer saveInitialDate(final Location location, final Date date) throws DAOException {
 		String hqlString = "update Index index set index.initialDate = :initialDate where index.location = :location";
 		Query query = sessionFactory.getCurrentSession().createQuery(hqlString);
@@ -147,6 +154,7 @@ public class HibernateIndexDAO implements IndexDAO {
 	/**
 	 * @see IndexDAO#getInitialDate(org.openmrs.Location)
 	 */
+	@Override
 	public Date getInitialDate(final Location location) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Index.class);
 		criteria.add(Restrictions.eq("location", location));

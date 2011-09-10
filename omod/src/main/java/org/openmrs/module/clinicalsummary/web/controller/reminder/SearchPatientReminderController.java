@@ -86,7 +86,7 @@ public class SearchPatientReminderController {
 		Cohort cohort = Context.getPatientSetService().convertPatientIdentifier(Arrays.asList(patientIdentifier));
 		for (Patient patient : patients) {
 			List<PatientReminderForm> patientReminderForms = new ArrayList<PatientReminderForm>();
-			for (Reminder reminder : service.getReminders(patient)) {
+			for (Reminder reminder : service.getLatestReminders(patient)) {
 				PatientReminderForm patientReminderForm = new PatientReminderForm();
 				BeanUtils.copyProperties(patientReminderForm, reminder);
 				patientReminderForm.setPatientId(reminder.getPatient().getPatientId());

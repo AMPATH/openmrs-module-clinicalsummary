@@ -14,6 +14,8 @@
 
 package org.openmrs.module.clinicalsummary.service.impl;
 
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
@@ -28,8 +30,6 @@ import org.openmrs.module.clinicalsummary.evaluator.Evaluator;
 import org.openmrs.module.clinicalsummary.evaluator.velocity.VelocityEvaluator;
 import org.openmrs.module.clinicalsummary.service.EvaluatorService;
 
-import java.util.Map;
-
 /**
  */
 public class EvaluatorServiceImpl extends BaseOpenmrsService implements EvaluatorService {
@@ -39,6 +39,7 @@ public class EvaluatorServiceImpl extends BaseOpenmrsService implements Evaluato
 	/**
 	 * @see EvaluatorService#evaluate(Patient, org.openmrs.module.clinicalsummary.Summary, Boolean)
 	 */
+	@Override
 	public void evaluate(final Patient patient, final Summary summary, final Boolean keepArtifact) throws APIException {
 		Evaluator evaluator = new VelocityEvaluator();
 		evaluator.evaluate(summary, patient, keepArtifact);
@@ -47,6 +48,7 @@ public class EvaluatorServiceImpl extends BaseOpenmrsService implements Evaluato
 	/**
 	 * @see EvaluatorService#evaluate(Patient, String, java.util.Map)
 	 */
+	@Override
 	public Result evaluate(final Patient patient, final String token, final Map<String, Object> parameters) throws APIException {
 		LogicCriteria criteria = new LogicCriteriaImpl(token);
 		return Context.getLogicService().eval(patient.getPatientId(), criteria, parameters);
@@ -55,6 +57,7 @@ public class EvaluatorServiceImpl extends BaseOpenmrsService implements Evaluato
 	/**
 	 * @see EvaluatorService#parseExpression(String)
 	 */
+	@Override
 	public LogicCriteria parseExpression(final String expression) throws APIException {
 		return Context.getLogicService().parse(expression);
 	}

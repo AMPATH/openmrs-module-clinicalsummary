@@ -65,6 +65,7 @@ public class HibernateUtilDAO implements UtilDAO {
 	/**
 	 * @see UtilDAO#saveWeightStandard(org.openmrs.module.clinicalsummary.util.weight.WeightStandard)
 	 */
+	@Override
 	public WeightStandard saveWeightStandard(final WeightStandard weightStandard) throws DAOException {
 		sessionFactory.getCurrentSession().saveOrUpdate(weightStandard);
 		return weightStandard;
@@ -73,6 +74,7 @@ public class HibernateUtilDAO implements UtilDAO {
 	/**
 	 * @see UtilDAO#getWeightStandard(Integer)
 	 */
+	@Override
 	public WeightStandard getWeightStandard(final Integer id) throws DAOException {
 		return (WeightStandard) sessionFactory.getCurrentSession().get(WeightStandard.class, id);
 	}
@@ -81,6 +83,7 @@ public class HibernateUtilDAO implements UtilDAO {
 	 * @see UtilDAO#getWeightStandard(org.openmrs.module.clinicalsummary.enumeration.Gender, org.openmrs.module.clinicalsummary.enumeration.AgeUnit,
 	 *      Integer)
 	 */
+	@Override
 	public WeightStandard getWeightStandard(final Gender gender, final AgeUnit ageUnit, final Integer age) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(WeightStandard.class);
 
@@ -94,6 +97,7 @@ public class HibernateUtilDAO implements UtilDAO {
 	/**
 	 * @see UtilDAO#saveOrderedObs(org.openmrs.module.clinicalsummary.util.obs.OrderedObs)
 	 */
+	@Override
 	public OrderedObs saveOrderedObs(final OrderedObs orderedObs) throws DAOException {
 		sessionFactory.getCurrentSession().saveOrUpdate(orderedObs);
 		return orderedObs;
@@ -102,6 +106,7 @@ public class HibernateUtilDAO implements UtilDAO {
 	/**
 	 * @see UtilDAO#getOrderedObs(Integer)
 	 */
+	@Override
 	public OrderedObs getOrderedObs(final Integer id) throws DAOException {
 		return (OrderedObs) sessionFactory.getCurrentSession().get(OrderedObs.class, id);
 	}
@@ -109,6 +114,7 @@ public class HibernateUtilDAO implements UtilDAO {
 	/**
 	 * @see UtilDAO#getOrderedObs(org.openmrs.Patient)
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<OrderedObs> getOrderedObs(final Patient patient) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(OrderedObs.class);
@@ -119,6 +125,7 @@ public class HibernateUtilDAO implements UtilDAO {
 	/**
 	 * @see UtilDAO#getOrderedObs(java.util.Map, java.util.Date, java.util.Date)
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<OrderedObs> getOrderedObs(final Map<String, Collection<OpenmrsObject>> restrictions,
 	                                      final Date startTime, final Date endTime) throws DAOException {
@@ -146,6 +153,7 @@ public class HibernateUtilDAO implements UtilDAO {
 	 * @param patients
 	 * @see UtilDAO#deleteOrderedObs(java.util.List
 	 */
+	@Override
 	public Integer deleteOrderedObs(final List<Patient> patients) throws DAOException {
 		String queryString = "delete OrderedObs orderedObs where person in (:patients)";
 		Query query = sessionFactory.getCurrentSession().createQuery(queryString);
@@ -156,6 +164,7 @@ public class HibernateUtilDAO implements UtilDAO {
 	/**
 	 * @see UtilDAO#getOrderedObs(java.util.Map, java.util.Date, java.util.Date)
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<Object[]> aggregateOrderedObs(final Map<String, Collection<OpenmrsObject>> restrictions, final Collection<String> groupingProperties,
 	                                          final StatusType statusType, final Date startTime, final Date endTime) throws DAOException {
@@ -201,6 +210,7 @@ public class HibernateUtilDAO implements UtilDAO {
 	/**
 	 * @see UtilDAO#saveResponse(org.openmrs.module.clinicalsummary.util.response.Response)
 	 */
+	@Override
 	public <T extends Response> T saveResponse(final T response) throws DAOException {
 		sessionFactory.getCurrentSession().saveOrUpdate(response);
 		return response;
@@ -209,6 +219,7 @@ public class HibernateUtilDAO implements UtilDAO {
 	/**
 	 * @see UtilDAO#getResponse(Class, Integer)
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public <T extends Response> T getResponse(final Class<T> clazz, final Integer id) throws DAOException {
 		return (T) sessionFactory.getCurrentSession().get(clazz, id);
@@ -217,6 +228,7 @@ public class HibernateUtilDAO implements UtilDAO {
 	/**
 	 * @see UtilDAO#saveResponses(java.util.List)
 	 */
+	@Override
 	public <T extends Response> List<T> saveResponses(final List<T> responses) throws DAOException {
 		int counter = 0;
 		Session session = sessionFactory.getCurrentSession();
@@ -234,6 +246,7 @@ public class HibernateUtilDAO implements UtilDAO {
 	/**
 	 * @see UtilDAO#getResponses(Class, org.openmrs.Patient)
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public <T extends Response> List<T> getResponses(final Class<T> clasz, final Patient patient) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(clasz);
@@ -247,6 +260,7 @@ public class HibernateUtilDAO implements UtilDAO {
 	/**
 	 * @see UtilDAO#getResponses(Class, org.openmrs.Location, java.util.Date, java.util.Date)
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public <T extends Response> List<T> getResponses(final Class<T> clasz, final Location location,
 	                                                 final Date startDate, final Date endDate) throws DAOException {

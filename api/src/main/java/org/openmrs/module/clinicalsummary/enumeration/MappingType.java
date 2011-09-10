@@ -30,6 +30,7 @@ public enum MappingType implements StringEnum {
 		this.value = value;
 	}
 
+	@Override
 	public String getValue() {
 		return value;
 	}

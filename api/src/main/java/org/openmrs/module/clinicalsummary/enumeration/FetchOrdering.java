@@ -29,6 +29,7 @@ public enum FetchOrdering implements StringEnum {
 		this.value = value;
 	}
 
+	@Override
 	public String getValue() {
 		return value;
 	}

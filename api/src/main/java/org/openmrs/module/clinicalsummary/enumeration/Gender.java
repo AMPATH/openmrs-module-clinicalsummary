@@ -27,6 +27,7 @@ public enum Gender implements StringEnum {
 		this.value = value;
 	}
 
+	@Override
 	public String getValue() {
 		return value;
 	}

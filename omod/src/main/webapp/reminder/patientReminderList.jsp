@@ -27,41 +27,43 @@
 				success: function(data, status, jqXHR) {
 					$j("#searchResult tr").remove();
 					$j("#searchcontainer").show();
-					if (jQuery.isEmptyObject(data, status, jqXHR)) {
-						$j("#searchResult").append("<tr><td>No reminder response found</td></tr>");
+					if (jQuery.isEmptyObject(data)) {
+						$j("#searchResult").append("<tr><td>No reminder found</td></tr>");
 					} else {
-						$j("#searchResult tr").remove();
-						$j("#searchcontainer").show();
 						jQuery.each(data, function(key, responses) {
-							var counter = 1;
-							jQuery.each(responses, function() {
-								if (counter == 1) {
-									var header =    "<tr>" +
-														"<th></th>" +
-														"<th><spring:message code='clinicalsummary.response.reminder.token'/></th>" +
-														"<th><spring:message code='clinicalsummary.response.reminder.id'/></th>" +
-														"<th><spring:message code='clinicalsummary.response.reminder.datetime'/></th>" +
-													"</tr>";
-									var patient =   "<tr>" +
-														"<td colspan='5' style='padding-top: 10px; font-weight: bold;'>" +
-															"<span>" + this.patientName + "</span>" +
-														"</td>" +
-													"</tr>";
-									$j("#searchResult").append(patient);
-									$j("#searchResult").append(header);
-								}
+							if (jQuery.isEmptyObject(responses)) {
+								$j("#searchResult").append("<tr><td>No reminder found</td></tr>");
+							} else {
+								var counter = 1;
+								jQuery.each(responses, function() {
+									if (counter == 1) {
+										var header =    "<tr>" +
+															"<th></th>" +
+															"<th><spring:message code='clinicalsummary.response.reminder.token'/></th>" +
+															"<th><spring:message code='clinicalsummary.response.reminder.id'/></th>" +
+															"<th><spring:message code='clinicalsummary.response.reminder.datetime'/></th>" +
+														"</tr>";
+										var patient =   "<tr>" +
+															"<td colspan='5' style='padding-top: 10px; font-weight: bold;'>" +
+																"<span>" + this.patientName + "</span>" +
+															"</td>" +
+														"</tr>";
+										$j("#searchResult").append(patient);
+										$j("#searchResult").append(header);
+									}
 
-								var colored = "<tr>";
-								if (counter % 2 == 1)
-									colored = "<tr style='background-color: #F3F3F3;'>";
+									var colored = "<tr>";
+									if (counter % 2 == 1)
+										colored = "<tr style='background-color: #F3F3F3;'>";
 
-								var description = colored + "<td>" + counter++ + ".&nbsp;</td>";
-									description += "<td>" + this.token + "</td>";
-									description += "<td style='text-align: center;'>" + this.reminderId + "</td>";
-									description += "<td style='text-align: center;'>" + this.datetime + "</td>";
-									description += "</tr>";
-								$j("#searchResult").append(description);
-							});
+									var description = colored + "<td>" + counter++ + ".&nbsp;</td>";
+										description += "<td>" + this.token + "</td>";
+										description += "<td style='text-align: center;'>" + this.reminderId + "</td>";
+										description += "<td style='text-align: center;'>" + this.datetime + "</td>";
+										description += "</tr>";
+									$j("#searchResult").append(description);
+								});
+							}
 						});
 					}
 				},

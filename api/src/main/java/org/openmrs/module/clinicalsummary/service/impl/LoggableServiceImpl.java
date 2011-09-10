@@ -14,6 +14,8 @@
 
 package org.openmrs.module.clinicalsummary.service.impl;
 
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
@@ -22,8 +24,6 @@ import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.clinicalsummary.Loggable;
 import org.openmrs.module.clinicalsummary.db.LoggableDAO;
 import org.openmrs.module.clinicalsummary.service.LoggableService;
-
-import java.util.List;
 
 /**
  */
@@ -49,6 +49,7 @@ public class LoggableServiceImpl extends BaseOpenmrsService implements LoggableS
 	/**
 	 * @see org.openmrs.module.clinicalsummary.service.LoggableService#saveLoggable(org.openmrs.module.clinicalsummary.Loggable)
 	 */
+	@Override
 	public Loggable saveLoggable(final Loggable loggable) throws APIException {
 		return loggableDAO.saveLoggable(loggable);
 	}
@@ -56,6 +57,7 @@ public class LoggableServiceImpl extends BaseOpenmrsService implements LoggableS
 	/**
 	 * @see org.openmrs.module.clinicalsummary.service.LoggableService#getLoggable(Integer)
 	 */
+	@Override
 	public Loggable getLoggable(final Integer id) throws APIException {
 		return loggableDAO.getLoggable(id);
 	}
@@ -63,6 +65,7 @@ public class LoggableServiceImpl extends BaseOpenmrsService implements LoggableS
 	/**
 	 * @see org.openmrs.module.clinicalsummary.service.LoggableService#getLoggables(org.openmrs.Patient)
 	 */
+	@Override
 	public List<Loggable> getLoggables(final Patient patient) throws APIException {
 		return loggableDAO.getLoggables(patient);
 	}

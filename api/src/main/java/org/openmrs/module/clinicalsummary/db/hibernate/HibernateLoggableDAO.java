@@ -14,6 +14,8 @@
 package org.openmrs.module.clinicalsummary.db.hibernate;
 
 
+import java.util.List;
+
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
@@ -21,8 +23,6 @@ import org.openmrs.Patient;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.module.clinicalsummary.Loggable;
 import org.openmrs.module.clinicalsummary.db.LoggableDAO;
-
-import java.util.List;
 
 /**
  *
@@ -44,6 +44,7 @@ public class HibernateLoggableDAO implements LoggableDAO {
 	/**
 	 * @see org.openmrs.module.clinicalsummary.db.LoggableDAO#saveLoggable(org.openmrs.module.clinicalsummary.Loggable)
 	 */
+	@Override
 	public Loggable saveLoggable(final Loggable loggable) throws DAOException {
 		sessionFactory.getCurrentSession().saveOrUpdate(loggable);
 		return loggable;
@@ -52,6 +53,7 @@ public class HibernateLoggableDAO implements LoggableDAO {
 	/**
 	 * @see org.openmrs.module.clinicalsummary.db.LoggableDAO#getLoggable(Integer)
 	 */
+	@Override
 	public Loggable getLoggable(final Integer id) throws DAOException {
 		return (Loggable) sessionFactory.getCurrentSession().get(Loggable.class, id);
 	}
@@ -59,6 +61,7 @@ public class HibernateLoggableDAO implements LoggableDAO {
 	/**
 	 * @see org.openmrs.module.clinicalsummary.db.LoggableDAO#getLoggables(org.openmrs.Patient)
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<Loggable> getLoggables(final Patient patient) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Loggable.class);

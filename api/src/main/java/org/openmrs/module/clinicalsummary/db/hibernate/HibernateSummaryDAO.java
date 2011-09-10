@@ -45,6 +45,7 @@ public class HibernateSummaryDAO implements SummaryDAO {
 	/**
 	 * @see org.openmrs.module.clinicalsummary.db.SummaryDAO#saveSummary(org.openmrs.module.clinicalsummary.Summary)
 	 */
+	@Override
 	public Summary saveSummary(final Summary summary) throws DAOException {
 		sessionFactory.getCurrentSession().saveOrUpdate(summary);
 		return summary;
@@ -53,6 +54,7 @@ public class HibernateSummaryDAO implements SummaryDAO {
 	/**
 	 * @see org.openmrs.module.clinicalsummary.db.SummaryDAO#getSummary(Integer)
 	 */
+	@Override
 	public Summary getSummary(final Integer id) throws DAOException {
 		return (Summary) sessionFactory.getCurrentSession().get(Summary.class, id);
 	}
@@ -60,6 +62,7 @@ public class HibernateSummaryDAO implements SummaryDAO {
 	/**
 	 * @see org.openmrs.module.clinicalsummary.db.SummaryDAO#getAllSummaries(Boolean)
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<Summary> getAllSummaries(final Boolean includeRetired) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Summary.class);
@@ -70,6 +73,7 @@ public class HibernateSummaryDAO implements SummaryDAO {
 	/**
 	 * @see org.openmrs.module.clinicalsummary.db.SummaryDAO#saveMapping(org.openmrs.module.clinicalsummary.Mapping)
 	 */
+	@Override
 	public Mapping saveMapping(final Mapping mapping) throws DAOException {
 		sessionFactory.getCurrentSession().saveOrUpdate(mapping);
 		return mapping;
@@ -78,6 +82,7 @@ public class HibernateSummaryDAO implements SummaryDAO {
 	/**
 	 * @see org.openmrs.module.clinicalsummary.db.SummaryDAO#getMapping(Integer)
 	 */
+	@Override
 	public Mapping getMapping(final Integer id) throws DAOException {
 		return (Mapping) sessionFactory.getCurrentSession().get(Mapping.class, id);
 	}
@@ -85,6 +90,7 @@ public class HibernateSummaryDAO implements SummaryDAO {
 	/**
 	 * @see org.openmrs.module.clinicalsummary.db.SummaryDAO#getAllMappings()
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<Mapping> getAllMappings() throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Mapping.class);
@@ -96,6 +102,7 @@ public class HibernateSummaryDAO implements SummaryDAO {
 	 * @see org.openmrs.module.clinicalsummary.db.SummaryDAO#getMappings(org.openmrs.module.clinicalsummary.Summary,
 	 *      org.openmrs.EncounterType, org.openmrs.module.clinicalsummary.enumeration.MappingType)
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<Mapping> getMappings(final Summary summary, final EncounterType encounterType, final MappingType mappingType) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Mapping.class);

@@ -67,6 +67,7 @@ public class HibernateCoreDAO implements CoreDAO {
 	/**
 	 * @see CoreDAO#getPatientObservations(Integer, java.util.Map, org.openmrs.module.clinicalsummary.util.FetchRestriction)
 	 */
+	@Override
 	public List<Obs> getPatientObservations(final Integer patientId, final Map<String, Collection<OpenmrsObject>> restrictions,
 	                                        final FetchRestriction fetchRestriction) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Obs.class);
@@ -125,6 +126,7 @@ public class HibernateCoreDAO implements CoreDAO {
 	/**
 	 * @see CoreDAO#getPatientEncounters(Integer, java.util.Map, org.openmrs.module.clinicalsummary.util.FetchRestriction)
 	 */
+	@Override
 	public List<Encounter> getPatientEncounters(final Integer patientId, final Map<String, Collection<OpenmrsObject>> restrictions,
 	                                            final FetchRestriction fetchRestriction) throws DAOException {
 		// create a hibernate criteria on the encounter object
@@ -184,6 +186,7 @@ public class HibernateCoreDAO implements CoreDAO {
 	/**
 	 * @see CoreDAO#getDateCreatedCohort(org.openmrs.Location, java.util.Date, java.util.Date)
 	 */
+	@Override
 	public Cohort getDateCreatedCohort(final Location location, final Date startDate, final Date endDate) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Obs.class);
 
@@ -206,6 +209,7 @@ public class HibernateCoreDAO implements CoreDAO {
 	/**
 	 * @see CoreDAO#getDateCreatedCohort(org.openmrs.Location, java.util.Date, java.util.Date)
 	 */
+	@Override
 	public Cohort getReturnDateCohort(final Location location, final Date startDate, final Date endDate) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Obs.class);
 		criteria.add(Restrictions.eq("concept", CacheUtils.getConcept(EvaluableNameConstants.RETURN_VISIT_DATE)));

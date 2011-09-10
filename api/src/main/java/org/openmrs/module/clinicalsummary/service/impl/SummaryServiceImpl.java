@@ -58,6 +58,7 @@ public class SummaryServiceImpl extends BaseOpenmrsService implements SummarySer
 	/**
 	 * @see org.openmrs.module.clinicalsummary.service.SummaryService#saveSummary(org.openmrs.module.clinicalsummary.Summary)
 	 */
+	@Override
 	public Summary saveSummary(final Summary summary) throws APIException {
 		// increase the revision before saving the template
 		summary.setRevision(summary.getRevision() + 1);
@@ -67,6 +68,7 @@ public class SummaryServiceImpl extends BaseOpenmrsService implements SummarySer
 	/**
 	 * @see org.openmrs.module.clinicalsummary.service.SummaryService#getSummary(Integer)
 	 */
+	@Override
 	public Summary getSummary(final Integer id) throws APIException {
 		return summaryDAO.getSummary(id);
 	}
@@ -74,6 +76,7 @@ public class SummaryServiceImpl extends BaseOpenmrsService implements SummarySer
 	/**
 	 * @see org.openmrs.module.clinicalsummary.service.SummaryService#getAllSummaries()
 	 */
+	@Override
 	public List<Summary> getAllSummaries() throws APIException {
 		return summaryDAO.getAllSummaries(Boolean.FALSE);
 	}
@@ -81,6 +84,7 @@ public class SummaryServiceImpl extends BaseOpenmrsService implements SummarySer
 	/**
 	 * @see org.openmrs.module.clinicalsummary.service.SummaryService#getSummaries(Patient)
 	 */
+	@Override
 	public List<Summary> getSummaries(Patient patient) throws APIException {
 		List<Summary> summaries = new ArrayList<Summary>();
 
@@ -97,6 +101,7 @@ public class SummaryServiceImpl extends BaseOpenmrsService implements SummarySer
 	/**
 	 * @see org.openmrs.module.clinicalsummary.service.SummaryService#saveMapping(org.openmrs.module.clinicalsummary.Mapping)
 	 */
+	@Override
 	public Mapping saveMapping(final Mapping mapping) throws APIException {
 		return summaryDAO.saveMapping(mapping);
 	}
@@ -104,6 +109,7 @@ public class SummaryServiceImpl extends BaseOpenmrsService implements SummarySer
 	/**
 	 * @see org.openmrs.module.clinicalsummary.service.SummaryService#getMapping(Integer)
 	 */
+	@Override
 	public Mapping getMapping(final Integer id) throws APIException {
 		return summaryDAO.getMapping(id);
 	}
@@ -111,6 +117,7 @@ public class SummaryServiceImpl extends BaseOpenmrsService implements SummarySer
 	/**
 	 * @see org.openmrs.module.clinicalsummary.service.SummaryService#getAllMappings()
 	 */
+	@Override
 	public List<Mapping> getAllMappings() throws APIException {
 		return summaryDAO.getAllMappings();
 	}
@@ -119,6 +126,7 @@ public class SummaryServiceImpl extends BaseOpenmrsService implements SummarySer
 	 * @see org.openmrs.module.clinicalsummary.service.SummaryService#getMappings(org.openmrs.module.clinicalsummary.Summary,
 	 *      org.openmrs.EncounterType, org.openmrs.module.clinicalsummary.enumeration.MappingType)
 	 */
+	@Override
 	public List<Mapping> getMappings(final Summary summary, final EncounterType encounterType, final MappingType mappingType) throws APIException {
 		return summaryDAO.getMappings(summary, encounterType, mappingType);
 	}

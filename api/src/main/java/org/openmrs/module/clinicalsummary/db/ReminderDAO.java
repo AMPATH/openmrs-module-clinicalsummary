@@ -14,15 +14,15 @@
 
 package org.openmrs.module.clinicalsummary.db;
 
-import org.openmrs.OpenmrsObject;
-import org.openmrs.Patient;
-import org.openmrs.api.db.DAOException;
-import org.openmrs.module.clinicalsummary.Reminder;
-
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import org.openmrs.OpenmrsObject;
+import org.openmrs.Patient;
+import org.openmrs.api.db.DAOException;
+import org.openmrs.module.clinicalsummary.Reminder;
 
 /**
  */
@@ -33,6 +33,8 @@ public interface ReminderDAO {
 	Reminder getReminder(final Integer id) throws DAOException;
 
 	List<Reminder> getReminders(final Patient patient) throws DAOException;
+
+	List<Reminder> getLatestReminders(Patient patient) throws DAOException;
 
 	List<Reminder> getReminders(final Map<String, Collection<OpenmrsObject>> restrictions,
 	                            final Date reminderStart, final Date reminderEnd) throws DAOException;

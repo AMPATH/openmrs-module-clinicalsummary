@@ -57,6 +57,7 @@ public class CoreServiceImpl extends BaseOpenmrsService implements CoreService {
 	/**
 	 * @see CoreService#getDateCreatedCohort(org.openmrs.Location, java.util.Date, java.util.Date)
 	 */
+	@Override
 	public Cohort getDateCreatedCohort(final Location location, final Date startDate, final Date endDate) throws APIException {
 		return coreDAO.getDateCreatedCohort(location, startDate, endDate);
 	}
@@ -64,6 +65,7 @@ public class CoreServiceImpl extends BaseOpenmrsService implements CoreService {
 	/**
 	 * @see CoreService#getReturnDateCohort(org.openmrs.Location, java.util.Date, java.util.Date)
 	 */
+	@Override
 	public Cohort getReturnDateCohort(final Location location, final Date startDate, final Date endDate) throws APIException {
 		return coreDAO.getReturnDateCohort(location, startDate, endDate);
 	}
@@ -71,6 +73,7 @@ public class CoreServiceImpl extends BaseOpenmrsService implements CoreService {
 	/**
 	 * @see CoreService#getPatientEncounters(Integer, java.util.Map, org.openmrs.module.clinicalsummary.util.FetchRestriction)
 	 */
+	@Override
 	public List<Encounter> getPatientEncounters(final Integer patientId, final Map<String, Collection<OpenmrsObject>> restrictions,
 	                                            final FetchRestriction fetchRestriction) throws APIException {
 		return coreDAO.getPatientEncounters(patientId, restrictions, fetchRestriction);
@@ -79,6 +82,7 @@ public class CoreServiceImpl extends BaseOpenmrsService implements CoreService {
 	/**
 	 * @see CoreService#getPatientObservations(Integer, java.util.Map, org.openmrs.module.clinicalsummary.util.FetchRestriction)
 	 */
+	@Override
 	public List<Obs> getPatientObservations(final Integer patientId, final Map<String, Collection<OpenmrsObject>> restrictions,
 	                                        final FetchRestriction fetchRestriction) throws APIException {
 		return coreDAO.getPatientObservations(patientId, restrictions, fetchRestriction);

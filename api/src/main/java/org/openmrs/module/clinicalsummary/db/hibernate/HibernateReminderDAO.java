@@ -14,6 +14,12 @@
 
 package org.openmrs.module.clinicalsummary.db.hibernate;
 
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
@@ -24,17 +30,13 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.Patient;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.module.clinicalsummary.Reminder;
 import org.openmrs.module.clinicalsummary.db.ReminderDAO;
-
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 /**
  */
@@ -57,6 +59,7 @@ public class HibernateReminderDAO implements ReminderDAO {
 	/**
 	 * @see ReminderDAO#saveReminder(org.openmrs.module.clinicalsummary.Reminder)
 	 */
+	@Override
 	public Reminder saveReminder(final Reminder reminder) throws DAOException {
 		sessionFactory.getCurrentSession().saveOrUpdate(reminder);
 		return reminder;
@@ -65,6 +68,7 @@ public class HibernateReminderDAO implements ReminderDAO {
 	/**
 	 * @see ReminderDAO#getReminder(Integer)
 	 */
+	@Override
 	public Reminder getReminder(final Integer id) throws DAOException {
 		return (Reminder) sessionFactory.getCurrentSession().get(Reminder.class, id);
 	}
@@ -72,16 +76,54 @@ public class HibernateReminderDAO implements ReminderDAO {
 	/**
 	 * @see ReminderDAO#getReminders(org.openmrs.Patient)
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<Reminder> getReminders(final Patient patient) throws DAOException {
+		// DetachedCriteria detachedCriteria = DetachedCriteria.forClass(Reminder.class);
+		// detachedCriteria.add(Restrictions.eq("patient", patient));
+		// detachedCriteria.setProjection(Projections.max("dateCreated"));
+
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Reminder.class);
 		criteria.add(Restrictions.eq("patient", patient));
+		// criteria.add(Property.forName("dateCreated").eq(detachedCriteria));
+		criteria.addOrder(Order.desc("dateCreated"));
+		return criteria.list();
+	}
+
+	/**
+	 * @see ReminderDAO#getLatestReminders(org.openmrs.Patient)
+	 */
+	@Override
+	@SuppressWarnings("unchecked")
+	public List<Reminder> getLatestReminders(final Patient patient) throws DAOException {
+		// we need to do two queries here because we can't do the detached query to get the max date without the time
+		Criteria criteria;
+
+		criteria = sessionFactory.getCurrentSession().createCriteria(Reminder.class);
+		criteria.add(Restrictions.eq("patient", patient));
+		criteria.setProjection(Projections.max("dateCreated"));
+		Date date = (Date) criteria.uniqueResult();
+
+		// remove the time part of the date
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		calendar.add(Calendar.SECOND, -calendar.get(Calendar.SECOND));
+		calendar.add(Calendar.MINUTE, -calendar.get(Calendar.MINUTE));
+		calendar.add(Calendar.HOUR, -calendar.get(Calendar.HOUR));
+
+		Date truncatedDate = calendar.getTime();
+
+		criteria = sessionFactory.getCurrentSession().createCriteria(Reminder.class);
+		criteria.add(Restrictions.eq("patient", patient));
+		criteria.add(Property.forName("dateCreated").ge(truncatedDate));
+		criteria.addOrder(Order.desc("dateCreated"));
 		return criteria.list();
 	}
 
 	/**
 	 * @see ReminderDAO#getReminders(java.util.Map, java.util.Date, java.util.Date)
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<Reminder> getReminders(final Map<String, Collection<OpenmrsObject>> restrictions,
 	                                   final Date reminderStart, final Date reminderEnd) throws DAOException {
@@ -108,6 +150,7 @@ public class HibernateReminderDAO implements ReminderDAO {
 	/**
 	 * @see ReminderDAO#aggregateReminders(java.util.Map, java.util.Collection, java.util.Date, java.util.Date)
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<Object[]> aggregateReminders(final Map<String, Collection<OpenmrsObject>> restrictions, final Collection<String> groupingProperties,
 	                                         final Date reminderStart, final Date reminderEnd) throws DAOException {

@@ -27,6 +27,7 @@ public enum StatusType implements StringEnum {
 		this.value = value;
 	}
 
+	@Override
 	public String getValue() {
 		return value;
 	}

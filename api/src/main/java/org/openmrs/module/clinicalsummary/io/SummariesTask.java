@@ -140,6 +140,7 @@ abstract class SummariesTask implements Runnable {
 	 *
 	 * @see Thread#run()
 	 */
+	@Override
 	public void run() {
 		try {
 			process();

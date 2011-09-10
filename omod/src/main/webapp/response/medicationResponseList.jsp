@@ -111,46 +111,56 @@
 						$j("#result").append("<tr><td>No drug changes found</td></tr>");
 					} else {
 						jQuery.each(data, function(key, responses) {
-							var header = null;
 							var counter = 1;
 							jQuery.each(responses, function() {
-								if (this.status == 1 || this.status == -1) {
-									if (header == null) {
-										header = "<tr><td colspan='5' style='padding-top: 10px;'><span style='font-weight: bold'>" + this.patientName + " ( Requested by " + this.providerName + " )</span></td></tr>";
-										$j("#result").append(header);
+								if (jQuery.isEmptyObject(data)) {
+									// write and empty status in the page
+									$j("#result").append("<tr><td>No drug changes found</td></tr>");
+								} else {
+									if (this.status == 1 || this.status == -1) {
+										if (counter == 1) {
+											header =    "<tr>" +
+															"<td colspan='5' style='padding-top: 10px;'>" +
+																"<span style='font-weight: bold'>" +
+																	this.patientName + " ( Requested by " + this.providerName + " )" +
+																"</span>" +
+															"</td>" +
+														"</tr>";
+											$j("#result").append(header);
+										}
+
+										var colored = "<tr>";
+										if (counter % 2 == 1)
+											colored = "<tr style='background-color: #F3F3F3;'>";
+
+										var description = colored + "<td>" + counter++ + ".&nbsp;</td>";
+										if (this.status == -1)
+											description += "<td colspan='4'>Please remove " + this.medicationName + " from encounter on " + this.datetime + "</td>";
+										else if (this.status == 1)
+											description += "<td colspan='4'>Please add " + this.medicationName + " to encounter on " + this.datetime + "</td>";
+										description += "</tr>";
+
+										var operation =  colored + "<td></td><td><a href='#' onclick='view(" + this.id + ", \"Encounter with " + this.providerName + " on " + this.datetime + "\")'>View Encounter</a></td>";
+
+										if (this.action == undefined) {
+											var comment = '';
+											if (this.comment != undefined)
+												comment = this.comment;
+											operation +=    "<td style='text-align: right; padding-right: 3px;' class='operation_" + this.id + "' colspan='2'>";
+											operation +=        "<span style='margin-right: 3px'><spring:message code='clinicalsummary.response.comment'/></span>" +
+																"<input id='comment_" + this.id + "' type='text' name='comment_" + this.id + "' value='" + comment + "' onclick='clearMessage(" + this.id + ");'/>|" +
+																"<a href='#' onclick='accept(" + this.id + ")'>Accept</a> | " +
+																"<a href='#' onclick='ignore(" + this.id + ")'>Ignore</a>" +
+															"</td>";
+										} else if (this.action == 'Ignore')
+											operation +=  "<td style='text-align: right;' colspan='3'>Ignored</td>";
+										else if (this.action == 'Accept')
+											operation +=  "<td style='text-align: right;' colspan='3'>Accepted</td>";
+										operation += "</tr>";
+
+										$j("#result").append(description);
+										$j("#result").append(operation);
 									}
-
-									var colored = "<tr>";
-									if (counter % 2 == 1)
-										colored = "<tr style='background-color: #F3F3F3;'>";
-
-									var description = colored + "<td>" + counter++ + ".&nbsp;</td>";
-									if (this.status == -1)
-										description += "<td colspan='4'>Please remove " + this.medicationName + " from encounter on " + this.datetime + "</td>";
-									else if (this.status == 1)
-										description += "<td colspan='4'>Please add " + this.medicationName + " to encounter on " + this.datetime + "</td>";
-									description += "</tr>";
-
-									var operation =  colored + "<td></td><td><a href='#' onclick='view(" + this.id + ", \"Encounter with " + this.providerName + " on " + this.datetime + "\")'>View Encounter</a></td>";
-
-									if (this.action == undefined) {
-										var comment = '';
-										if (this.comment != undefined)
-											comment = this.comment;
-										operation +=    "<td style='text-align: right; padding-right: 3px;' class='operation_" + this.id + "' colspan='2'>";
-										operation +=        "<span style='margin-right: 3px'><spring:message code='clinicalsummary.response.comment'/></span>" +
-															"<input id='comment_" + this.id + "' type='text' name='comment_" + this.id + "' value='" + comment + "' onclick='clearMessage(" + this.id + ");'/>|" +
-															"<a href='#' onclick='accept(" + this.id + ")'>Accept</a> | " +
-															"<a href='#' onclick='ignore(" + this.id + ")'>Ignore</a>" +
-														"</td>";
-									} else if (this.action == 'Ignore')
-										operation +=  "<td style='text-align: right;' colspan='3'>Ignored</td>";
-									else if (this.action == 'Accept')
-										operation +=  "<td style='text-align: right;' colspan='3'>Accepted</td>";
-									operation += "</tr>";
-
-									$j("#result").append(description);
-									$j("#result").append(operation);
 								}
 							});
 						});

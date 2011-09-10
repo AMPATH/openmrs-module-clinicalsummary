@@ -73,6 +73,15 @@ public interface ReminderService extends OpenmrsService {
 	List<Reminder> getReminders(final Patient patient) throws APIException;
 
 	/**
+	 * Search for latest reminder records for a patient
+	 *
+	 * @param patient the patient
+	 * @return all reminder records for the patient
+	 * @throws APIException
+	 */
+	List<Reminder> getLatestReminders(Patient patient) throws APIException;
+
+	/**
 	 * Search reminder records with certain restrictions on providers, locations and reminder datetime
 	 *
 	 * @param restrictions  map of the property name and the list of accepted objects

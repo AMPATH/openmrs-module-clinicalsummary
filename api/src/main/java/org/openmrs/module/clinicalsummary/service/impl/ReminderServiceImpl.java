@@ -14,6 +14,11 @@
 
 package org.openmrs.module.clinicalsummary.service.impl;
 
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.OpenmrsObject;
@@ -26,11 +31,6 @@ import org.openmrs.module.clinicalsummary.db.ReminderDAO;
 import org.openmrs.module.clinicalsummary.evaluator.Evaluator;
 import org.openmrs.module.clinicalsummary.evaluator.reminder.ReminderEvaluator;
 import org.openmrs.module.clinicalsummary.service.ReminderService;
-
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 /**
  */
@@ -56,6 +56,7 @@ public class ReminderServiceImpl extends BaseOpenmrsService implements ReminderS
 	/**
 	 * @see ReminderService#evaluateReminder(Patient, org.openmrs.module.clinicalsummary.Summary)
 	 */
+	@Override
 	public void evaluateReminder(final Patient patient, final Summary summary) throws APIException {
 		Evaluator evaluator = new ReminderEvaluator();
 		evaluator.evaluate(summary, patient, Boolean.FALSE);
@@ -64,6 +65,7 @@ public class ReminderServiceImpl extends BaseOpenmrsService implements ReminderS
 	/**
 	 * @see ReminderService#saveReminder(org.openmrs.module.clinicalsummary.Reminder)
 	 */
+	@Override
 	public Reminder saveReminder(final Reminder reminder) throws APIException {
 		return reminderDAO.saveReminder(reminder);
 	}
@@ -71,6 +73,7 @@ public class ReminderServiceImpl extends BaseOpenmrsService implements ReminderS
 	/**
 	 * @see ReminderService#getReminder(Integer)
 	 */
+	@Override
 	public Reminder getReminder(final Integer id) throws APIException {
 		return reminderDAO.getReminder(id);
 	}
@@ -78,13 +81,23 @@ public class ReminderServiceImpl extends BaseOpenmrsService implements ReminderS
 	/**
 	 * @see ReminderService#getReminders(org.openmrs.Patient)
 	 */
+	@Override
 	public List<Reminder> getReminders(final Patient patient) throws APIException {
 		return reminderDAO.getReminders(patient);
 	}
 
 	/**
+	 * @see ReminderService#getLatestReminders(org.openmrs.Patient)
+	 */
+	@Override
+	public List<Reminder> getLatestReminders(final Patient patient) throws APIException {
+		return reminderDAO.getLatestReminders(patient);
+	}
+
+	/**
 	 * @see ReminderService#getReminders(java.util.Map, java.util.Date, java.util.Date)
 	 */
+	@Override
 	public List<Reminder> getReminders(final Map<String, Collection<OpenmrsObject>> restrictions,
 	                                   final Date reminderStart, final Date reminderEnd) throws APIException {
 		return reminderDAO.getReminders(restrictions, reminderStart, reminderEnd);
@@ -93,6 +106,7 @@ public class ReminderServiceImpl extends BaseOpenmrsService implements ReminderS
 	/**
 	 * @see ReminderService#aggregateReminders(java.util.Map, java.util.Collection, java.util.Date, java.util.Date)
 	 */
+	@Override
 	public List<Object[]> aggregateReminders(final Map<String, Collection<OpenmrsObject>> restrictions, final Collection<String> groupingProperties,
 	                                         final Date reminderStart, final Date reminderEnd) throws APIException {
 		return reminderDAO.aggregateReminders(restrictions, groupingProperties, reminderStart, reminderEnd);
