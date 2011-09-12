@@ -23,6 +23,7 @@ import java.util.Map;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
@@ -34,6 +35,7 @@ import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.Patient;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.module.clinicalsummary.Reminder;
 import org.openmrs.module.clinicalsummary.db.ReminderDAO;
@@ -49,8 +51,7 @@ public class HibernateReminderDAO implements ReminderDAO {
 	/**
 	 * Method that will be called by Spring to inject the Hibernate's SessionFactory.
 	 *
-	 * @param sessionFactory
-	 * 		the session factory to be injected
+	 * @param sessionFactory the session factory to be injected
 	 */
 	public void setSessionFactory(final SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
@@ -96,28 +97,64 @@ public class HibernateReminderDAO implements ReminderDAO {
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<Reminder> getLatestReminders(final Patient patient) throws DAOException {
-		// we need to do two queries here because we can't do the detached query to get the max date without the time
+
 		Criteria criteria;
 
 		criteria = sessionFactory.getCurrentSession().createCriteria(Reminder.class);
 		criteria.add(Restrictions.eq("patient", patient));
-		criteria.setProjection(Projections.max("reminderDatetime"));
-		Date date = (Date) criteria.uniqueResult();
+		criteria.setProjection(Projections.projectionList()
+				.add(Projections.max("dateCreated"))
+				.add(Projections.max("reminderDatetime")));
+		List<Object[]> objects = criteria.list();
 
-		// remove the time part of the date
+		Object[] dates = new Object[2];
+		for (Object[] object : objects)
+			dates = object;
+
+		criteria = sessionFactory.getCurrentSession().createCriteria(Reminder.class);
+		criteria.add(Restrictions.eq("patient", patient));
+		// we found valid date object for the latest date created
+		if (isValidDateObject(dates[0]))
+			criteria.add(Property.forName("dateCreated").ge(truncate((Date) dates[0])));
+		// we found valid date object for the latest encounter datetime
+		if (isValidDateObject(dates[1]))
+			criteria.add(Property.forName("reminderDatetime").ge(truncate((Date) dates[1])));
+		criteria.addOrder(Order.desc("dateCreated"));
+		return criteria.list();
+	}
+
+	/**
+	 * Check whether an object is a valid java.util.Date object or not
+	 *
+	 * @param date the object
+	 * @return true if it's a valid java.util.Date object
+	 */
+	private static Boolean isValidDateObject(final Object date) {
+		if (date == null)
+			return Boolean.FALSE;
+
+		if (!ClassUtils.isAssignable(date.getClass(), Date.class))
+			return Boolean.FALSE;
+
+		return Boolean.TRUE;
+	}
+
+	/**
+	 * Remove the time part of the date passed as parameter
+	 *
+	 * @param date the date
+	 * @return truncated date
+	 */
+	private Date truncate(Date date) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);
 		calendar.add(Calendar.SECOND, -calendar.get(Calendar.SECOND));
 		calendar.add(Calendar.MINUTE, -calendar.get(Calendar.MINUTE));
 		calendar.add(Calendar.HOUR, -calendar.get(Calendar.HOUR));
 
-		Date truncatedDate = calendar.getTime();
+		log.info("Truncating date: " + Context.getDateFormat().format(calendar.getTime()));
 
-		criteria = sessionFactory.getCurrentSession().createCriteria(Reminder.class);
-		criteria.add(Restrictions.eq("patient", patient));
-		criteria.add(Property.forName("dateCreated").ge(truncatedDate));
-		criteria.addOrder(Order.desc("dateCreated"));
-		return criteria.list();
+		return calendar.getTime();
 	}
 
 	/**

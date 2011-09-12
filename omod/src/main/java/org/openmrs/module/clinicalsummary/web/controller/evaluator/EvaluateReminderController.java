@@ -49,6 +49,6 @@ public class EvaluateReminderController {
 		Cohort cohort = Context.getCohortService().getCohort(cohortId);
 		ReminderCohortEvaluatorInstance.getInstance().evaluate(new Cohort(cohort.getMemberIds()));
 		session.setMaxInactiveInterval(maxInactiveInterval);
-		return "redirect:evaluatePatients.form";
+		return "redirect:evaluateReminder.form";
 	}
 }
