@@ -14,19 +14,19 @@
 
 package org.openmrs.module.clinicalsummary.web.controller.watcher;
 
+import java.io.IOException;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.openmrs.module.clinicalsummary.web.controller.MimeType;
-import org.openmrs.module.clinicalsummary.web.controller.evaluator.engine.RuleEvaluatorInstance;
+import org.openmrs.module.clinicalsummary.web.controller.evaluator.engine.RuleCohortEvaluatorInstance;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 /**
  */
@@ -45,12 +45,12 @@ public class RuleEvaluationWatcherController {
 
 		generator.writeStartObject();
 
-		RuleEvaluatorInstance instance = RuleEvaluatorInstance.getInstance();
-		generator.writeBooleanField("running", instance.isRunning());
-		generator.writeStringField("filename", instance.getCurrentPatient());
-		generator.writeStringField("status", instance.getCurrentStatus());
-		generator.writeStringField("counter", instance.getProcessed());
-		generator.writeStringField("size", instance.getSize());
+		RuleCohortEvaluatorInstance instanceCohort = RuleCohortEvaluatorInstance.getInstance();
+		generator.writeBooleanField("running", instanceCohort.isRunning());
+		generator.writeStringField("filename", instanceCohort.getCurrentPatient());
+		generator.writeStringField("status", instanceCohort.getCurrentStatus());
+		generator.writeStringField("counter", instanceCohort.getProcessed());
+		generator.writeStringField("size", instanceCohort.getSize());
 
 		generator.writeEndObject();
 

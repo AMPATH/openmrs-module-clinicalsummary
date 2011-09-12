@@ -101,7 +101,7 @@ public class HibernateReminderDAO implements ReminderDAO {
 
 		criteria = sessionFactory.getCurrentSession().createCriteria(Reminder.class);
 		criteria.add(Restrictions.eq("patient", patient));
-		criteria.setProjection(Projections.max("dateCreated"));
+		criteria.setProjection(Projections.max("reminderDatetime"));
 		Date date = (Date) criteria.uniqueResult();
 
 		// remove the time part of the date

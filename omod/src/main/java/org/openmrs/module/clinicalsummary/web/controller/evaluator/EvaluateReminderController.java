@@ -20,7 +20,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.clinicalsummary.web.controller.evaluator.engine.SummaryCohortEvaluatorInstance;
+import org.openmrs.module.clinicalsummary.web.controller.evaluator.engine.ReminderCohortEvaluatorInstance;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,10 +30,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 /**
  */
 @Controller
-@RequestMapping(value = "/module/clinicalsummary/evaluator/evaluatePatients")
-public class EvaluatePatientsController {
+@RequestMapping(value = "/module/clinicalsummary/evaluator/evaluateReminder")
+public class EvaluateReminderController {
 
-	private static final Log log = LogFactory.getLog(EvaluatePatientsController.class);
+	private static final Log log = LogFactory.getLog(EvaluateReminderController.class);
 
 	@SuppressWarnings("unchecked")
 	@RequestMapping(method = RequestMethod.GET)
@@ -47,7 +47,7 @@ public class EvaluatePatientsController {
 		int maxInactiveInterval = session.getMaxInactiveInterval();
 		session.setMaxInactiveInterval(-1);
 		Cohort cohort = Context.getCohortService().getCohort(cohortId);
-		SummaryCohortEvaluatorInstance.getInstance().evaluate(new Cohort(cohort.getMemberIds()));
+		ReminderCohortEvaluatorInstance.getInstance().evaluate(new Cohort(cohort.getMemberIds()));
 		session.setMaxInactiveInterval(maxInactiveInterval);
 		return "redirect:evaluatePatients.form";
 	}

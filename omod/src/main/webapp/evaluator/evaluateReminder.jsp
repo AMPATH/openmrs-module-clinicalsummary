@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<openmrs:require privilege="Generate Summaries" otherwise="/login.htm" redirect="/module/clinicalsummary/evaluator/evaluatePatients.form"/>
+<openmrs:require privilege="Generate Summaries" otherwise="/login.htm" redirect="/module/clinicalsummary/evaluator/evaluateReminder.form"/>
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="../localHeader.jsp" %>
@@ -26,7 +26,7 @@
 	});
 
 	function startWatcherIfNeeded() {
-		var json = "${pageContext.request.contextPath}/module/clinicalsummary/watcher/watchCohortEvaluation.form";
+		var json = "${pageContext.request.contextPath}/module/clinicalsummary/watcher/watchReminderEvaluation.form";
 		jQuery.getJSON(json, function(data) {
 			// start processing the json data
 			if (data.running) {

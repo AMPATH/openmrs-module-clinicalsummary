@@ -21,61 +21,61 @@ import org.openmrs.util.OpenmrsUtil;
 
 /**
  */
-public class RuleEvaluatorInstance {
+public class ReminderCohortEvaluatorInstance {
 
-	private static RuleEvaluatorInstance ourInstance;
+	private static ReminderCohortEvaluatorInstance ourInstanceCohort;
 
-	private RuleEvaluator ruleEvaluator;
+	private ReminderCohortEvaluator reminderCohortEvaluator;
 
-	private RuleEvaluatorInstance() {
+	private ReminderCohortEvaluatorInstance() {
 	}
 
-	public static synchronized RuleEvaluatorInstance getInstance() {
-		if (ourInstance == null)
-			ourInstance = new RuleEvaluatorInstance();
-		return ourInstance;
+	public static synchronized ReminderCohortEvaluatorInstance getInstance() {
+		if (ourInstanceCohort == null)
+			ourInstanceCohort = new ReminderCohortEvaluatorInstance();
+		return ourInstanceCohort;
 	}
 
 	public static synchronized void removeInstance() {
-		ourInstance = null;
+		ourInstanceCohort = null;
 	}
 
 	public void evaluate(final Cohort cohort) {
 		if (!isRunning()) {
-			ruleEvaluator = new RuleEvaluator(cohort);
-			new Thread(ruleEvaluator).start();
+			reminderCohortEvaluator = new ReminderCohortEvaluator(cohort);
+			new Thread(reminderCohortEvaluator).start();
 		}
 	}
 
 	public String getCurrentPatient() {
 		if (isRunning())
-			return String.valueOf(ruleEvaluator.getCurrentPatientId());
+			return String.valueOf(reminderCohortEvaluator.getCurrentPatientId());
 		return StringUtils.EMPTY;
 	}
 
 	public String getProcessed() {
 		if (isRunning())
-			return String.valueOf(ruleEvaluator.getCounter());
+			return String.valueOf(reminderCohortEvaluator.getProcessed());
 		return StringUtils.EMPTY;
 	}
 
 	public String getSize() {
 		if (isRunning())
-			return String.valueOf(ruleEvaluator.getCohortSize());
+			return String.valueOf(reminderCohortEvaluator.getCohortSize());
 		return StringUtils.EMPTY;
 	}
 
 	public String getCurrentStatus() {
 		if (isRunning())
-			return ruleEvaluator.getEvaluatorStatus().getValue();
+			return reminderCohortEvaluator.getEvaluatorStatus().getValue();
 		return StringUtils.EMPTY;
 	}
 
 	public Boolean isRunning() {
-		if (ruleEvaluator == null)
+		if (reminderCohortEvaluator == null)
 			return Boolean.FALSE;
 
-		if (OpenmrsUtil.nullSafeEquals(EvaluatorStatus.EVALUATOR_RUNNING, ruleEvaluator.getEvaluatorStatus()))
+		if (OpenmrsUtil.nullSafeEquals(EvaluatorStatus.EVALUATOR_RUNNING, reminderCohortEvaluator.getEvaluatorStatus()))
 			return Boolean.TRUE;
 
 		return Boolean.FALSE;

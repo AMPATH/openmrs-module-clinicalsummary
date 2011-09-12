@@ -27,7 +27,7 @@ import org.openmrs.Location;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.clinicalsummary.service.CoreService;
 import org.openmrs.module.clinicalsummary.web.controller.WebUtils;
-import org.openmrs.module.clinicalsummary.web.controller.evaluator.engine.CohortEvaluatorInstance;
+import org.openmrs.module.clinicalsummary.web.controller.evaluator.engine.SummaryCohortEvaluatorInstance;
 import org.openmrs.web.WebConstants;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -70,7 +70,7 @@ public class EvaluateCohortController {
 				Date endDate = WebUtils.parse(obsEndDate, null);
 				cohort = Context.getService(CoreService.class).getDateCreatedCohort(location, startDate, endDate);
 			}
-			CohortEvaluatorInstance.getInstance().evaluate(cohort);
+			SummaryCohortEvaluatorInstance.getInstance().evaluate(cohort);
 		}
 		session.setMaxInactiveInterval(maxInactiveInterval);
 		return "redirect:evaluateCohort.form";

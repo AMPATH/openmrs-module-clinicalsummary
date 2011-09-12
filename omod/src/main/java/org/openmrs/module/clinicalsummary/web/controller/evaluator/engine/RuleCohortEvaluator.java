@@ -14,25 +14,33 @@
 
 package org.openmrs.module.clinicalsummary.web.controller.evaluator.engine;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
+import org.openmrs.Concept;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.UserContext;
-import org.openmrs.module.clinicalsummary.Summary;
-import org.openmrs.module.clinicalsummary.evaluator.Evaluator;
-import org.openmrs.module.clinicalsummary.evaluator.velocity.VelocityEvaluator;
-import org.openmrs.module.clinicalsummary.rule.ResultCacheInstance;
-import org.openmrs.module.clinicalsummary.service.IndexService;
-import org.openmrs.module.clinicalsummary.service.SummaryService;
+import org.openmrs.logic.result.Result;
+import org.openmrs.module.clinicalsummary.rule.common.CohortBuilderRule;
+import org.openmrs.module.clinicalsummary.service.EvaluatorService;
+import org.openmrs.module.clinicalsummary.web.controller.WebUtils;
 import org.openmrs.module.clinicalsummary.web.controller.evaluator.EvaluatorStatus;
 
 /**
  */
-class CohortEvaluator implements Runnable {
+class RuleCohortEvaluator implements Runnable {
 
-	private static final Log log = LogFactory.getLog(CohortEvaluator.class);
+	private static final Log log = LogFactory.getLog(RuleCohortEvaluator.class);
+
+	private static final String SEPARATOR_STRING = "\t";
 
 	private final Cohort cohort;
 
@@ -42,13 +50,13 @@ class CohortEvaluator implements Runnable {
 
 	private Integer currentPatientId;
 
-	private Integer processed;
+	private Integer counter;
 
 	/**
 	 * @param cohort
 	 */
-	public CohortEvaluator(final Cohort cohort) {
-		this.processed = 0;
+	public RuleCohortEvaluator(final Cohort cohort) {
+		this.counter = 0;
 		this.cohort = cohort;
 		this.userContext = Context.getUserContext();
 		this.evaluatorStatus = EvaluatorStatus.EVALUATOR_IDLE;
@@ -85,8 +93,8 @@ class CohortEvaluator implements Runnable {
 	/**
 	 * @return
 	 */
-	public Integer getProcessed() {
-		return processed;
+	public Integer getCounter() {
+		return counter;
 	}
 
 	/**
@@ -111,31 +119,30 @@ class CohortEvaluator implements Runnable {
 
 			setEvaluatorStatus(EvaluatorStatus.EVALUATOR_RUNNING);
 
-			IndexService indexService = Context.getService(IndexService.class);
-			Evaluator evaluator = new VelocityEvaluator();
+			EvaluatorService evaluatorService = Context.getService(EvaluatorService.class);
 
-			ResultCacheInstance cacheInstance = ResultCacheInstance.getInstance();
+			File attachmentFile = new File(System.getProperty("java.io.tmpdir"), WebUtils.prepareFilename(null, null));
+			BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(attachmentFile));
 
 			for (Integer patientId : cohort.getMemberIds()) {
+
 				setCurrentPatientId(patientId);
+
+				Map<String, Object> parameters = new HashMap<String, Object>();
 				Patient patient = Context.getPatientService().getPatient(patientId);
-				if (patient != null) {
-					SummaryService summaryService = Context.getService(SummaryService.class);
-					for (Summary summary : summaryService.getSummaries(patient)) {
-						double start = System.currentTimeMillis();
+				Result results = evaluatorService.evaluate(patient, CohortBuilderRule.TOKEN, parameters);
 
-						evaluator.evaluate(summary, patient, Boolean.TRUE);
-						indexService.saveIndex(indexService.generateIndex(patient, summary));
-
-						double elapsed = System.currentTimeMillis() - start;
-						log.info("Velocity evaluator running for " + elapsed + "ms (" + (elapsed / 1000) + "s)");
-					}
-
-					cacheInstance.clearCache(patient);
-					cleanSession();
+				if (CollectionUtils.isNotEmpty(results)) {
+					Result result = results.latest();
+					bufferedWriter.write(format(patient));
+					bufferedWriter.write(format(result));
+					bufferedWriter.newLine();
 				}
-				processed++;
+
+				counter++;
 			}
+
+			bufferedWriter.close();
 		} catch (Exception e) {
 			log.error("Generating summary sheet for cohort failed ...", e);
 		} finally {
@@ -144,10 +151,23 @@ class CohortEvaluator implements Runnable {
 		}
 	}
 
-	private void cleanSession() {
-		if (processed % 20 == 0) {
-			Context.flushSession();
-			Context.clearSession();
-		}
+	private String format(Patient patient) {
+		StringBuilder buffer = new StringBuilder();
+		buffer.append(patient.getPersonName().getFullName()).append(SEPARATOR_STRING);
+		buffer.append(patient.getPatientIdentifier().getIdentifier()).append(SEPARATOR_STRING);
+		return buffer.toString();
+	}
+
+	private String format(Result result) {
+		StringBuilder buffer = new StringBuilder();
+		buffer.append(Context.getDateFormat().format(result.getResultDate())).append(SEPARATOR_STRING);
+		buffer.append(result.toString()).append(SEPARATOR_STRING);
+		buffer.append(result.toNumber()).append(SEPARATOR_STRING);
+		buffer.append(Context.getDateFormat().format(result.toDatetime())).append(SEPARATOR_STRING);
+		buffer.append(result.toConcept().getName(Context.getLocale()).getName()).append(SEPARATOR_STRING);
+
+		Concept concept = (Concept) result.getResultObject();
+		buffer.append(concept.getName(Context.getLocale()).getName()).append(SEPARATOR_STRING);
+		return buffer.toString();
 	}
 }

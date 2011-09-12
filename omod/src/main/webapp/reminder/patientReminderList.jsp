@@ -67,10 +67,10 @@
 						});
 					}
 				},
-				beforeSend: function(jqXHR, status, error) {
+				error: function(jqXHR, status, error) {
 					$j("#searchResult tr").remove();
 					$j("#searchcontainer").show();
-					$j("#searchResult ").append("<tr><td style='font-weight: bold;'>Searching reminder returned unknown error.</td></tr>");
+					$j("#searchResult ").append("<tr><td style='font-weight: bold;'>Error searching reminder. Please try again later!</td></tr>");
 				}
 			});
 		});

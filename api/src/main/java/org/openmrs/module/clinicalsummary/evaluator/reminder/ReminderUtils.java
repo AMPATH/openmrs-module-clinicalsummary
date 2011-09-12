@@ -85,10 +85,11 @@ public class ReminderUtils {
 					if (CollectionUtils.isNotEmpty(encounterResults)) {
 						Result encounterResult = encounterResults.latest();
 						Encounter encounter = (Encounter) encounterResult.getResultObject();
+						reminder.setEncounter(encounter);
 						reminder.setPatient(encounter.getPatient());
 						reminder.setProvider(encounter.getProvider());
-						reminder.setEncounter(encounter);
 						reminder.setLocation(encounter.getLocation());
+						reminder.setReminderDatetime(encounter.getEncounterDatetime());
 					}
 					Context.getService(ReminderService.class).saveReminder(reminder);
 				}

@@ -23,7 +23,7 @@ import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.openmrs.module.clinicalsummary.web.controller.MimeType;
-import org.openmrs.module.clinicalsummary.web.controller.evaluator.engine.SummaryCohortEvaluatorInstance;
+import org.openmrs.module.clinicalsummary.web.controller.evaluator.engine.ReminderCohortEvaluatorInstance;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -31,10 +31,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 /**
  */
 @Controller
-@RequestMapping("/module/clinicalsummary/watcher/watchCohortEvaluation")
-public class CohortEvaluationWatcherController {
+@RequestMapping("/module/clinicalsummary/watcher/watchReminderEvaluation")
+public class ReminderEvaluationWatcherController {
 
-	private static final Log log = LogFactory.getLog(CohortEvaluationWatcherController.class);
+	private static final Log log = LogFactory.getLog(ReminderEvaluationWatcherController.class);
 
 	@RequestMapping(method = RequestMethod.GET)
 	public void watch(final HttpServletResponse response) throws IOException {
@@ -45,7 +45,7 @@ public class CohortEvaluationWatcherController {
 
 		generator.writeStartObject();
 
-		SummaryCohortEvaluatorInstance instanceSummary = SummaryCohortEvaluatorInstance.getInstance();
+		ReminderCohortEvaluatorInstance instanceSummary = ReminderCohortEvaluatorInstance.getInstance();
 		generator.writeBooleanField("running", instanceSummary.isRunning());
 		generator.writeStringField("filename", instanceSummary.getCurrentPatient());
 		generator.writeStringField("status", instanceSummary.getCurrentStatus());
