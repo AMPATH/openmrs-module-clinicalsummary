@@ -43,6 +43,7 @@ public class ReturnDateEvaluatorProcessor {
 
 	private static final Log log = LogFactory.getLog(DateCreatedEvaluatorTask.class);
 
+	private static final String RETURN_DATE_EVALUATOR_COHORT_NAME = "return.date.evaluator.cohort";
 
 	public void processSummary() {
 		// remove the concept cache every night

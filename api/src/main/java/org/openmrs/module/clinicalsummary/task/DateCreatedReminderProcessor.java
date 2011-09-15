@@ -36,9 +36,11 @@ import org.openmrs.module.clinicalsummary.service.SummaryService;
 
 /**
  */
-public class ReminderEvaluatorProcessor {
+public class DateCreatedReminderProcessor {
 
-	private static final Log log = LogFactory.getLog(ReminderEvaluatorProcessor.class);
+	private static final Log log = LogFactory.getLog(DateCreatedReminderProcessor.class);
+
+	private static final String DATE_CREATED_REMINDER_COHORT_NAME = "date.created.reminder.cohort";
 
 	public void processReminder() {
 		// location is clustered, clusters are separated by comma

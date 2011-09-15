@@ -20,16 +20,16 @@ import org.openmrs.scheduler.StatefulTask;
 
 /**
  */
-public class ReminderEvaluatorTask extends StatefulTask {
+public class ReturnDateReminderTask extends StatefulTask {
 
-	private static final Log log = LogFactory.getLog(ReminderEvaluatorTask.class);
+	private static final Log log = LogFactory.getLog(ReturnDateReminderTask.class);
 
 	/**
 	 * @see org.openmrs.scheduler.tasks.AbstractTask#execute()
 	 */
 	@Override
 	public void execute() {
-		ReminderEvaluatorProcessor processor = new ReminderEvaluatorProcessor();
+		ReturnDateReminderProcessor processor = new ReturnDateReminderProcessor();
 		processor.processReminder();
 	}
 }
