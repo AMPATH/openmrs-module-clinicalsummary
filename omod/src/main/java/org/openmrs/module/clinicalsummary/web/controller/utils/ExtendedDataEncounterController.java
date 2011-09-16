@@ -22,7 +22,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,10 +41,8 @@ import org.openmrs.module.clinicalsummary.rule.EvaluableConstants;
 import org.openmrs.module.clinicalsummary.rule.EvaluableNameConstants;
 import org.openmrs.module.clinicalsummary.rule.ResultCacheInstance;
 import org.openmrs.module.clinicalsummary.rule.encounter.EncounterWithStringRestrictionRule;
-import org.openmrs.module.clinicalsummary.rule.medication.AntiRetroViralRule;
-import org.openmrs.module.clinicalsummary.rule.observation.ObsWithStringRestrictionRule;
-import org.openmrs.module.clinicalsummary.rule.pediatric.AgeWithUnitRule;
 import org.openmrs.module.clinicalsummary.service.EvaluatorService;
+import org.openmrs.module.clinicalsummary.web.controller.WebUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.FileCopyUtils;
@@ -57,7 +54,7 @@ import org.springframework.web.multipart.MultipartFile;
 /**
  */
 @Controller
-@RequestMapping("/module/clinicalsummary/utils/extendedData")
+@RequestMapping("/module/clinicalsummary/utils/extendedDataEncounter")
 public class ExtendedDataEncounterController {
 
 	private static final Log log = LogFactory.getLog(ExtendedDataEncounterController.class);
@@ -68,18 +65,9 @@ public class ExtendedDataEncounterController {
 
 	public static final String JAVA_IO_TMPDIR = "java.io.tmpdir";
 
-	private Date referenceDate;
-
-	public ExtendedDataEncounterController() {
-		Calendar calendar = Calendar.getInstance();
-		calendar.set(Calendar.YEAR, 2011);
-		calendar.set(Calendar.MONTH, Calendar.MARCH);
-		calendar.set(Calendar.DATE, 1);
-		referenceDate = calendar.getTime();
-	}
-
 	@RequestMapping(method = RequestMethod.GET)
 	public void populatePage(final ModelMap map) {
+		map.put("cohorts", Context.getCohortService().getAllCohorts());
 	}
 
 	@RequestMapping(method = RequestMethod.POST)
@@ -105,6 +93,7 @@ public class ExtendedDataEncounterController {
 			Patient patient = null;
 			String[] elements = StringUtils.splitPreserveAllTokens(line);
 			Cohort cohort = patientSetService.convertPatientIdentifier(Arrays.asList(elements[0]));
+			Date referenceDate = WebUtils.parse(elements[1], new Date());
 			for (Integer integer : cohort.getMemberIds()) {
 				// get the actual patient object
 				patient = patientService.getPatient(integer);
@@ -112,12 +101,6 @@ public class ExtendedDataEncounterController {
 					ExtendedData extended = new ExtendedData(referenceDate, patient);
 					extended.setDuplicates(cohort.size());
 					extended.setEncounterResults(searchEncounters(patient));
-					extended.addConceptResult(ExtendedData.PAEDIATRICS_WHO_CATEGORY_QUERY, searchObservation(patient, ExtendedData.PAEDIATRICS_WHO_CATEGORY_QUERY));
-					extended.addConceptResult(ExtendedData.PAEDIATRICS_CDC_CATEGORY_QUERY, searchObservation(patient, ExtendedData.PAEDIATRICS_CDC_CATEGORY_QUERY));
-					extended.addConceptResult(ExtendedData.MOTHER_DECEASED_STATUS, searchObservation(patient, ExtendedData.MOTHER_DECEASED_STATUS));
-					extended.addConceptResult(ExtendedData.FATHER_DECEASED_STATUS, searchObservation(patient, ExtendedData.FATHER_DECEASED_STATUS));
-					extended.addTokenResult(AntiRetroViralRule.TOKEN, searchMedications(patient, AntiRetroViralRule.TOKEN));
-					extended.addTokenResult(AgeWithUnitRule.TOKEN, evaluate(patient, AntiRetroViralRule.TOKEN, new HashMap<String, Object>()));
 					writer.write(extended.generateExtededData());
 					writer.newLine();
 				}
@@ -127,35 +110,6 @@ public class ExtendedDataEncounterController {
 
 		reader.close();
 		writer.close();
-	}
-
-	private Result evaluate(Patient patient, String token, Map<String, Object> parameters) {
-		EvaluatorService evaluatorService = Context.getService(EvaluatorService.class);
-		return evaluatorService.evaluate(patient, token, parameters);
-	}
-
-	private Result searchMedications(Patient patient, String token) {
-		Result encountersResult = searchEncounters(patient);
-
-		Integer counter = 0;
-		Result result = null;
-		while (counter < encountersResult.size() && result == null) {
-			Result encounterResult = encountersResult.get(counter++);
-			if (encounterResult.getResultDate().before(referenceDate)) {
-				Map<String, Object> parameters = new HashMap<String, Object>();
-				parameters.put(EvaluableConstants.OBS_ENCOUNTER, Arrays.asList(encounterResult.getResultObject()));
-				result = evaluate(patient, token, parameters);
-			}
-		}
-		return result;
-	}
-
-	private Result searchObservation(Patient patient, String concept) {
-		Map<String, Object> parameters = new HashMap<String, Object>();
-		parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(concept));
-
-		EvaluatorService evaluatorService = Context.getService(EvaluatorService.class);
-		return evaluatorService.evaluate(patient, ObsWithStringRestrictionRule.TOKEN, parameters);
 	}
 
 	private Result searchEncounters(Patient patient) {

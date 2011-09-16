@@ -27,7 +27,9 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
+import org.openmrs.Concept;
 import org.openmrs.Patient;
+import org.openmrs.api.ConceptService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
@@ -39,18 +41,17 @@ import org.openmrs.module.clinicalsummary.rule.encounter.EncounterWithStringRest
 import org.openmrs.module.clinicalsummary.rule.medication.AntiRetroViralRule;
 import org.openmrs.module.clinicalsummary.rule.observation.ObsWithStringRestrictionRule;
 import org.openmrs.module.clinicalsummary.rule.pediatric.AgeWithUnitRule;
+import org.openmrs.module.clinicalsummary.service.CoreService;
 import org.openmrs.module.clinicalsummary.service.EvaluatorService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  */
 @Controller
-@RequestMapping("/module/clinicalsummary/utils/extendedData")
+@RequestMapping("/module/clinicalsummary/utils/extendedDataGeneral")
 public class ExtendedDataGeneralController {
 
 	private static final Log log = LogFactory.getLog(ExtendedDataGeneralController.class);
@@ -71,17 +72,23 @@ public class ExtendedDataGeneralController {
 
 	@RequestMapping(method = RequestMethod.GET)
 	public void populatePage(final ModelMap map) {
+		map.put("cohorts", Context.getCohortService().getAllCohorts());
 	}
 
 	@RequestMapping(method = RequestMethod.POST)
-	public void processSubmit(final @RequestParam(required = true, value = "data") MultipartFile data) throws IOException {
+	public void processRequest() throws IOException {
 
 		PatientService patientService = Context.getPatientService();
 		PatientSetService patientSetService = Context.getPatientSetService();
+		ConceptService conceptService = Context.getConceptService();
+		CoreService coreService = Context.getService(CoreService.class);
 
 		File extendedData = new File(System.getProperty(JAVA_IO_TMPDIR), OUTPUT_STUDY_DATA);
 		BufferedWriter writer = new BufferedWriter(new FileWriter(extendedData));
-		Cohort cohort = Context.getCohortService().getCohort("Some Cohort Name");
+		Concept controlConcept = conceptService.getConcept(EvaluableNameConstants.PEDIATRIC_STUDY_CONTROL_GROUP);
+		Concept interventionConcept = conceptService.getConcept(EvaluableNameConstants.PEDIATRIC_STUDY_INTERVENTION_GROUP);
+		// combine both cohort
+		Cohort cohort = coreService.getObservationCohort(Arrays.asList(controlConcept, interventionConcept), null, null);
 		for (Integer integer : cohort.getMemberIds()) {
 			// get the actual patient object
 			Patient patient = patientService.getPatient(integer);
@@ -89,12 +96,19 @@ public class ExtendedDataGeneralController {
 				ExtendedData extended = new ExtendedData(referenceDate, patient);
 				extended.setDuplicates(cohort.size());
 				extended.setEncounterResults(searchEncounters(patient));
-				extended.addConceptResult(ExtendedData.PAEDIATRICS_WHO_CATEGORY_QUERY, searchObservation(patient, ExtendedData.PAEDIATRICS_WHO_CATEGORY_QUERY));
-				extended.addConceptResult(ExtendedData.PAEDIATRICS_CDC_CATEGORY_QUERY, searchObservation(patient, ExtendedData.PAEDIATRICS_CDC_CATEGORY_QUERY));
+				extended.addConceptResult(ExtendedData.PAEDIATRICS_WHO_CATEGORY_QUERY,
+						searchObservation(patient, ExtendedData.PAEDIATRICS_WHO_CATEGORY_QUERY));
+				extended.addConceptResult(ExtendedData.PAEDIATRICS_CDC_CATEGORY_QUERY,
+						searchObservation(patient, ExtendedData.PAEDIATRICS_CDC_CATEGORY_QUERY));
 				extended.addConceptResult(ExtendedData.MOTHER_DECEASED_STATUS, searchObservation(patient, ExtendedData.MOTHER_DECEASED_STATUS));
 				extended.addConceptResult(ExtendedData.FATHER_DECEASED_STATUS, searchObservation(patient, ExtendedData.FATHER_DECEASED_STATUS));
+				extended.addConceptResult(ExtendedData.FATHER_DECEASED_STATUS, searchObservation(patient, ExtendedData.FATHER_DECEASED_STATUS));
+				extended.addConceptResult(EvaluableNameConstants.PEDIATRIC_STUDY_CONTROL_GROUP,
+						searchObservation(patient, EvaluableNameConstants.PEDIATRIC_STUDY_CONTROL_GROUP));
+				extended.addConceptResult(EvaluableNameConstants.PEDIATRIC_STUDY_INTERVENTION_GROUP,
+						searchObservation(patient, EvaluableNameConstants.PEDIATRIC_STUDY_INTERVENTION_GROUP));
 				extended.addTokenResult(AntiRetroViralRule.TOKEN, searchMedications(patient, AntiRetroViralRule.TOKEN));
-				extended.addTokenResult(AgeWithUnitRule.TOKEN, evaluate(patient, AntiRetroViralRule.TOKEN, new HashMap<String, Object>()));
+				extended.addTokenResult(AgeWithUnitRule.TOKEN, evaluate(patient, AgeWithUnitRule.TOKEN, new HashMap<String, Object>()));
 				writer.write(extended.generateExtededData());
 				writer.newLine();
 			}

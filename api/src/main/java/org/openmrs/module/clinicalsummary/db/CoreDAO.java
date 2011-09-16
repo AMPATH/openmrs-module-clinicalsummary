@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.openmrs.Cohort;
+import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Obs;
@@ -34,6 +35,8 @@ public interface CoreDAO {
 	Cohort getDateCreatedCohort(final Location location, final Date startDate, Date endDate) throws DAOException;
 
 	Cohort getReturnDateCohort(final Location location, final Date startDate, final Date endDate) throws DAOException;
+
+	Cohort getObservationCohort(List<Concept> concepts, Date startDate, Date endDate) throws DAOException;
 
 	List<Encounter> getPatientEncounters(final Integer patientId, final Map<String, Collection<OpenmrsObject>> restrictions,
 	                                     final FetchRestriction fetchRestriction) throws DAOException;

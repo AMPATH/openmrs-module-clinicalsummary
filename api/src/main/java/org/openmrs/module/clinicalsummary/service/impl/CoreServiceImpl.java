@@ -22,6 +22,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
+import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Obs;
@@ -68,6 +69,14 @@ public class CoreServiceImpl extends BaseOpenmrsService implements CoreService {
 	@Override
 	public Cohort getReturnDateCohort(final Location location, final Date startDate, final Date endDate) throws APIException {
 		return coreDAO.getReturnDateCohort(location, startDate, endDate);
+	}
+
+	/**
+	 * @see CoreService#getObservationCohort(java.util.List, java.util.Date, java.util.Date)
+	 */
+	@Override
+	public Cohort getObservationCohort(final List<Concept> concepts, final Date startDate, final Date endDate) throws APIException {
+		return coreDAO.getObservationCohort(concepts, startDate, endDate);
 	}
 
 	/**

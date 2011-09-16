@@ -25,8 +25,11 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Patient;
+import org.openmrs.PatientIdentifier;
+import org.openmrs.PersonName;
 import org.openmrs.api.context.Context;
 import org.openmrs.logic.result.Result;
+import org.openmrs.module.clinicalsummary.rule.EvaluableNameConstants;
 import org.openmrs.module.clinicalsummary.rule.medication.AntiRetroViralRule;
 import org.openmrs.module.clinicalsummary.rule.pediatric.AgeWithUnitRule;
 import org.openmrs.util.OpenmrsUtil;
@@ -154,6 +157,8 @@ public class ExtendedData {
 	 * @return
 	 */
 	public Map<String, Result> getTokenResults() {
+		if (tokenResults == null)
+			tokenResults = new HashMap<String, Result>();
 		return tokenResults;
 	}
 
@@ -242,17 +247,19 @@ public class ExtendedData {
 		// append number of patient actually resolved by the patient identifier
 		builder.append(getDuplicates()).append(FIELD_SEPARATOR);
 		// append the initial identifier
-		builder.append(getPatient().getPatientIdentifier().getIdentifier()).append(FIELD_SEPARATOR);
+		PatientIdentifier patientIdentifier = getPatient().getPatientIdentifier();
+		builder.append(patientIdentifier != null ? patientIdentifier.getIdentifier() : StringUtils.EMPTY).append(FIELD_SEPARATOR);
 		// append the patient internal id
 		builder.append(getPatient().getPatientId()).append(FIELD_SEPARATOR);
 		// append the patient names
-		builder.append(getPatient().getPersonName().getFullName()).append(FIELD_SEPARATOR);
+		PersonName personName = getPatient().getPersonName();
+		builder.append(personName != null ? personName.getFullName() : StringUtils.EMPTY).append(FIELD_SEPARATOR);
 		// append the patient age using the age with unit rule
-		builder.append(getTokenResult(AgeWithUnitRule.TOKEN).toString()).append(FIELD_SEPARATOR);
+		builder.append("\"").append(getTokenResult(AgeWithUnitRule.TOKEN).toString()).append("\"").append(FIELD_SEPARATOR);
 		// append pediatric initial encounter date
 		String initialEncounterDatetime = StringUtils.EMPTY;
 		if (CollectionUtils.isNotEmpty(getEncounterResults())) {
-			Result initialEncounterResult = getEncounterResults().earliest();
+			Result initialEncounterResult = getEncounterResults().get(getEncounterResults().size() - 1);
 			initialEncounterDatetime = Context.getDateFormat().format(initialEncounterResult.getResultDate());
 		}
 		builder.append(initialEncounterDatetime).append(FIELD_SEPARATOR);
@@ -266,15 +273,26 @@ public class ExtendedData {
 		Result result = searchVisitCountForLocation(location);
 		builder.append(result.size()).append(FIELD_SEPARATOR);
 		// append WHO stage
-		builder.append(searchValidObsResult(PAEDIATRICS_WHO_CATEGORY_QUERY).toString()).append(FIELD_SEPARATOR);
+		Result whoStageResult = searchValidObsResult(PAEDIATRICS_WHO_CATEGORY_QUERY);
+		builder.append(whoStageResult != null ? whoStageResult.toString() : StringUtils.EMPTY).append(FIELD_SEPARATOR);
 		// append the cdc class
-		builder.append(searchValidObsResult(PAEDIATRICS_CDC_CATEGORY_QUERY).toString()).append(FIELD_SEPARATOR);
+		Result cdcClassResult = searchValidObsResult(PAEDIATRICS_CDC_CATEGORY_QUERY);
+		builder.append(cdcClassResult != null ? cdcClassResult.toString() : StringUtils.EMPTY).append(FIELD_SEPARATOR);
 		// append whether patients on arv or not
-		builder.append(getTokenResult(AntiRetroViralRule.TOKEN).size() > 0 ? "Yes" : "No").append(FIELD_SEPARATOR);
+		Result antiRetroViralResults = getTokenResult(AntiRetroViralRule.TOKEN);
+		builder.append(CollectionUtils.isNotEmpty(antiRetroViralResults) ? "YES" : "NO").append(FIELD_SEPARATOR);
 		// append mother deceased status
-		builder.append(searchValidObsResult(MOTHER_DECEASED_STATUS).toString()).append(FIELD_SEPARATOR);
+		Result motherStatusResult = searchValidObsResult(MOTHER_DECEASED_STATUS);
+		builder.append(motherStatusResult != null ? motherStatusResult.toString() : StringUtils.EMPTY).append(FIELD_SEPARATOR);
 		// append father deceased status
-		builder.append(searchValidObsResult(FATHER_DECEASED_STATUS).toString()).append(FIELD_SEPARATOR);
+		Result fatherStatusResult = searchValidObsResult(FATHER_DECEASED_STATUS);
+		builder.append(fatherStatusResult != null ? fatherStatusResult.toString() : StringUtils.EMPTY).append(FIELD_SEPARATOR);
+		// append father deceased status
+		Result controlResult = searchValidObsResult(EvaluableNameConstants.PEDIATRIC_STUDY_CONTROL_GROUP);
+		builder.append(controlResult != null ? "CONTROL" : StringUtils.EMPTY).append(FIELD_SEPARATOR);
+		// append father deceased status
+		Result interventionResult = searchValidObsResult(EvaluableNameConstants.PEDIATRIC_STUDY_INTERVENTION_GROUP);
+		builder.append(interventionResult != null ? "INTERVENTION" : StringUtils.EMPTY).append(FIELD_SEPARATOR);
 		return builder.toString();
 	}
 
@@ -301,44 +319,6 @@ public class ExtendedData {
 	 */
 	@Override
 	public String toString() {
-		// create the string holder
-		StringBuilder builder = new StringBuilder();
-		// append number of patient actually resolved by the patient identifier
-		builder.append(getDuplicates()).append(FIELD_SEPARATOR);
-		// append the initial identifier
-		builder.append(getPatient().getPatientIdentifier().getIdentifier()).append(FIELD_SEPARATOR);
-		// append the patient internal id
-		builder.append(getPatient().getPatientId()).append(FIELD_SEPARATOR);
-		// append the patient names
-		builder.append(getPatient().getPersonName().getFullName()).append(FIELD_SEPARATOR);
-		// append the patient age using the age with unit rule
-		builder.append(getTokenResult(AgeWithUnitRule.TOKEN).toString()).append(FIELD_SEPARATOR);
-		// append pediatric initial encounter date
-		String initialEncounterDatetime = StringUtils.EMPTY;
-		if (CollectionUtils.isNotEmpty(getEncounterResults())) {
-			Result initialEncounterResult = getEncounterResults().earliest();
-			initialEncounterDatetime = Context.getDateFormat().format(initialEncounterResult.getResultDate());
-		}
-		builder.append(initialEncounterDatetime).append(FIELD_SEPARATOR);
-		// append the primary clinic
-		Location primaryLocation = searchPrimaryLocation();
-		builder.append(primaryLocation == null ? StringUtils.EMPTY : primaryLocation.getName()).append(FIELD_SEPARATOR);
-		// append the gender
-		builder.append(getPatient().getGender()).append(FIELD_SEPARATOR);
-		// append prev module 4 visit
-		Location location = Context.getLocationService().getLocation("MTRH Module 4");
-		Result result = searchVisitCountForLocation(location);
-		builder.append(result.size()).append(FIELD_SEPARATOR);
-		// append WHO stage
-		builder.append(searchValidObsResult(PAEDIATRICS_WHO_CATEGORY_QUERY).toString()).append(FIELD_SEPARATOR);
-		// append the cdc class
-		builder.append(searchValidObsResult(PAEDIATRICS_CDC_CATEGORY_QUERY).toString()).append(FIELD_SEPARATOR);
-		// append whether patients on arv or not
-		builder.append(getTokenResult(AntiRetroViralRule.TOKEN).size() > 0 ? "Yes" : "No").append(FIELD_SEPARATOR);
-		// append mother deceased status
-		builder.append(searchValidObsResult(MOTHER_DECEASED_STATUS).toString()).append(FIELD_SEPARATOR);
-		// append father deceased status
-		builder.append(searchValidObsResult(FATHER_DECEASED_STATUS).toString()).append(FIELD_SEPARATOR);
-		return builder.toString();
+		return generateExtededData();
 	}
 }

@@ -73,7 +73,7 @@
 
 <div id="container">
 
-	<h3 id="header"><spring:message code="clinicalsummary.generate.generating"/></h3>
+	<h3 id="header">Generating Rule Output</h3>
 
 	<div id="main">
 		<div id="leftcontent">
@@ -95,7 +95,7 @@
 						</li>
 						<li />
 						<li>
-							<input type="submit" value="<spring:message code="clinicalsummary.generate"/>"/>
+							<input type="submit" value="Generate Data"/>
 						</li>
 					</ol>
 				</fieldset>

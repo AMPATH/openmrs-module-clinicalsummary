@@ -34,6 +34,7 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.Cohort;
+import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Obs;
@@ -224,6 +225,25 @@ public class HibernateCoreDAO implements CoreDAO {
 
 		if (endDate != null)
 			criteria.add(Restrictions.le("valueDatetime", endDate));
+
+		criteria.setProjection(Projections.property("person.personId"));
+		criteria.add(Restrictions.eq("voided", Boolean.FALSE));
+		return new Cohort(criteria.list());
+	}
+
+	/**
+	 * @see CoreDAO#getObservationCohort(java.util.List, java.util.Date, java.util.Date)
+	 */
+	@Override
+	public Cohort getObservationCohort(final List<Concept> concepts, final Date startDate, final Date endDate) throws DAOException {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Obs.class);
+		criteria.add(Restrictions.in("concept", concepts));
+
+		if (startDate != null)
+			criteria.add(Restrictions.ge("dateCreated", startDate));
+
+		if (endDate != null)
+			criteria.add(Restrictions.le("dateCreated", endDate));
 
 		criteria.setProjection(Projections.property("person.personId"));
 		criteria.add(Restrictions.eq("voided", Boolean.FALSE));
