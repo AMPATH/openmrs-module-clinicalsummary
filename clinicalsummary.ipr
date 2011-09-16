@@ -1268,6 +1268,7 @@
       <SOURCES>
         <root url="jar://$MAVEN_REPOSITORY$/org/openmrs/module/logic/logic-api/0.5-SNAPSHOT/logic-api-0.5-SNAPSHOT-sources.jar!/" />
         <root url="file://$PROJECT_DIR$/../openmrs--logic/api/src/main/java" />
+        <root url="file://$PROJECT_DIR$/../logic--trunk/api/src/main/java" />
       </SOURCES>
     </library>
     <library name="Maven: org.openmrs.simpleframework:simple-xml:1.6.1-mod">
