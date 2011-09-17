@@ -67,5 +67,7 @@ public interface UtilDAO {
 	<T extends Response> List<T> getResponses(final Class<T> clazz, final Location location,
 	                                          final Date startDate, final Date endDate) throws DAOException;
 
-	List<DeviceLog> saveDeviceLogs(List<DeviceLog> deviceLogs);
+	List<DeviceLog> saveDeviceLogs(List<DeviceLog> deviceLogs) throws DAOException;
+
+	DeviceLog saveDeviceLog(DeviceLog deviceLog) throws DAOException;
 }

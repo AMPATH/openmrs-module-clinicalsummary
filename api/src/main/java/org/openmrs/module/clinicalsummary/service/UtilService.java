@@ -19,6 +19,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.openmrs.BaseOpenmrsData;
 import org.openmrs.Location;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.Patient;
@@ -201,7 +202,6 @@ public interface UtilService extends OpenmrsService {
 	<T extends Response> List<T> getResponses(final Class<T> clazz, final Location location,
 	                                          final Date startDate, final Date endDate) throws APIException;
 
-
 	/**
 	 * Save list of device log to the database
 	 *
@@ -209,5 +209,24 @@ public interface UtilService extends OpenmrsService {
 	 * @return list of all saved device log
 	 * @throws APIException
 	 */
-	List<DeviceLog> saveDeviceLogs(List<DeviceLog> deviceLogs);
+	List<DeviceLog> saveDeviceLogs(final List<DeviceLog> deviceLogs);
+
+	/**
+	 * This method will encapsulate the saveResponses and saveDeviceLogs in one transaction. The data contains both Response objects and
+	 * DeviceLog objects. This method will separate both of them and save them accordingly.
+	 *
+	 * @param data the data coming from the phone
+	 * @return saved data
+	 * @throws APIException
+	 */
+	<T extends BaseOpenmrsData> List<T> saveReceivedData(final List<T> data) throws APIException;
+
+	/**
+	 * Save device log to the database
+	 *
+	 * @param deviceLog the device log
+	 * @return saved device log
+	 * @throws APIException
+	 */
+	DeviceLog saveDeviceLog(DeviceLog deviceLog) throws APIException;
 }

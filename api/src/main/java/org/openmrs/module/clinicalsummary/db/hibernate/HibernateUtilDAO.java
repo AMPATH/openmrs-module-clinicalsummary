@@ -22,6 +22,8 @@ import java.util.Map;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -50,6 +52,8 @@ import org.openmrs.module.clinicalsummary.util.weight.WeightStandard;
  *
  */
 public class HibernateUtilDAO implements UtilDAO {
+
+	private static final Log log = LogFactory.getLog(HibernateUtilDAO.class);
 
 	private SessionFactory sessionFactory;
 
@@ -277,10 +281,19 @@ public class HibernateUtilDAO implements UtilDAO {
 	}
 
 	/**
+	 * @see UtilDAO#saveDeviceLog(org.openmrs.module.clinicalsummary.util.response.DeviceLog)
+	 */
+	@Override
+	public DeviceLog saveDeviceLog(final DeviceLog deviceLog) throws DAOException {
+		sessionFactory.getCurrentSession().saveOrUpdate(deviceLog);
+		return deviceLog;
+	}
+
+	/**
 	 * @see UtilDAO#saveDeviceLogs(java.util.List)
 	 */
 	@Override
-	public List<DeviceLog> saveDeviceLogs(final List<DeviceLog> deviceLogs) {
+	public List<DeviceLog> saveDeviceLogs(final List<DeviceLog> deviceLogs) throws DAOException {
 		int counter = 0;
 		Session session = sessionFactory.getCurrentSession();
 		for (DeviceLog deviceLog : deviceLogs) {

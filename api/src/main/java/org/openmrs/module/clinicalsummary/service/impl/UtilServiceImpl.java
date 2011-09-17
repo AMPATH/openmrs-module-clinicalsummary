@@ -14,13 +14,16 @@
 
 package org.openmrs.module.clinicalsummary.service.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.BaseOpenmrsData;
 import org.openmrs.Location;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.Patient;
@@ -47,8 +50,7 @@ public class UtilServiceImpl extends BaseOpenmrsService implements UtilService {
 	/**
 	 * Setter for the DAO interface reference that will be called by Spring to inject the actual implementation of the DAO layer
 	 *
-	 * @param utilDAO
-	 * 		the utilDAO to be injected
+	 * @param utilDAO the utilDAO to be injected
 	 */
 	public void setUtilDAO(final UtilDAO utilDAO) {
 		if (log.isDebugEnabled())
@@ -178,15 +180,44 @@ public class UtilServiceImpl extends BaseOpenmrsService implements UtilService {
 	 */
 	@Override
 	public <T extends Response> List<T> getResponses(final Class<T> clazz, final Location location,
-	                                             final Date startDate, final Date endDate) throws APIException {
+	                                                 final Date startDate, final Date endDate) throws APIException {
 		return utilDAO.getResponses(clazz, location, startDate, endDate);
+	}
+
+	/**
+	 * @see UtilService#saveDeviceLog(org.openmrs.module.clinicalsummary.util.response.DeviceLog)
+	 */
+	@Override
+	public DeviceLog saveDeviceLog(final DeviceLog deviceLog) throws APIException {
+		return utilDAO.saveDeviceLog(deviceLog);
 	}
 
 	/**
 	 * @see UtilService#saveDeviceLogs(java.util.List)
 	 */
 	@Override
-	public List<DeviceLog> saveDeviceLogs(final List<DeviceLog> deviceLogs) {
+	public List<DeviceLog> saveDeviceLogs(final List<DeviceLog> deviceLogs) throws APIException {
 		return utilDAO.saveDeviceLogs(deviceLogs);
+	}
+
+	/**
+	 * @see UtilService#saveReceivedData(java.util.List)
+	 */
+	@Override
+	public <T extends BaseOpenmrsData> List<T> saveReceivedData(final List<T> data) throws APIException {
+		List<DeviceLog> deviceLogs = new ArrayList<DeviceLog>();
+		List<Response> responses = new ArrayList<Response>();
+
+		for (T t : data) {
+			if (ClassUtils.isAssignable(t.getClass(), DeviceLog.class))
+				deviceLogs.add((DeviceLog) t);
+			else if (ClassUtils.isAssignable(t.getClass(), Response.class))
+				responses.add((Response) t);
+		}
+
+		saveDeviceLogs(deviceLogs);
+		saveResponses(responses);
+
+		return data;
 	}
 }

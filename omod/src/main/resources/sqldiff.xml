@@ -1352,4 +1352,18 @@
 		</sql>
 	</diff>
 
+	<diff>
+		<version>4.3.0</version>
+		<author>Nyoman Ribeka</author>
+		<date>Sept 17 2011</date>
+		<description>
+			Adding indexes to the phone data
+		</description>
+		<sql>
+			alter table clinical_summary_medication_response add unique unique_index(patient,provider,location,datetime,medication,medication_type,status,present);
+			alter table clinical_summary_reminder_response add unique unique_index(patient,provider,location,datetime,token,response,comment,present);
+			alter table clinical_summary_device_log add unique unique_index(device_id,device_key,device_value,device_timestamp);
+		</sql>
+	</diff>
+
 </sqldiff>
