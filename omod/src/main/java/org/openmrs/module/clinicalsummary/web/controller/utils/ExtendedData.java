@@ -14,18 +14,21 @@
 
 package org.openmrs.module.clinicalsummary.web.controller.utils;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
+import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.api.context.Context;
 import org.openmrs.logic.result.Result;
@@ -241,6 +244,74 @@ public class ExtendedData {
 		return primaryLocation;
 	}
 
+	/**
+	 * @return
+	 */
+	private Result searchEnrollmentEncounter() {
+		Integer counter = 0;
+		Result result = null;
+		while (counter < getEncounterResults().size() && result == null) {
+			Result observationResult = getEncounterResults().get(counter++);
+			if (DateUtils.isSameDay(observationResult.getResultDate(), referenceDate))
+				result = observationResult;
+		}
+		// if we can't find the encounter yet, then we use approximation here +/- 5 days from the reference date.
+
+		if (result == null) {
+			Calendar calendar = Calendar.getInstance();
+
+			calendar.setTime(referenceDate);
+			calendar.add(Calendar.DATE, 5);
+			Date startDate = calendar.getTime();
+
+			calendar.setTime(referenceDate);
+			calendar.add(Calendar.DATE, -5);
+			Date endDate = calendar.getTime();
+
+			while (counter < getEncounterResults().size() && result == null) {
+				Result observationResult = getEncounterResults().get(counter++);
+				if (startDate.after(observationResult.getResultDate()) && endDate.before(observationResult.getResultDate()))
+					result = observationResult;
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * @return
+	 */
+	private Result searchAfterEnrollmentObservation(String concept) {
+		Integer counter = 0;
+		Boolean stopSearch = Boolean.FALSE;
+		Result previousResult = null;
+		Result currentResult = null;
+		while (counter < getConceptResult(concept).size() && !stopSearch) {
+			previousResult = currentResult;
+			currentResult = getConceptResult(concept).get(counter++);
+			if (currentResult.getResultDate().before(referenceDate))
+				stopSearch = Boolean.TRUE;
+		}
+		return previousResult;
+
+	}
+
+	/**
+	 * @return
+	 */
+	private Result searchProvider(Person provider) {
+		Integer counter = 0;
+		Result result = new Result();
+		while (counter < getEncounterResults().size()) {
+			Result encounterResult = getEncounterResults().get(counter++);
+			Encounter encounter = (Encounter) encounterResult.getResultObject();
+			if (OpenmrsUtil.nullSafeEquals(provider, encounter.getProvider())
+					&& encounterResult.getResultDate().before(referenceDate))
+				result.add(encounterResult);
+		}
+		return result;
+	}
+
 	public String generateExtededData() {
 		// create the string holder
 		StringBuilder builder = new StringBuilder();
@@ -290,35 +361,23 @@ public class ExtendedData {
 		// append father deceased status
 		Result controlResult = searchValidObsResult(EvaluableNameConstants.PEDIATRIC_STUDY_CONTROL_GROUP);
 		builder.append(controlResult != null ? "CONTROL" : StringUtils.EMPTY).append(FIELD_SEPARATOR);
+		builder.append(controlResult != null ? Context.getDateFormat().format(controlResult.getResultDate()) : StringUtils.EMPTY).append(FIELD_SEPARATOR);
 		// append father deceased status
 		Result interventionResult = searchValidObsResult(EvaluableNameConstants.PEDIATRIC_STUDY_INTERVENTION_GROUP);
 		builder.append(interventionResult != null ? "INTERVENTION" : StringUtils.EMPTY).append(FIELD_SEPARATOR);
+		builder.append(interventionResult != null ? Context.getDateFormat().format(interventionResult.getResultDate()) : StringUtils.EMPTY);
 		return builder.toString();
 	}
 
-	/**
-	 * Returns a string representation of the object. In general, the
-	 * <code>toString</code> method returns a string that
-	 * "textually represents" this object. The result should
-	 * be a concise but informative representation that is easy for a
-	 * person to read.
-	 * It is recommended that all subclasses override this method.
-	 * <p/>
-	 * The <code>toString</code> method for class <code>Object</code>
-	 * returns a string consisting of the name of the class of which the
-	 * object is an instance, the at-sign character `<code>@</code>', and
-	 * the unsigned hexadecimal representation of the hash code of the
-	 * object. In other words, this method returns a string equal to the
-	 * value of:
-	 * <blockquote>
-	 * <pre>
-	 * getClass().getName() + '@' + Integer.toHexString(hashCode())
-	 * </pre></blockquote>
-	 *
-	 * @return a string representation of the object.
-	 */
-	@Override
-	public String toString() {
-		return generateExtededData();
+	public String generateEncounterData() {
+		StringBuilder builder = new StringBuilder();
+		Result enrollmentEncounter = searchEnrollmentEncounter();
+		if (enrollmentEncounter != null) {
+			Encounter encounter = (Encounter) enrollmentEncounter.getResultObject();
+			builder.append(encounter.getProvider().getPersonId()).append(FIELD_SEPARATOR);
+			builder.append(encounter.getProvider().getPersonName().getFullName()).append(FIELD_SEPARATOR);
+			builder.append(searchProvider(encounter.getProvider()));
+		}
+		return builder.toString();
 	}
 }

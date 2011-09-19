@@ -58,6 +58,8 @@ public class ExtendedDataGeneralController {
 
 	private static final String OUTPUT_STUDY_DATA = "extended.data.general";
 
+	private static final String EXTENDED_DATA_COHORT_NAME = "extended.data.cohort";
+
 	public static final String JAVA_IO_TMPDIR = "java.io.tmpdir";
 
 	private Date referenceDate;
@@ -72,7 +74,6 @@ public class ExtendedDataGeneralController {
 
 	@RequestMapping(method = RequestMethod.GET)
 	public void populatePage(final ModelMap map) {
-		map.put("cohorts", Context.getCohortService().getAllCohorts());
 	}
 
 	@RequestMapping(method = RequestMethod.POST)
@@ -88,7 +89,9 @@ public class ExtendedDataGeneralController {
 		Concept controlConcept = conceptService.getConcept(EvaluableNameConstants.PEDIATRIC_STUDY_CONTROL_GROUP);
 		Concept interventionConcept = conceptService.getConcept(EvaluableNameConstants.PEDIATRIC_STUDY_INTERVENTION_GROUP);
 		// combine both cohort
-		Cohort cohort = coreService.getObservationCohort(Arrays.asList(controlConcept, interventionConcept), null, null);
+		Cohort cohort = Context.getCohortService().getCohort(EXTENDED_DATA_COHORT_NAME);
+		if (cohort == null)
+			cohort = coreService.getObservationCohort(Arrays.asList(controlConcept, interventionConcept), null, null);
 		for (Integer integer : cohort.getMemberIds()) {
 			// get the actual patient object
 			Patient patient = patientService.getPatient(integer);
@@ -108,7 +111,10 @@ public class ExtendedDataGeneralController {
 				extended.addConceptResult(EvaluableNameConstants.PEDIATRIC_STUDY_INTERVENTION_GROUP,
 						searchObservation(patient, EvaluableNameConstants.PEDIATRIC_STUDY_INTERVENTION_GROUP));
 				extended.addTokenResult(AntiRetroViralRule.TOKEN, searchMedications(patient, AntiRetroViralRule.TOKEN));
-				extended.addTokenResult(AgeWithUnitRule.TOKEN, evaluate(patient, AgeWithUnitRule.TOKEN, new HashMap<String, Object>()));
+
+				Map<String, Object> parameters = new HashMap<String, Object>();
+				parameters.put(AgeWithUnitRule.REFERENCE_DATE, referenceDate);
+				extended.addTokenResult(AgeWithUnitRule.TOKEN, evaluate(patient, AgeWithUnitRule.TOKEN, parameters));
 				writer.write(extended.generateExtededData());
 				writer.newLine();
 			}

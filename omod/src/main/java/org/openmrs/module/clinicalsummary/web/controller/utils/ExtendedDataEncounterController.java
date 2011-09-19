@@ -31,8 +31,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
 import org.openmrs.Patient;
-import org.openmrs.api.EncounterService;
-import org.openmrs.api.ObsService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
@@ -75,9 +73,6 @@ public class ExtendedDataEncounterController {
 
 		PatientService patientService = Context.getPatientService();
 		PatientSetService patientSetService = Context.getPatientSetService();
-		EncounterService encounterService = Context.getEncounterService();
-		ObsService obsService = Context.getObsService();
-		EvaluatorService evaluatorService = Context.getService(EvaluatorService.class);
 
 		File identifierData = new File(System.getProperty(JAVA_IO_TMPDIR), INPUT_STUDY_DATA);
 		FileOutputStream identifierDataStream = new FileOutputStream(identifierData);
@@ -86,7 +81,7 @@ public class ExtendedDataEncounterController {
 		File extendedData = new File(System.getProperty(JAVA_IO_TMPDIR), OUTPUT_STUDY_DATA);
 		BufferedWriter writer = new BufferedWriter(new FileWriter(extendedData));
 
-		String line = null;
+		String line;
 		BufferedReader reader = new BufferedReader(new FileReader(identifierData));
 		while ((line = reader.readLine()) != null) {
 
@@ -101,7 +96,7 @@ public class ExtendedDataEncounterController {
 					ExtendedData extended = new ExtendedData(referenceDate, patient);
 					extended.setDuplicates(cohort.size());
 					extended.setEncounterResults(searchEncounters(patient));
-					writer.write(extended.generateExtededData());
+					writer.write(extended.generateEncounterData());
 					writer.newLine();
 				}
 			}

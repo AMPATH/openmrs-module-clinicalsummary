@@ -14,6 +14,10 @@
 
 package org.openmrs.module.clinicalsummary.rule.pediatric;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
@@ -23,10 +27,6 @@ import org.openmrs.logic.LogicException;
 import org.openmrs.logic.result.Result;
 import org.openmrs.module.clinicalsummary.rule.EvaluableRule;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Map;
-
 /**
  * No parameter needed
  */
@@ -35,6 +35,8 @@ public class AgeWithUnitRule extends EvaluableRule {
 	private static final Log log = LogFactory.getLog(AgeWithUnitRule.class);
 
 	public static final String TOKEN = "Age With Unit";
+
+	public static final String REFERENCE_DATE = "reference.date";
 
 	/**
 	 * @see org.openmrs.logic.Rule#eval(org.openmrs.logic.LogicContext, Integer, java.util.Map)
@@ -52,7 +54,11 @@ public class AgeWithUnitRule extends EvaluableRule {
 		Result ageResult = new Result();
 
 		if (birthdate != null) {
+
 			Calendar todayCalendar = Calendar.getInstance();
+			Date referenceDate = (Date) parameters.get(REFERENCE_DATE);
+			if (referenceDate != null)
+				todayCalendar.setTime(referenceDate);
 
 			Calendar birthCalendar = Calendar.getInstance();
 			birthCalendar.setTime(birthdate);

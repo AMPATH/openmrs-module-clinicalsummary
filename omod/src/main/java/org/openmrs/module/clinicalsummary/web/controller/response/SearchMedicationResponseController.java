@@ -50,6 +50,7 @@ public class SearchMedicationResponseController {
 	                                                           final @RequestParam(required = false, value = "displayType") ResponseDisplayType displayType)
 			throws InvocationTargetException, IllegalAccessException {
 
+		// TODO: add another grouping by provider name to this json and then in the jsp, add another jQuery.each call!
 		Map<Integer, List<MedicationResponseForm>> responseMap = new HashMap<Integer, List<MedicationResponseForm>>();
 		if (Context.isAuthenticated()) {
 			// prepare the calendar to limit the returned responses
@@ -112,5 +113,4 @@ public class SearchMedicationResponseController {
 		// return the formatted output
 		return responseMap;
 	}
-
 }

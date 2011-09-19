@@ -21,7 +21,7 @@
 
 		<property name="token" column="token" type="java.lang.String" />
 
-		<property name="response" column="response" type="java.lang.String" />
+		<property name="response" column="response" type="java.lang.Integer" />
 
 		<property name="comment" type="java.lang.String" column="comment" length="19" />
 

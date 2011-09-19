@@ -145,7 +145,7 @@ public class ResponseController {
 		reminderResponse.setPatient(patient);
 		reminderResponse.setProvider(Context.getAuthenticatedUser().getPerson());
 		reminderResponse.setToken(parameter[1]);
-		reminderResponse.setResponse(parameter[2]);
+		reminderResponse.setResponse(NumberUtils.toInt(parameter[2]));
 		reminderResponse.setComment(parameter[3]);
 		reminderResponse.setLocation(Context.getLocationService().getLocation(parameter[4]));
 		reminderResponse.setDatetime(parse(parameter[5]));

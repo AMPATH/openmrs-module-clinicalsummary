@@ -17,17 +17,7 @@
 		<div id="leftcontent">
 			<form method="post" action="">
 				<fieldset>
-					<legend>Select A Cohort</legend>
 					<ol>
-						<li>
-							<label for="cohort">Cohort Definition</label>
-							<select name="cohort" id="cohort">
-								<c:forEach var="cohort" items="${cohorts}" varStatus="varStatus">
-									<option value="${cohort.id}">${cohort.name}</option>
-								</c:forEach>
-							</select>
-						</li>
-						<li />
 						<li>
 							<input type="submit" value="Generate Extended Data"/>
 						</li>

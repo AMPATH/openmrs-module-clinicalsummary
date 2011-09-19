@@ -14,6 +14,8 @@
 
 package org.openmrs.module.clinicalsummary.web.controller.utils;
 
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.ServiceContext;
@@ -23,8 +25,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
-
-import java.util.List;
 
 @Controller
 @RequestMapping("/module/clinicalsummary/utils/fileSize")
@@ -37,7 +37,7 @@ public class FileSizeController {
 	}
 
 	@RequestMapping(method = RequestMethod.POST)
-	public void processSubmit(final @RequestParam(required = false, value = "size") Integer size) {
+	public void processSubmit(final @RequestParam(required = false, value = "size") Long size) {
 		List<CommonsMultipartResolver> resolvers = ServiceContext.getInstance().getRegisteredComponents(CommonsMultipartResolver.class);
 		for (CommonsMultipartResolver resolver : resolvers)
 			resolver.setMaxUploadSize(size);

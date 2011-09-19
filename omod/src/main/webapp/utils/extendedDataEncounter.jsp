@@ -20,12 +20,8 @@
 					<legend>Select A Cohort</legend>
 					<ol>
 						<li>
-							<label for="cohort">Cohort Definition</label>
-							<select name="cohort" id="cohort">
-								<c:forEach var="cohort" items="${cohorts}" varStatus="varStatus">
-									<option value="${cohort.id}">${cohort.name}</option>
-								</c:forEach>
-							</select>
+							<label for="summaries"><spring:message code="clinicalsummary.upload.summaries"/></label>
+							<input type="file" id="summaries" name="data"/>
 						</li>
 						<li />
 						<li>

@@ -23,7 +23,7 @@ public class ReminderResponse extends Response {
 
 	private String token;
 
-	private String response;
+	private Integer response;
 
 	private String comment;
 
@@ -44,14 +44,14 @@ public class ReminderResponse extends Response {
 	/**
 	 * @return
 	 */
-	public String getResponse() {
+	public Integer getResponse() {
 		return response;
 	}
 
 	/**
 	 * @param response
 	 */
-	public void setResponse(final String response) {
+	public void setResponse(final Integer response) {
 		this.response = response;
 	}
 
