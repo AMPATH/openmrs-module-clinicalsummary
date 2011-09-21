@@ -117,8 +117,9 @@ public class ExtendedDataGeneralController {
 				extended.addTokenResult(AgeWithUnitRule.TOKEN, evaluate(patient, AgeWithUnitRule.TOKEN, parameters));
 				writer.write(extended.generateExtededData());
 				writer.newLine();
+
+				ResultCacheInstance.getInstance().clearCache(patient);
 			}
-			ResultCacheInstance.getInstance().clearCache(patient);
 		}
 		writer.close();
 	}

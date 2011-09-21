@@ -91,10 +91,7 @@ public class AgeWithUnitRule extends EvaluableRule {
 					ageInMonth++;
 			}
 
-			if (ageInYear != 0)
-				ageResult.add(new Result(ageInYear + " Years"));
-			if (ageInMonth != 0)
-				ageResult.add(new Result(ageInMonth + " Months"));
+			ageResult.add(new Result(ageInYear * 12 + ageInMonth));
 
 		}
 

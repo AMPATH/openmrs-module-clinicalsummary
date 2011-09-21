@@ -14,6 +14,7 @@
 
 package org.openmrs.module.clinicalsummary.web.controller.utils;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -21,6 +22,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -39,6 +41,7 @@ import org.openmrs.module.clinicalsummary.rule.EvaluableConstants;
 import org.openmrs.module.clinicalsummary.rule.EvaluableNameConstants;
 import org.openmrs.module.clinicalsummary.rule.ResultCacheInstance;
 import org.openmrs.module.clinicalsummary.rule.encounter.EncounterWithStringRestrictionRule;
+import org.openmrs.module.clinicalsummary.rule.observation.ObsWithStringRestrictionRule;
 import org.openmrs.module.clinicalsummary.service.EvaluatorService;
 import org.openmrs.module.clinicalsummary.web.controller.WebUtils;
 import org.springframework.stereotype.Controller;
@@ -69,13 +72,14 @@ public class ExtendedDataEncounterController {
 	}
 
 	@RequestMapping(method = RequestMethod.POST)
-	public void processSubmit(final @RequestParam(required = true, value = "data") MultipartFile data) throws IOException {
+	public void processSubmit(final @RequestParam(required = true, value = "data") MultipartFile data,
+	                          final @RequestParam(required = true, value = "concept") String concept) throws IOException {
 
 		PatientService patientService = Context.getPatientService();
 		PatientSetService patientSetService = Context.getPatientSetService();
 
 		File identifierData = new File(System.getProperty(JAVA_IO_TMPDIR), INPUT_STUDY_DATA);
-		FileOutputStream identifierDataStream = new FileOutputStream(identifierData);
+		OutputStream identifierDataStream = new BufferedOutputStream(new FileOutputStream(identifierData));
 		FileCopyUtils.copy(data.getInputStream(), identifierDataStream);
 
 		File extendedData = new File(System.getProperty(JAVA_IO_TMPDIR), OUTPUT_STUDY_DATA);
@@ -86,9 +90,9 @@ public class ExtendedDataEncounterController {
 		while ((line = reader.readLine()) != null) {
 
 			Patient patient = null;
-			String[] elements = StringUtils.splitPreserveAllTokens(line);
+			String[] elements = StringUtils.splitPreserveAllTokens(line, ",");
 			Cohort cohort = patientSetService.convertPatientIdentifier(Arrays.asList(elements[0]));
-			Date referenceDate = WebUtils.parse(elements[1], new Date());
+			Date referenceDate = WebUtils.parse(elements[1], "MM/dd/yyyy", new Date());
 			for (Integer integer : cohort.getMemberIds()) {
 				// get the actual patient object
 				patient = patientService.getPatient(integer);
@@ -96,15 +100,26 @@ public class ExtendedDataEncounterController {
 					ExtendedData extended = new ExtendedData(referenceDate, patient);
 					extended.setDuplicates(cohort.size());
 					extended.setEncounterResults(searchEncounters(patient));
+					if (StringUtils.isNotEmpty(concept))
+						extended.addConceptResult(concept,
+								searchObservation(patient, concept));
 					writer.write(extended.generateEncounterData());
 					writer.newLine();
+					ResultCacheInstance.getInstance().clearCache(patient);
 				}
 			}
-			ResultCacheInstance.getInstance().clearCache(patient);
 		}
 
 		reader.close();
 		writer.close();
+	}
+
+	private Result searchObservation(Patient patient, String concept) {
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(concept));
+
+		EvaluatorService evaluatorService = Context.getService(EvaluatorService.class);
+		return evaluatorService.evaluate(patient, ObsWithStringRestrictionRule.TOKEN, parameters);
 	}
 
 	private Result searchEncounters(Patient patient) {

@@ -15,13 +15,16 @@
 
 	<div id="main">
 		<div id="leftcontent">
-			<form method="post" action="">
+			<form method="post" action="" enctype="multipart/form-data">
 				<fieldset>
-					<legend>Select A Cohort</legend>
 					<ol>
 						<li>
-							<label for="summaries"><spring:message code="clinicalsummary.upload.summaries"/></label>
-							<input type="file" id="summaries" name="data"/>
+							<label for="concept">Concept Name</label>
+							<input type="text" id="concept" name="concept"/>
+						</li>
+						<li>
+							<label for="data">Paediatric Data</label>
+							<input type="file" id="data" name="data"/>
 						</li>
 						<li />
 						<li>

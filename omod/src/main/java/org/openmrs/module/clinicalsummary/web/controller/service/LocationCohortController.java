@@ -15,13 +15,15 @@
 package org.openmrs.module.clinicalsummary.web.controller.service;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.servlet.http.HttpServletResponse;
 
 import com.thoughtworks.xstream.XStream;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -78,13 +80,16 @@ public class LocationCohortController {
 
 			List<Index> indexes = Context.getService(IndexService.class).getIndexes(location, summary, startDate, endDate);
 
-			List<Patient> patients = new ArrayList<Patient>();
-			for (Index index : indexes)
-				patients.add(index.getPatient());
+			Set<Patient> patients = new HashSet<Patient>();
+			for (Index index : indexes) {
+				Patient patient = index.getPatient();
+				if (CollectionUtils.isNotEmpty(patient.getIdentifiers()))
+					patients.add(index.getPatient());
+			}
 
 			// serialize the the search result
 			XStream xStream = new XStream();
-			xStream.alias("results", List.class);
+			xStream.alias("results", Set.class);
 			xStream.alias("patient", Patient.class);
 			xStream.registerConverter(new PatientConverter());
 			xStream.registerConverter(new PatientIdentifierConverter());

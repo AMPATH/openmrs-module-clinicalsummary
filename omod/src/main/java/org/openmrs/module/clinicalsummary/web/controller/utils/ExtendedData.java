@@ -26,6 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
+import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.Person;
@@ -279,6 +280,7 @@ public class ExtendedData {
 	}
 
 	/**
+	 * @param concept
 	 * @return
 	 */
 	private Result searchAfterEnrollmentObservation(String concept) {
@@ -289,6 +291,7 @@ public class ExtendedData {
 		while (counter < getConceptResult(concept).size() && !stopSearch) {
 			previousResult = currentResult;
 			currentResult = getConceptResult(concept).get(counter++);
+			log.info("Processing enrollment observations for concept: " + concept + " dated: " + currentResult.getResultDate());
 			if (currentResult.getResultDate().before(referenceDate))
 				stopSearch = Boolean.TRUE;
 		}
@@ -297,14 +300,17 @@ public class ExtendedData {
 	}
 
 	/**
+	 * @param provider
 	 * @return
 	 */
 	private Result searchProvider(Person provider) {
 		Integer counter = 0;
 		Result result = new Result();
+		log.info("Searching for provider: " + provider.getPersonId());
 		while (counter < getEncounterResults().size()) {
 			Result encounterResult = getEncounterResults().get(counter++);
 			Encounter encounter = (Encounter) encounterResult.getResultObject();
+			log.info("Processing provider: " + encounter.getProvider().getPersonId() + " dated: " + encounterResult.getResultDate());
 			if (OpenmrsUtil.nullSafeEquals(provider, encounter.getProvider())
 					&& encounterResult.getResultDate().before(referenceDate))
 				result.add(encounterResult);
@@ -358,25 +364,45 @@ public class ExtendedData {
 		// append father deceased status
 		Result fatherStatusResult = searchValidObsResult(FATHER_DECEASED_STATUS);
 		builder.append(fatherStatusResult != null ? fatherStatusResult.toString() : StringUtils.EMPTY).append(FIELD_SEPARATOR);
-		// append father deceased status
+
 		Result controlResult = searchValidObsResult(EvaluableNameConstants.PEDIATRIC_STUDY_CONTROL_GROUP);
-		builder.append(controlResult != null ? "CONTROL" : StringUtils.EMPTY).append(FIELD_SEPARATOR);
-		builder.append(controlResult != null ? Context.getDateFormat().format(controlResult.getResultDate()) : StringUtils.EMPTY).append(FIELD_SEPARATOR);
-		// append father deceased status
 		Result interventionResult = searchValidObsResult(EvaluableNameConstants.PEDIATRIC_STUDY_INTERVENTION_GROUP);
-		builder.append(interventionResult != null ? "INTERVENTION" : StringUtils.EMPTY).append(FIELD_SEPARATOR);
-		builder.append(interventionResult != null ? Context.getDateFormat().format(interventionResult.getResultDate()) : StringUtils.EMPTY);
+		if (controlResult != null)
+			builder.append("CONTROL").append(FIELD_SEPARATOR).append(Context.getDateFormat().format(controlResult.getResultDate()));
+		if (interventionResult != null)
+			builder.append("INTERVENTION").append(FIELD_SEPARATOR).append(Context.getDateFormat().format(interventionResult.getResultDate()));
 		return builder.toString();
 	}
 
 	public String generateEncounterData() {
 		StringBuilder builder = new StringBuilder();
+		// append the initial identifier
+		PatientIdentifier patientIdentifier = getPatient().getPatientIdentifier();
+		builder.append(patientIdentifier != null ? patientIdentifier.getIdentifier() : StringUtils.EMPTY).append(FIELD_SEPARATOR);
+		// append the patient internal id
+		builder.append(getPatient().getPatientId()).append(FIELD_SEPARATOR);
+		// append the patient names
+		PersonName personName = getPatient().getPersonName();
+		builder.append(personName != null ? personName.getFullName() : StringUtils.EMPTY).append(FIELD_SEPARATOR);
 		Result enrollmentEncounter = searchEnrollmentEncounter();
 		if (enrollmentEncounter != null) {
 			Encounter encounter = (Encounter) enrollmentEncounter.getResultObject();
+			builder.append(encounter.getEncounterId()).append(FIELD_SEPARATOR);
+			builder.append(Context.getDateFormat().format(encounter.getEncounterDatetime())).append(FIELD_SEPARATOR);
 			builder.append(encounter.getProvider().getPersonId()).append(FIELD_SEPARATOR);
 			builder.append(encounter.getProvider().getPersonName().getFullName()).append(FIELD_SEPARATOR);
-			builder.append(searchProvider(encounter.getProvider()));
+			builder.append(searchProvider(encounter.getProvider()).size()).append(FIELD_SEPARATOR);
+		}
+
+		for (String concept : getConceptResults().keySet()) {
+			log.info("Searching concept name: " + concept);
+			Result afterEnrollmentObservation = searchAfterEnrollmentObservation(concept);
+			if (afterEnrollmentObservation != null) {
+				Obs obs = (Obs) afterEnrollmentObservation.getResultObject();
+				builder.append(obs.getObsId()).append(FIELD_SEPARATOR);
+				builder.append(Context.getDateFormat().format(afterEnrollmentObservation.getResultDate())).append(FIELD_SEPARATOR);
+				builder.append(afterEnrollmentObservation.toString());
+			}
 		}
 		return builder.toString();
 	}

@@ -96,6 +96,11 @@ public class HibernateIndexDAO implements IndexDAO {
 	public List<Index> getIndexes(final Location location, final Summary summary, final Date startVisitDate, final Date endVisitDate) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Index.class);
 		criteria.add(Restrictions.eq("location", location));
+		criteria.createAlias("patient", "patient");
+		criteria.createAlias("patient.identifiers", "identifier");
+
+		criteria.add(Restrictions.eq("patient.voided", Boolean.FALSE));
+		criteria.add(Restrictions.isNotNull("identifier.identifier"));
 
 		if (summary != null)
 			criteria.add(Restrictions.eq("summary", summary));
@@ -107,6 +112,7 @@ public class HibernateIndexDAO implements IndexDAO {
 			criteria.add(Restrictions.le("returnDate", endVisitDate));
 
 		criteria.addOrder(Order.asc("returnDate"));
+		criteria.addOrder(Order.asc("identifier.identifier"));
 		return criteria.list();
 	}
 
@@ -120,6 +126,9 @@ public class HibernateIndexDAO implements IndexDAO {
 		criteria.createAlias("patient", "patient");
 		criteria.createAlias("patient.identifiers", "identifier");
 		criteria.add(Restrictions.eq("location", location));
+
+		criteria.add(Restrictions.eq("patient.voided", Boolean.FALSE));
+		criteria.add(Restrictions.isNotNull("identifier.identifier"));
 
 		if (summary != null)
 			criteria.add(Restrictions.eq("summary", summary));

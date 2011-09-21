@@ -14,6 +14,16 @@
 
 package org.openmrs.module.clinicalsummary.web.controller;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.TreeSet;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.StringUtils;
@@ -29,15 +39,6 @@ import org.openmrs.PersonName;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.clinicalsummary.cache.CacheUtils;
 import org.openmrs.module.clinicalsummary.db.hibernate.type.StringEnum;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.TreeSet;
 
 /**
  *
@@ -61,6 +62,18 @@ public final class WebUtils {
 		Date date;
 		try {
 			date = Context.getDateFormat().parse(dateString);
+		} catch (ParseException e) {
+			log.error("Parsing " + dateString + " to Date object failed. Ignoring and using default value.");
+			date = defaultDate;
+		}
+		return date;
+	}
+
+	public static Date parse(final String dateString, final String pattern, final Date defaultDate) {
+		Date date;
+		try {
+			DateFormat format = new SimpleDateFormat(pattern);
+			date = format.parse(dateString);
 		} catch (ParseException e) {
 			log.error("Parsing " + dateString + " to Date object failed. Ignoring and using default value.");
 			date = defaultDate;
