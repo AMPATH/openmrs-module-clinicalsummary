@@ -14,19 +14,23 @@
 
 package org.openmrs.module.clinicalsummary.web.controller.utils;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -73,7 +77,8 @@ public class ExtendedDataEncounterController {
 
 	@RequestMapping(method = RequestMethod.POST)
 	public void processSubmit(final @RequestParam(required = true, value = "data") MultipartFile data,
-	                          final @RequestParam(required = true, value = "concept") String concept) throws IOException {
+	                          final @RequestParam(required = true, value = "concept") String concept,
+	                          HttpServletResponse response) throws IOException {
 
 		PatientService patientService = Context.getPatientService();
 		PatientSetService patientSetService = Context.getPatientSetService();
@@ -93,25 +98,38 @@ public class ExtendedDataEncounterController {
 			String[] elements = StringUtils.splitPreserveAllTokens(line, ",");
 			Cohort cohort = patientSetService.convertPatientIdentifier(Arrays.asList(elements[0]));
 			Date referenceDate = WebUtils.parse(elements[1], "MM/dd/yyyy", new Date());
-			for (Integer integer : cohort.getMemberIds()) {
-				// get the actual patient object
-				patient = patientService.getPatient(integer);
-				if (patient != null) {
-					ExtendedData extended = new ExtendedData(referenceDate, patient);
-					extended.setDuplicates(cohort.size());
-					extended.setEncounterResults(searchEncounters(patient));
-					if (StringUtils.isNotEmpty(concept))
-						extended.addConceptResult(concept,
-								searchObservation(patient, concept));
-					writer.write(extended.generateEncounterData());
+			if (cohort.isEmpty()) {
+				writer.write("INVALID PATIENT IDENTIFIER!");
+				writer.newLine();
+			} else {
+				for (Integer integer : cohort.getMemberIds()) {
+					// get the actual patient object
+					patient = patientService.getPatient(integer);
+					if (patient != null) {
+						ExtendedData extended = new ExtendedData(referenceDate, patient);
+						extended.setDuplicates(cohort.size());
+						extended.setEncounterResults(searchEncounters(patient));
+						if (StringUtils.isNotEmpty(concept))
+							extended.addConceptResult(concept,
+									searchObservation(patient, concept));
+						writer.write(extended.generateEncounterData());
+						ResultCacheInstance.getInstance().clearCache(patient);
+					} else {
+						writer.write("INVALID PATIENT IDENTIFIER!");
+					}
 					writer.newLine();
-					ResultCacheInstance.getInstance().clearCache(patient);
 				}
 			}
 		}
 
 		reader.close();
 		writer.close();
+
+		InputStream inputStream = new BufferedInputStream(new FileInputStream(extendedData));
+
+		response.setHeader("Content-Disposition", "attachment; filename=" + data.getName());
+		response.setContentType("text/plain");
+		FileCopyUtils.copy(inputStream, response.getOutputStream());
 	}
 
 	private Result searchObservation(Patient patient, String concept) {

@@ -292,6 +292,7 @@ public class ExtendedData {
 			previousResult = currentResult;
 			currentResult = getConceptResult(concept).get(counter++);
 			log.info("Processing enrollment observations for concept: " + concept + " dated: " + currentResult.getResultDate());
+			// TODO: probe the search to encounter - 5 days forward
 			if (currentResult.getResultDate().before(referenceDate))
 				stopSearch = Boolean.TRUE;
 		}
