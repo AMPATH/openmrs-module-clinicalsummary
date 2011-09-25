@@ -56,6 +56,10 @@ public class ResponseController {
 
 	private static final String HEADER_REMINDER = "reminder";
 
+	private static final String HEADER_OI_MEDICATION = "oiMedication";
+
+	private static final String HEADER_ARV_MEDICATION = "arvMedication";
+
 	private static final String HEADER_LOG = "log";
 
 	@RequestMapping(method = RequestMethod.POST)
@@ -107,7 +111,8 @@ public class ResponseController {
 				String[] parameter = StringUtils.splitPreserveAllTokens(parameterValue, "|");
 				if (StringUtils.equalsIgnoreCase(HEADER_REMINDER, parameter[0]))
 					saveReminderResponse(utilService, patient, parameter);
-				else
+				else if (StringUtils.equalsIgnoreCase(HEADER_ARV_MEDICATION, parameter[0])
+						|| StringUtils.equalsIgnoreCase(HEADER_OI_MEDICATION, parameter[0]))
 					saveMedicationResponse(utilService, patient, parameter);
 			} catch (ConstraintViolationException e) {
 				log.info("Ignoring constrain violation and skipping the record");
@@ -132,7 +137,7 @@ public class ResponseController {
 					medicationResponse.setMedicationType(medicationType);
 			medicationResponse.setMedication(concept);
 			medicationResponse.setStatus(NumberUtils.toInt(parameter[2]));
-			medicationResponse.setLocation(Context.getLocationService().getLocation(parameter[3]));
+			medicationResponse.setLocation(Context.getLocationService().getLocation(NumberUtils.toInt(parameter[3])));
 			medicationResponse.setDatetime(parse(parameter[4]));
 			medicationResponse.setPresent(NumberUtils.toInt(parameter[5]));
 			// add to the list
@@ -147,7 +152,7 @@ public class ResponseController {
 		reminderResponse.setToken(parameter[1]);
 		reminderResponse.setResponse(NumberUtils.toInt(parameter[2]));
 		reminderResponse.setComment(parameter[3]);
-		reminderResponse.setLocation(Context.getLocationService().getLocation(parameter[4]));
+		reminderResponse.setLocation(Context.getLocationService().getLocation(NumberUtils.toInt(parameter[4])));
 		reminderResponse.setDatetime(parse(parameter[5]));
 		reminderResponse.setPresent(NumberUtils.toInt(parameter[6]));
 		// add to the list
@@ -156,18 +161,19 @@ public class ResponseController {
 
 	private void processDeviceLogs(final UtilService utilService, final String id, final String[] parameterValues) {
 		for (String parameterValue : parameterValues) {
-			try {
-				String[] parameter = StringUtils.splitPreserveAllTokens(parameterValue, "|");
-				DeviceLog deviceLog = new DeviceLog();
-				deviceLog.setDeviceId(id);
-				deviceLog.setKey(parameter[1]);
-				deviceLog.setValue(parameter[2]);
-				deviceLog.setTimestamp(parameter[3]);
-				deviceLog.setUser(Context.getAuthenticatedUser().getPerson());
-				utilService.saveDeviceLog(deviceLog);
-			} catch (ConstraintViolationException e) {
-				log.info("Ignoring constrain violation and skipping the record");
-			}
+			String[] parameter = StringUtils.splitPreserveAllTokens(parameterValue, "|");
+			if (StringUtils.equalsIgnoreCase(HEADER_LOG, parameter[0]))
+				try {
+					DeviceLog deviceLog = new DeviceLog();
+					deviceLog.setDeviceId(id);
+					deviceLog.setKey(parameter[1]);
+					deviceLog.setValue(parameter[2]);
+					deviceLog.setTimestamp(parameter[3]);
+					deviceLog.setUser(Context.getAuthenticatedUser().getPerson());
+					utilService.saveDeviceLog(deviceLog);
+				} catch (ConstraintViolationException e) {
+					log.info("Ignoring constrain violation and skipping the record");
+				}
 		}
 	}
 

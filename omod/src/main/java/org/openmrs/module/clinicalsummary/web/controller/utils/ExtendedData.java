@@ -64,7 +64,7 @@ public class ExtendedData {
 
 	private Map<String, Result> tokenResults;
 
-	public ExtendedData(Date referenceDate, Patient patient) {
+	public ExtendedData(final Date referenceDate, final Patient patient) {
 		this.referenceDate = referenceDate;
 		this.patient = patient;
 	}
@@ -189,7 +189,7 @@ public class ExtendedData {
 		return getTokenResults().get(token);
 	}
 
-	private Result searchValidObsResult(String concept) {
+	private Result searchValidObsResult(final String concept) {
 		Integer counter = 0;
 		Result result = null;
 		while (counter < getConceptResult(concept).size() && result == null) {
@@ -206,7 +206,7 @@ public class ExtendedData {
 	 * @param location
 	 * @return
 	 */
-	private Result searchVisitCountForLocation(Location location) {
+	private Result searchVisitCountForLocation(final Location location) {
 		Integer counter = 0;
 		Result result = new Result();
 		while (counter < getEncounterResults().size()) {
@@ -283,20 +283,24 @@ public class ExtendedData {
 	 * @param concept
 	 * @return
 	 */
-	private Result searchAfterEnrollmentObservation(String concept) {
+	private Result searchAfterEnrollmentObservation(final String concept) {
 		Integer counter = 0;
-		Boolean stopSearch = Boolean.FALSE;
-		Result previousResult = null;
-		Result currentResult = null;
-		while (counter < getConceptResult(concept).size() && !stopSearch) {
-			previousResult = currentResult;
-			currentResult = getConceptResult(concept).get(counter++);
-			log.info("Processing enrollment observations for concept: " + concept + " dated: " + currentResult.getResultDate());
-			// TODO: probe the search to encounter - 5 days forward
-			if (currentResult.getResultDate().before(referenceDate))
-				stopSearch = Boolean.TRUE;
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(referenceDate);
+		calendar.add(Calendar.DATE, -5);
+
+		Result returnedResult = null;
+		while (counter < getConceptResult(concept).size()) {
+			// iterate over all results for the concept
+			Result currentResult = getConceptResult(concept).get(counter);
+			// only assign the current one to returned when the result date is after the reference date
+			// at the end of the iteration, the returned result will hold the reference to the latest result after the encounter date
+			if (currentResult.getResultDate().after(referenceDate) || DateUtils.isSameDay(currentResult.getResultDate(), referenceDate))
+				returnedResult = currentResult;
+			counter++;
 		}
-		return previousResult;
+		return returnedResult;
 
 	}
 
@@ -304,14 +308,12 @@ public class ExtendedData {
 	 * @param provider
 	 * @return
 	 */
-	private Result searchProvider(Person provider) {
+	private Result searchProvider(final Person provider) {
 		Integer counter = 0;
 		Result result = new Result();
-		log.info("Searching for provider: " + provider.getPersonId());
 		while (counter < getEncounterResults().size()) {
 			Result encounterResult = getEncounterResults().get(counter++);
 			Encounter encounter = (Encounter) encounterResult.getResultObject();
-			log.info("Processing provider: " + encounter.getProvider().getPersonId() + " dated: " + encounterResult.getResultDate());
 			if (OpenmrsUtil.nullSafeEquals(provider, encounter.getProvider())
 					&& encounterResult.getResultDate().before(referenceDate))
 				result.add(encounterResult);
