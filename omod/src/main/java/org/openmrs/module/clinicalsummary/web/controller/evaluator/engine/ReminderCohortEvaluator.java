@@ -24,7 +24,6 @@ import org.openmrs.module.clinicalsummary.Summary;
 import org.openmrs.module.clinicalsummary.evaluator.Evaluator;
 import org.openmrs.module.clinicalsummary.evaluator.reminder.ReminderEvaluator;
 import org.openmrs.module.clinicalsummary.rule.ResultCacheInstance;
-import org.openmrs.module.clinicalsummary.service.IndexService;
 import org.openmrs.module.clinicalsummary.service.SummaryService;
 import org.openmrs.module.clinicalsummary.web.controller.evaluator.EvaluatorStatus;
 
@@ -111,9 +110,7 @@ class ReminderCohortEvaluator implements Runnable {
 
 			setEvaluatorStatus(EvaluatorStatus.EVALUATOR_RUNNING);
 
-			IndexService indexService = Context.getService(IndexService.class);
 			Evaluator evaluator = new ReminderEvaluator();
-
 			ResultCacheInstance cacheInstance = ResultCacheInstance.getInstance();
 
 			for (Integer patientId : cohort.getMemberIds()) {

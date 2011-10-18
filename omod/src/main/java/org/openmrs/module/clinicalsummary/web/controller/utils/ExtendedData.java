@@ -16,7 +16,7 @@ package org.openmrs.module.clinicalsummary.web.controller.utils;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -36,6 +36,7 @@ import org.openmrs.logic.result.Result;
 import org.openmrs.module.clinicalsummary.rule.EvaluableNameConstants;
 import org.openmrs.module.clinicalsummary.rule.medication.AntiRetroViralRule;
 import org.openmrs.module.clinicalsummary.rule.pediatric.AgeWithUnitRule;
+import org.openmrs.module.clinicalsummary.web.controller.WebUtils;
 import org.openmrs.util.OpenmrsUtil;
 
 public class ExtendedData {
@@ -130,7 +131,7 @@ public class ExtendedData {
 	 */
 	public Map<String, Result> getConceptResults() {
 		if (conceptResults == null)
-			conceptResults = new HashMap<String, Result>();
+			conceptResults = new LinkedHashMap<String, Result>();
 		return conceptResults;
 	}
 
@@ -162,7 +163,7 @@ public class ExtendedData {
 	 */
 	public Map<String, Result> getTokenResults() {
 		if (tokenResults == null)
-			tokenResults = new HashMap<String, Result>();
+			tokenResults = new LinkedHashMap<String, Result>();
 		return tokenResults;
 	}
 
@@ -289,6 +290,7 @@ public class ExtendedData {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(referenceDate);
 		calendar.add(Calendar.DATE, -5);
+		Date enrollmentDate = calendar.getTime();
 
 		Result returnedResult = null;
 		while (counter < getConceptResult(concept).size()) {
@@ -296,12 +298,29 @@ public class ExtendedData {
 			Result currentResult = getConceptResult(concept).get(counter);
 			// only assign the current one to returned when the result date is after the reference date
 			// at the end of the iteration, the returned result will hold the reference to the latest result after the encounter date
-			if (currentResult.getResultDate().after(referenceDate) || DateUtils.isSameDay(currentResult.getResultDate(), referenceDate))
+			if (currentResult.getResultDate().after(enrollmentDate) || DateUtils.isSameDay(currentResult.getResultDate(), enrollmentDate))
 				returnedResult = currentResult;
 			counter++;
 		}
 		return returnedResult;
+	}
 
+	/**
+	 * @param concept
+	 * @return
+	 */
+	private Result searchBeforeEnrollmentObservation(final String concept) {
+		Integer counter = 0;
+		Date enrollmentDate = WebUtils.parse("02/28/2011", "MM/dd/yyyy", new Date());
+		while (counter < getConceptResult(concept).size()) {
+			// iterate over all results for the concept
+			Result currentResult = getConceptResult(concept).get(counter++);
+			// only assign the current one to returned when the result date is after the reference date
+			// at the end of the iteration, the returned result will hold the reference to the latest result after the encounter date
+			if (currentResult.getResultDate().before(enrollmentDate))
+				return currentResult;
+		}
+		return null;
 	}
 
 	/**
@@ -395,6 +414,8 @@ public class ExtendedData {
 			builder.append(encounter.getProvider().getPersonId()).append(FIELD_SEPARATOR);
 			builder.append(encounter.getProvider().getPersonName().getFullName()).append(FIELD_SEPARATOR);
 			builder.append(searchProvider(encounter.getProvider()).size()).append(FIELD_SEPARATOR);
+		} else {
+			builder.append(FIELD_SEPARATOR).append(FIELD_SEPARATOR).append(FIELD_SEPARATOR).append(FIELD_SEPARATOR).append(FIELD_SEPARATOR);
 		}
 
 		for (String concept : getConceptResults().keySet()) {
@@ -404,9 +425,25 @@ public class ExtendedData {
 				Obs obs = (Obs) afterEnrollmentObservation.getResultObject();
 				builder.append(obs.getObsId()).append(FIELD_SEPARATOR);
 				builder.append(Context.getDateFormat().format(afterEnrollmentObservation.getResultDate())).append(FIELD_SEPARATOR);
-				builder.append(afterEnrollmentObservation.toString());
+				builder.append(afterEnrollmentObservation.toString()).append(FIELD_SEPARATOR);
+			} else {
+				builder.append(FIELD_SEPARATOR).append(FIELD_SEPARATOR).append(FIELD_SEPARATOR);
 			}
 		}
+
+		for (String concept : getConceptResults().keySet()) {
+			log.info("Searching concept name: " + concept);
+			Result afterEnrollmentObservation = searchBeforeEnrollmentObservation(concept);
+			if (afterEnrollmentObservation != null) {
+				Obs obs = (Obs) afterEnrollmentObservation.getResultObject();
+				builder.append(obs.getObsId()).append(FIELD_SEPARATOR);
+				builder.append(Context.getDateFormat().format(afterEnrollmentObservation.getResultDate())).append(FIELD_SEPARATOR);
+				builder.append(afterEnrollmentObservation.toString()).append(FIELD_SEPARATOR);
+			} else {
+				builder.append(FIELD_SEPARATOR).append(FIELD_SEPARATOR).append(FIELD_SEPARATOR);
+			}
+		}
+
 		return builder.toString();
 	}
 }

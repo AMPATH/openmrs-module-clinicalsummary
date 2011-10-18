@@ -14,6 +14,9 @@
 
 package org.openmrs.module.clinicalsummary.web.controller.evaluator.engine;
 
+import java.util.List;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
@@ -43,6 +46,8 @@ class SummaryCohortEvaluator implements Runnable {
 	private Integer currentPatientId;
 
 	private Integer processed;
+
+	private List<Summary> summaries;
 
 	/**
 	 * @param cohort
@@ -97,6 +102,20 @@ class SummaryCohortEvaluator implements Runnable {
 	}
 
 	/**
+	 * @return
+	 */
+	public List<Summary> getSummaries() {
+		return summaries;
+	}
+
+	/**
+	 * @param summaries
+	 */
+	public void setSummaries(final List<Summary> summaries) {
+		this.summaries = summaries;
+	}
+
+	/**
 	 * When an object implementing interface <code>Runnable</code> is used to create a thread, starting the thread causes the object's <code>run</code>
 	 * method to be called in that separately executing thread.
 	 * <p/>
@@ -121,7 +140,9 @@ class SummaryCohortEvaluator implements Runnable {
 				Patient patient = Context.getPatientService().getPatient(patientId);
 				if (patient != null) {
 					SummaryService summaryService = Context.getService(SummaryService.class);
-					for (Summary summary : summaryService.getSummaries(patient)) {
+					if (CollectionUtils.isEmpty(summaries))
+						summaries = summaryService.getSummaries(patient);
+					for (Summary summary : summaries) {
 						double start = System.currentTimeMillis();
 
 						evaluator.evaluate(summary, patient, Boolean.TRUE);

@@ -14,12 +14,15 @@
 
 package org.openmrs.module.clinicalsummary.web.controller.evaluator;
 
+import java.util.Arrays;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.clinicalsummary.Summary;
+import org.openmrs.module.clinicalsummary.service.SummaryService;
 import org.openmrs.module.clinicalsummary.web.controller.evaluator.engine.SummaryCohortEvaluatorInstance;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -39,15 +42,20 @@ public class EvaluatePatientsController {
 	@RequestMapping(method = RequestMethod.GET)
 	public void populatePage(final ModelMap map) {
 		map.put("cohorts", Context.getCohortService().getAllCohorts());
+		map.addAttribute("summaries", Context.getService(SummaryService.class).getAllSummaries());
 	}
 
 	@RequestMapping(method = RequestMethod.POST)
 	public String processForm(final @RequestParam(required = false, value = "cohort") Integer cohortId,
+	                          final @RequestParam(required = false, value = "summaryId") Integer summaryId,
 	                          final HttpSession session) {
 		int maxInactiveInterval = session.getMaxInactiveInterval();
 		session.setMaxInactiveInterval(-1);
+
+		Summary summary = Context.getService(SummaryService.class).getSummary(summaryId);
 		Cohort cohort = Context.getCohortService().getCohort(cohortId);
-		SummaryCohortEvaluatorInstance.getInstance().evaluate(new Cohort(cohort.getMemberIds()));
+		SummaryCohortEvaluatorInstance.getInstance().evaluate(new Cohort(cohort.getMemberIds()), Arrays.asList(summary));
+
 		session.setMaxInactiveInterval(maxInactiveInterval);
 		return "redirect:evaluatePatients.form";
 	}

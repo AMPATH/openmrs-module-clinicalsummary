@@ -14,6 +14,11 @@
 
 package org.openmrs.module.clinicalsummary.rule.common;
 
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Map;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,11 +37,6 @@ import org.openmrs.module.clinicalsummary.rule.encounter.EncounterWithStringRest
 import org.openmrs.module.clinicalsummary.rule.observation.ObsWithRestrictionRule;
 import org.openmrs.module.clinicalsummary.rule.observation.ObsWithStringRestrictionRule;
 import org.openmrs.module.clinicalsummary.rule.util.RuleUtils;
-
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Map;
 
 public class CohortBuilderRule extends EvaluableRule {
 
@@ -118,13 +118,13 @@ public class CohortBuilderRule extends EvaluableRule {
 					parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(EvaluableNameConstants.HIV_DNA_POLYMERASE_CHAIN_REACTION_QUALITATIVE));
 					parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList(EvaluableNameConstants.POSITIVE));
 					Result polymeraseResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-					if (CollectionUtils.size(polymeraseResults) >= 2)
+					if (CollectionUtils.isNotEmpty(polymeraseResults) && CollectionUtils.size(polymeraseResults) >= 2)
 						obsResult = polymeraseResults.latest();
 
 					if (obsResult != null) {
 						Obs obs = (Obs) obsResult.getResultObject();
-						result.add(new Result(encounterResult.getResultDate(), null, null, obs.getConcept(), obs.getObsDatetime(),
-								obs.getObsId().doubleValue(), encounter.getLocation().getName(), obs.getValueCoded()));
+						result.add(new Result(encounter.getEncounterDatetime(), null, null, obs.getConcept(), obs.getObsDatetime(),
+								obs.getObsId().doubleValue(), encounterLocation.getName(), obs.getValueCoded()));
 					}
 				}
 			}

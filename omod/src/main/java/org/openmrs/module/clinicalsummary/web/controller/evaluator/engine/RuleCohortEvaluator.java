@@ -18,7 +18,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
@@ -29,6 +28,7 @@ import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.UserContext;
 import org.openmrs.logic.result.Result;
+import org.openmrs.module.clinicalsummary.rule.ResultCacheInstance;
 import org.openmrs.module.clinicalsummary.rule.common.CohortBuilderRule;
 import org.openmrs.module.clinicalsummary.service.EvaluatorService;
 import org.openmrs.module.clinicalsummary.web.controller.WebUtils;
@@ -120,25 +120,25 @@ class RuleCohortEvaluator implements Runnable {
 			setEvaluatorStatus(EvaluatorStatus.EVALUATOR_RUNNING);
 
 			EvaluatorService evaluatorService = Context.getService(EvaluatorService.class);
+			ResultCacheInstance cacheInstance = ResultCacheInstance.getInstance();
 
 			File attachmentFile = new File(System.getProperty("java.io.tmpdir"), WebUtils.prepareFilename(null, null));
 			BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(attachmentFile));
 
 			for (Integer patientId : cohort.getMemberIds()) {
-
 				setCurrentPatientId(patientId);
-
-				Map<String, Object> parameters = new HashMap<String, Object>();
 				Patient patient = Context.getPatientService().getPatient(patientId);
-				Result results = evaluatorService.evaluate(patient, CohortBuilderRule.TOKEN, parameters);
-
-				if (CollectionUtils.isNotEmpty(results)) {
-					Result result = results.latest();
-					bufferedWriter.write(format(patient));
-					bufferedWriter.write(format(result));
-					bufferedWriter.newLine();
+				if (patient != null) {
+					Result results = evaluatorService.evaluate(patient, CohortBuilderRule.TOKEN, new HashMap<String, Object>());
+					if (CollectionUtils.isNotEmpty(results)) {
+						Result result = results.latest();
+						bufferedWriter.write(format(patient));
+						bufferedWriter.write(format(result));
+						bufferedWriter.newLine();
+					}
+					cacheInstance.clearCache(patient);
+					cleanSession();
 				}
-
 				counter++;
 			}
 
@@ -169,5 +169,12 @@ class RuleCohortEvaluator implements Runnable {
 		Concept concept = (Concept) result.getResultObject();
 		buffer.append(concept.getName(Context.getLocale()).getName()).append(SEPARATOR_STRING);
 		return buffer.toString();
+	}
+
+	private void cleanSession() {
+		if (counter % 20 == 0) {
+			Context.flushSession();
+			Context.clearSession();
+		}
 	}
 }

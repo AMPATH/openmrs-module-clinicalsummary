@@ -82,6 +82,14 @@
 					<legend><spring:message code="clinicalsummary.generate.byCohort"/></legend>
 					<ol>
 						<li>
+							<label for="summaryId"><spring:message code="clinicalsummary.generate.summary"/></label>
+							<select name="summaryId" id="summaryId">
+								<c:forEach var="summary" items="${summaries}" varStatus="varStatus">
+									<option value="${summary.id}">${summary.name}</option>
+								</c:forEach>
+							</select>
+						</li>
+						<li>
 							<label for="cohort"><spring:message code="clinicalsummary.generate.cohort"/></label>
 							<select name="cohort" id="cohort">
 								<c:forEach var="cohort" items="${cohorts}" varStatus="varStatus">

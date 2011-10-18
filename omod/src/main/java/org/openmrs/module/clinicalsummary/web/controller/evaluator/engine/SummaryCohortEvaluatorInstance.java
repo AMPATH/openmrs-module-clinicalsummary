@@ -14,8 +14,11 @@
 
 package org.openmrs.module.clinicalsummary.web.controller.evaluator.engine;
 
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.Cohort;
+import org.openmrs.module.clinicalsummary.Summary;
 import org.openmrs.module.clinicalsummary.web.controller.evaluator.EvaluatorStatus;
 import org.openmrs.util.OpenmrsUtil;
 
@@ -43,6 +46,14 @@ public class SummaryCohortEvaluatorInstance {
 	public void evaluate(final Cohort cohort) {
 		if (!isRunning()) {
 			summaryCohortEvaluator = new SummaryCohortEvaluator(cohort);
+			new Thread(summaryCohortEvaluator).start();
+		}
+	}
+
+	public void evaluate(final Cohort cohort, final List<Summary> summaries) {
+		if (!isRunning()) {
+			summaryCohortEvaluator = new SummaryCohortEvaluator(cohort);
+			summaryCohortEvaluator.setSummaries(summaries);
 			new Thread(summaryCohortEvaluator).start();
 		}
 	}

@@ -59,14 +59,17 @@ public class EncounterDiagnosisAndMedicationRule extends EvaluableRule {
 		List<String> encounterTypeNames = Arrays.asList(EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_INITIAL,
 				EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_RETURN, EvaluableNameConstants.ENCOUNTER_TYPE_PEDIATRIC_INITIAL,
 				EvaluableNameConstants.ENCOUNTER_TYPE_PEDIATRIC_RETURN, EvaluableNameConstants.ENCOUNTER_TYPE_MOSORIOT_PERINATAL_INITIAL,
+				EvaluableNameConstants.ENCOUNTER_TYPE_MOSORIOT_PERINATAL_RETURN, EvaluableNameConstants.ENCOUNTER_TYPE_PRIMARY_CARE_MAIN,
 				EvaluableNameConstants.ENCOUNTER_TYPE_MOSORIOT_PRIMARY_CARE);
 
 		EncounterType adultInitialEncounterType = CacheUtils.getEncounterType(EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_INITIAL);
 		EncounterType adultReturnEncounterType = CacheUtils.getEncounterType(EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_RETURN);
 		EncounterType pediatricInitialEncounterType = CacheUtils.getEncounterType(EvaluableNameConstants.ENCOUNTER_TYPE_PEDIATRIC_INITIAL);
 		EncounterType pediatricReturnEncounterType = CacheUtils.getEncounterType(EvaluableNameConstants.ENCOUNTER_TYPE_PEDIATRIC_RETURN);
-		EncounterType mosoriotPerinatalEncounterType = CacheUtils.getEncounterType(EvaluableNameConstants.ENCOUNTER_TYPE_MOSORIOT_PERINATAL_INITIAL);
+		EncounterType mosoriotPerinatalInitialEncounterType = CacheUtils.getEncounterType(EvaluableNameConstants.ENCOUNTER_TYPE_MOSORIOT_PERINATAL_INITIAL);
+		EncounterType mosoriotPerinatalReturnEncounterType = CacheUtils.getEncounterType(EvaluableNameConstants.ENCOUNTER_TYPE_MOSORIOT_PERINATAL_RETURN);
 		EncounterType mosoriotPrimaryCareEncounterType = CacheUtils.getEncounterType(EvaluableNameConstants.ENCOUNTER_TYPE_MOSORIOT_PRIMARY_CARE);
+		EncounterType primaryCareEncounterType = CacheUtils.getEncounterType(EvaluableNameConstants.ENCOUNTER_TYPE_PRIMARY_CARE_MAIN);
 
 		parameters.put(EvaluableConstants.ENCOUNTER_TYPE, encounterTypeNames);
 		parameters.put(EvaluableConstants.ENCOUNTER_FETCH_SIZE, 5);
@@ -136,7 +139,8 @@ public class EncounterDiagnosisAndMedicationRule extends EvaluableRule {
 					perEncounterResult.add(medicationResults);
 				}
 
-				if (OpenmrsUtil.nullSafeEquals(encounterType, mosoriotPerinatalEncounterType)) {
+				if (OpenmrsUtil.nullSafeEquals(encounterType, mosoriotPerinatalInitialEncounterType)
+						|| OpenmrsUtil.nullSafeEquals(encounterType, mosoriotPerinatalReturnEncounterType)) {
 
 					Result problemResults = new Result();
 
@@ -191,7 +195,8 @@ public class EncounterDiagnosisAndMedicationRule extends EvaluableRule {
 					perEncounterResult.add(medicationResults);
 				}
 
-				if (OpenmrsUtil.nullSafeEquals(encounterType, mosoriotPrimaryCareEncounterType)) {
+				if (OpenmrsUtil.nullSafeEquals(encounterType, mosoriotPrimaryCareEncounterType)
+						|| OpenmrsUtil.nullSafeEquals(encounterType, primaryCareEncounterType)) {
 
 					Result problemResults = new Result();
 

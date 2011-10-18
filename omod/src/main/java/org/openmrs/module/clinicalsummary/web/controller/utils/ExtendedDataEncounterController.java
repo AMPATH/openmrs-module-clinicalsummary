@@ -70,6 +70,8 @@ public class ExtendedDataEncounterController {
 
 	public static final String JAVA_IO_TMPDIR = "java.io.tmpdir";
 
+	public static final String CHILDS_CURRENT_HIV_STATUS = "CHILDS CURRENT HIV STATUS";
+
 	@RequestMapping(method = RequestMethod.GET)
 	public void populatePage(final ModelMap map) {
 		map.put("cohorts", Context.getCohortService().getAllCohorts());
@@ -109,6 +111,7 @@ public class ExtendedDataEncounterController {
 						ExtendedData extended = new ExtendedData(referenceDate, patient);
 						extended.setDuplicates(cohort.size());
 						extended.setEncounterResults(searchEncounters(patient));
+						extended.addConceptResult(CHILDS_CURRENT_HIV_STATUS, searchObservation(patient, CHILDS_CURRENT_HIV_STATUS));
 						if (StringUtils.isNotEmpty(concept))
 							extended.addConceptResult(concept,
 									searchObservation(patient, concept));
