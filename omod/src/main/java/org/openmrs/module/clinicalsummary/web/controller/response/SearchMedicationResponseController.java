@@ -59,23 +59,28 @@ public class SearchMedicationResponseController {
 			Date startDate;
 			switch (displayType) {
 				case DISPLAY_PAST_WEEK_RESPONSES:
+					calendar = Calendar.getInstance();
 					calendar.add(Calendar.DATE, -7);
 					startDate = calendar.getTime();
 					break;
 				case DISPLAY_PAST_MONTH_RESPONSES:
+					calendar = Calendar.getInstance();
 					calendar.add(Calendar.MONTH, -1);
 					startDate = calendar.getTime();
 					break;
 				case DISPLAY_PAST_2_MONTHS_RESPONSES:
-					calendar.add(Calendar.MONTH, -1);
+					calendar = Calendar.getInstance();
+					calendar.add(Calendar.MONTH, -2);
 					startDate = calendar.getTime();
 					break;
 				case DISPLAY_PAST_6_MONTHS_RESPONSES:
-					calendar.add(Calendar.MONTH, -1);
+					calendar = Calendar.getInstance();
+					calendar.add(Calendar.MONTH, -6);
 					startDate = calendar.getTime();
 					break;
 				case DISPLAY_PAST_12_MONTHS_RESPONSES:
-					calendar.add(Calendar.MONTH, -1);
+					calendar = Calendar.getInstance();
+					calendar.add(Calendar.MONTH, -12);
 					startDate = calendar.getTime();
 					break;
 				default:
