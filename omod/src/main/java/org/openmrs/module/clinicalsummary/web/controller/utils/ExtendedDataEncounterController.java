@@ -37,6 +37,7 @@ import org.openmrs.Patient;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.clinicalsummary.rule.ResultCacheInstance;
 import org.openmrs.module.clinicalsummary.service.CoreService;
 import org.openmrs.module.clinicalsummary.util.FetchRestriction;
 import org.openmrs.module.clinicalsummary.web.controller.WebUtils;
@@ -70,7 +71,7 @@ public class ExtendedDataEncounterController {
     @RequestMapping(method = RequestMethod.POST)
     public void processSubmit(final @RequestParam(required = true, value = "data") MultipartFile data,
                               final @RequestParam(required = true, value = "conceptNames") String conceptNames,
-                              HttpServletResponse response) throws IOException {
+                              final HttpServletResponse response) throws IOException {
 
         List<Concept> concepts = new ArrayList<Concept>();
         for (String conceptName : StringUtils.splitPreserveAllTokens(conceptNames, ",")) {
@@ -99,8 +100,11 @@ public class ExtendedDataEncounterController {
                 patient = patientService.getPatient(NumberUtils.toInt(elements[4]));
             else {
                 Cohort cohort = patientSetService.convertPatientIdentifier(Arrays.asList(elements[4]));
-                for (Integer patientId : cohort.getMemberIds())
-                    patient = patientService.getPatient(patientId);
+                for (Integer patientId : cohort.getMemberIds()) {
+                    Patient cohortPatient = patientService.getPatient(patientId);
+                    if (cohortPatient != null && !cohortPatient.isVoided())
+                        patient = cohortPatient;
+                }
             }
             Date referenceDate = WebUtils.parse(elements[3], "MM/dd/yyyy", new Date());
 
@@ -111,6 +115,8 @@ public class ExtendedDataEncounterController {
                     extended.addObservations(concept, searchObservations(patient, concept));
                 writer.write(extended.generateEncounterData());
                 writer.newLine();
+
+                ResultCacheInstance.getInstance().clearCache(patient);
             } else {
                 writer.write("Unresolved patient id or patient identifier for " + elements[4]);
                 writer.newLine();

@@ -16,22 +16,27 @@ package org.openmrs.module.clinicalsummary.web.controller.utils;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
+import org.openmrs.Concept;
 import org.openmrs.Encounter;
+import org.openmrs.Obs;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.Patient;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.clinicalsummary.rule.ResultCacheInstance;
 import org.openmrs.module.clinicalsummary.service.CoreService;
 import org.openmrs.module.clinicalsummary.util.FetchRestriction;
 import org.springframework.stereotype.Controller;
@@ -61,7 +66,16 @@ public class ExtendedDataGeneralController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public void processRequest(final @RequestParam(required = true, value = "data") MultipartFile data, HttpServletResponse response) throws IOException {
+    public void processRequest(final @RequestParam(required = true, value = "data") MultipartFile data,
+                               final @RequestParam(required = true, value = "conceptNames") String conceptNames,
+                               final HttpServletResponse response) throws IOException {
+
+        List<Concept> concepts = new ArrayList<Concept>();
+        for (String conceptName : StringUtils.splitPreserveAllTokens(conceptNames, ",")) {
+            Concept concept = Context.getConceptService().getConcept(conceptName);
+            if (concept != null)
+                concepts.add(concept);
+        }
 
         PatientService patientService = Context.getPatientService();
         PatientSetService patientSetService = Context.getPatientSetService();
@@ -81,15 +95,22 @@ public class ExtendedDataGeneralController {
                 patient = patientService.getPatient(NumberUtils.toInt(line));
             else {
                 Cohort cohort = patientSetService.convertPatientIdentifier(Arrays.asList(line));
-                for (Integer patientId : cohort.getMemberIds())
-                    patient = patientService.getPatient(patientId);
+                for (Integer patientId : cohort.getMemberIds()) {
+                    Patient cohortPatient = patientService.getPatient(patientId);
+                    if (cohortPatient != null && !cohortPatient.isVoided())
+                        patient = cohortPatient;
+                }
             }
 
             if (patient != null) {
                 ExtendedData extended = new ExtendedData(patient, null);
                 extended.setEncounters(searchEncounters(patient));
+                for (Concept concept : concepts)
+                    extended.addObservations(concept, searchObservations(patient, concept));
                 writer.write(extended.generatePatientData());
                 writer.newLine();
+
+                ResultCacheInstance.getInstance().clearCache(patient);
             } else {
                 writer.write("Unresolved patient id or patient identifier for " + line);
                 writer.newLine();
@@ -110,6 +131,18 @@ public class ExtendedDataGeneralController {
             if (!Character.isDigit(string.charAt(i)))
                 return Boolean.FALSE;
         return Boolean.TRUE;
+    }
+
+    private List<Obs> searchObservations(Patient patient, Concept concept) {
+        CoreService service = Context.getService(CoreService.class);
+
+        Collection<OpenmrsObject> concepts = new ArrayList<OpenmrsObject>();
+        concepts.add(concept);
+
+        Map<String, Collection<OpenmrsObject>> restrictions = new HashMap<String, Collection<OpenmrsObject>>();
+        restrictions.put("concept", concepts);
+
+        return service.getPatientObservations(patient.getPatientId(), restrictions, new FetchRestriction());
     }
 
     private List<Encounter> searchEncounters(Patient patient) {

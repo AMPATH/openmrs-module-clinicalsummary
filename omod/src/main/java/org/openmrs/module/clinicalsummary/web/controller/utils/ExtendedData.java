@@ -15,8 +15,11 @@
 package org.openmrs.module.clinicalsummary.web.controller.utils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +40,11 @@ import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.context.Context;
+import org.openmrs.logic.result.Result;
+import org.openmrs.module.clinicalsummary.rule.EvaluableConstants;
 import org.openmrs.module.clinicalsummary.rule.EvaluableNameConstants;
+import org.openmrs.module.clinicalsummary.rule.medication.AntiRetroViralRule;
+import org.openmrs.module.clinicalsummary.service.EvaluatorService;
 import org.openmrs.util.OpenmrsUtil;
 
 public class ExtendedData {
@@ -141,56 +148,23 @@ public class ExtendedData {
      *
      * @return
      */
-    private Encounter searchEncounterAroundReferenceDate() {
-        Integer counter = 0;
-        Encounter encounter = null;
-        log.info("Searching encounter from encounter with size: " + encounters.size());
-        while (counter < getEncounters().size() && encounter == null) {
-            Encounter currentEncounter = getEncounters().get(counter++);
-            if (DateUtils.isSameDay(currentEncounter.getEncounterDatetime(), referenceDate))
-                encounter = currentEncounter;
-        }
-
-        // if we can't find the encounter yet, then we use approximation here +/- 5 days from the reference date.
-        // maybe we can just go straight to this approximation approach or not!
-        if (encounter == null) {
-            log.info("Can't find encounter with matching datetime: " + Context.getDateFormat().format(referenceDate));
-            Calendar calendar = Calendar.getInstance();
-
-            calendar.setTime(referenceDate);
-            calendar.add(Calendar.DATE, 5);
-            Date startDate = calendar.getTime();
-
-            calendar.setTime(referenceDate);
-            calendar.add(Calendar.DATE, -5);
-            Date endDate = calendar.getTime();
-
-            while (counter < getEncounters().size() && encounter == null) {
-                Encounter currentEncounter = getEncounters().get(counter++);
-                if (startDate.after(currentEncounter.getEncounterDatetime())
-                        && endDate.before(currentEncounter.getEncounterDatetime()))
-                    encounter = currentEncounter;
-            }
-        }
-
-        return encounter;
+    private Encounter searchEncounterAfterReferenceDate(final Date referenceDate) {
+        List<EncounterType> encounterTypes = Collections.emptyList();
+        return searchEncounterAfterReferenceDate(encounterTypes, referenceDate);
     }
 
-    private Encounter searchExpressEncounterAroundReferenceDate(final EncounterType encounterType) {
+    private Encounter searchEncounterAfterReferenceDate(final List<EncounterType> encounterTypes,
+                                                        final Date referenceDate) {
         Encounter expressEncounter = null;
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(referenceDate);
-        calendar.add(Calendar.DATE, -5);
-        Date enrollmentDate = calendar.getTime();
 
         Integer counter = 0;
         Boolean shouldStop = Boolean.FALSE;
         while (counter < getEncounters().size() && !shouldStop) {
             Encounter encounter = getEncounters().get(counter++);
-            if (encounter.getEncounterDatetime().after(enrollmentDate)
-                    || DateUtils.isSameDay(encounter.getEncounterDatetime(), enrollmentDate)) {
-                if (OpenmrsUtil.nullSafeEquals(encounter.getEncounterType(), encounterType))
+            if (encounter.getEncounterDatetime().after(referenceDate)
+                    || DateUtils.isSameDay(encounter.getEncounterDatetime(), referenceDate)) {
+                if (CollectionUtils.isEmpty(encounterTypes)
+                        || OpenmrsUtil.collectionContains(encounterTypes, encounter.getEncounterType()))
                     expressEncounter = encounter;
             } else
                 shouldStop = Boolean.TRUE;
@@ -205,13 +179,8 @@ public class ExtendedData {
      * @param concept
      * @return
      */
-    private Obs searchObservationAroundReferenceDate(final Concept concept) {
+    private Obs searchObservationAfterReferenceDate(final Concept concept, final Date referenceDate) {
         Obs obs = null;
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(referenceDate);
-        calendar.add(Calendar.DATE, -5);
-        Date enrollmentDate = calendar.getTime();
 
         List<Obs> observations = getObservations(concept);
 
@@ -222,8 +191,8 @@ public class ExtendedData {
             Obs currentObs = observations.get(counter++);
             // only assign the current one to returned when the result date is after the reference date
             // at the end of the iteration, the returned result will hold the reference to the latest result after the encounter date
-            if (currentObs.getObsDatetime().after(enrollmentDate)
-                    || DateUtils.isSameDay(currentObs.getObsDatetime(), enrollmentDate))
+            if (currentObs.getObsDatetime().after(referenceDate)
+                    || DateUtils.isSameDay(currentObs.getObsDatetime(), referenceDate))
                 obs = currentObs;
             else
                 shouldStop = Boolean.TRUE;
@@ -232,10 +201,53 @@ public class ExtendedData {
     }
 
     /**
+     * Search patient latest obs for certain concept before the study enrollment date
+     *
+     * @param concept       the concept
+     * @param referenceDate the enrollment date
+     * @return the obs before the enrollment date or null if there's no obs before the enrollment date
+     */
+    private Obs searchObservationBeforeReferenceDate(Concept concept, Date referenceDate) {
+        Obs enrollmentObs = null;
+
+        List<Obs> observations = getObservations(concept);
+
+        Integer counter = 0;
+        while (counter < observations.size() && enrollmentObs == null) {
+            Obs currentObs = observations.get(counter++);
+            if (currentObs.getObsDatetime().before(referenceDate)
+                    || DateUtils.isSameDay(currentObs.getObsDatetime(), referenceDate))
+                enrollmentObs = currentObs;
+        }
+
+        return enrollmentObs;
+    }
+
+    /**
+     * Search patient latest encounter before the study enrollment date
+     *
+     * @param referenceDate the enrollment date
+     * @return the encounter before the enrollment date or null if there's no encounter before the enrollment date
+     */
+    private Encounter searchEncounterBeforeReferenceDate(Date referenceDate) {
+        Encounter enrollmentEncounter = null;
+
+        Integer counter = 0;
+        while (counter < getEncounters().size() && enrollmentEncounter == null) {
+            Encounter currentEncounter = getEncounters().get(counter++);
+            if (currentEncounter.getEncounterDatetime().before(referenceDate)
+                    || DateUtils.isSameDay(currentEncounter.getEncounterDatetime(), referenceDate))
+                enrollmentEncounter = currentEncounter;
+        }
+
+        return enrollmentEncounter;
+    }
+
+    /**
      * Calculate how many times the same provider provides care to the patient
      *
-     * @param provider
-     * @return
+     * @param provider the provider
+     * @return list of all encounters with matching provider
      */
     private List<Encounter> searchProvider(final Person provider) {
         List<Encounter> encounters = new ArrayList<Encounter>();
@@ -363,6 +375,51 @@ public class ExtendedData {
         encountersForLocation = searchVisitCountForLocation(location);
         builder.append(encountersForLocation.size()).append(FIELD_SEPARATOR);
 
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.YEAR, 2011);
+        calendar.set(Calendar.MONTH, Calendar.JULY);
+        calendar.set(Calendar.DATE, 1);
+
+        Date enrollmentDate = calendar.getTime();
+        Encounter enrollmentEncounter = searchEncounterBeforeReferenceDate(enrollmentDate);
+        if (enrollmentEncounter != null) {
+            Map<String, Object> parameters = new HashMap<String, Object>();
+            parameters.put(EvaluableConstants.OBS_ENCOUNTER, Arrays.asList(enrollmentEncounter));
+
+            EvaluatorService evaluatorService = Context.getService(EvaluatorService.class);
+
+            Result result = evaluatorService.evaluate(patient, AntiRetroViralRule.TOKEN, parameters);
+
+            String onMedication = String.valueOf(Boolean.FALSE);
+            if (CollectionUtils.isEmpty(result))
+                onMedication = String.valueOf(Boolean.TRUE);
+            builder.append(onMedication).append(FIELD_SEPARATOR);
+        }
+
+        for (Concept concept : getObservationsByConcept().keySet()) {
+            Obs obs = searchObservationBeforeReferenceDate(concept, enrollmentDate);
+
+            String obsConceptName = StringUtils.EMPTY;
+            if (concept != null)
+                obsConceptName = concept.getName(Context.getLocale()).getName();
+            builder.append(obsConceptName).append(FIELD_SEPARATOR);
+
+            String obsId = StringUtils.EMPTY;
+            if (obs != null)
+                obsId = String.valueOf(obs.getObsId());
+            builder.append(obsId).append(FIELD_SEPARATOR);
+
+            String obsDatetime = StringUtils.EMPTY;
+            if (obs != null)
+                obsDatetime = Context.getDateFormat().format(obs.getObsDatetime());
+            builder.append(obsDatetime).append(FIELD_SEPARATOR);
+
+            String obsValue = StringUtils.EMPTY;
+            if (obs != null)
+                obsValue = obs.getValueAsString(Context.getLocale());
+            builder.append(obsValue).append(FIELD_SEPARATOR);
+        }
+
         return builder.toString();
     }
 
@@ -387,8 +444,13 @@ public class ExtendedData {
             name = patientName.getFullName();
         builder.append(name).append(FIELD_SEPARATOR);
 
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(getReferenceDate());
+        calendar.add(Calendar.DATE, -5);
+        Date referenceDate = calendar.getTime();
+
         // Find the encounter data
-        Encounter encounter = searchEncounterAroundReferenceDate();
+        Encounter encounter = searchEncounterAfterReferenceDate(referenceDate);
 
         String encounterId = StringUtils.EMPTY;
         if (encounter != null)
@@ -416,7 +478,7 @@ public class ExtendedData {
         builder.append(previousVisitCount).append(FIELD_SEPARATOR);
 
         for (Concept concept : getObservationsByConcept().keySet()) {
-            Obs obs = searchObservationAroundReferenceDate(concept);
+            Obs obs = searchObservationAfterReferenceDate(concept, referenceDate);
 
             String obsConceptName = StringUtils.EMPTY;
             if (concept != null)
@@ -442,7 +504,8 @@ public class ExtendedData {
         EncounterService service = Context.getEncounterService();
 
         EncounterType expressHighRiskEncounterType = service.getEncounterType(EvaluableNameConstants.ECHIGHRISK);
-        Encounter expressHighRiskEncounter = searchExpressEncounterAroundReferenceDate(expressHighRiskEncounterType);
+        Encounter expressHighRiskEncounter = searchEncounterAfterReferenceDate(
+                Arrays.asList(expressHighRiskEncounterType), referenceDate);
 
         builder.append(EvaluableNameConstants.ECHIGHRISK).append(FIELD_SEPARATOR);
 
@@ -457,7 +520,8 @@ public class ExtendedData {
         builder.append(expressHighRiskEncounterDatetime).append(FIELD_SEPARATOR);
 
         EncounterType expressStableEncounterType = service.getEncounterType(EvaluableNameConstants.ECSTABLE);
-        Encounter expressStableEncounter = searchExpressEncounterAroundReferenceDate(expressStableEncounterType);
+        Encounter expressStableEncounter = searchEncounterAfterReferenceDate(
+                Arrays.asList(expressStableEncounterType), referenceDate);
 
         builder.append(EvaluableNameConstants.ECSTABLE).append(FIELD_SEPARATOR);
 

@@ -19,6 +19,10 @@
 				<fieldset>
 					<ol>
                         <li>
+                            <label for="conceptNames">Concept Names (Optional)</label>
+                            <input type="text" id="conceptNames" name="conceptNames"/>
+                        </li>
+                        <li>
                             <label for="data">Input Data</label>
                             <input type="file" id="data" name="data"/>
                         </li>
