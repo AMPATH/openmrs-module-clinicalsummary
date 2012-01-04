@@ -39,16 +39,16 @@ public class SummariesTaskInstance {
 		ourInstance = null;
 	}
 
-	public void startDownloading(final String password, final String passphrase, final String filename) {
+	public void startDownloading(final String password, final String filename) {
 		if (!isRunning()) {
-			summariesTask = new DownloadSummariesTask(password, passphrase, filename);
+			summariesTask = new DownloadSummariesTask(password, filename);
 			new Thread(summariesTask).start();
 		}
 	}
 
-	public void startUploading(final String password, final String passphrase, final String filename) {
+	public void startUploading(final String password, final String filename) {
 		if (!isRunning()) {
-			summariesTask = new UploadSummariesTask(password, passphrase, filename);
+			summariesTask = new UploadSummariesTask(password, filename);
 			new Thread(summariesTask).start();
 		}
 	}

@@ -11,13 +11,17 @@
 
 <div id="container">
 
-	<h3 id="header">Creating Paediatric Study Data</h3>
+	<h3 id="header">Creating Encounter Study Data</h3>
 
 	<div id="main">
 		<div id="leftcontent">
-			<form method="post" action="">
+			<form method="post" action="" enctype="multipart/form-data">
 				<fieldset>
 					<ol>
+                        <li>
+                            <label for="data">Input Data</label>
+                            <input type="file" id="data" name="data"/>
+                        </li>
 						<li>
 							<input type="submit" value="Generate Extended Data"/>
 						</li>

@@ -38,13 +38,15 @@
 
 	function validate() {
 		var form = document.getElementById("upload");
-		form.setAttribute("action", "validateUpload.form");
+		var hiddenElement = document.getElementById("uploadAction");
+		hiddenElement.setAttribute("value", "validate");
 		form.submit();
 	};
 
-	function post() {
+	function upload() {
 		var form = document.getElementById("upload");
-		form.setAttribute("action", "");
+		var hiddenElement = document.getElementById("uploadAction");
+		hiddenElement.setAttribute("value", "upload");
 		form.submit();
 	}
 </script>
@@ -87,10 +89,6 @@
 							<input type="password" id="password" name="password"/>
 						</li>
 						<li>
-							<label for="passphrase"><spring:message code="clinicalsummary.upload.passphrase"/></label>
-							<input type="password" id="passphrase" name="passphrase"/>
-						</li>
-						<li>
 							<label for="secretFile"><spring:message code="clinicalsummary.upload.secret"/></label>
 							<input type="file" id="secretFile" name="secretFile"/>
 						</li>
@@ -98,12 +96,14 @@
 							<label for="summaries"><spring:message code="clinicalsummary.upload.summaries"/></label>
 							<input type="file" id="summaries" name="summaries"/>
 						</li>
-						<li />
+						<li>
+							<input type="hidden" id="uploadAction" name="action"/>
+						</li>
 						<li>
 							<input type="button" value="<spring:message code="clinicalsummary.upload.validate"/>" onclick="validate();" />
 						</li>
 						<li>
-							<input type="button" value="<spring:message code="clinicalsummary.upload"/>" onclick="post();" />
+							<input type="button" value="<spring:message code="clinicalsummary.upload"/>" onclick="upload();" />
 						</li>
 					</ol>
 				</fieldset>

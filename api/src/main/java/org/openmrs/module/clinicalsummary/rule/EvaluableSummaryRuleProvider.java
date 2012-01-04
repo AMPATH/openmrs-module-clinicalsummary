@@ -14,6 +14,12 @@
 
 package org.openmrs.module.clinicalsummary.rule;
 
+import java.io.IOException;
+import java.net.URL;
+import java.util.Enumeration;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -24,18 +30,12 @@ import org.openmrs.module.ModuleFactory;
 import org.springframework.asm.ClassReader;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.Enumeration;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-
 /**
  */
 @Component
-public class EvaluableRuleProvider extends ClassRuleProvider {
+public class EvaluableSummaryRuleProvider extends ClassRuleProvider {
 
-	private static final Log log = LogFactory.getLog(EvaluableRuleProvider.class);
+	private static final Log log = LogFactory.getLog(EvaluableSummaryRuleProvider.class);
 
 	private static final String CLINICAL_SUMMARY_MODULE = "clinicalsummary";
 

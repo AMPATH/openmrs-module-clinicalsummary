@@ -14,39 +14,31 @@
 
 package org.openmrs.module.clinicalsummary.web.controller.utils;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
+import org.openmrs.Concept;
+import org.openmrs.Encounter;
+import org.openmrs.Obs;
+import org.openmrs.OpenmrsObject;
 import org.openmrs.Patient;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
-import org.openmrs.logic.result.Result;
-import org.openmrs.module.clinicalsummary.rule.EvaluableConstants;
-import org.openmrs.module.clinicalsummary.rule.EvaluableNameConstants;
-import org.openmrs.module.clinicalsummary.rule.ResultCacheInstance;
-import org.openmrs.module.clinicalsummary.rule.encounter.EncounterWithStringRestrictionRule;
-import org.openmrs.module.clinicalsummary.rule.observation.ObsWithStringRestrictionRule;
-import org.openmrs.module.clinicalsummary.service.EvaluatorService;
+import org.openmrs.module.clinicalsummary.service.CoreService;
+import org.openmrs.module.clinicalsummary.util.FetchRestriction;
 import org.openmrs.module.clinicalsummary.web.controller.WebUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -62,94 +54,102 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/module/clinicalsummary/utils/extendedDataEncounter")
 public class ExtendedDataEncounterController {
 
-	private static final Log log = LogFactory.getLog(ExtendedDataEncounterController.class);
+    private static final Log log = LogFactory.getLog(ExtendedDataEncounterController.class);
 
-	private static final String INPUT_STUDY_DATA = "identifier.data";
+    private static final String STUDY_DATA = "patientExtendedData";
 
-	private static final String OUTPUT_STUDY_DATA = "extended.data.encounter";
+    private static final String OUTPUT_PREFIX = "output";
 
-	public static final String JAVA_IO_TMPDIR = "java.io.tmpdir";
+    private static final String INPUT_PREFIX = "input";
 
-	public static final String CHILDS_CURRENT_HIV_STATUS = "CHILDS CURRENT HIV STATUS";
+    @RequestMapping(method = RequestMethod.GET)
+    public void populatePage(final ModelMap map) {
+        map.put("cohorts", Context.getCohortService().getAllCohorts());
+    }
 
-	@RequestMapping(method = RequestMethod.GET)
-	public void populatePage(final ModelMap map) {
-		map.put("cohorts", Context.getCohortService().getAllCohorts());
-	}
+    @RequestMapping(method = RequestMethod.POST)
+    public void processSubmit(final @RequestParam(required = true, value = "data") MultipartFile data,
+                              final @RequestParam(required = true, value = "conceptNames") String conceptNames,
+                              HttpServletResponse response) throws IOException {
 
-	@RequestMapping(method = RequestMethod.POST)
-	public void processSubmit(final @RequestParam(required = true, value = "data") MultipartFile data,
-	                          final @RequestParam(required = true, value = "concept") String concept,
-	                          HttpServletResponse response) throws IOException {
+        List<Concept> concepts = new ArrayList<Concept>();
+        for (String conceptName : StringUtils.splitPreserveAllTokens(conceptNames, ",")) {
+            Concept concept = Context.getConceptService().getConcept(conceptName);
+            if (concept != null)
+                concepts.add(concept);
+        }
 
-		PatientService patientService = Context.getPatientService();
-		PatientSetService patientSetService = Context.getPatientSetService();
+        PatientService patientService = Context.getPatientService();
+        PatientSetService patientSetService = Context.getPatientSetService();
 
-		File identifierData = new File(System.getProperty(JAVA_IO_TMPDIR), INPUT_STUDY_DATA);
-		OutputStream identifierDataStream = new BufferedOutputStream(new FileOutputStream(identifierData));
-		FileCopyUtils.copy(data.getInputStream(), identifierDataStream);
+        File identifierData = File.createTempFile(STUDY_DATA, INPUT_PREFIX);
+        OutputStream identifierDataStream = new BufferedOutputStream(new FileOutputStream(identifierData));
+        FileCopyUtils.copy(data.getInputStream(), identifierDataStream);
 
-		File extendedData = new File(System.getProperty(JAVA_IO_TMPDIR), OUTPUT_STUDY_DATA);
-		BufferedWriter writer = new BufferedWriter(new FileWriter(extendedData));
+        File extendedData = File.createTempFile(STUDY_DATA, OUTPUT_PREFIX);
+        BufferedWriter writer = new BufferedWriter(new FileWriter(extendedData));
 
-		String line;
-		BufferedReader reader = new BufferedReader(new FileReader(identifierData));
-		while ((line = reader.readLine()) != null) {
+        String line;
+        BufferedReader reader = new BufferedReader(new FileReader(identifierData));
+        while ((line = reader.readLine()) != null) {
+            Patient patient = null;
 
-			Patient patient = null;
-			String[] elements = StringUtils.splitPreserveAllTokens(line, ",");
-			Cohort cohort = patientSetService.convertPatientIdentifier(Arrays.asList(elements[0]));
-			Date referenceDate = WebUtils.parse(elements[1], "MM/dd/yyyy", new Date());
-			if (cohort.isEmpty()) {
-				writer.write("INVALID PATIENT IDENTIFIER!");
-				writer.newLine();
-			} else {
-				for (Integer integer : cohort.getMemberIds()) {
-					// get the actual patient object
-					patient = patientService.getPatient(integer);
-					if (patient != null) {
-						ExtendedData extended = new ExtendedData(referenceDate, patient);
-						extended.setDuplicates(cohort.size());
-						extended.setEncounterResults(searchEncounters(patient));
-						extended.addConceptResult(CHILDS_CURRENT_HIV_STATUS, searchObservation(patient, CHILDS_CURRENT_HIV_STATUS));
-						if (StringUtils.isNotEmpty(concept))
-							extended.addConceptResult(concept,
-									searchObservation(patient, concept));
-						writer.write(extended.generateEncounterData());
-						ResultCacheInstance.getInstance().clearCache(patient);
-					} else {
-						writer.write("INVALID PATIENT IDENTIFIER!");
-					}
-					writer.newLine();
-				}
-			}
-		}
+            String[] elements = StringUtils.splitPreserveAllTokens(line, ",");
+            if (isDigit(StringUtils.trim(elements[4])))
+                patient = patientService.getPatient(NumberUtils.toInt(elements[4]));
+            else {
+                Cohort cohort = patientSetService.convertPatientIdentifier(Arrays.asList(elements[4]));
+                for (Integer patientId : cohort.getMemberIds())
+                    patient = patientService.getPatient(patientId);
+            }
+            Date referenceDate = WebUtils.parse(elements[3], "MM/dd/yyyy", new Date());
 
-		reader.close();
-		writer.close();
+            if (patient != null) {
+                ExtendedData extended = new ExtendedData(patient, referenceDate);
+                extended.setEncounters(searchEncounters(patient));
+                for (Concept concept : concepts)
+                    extended.addObservations(concept, searchObservations(patient, concept));
+                writer.write(extended.generateEncounterData());
+                writer.newLine();
+            } else {
+                writer.write("Unresolved patient id or patient identifier for " + elements[4]);
+                writer.newLine();
+            }
+        }
 
-		InputStream inputStream = new BufferedInputStream(new FileInputStream(extendedData));
+        reader.close();
+        writer.close();
 
-		response.setHeader("Content-Disposition", "attachment; filename=" + data.getName());
-		response.setContentType("text/plain");
-		FileCopyUtils.copy(inputStream, response.getOutputStream());
-	}
+        InputStream inputStream = new BufferedInputStream(new FileInputStream(extendedData));
 
-	private Result searchObservation(Patient patient, String concept) {
-		Map<String, Object> parameters = new HashMap<String, Object>();
-		parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(concept));
+        response.setHeader("Content-Disposition", "attachment; filename=generated-" + data.getOriginalFilename());
+        response.setContentType("text/plain");
+        FileCopyUtils.copy(inputStream, response.getOutputStream());
+    }
 
-		EvaluatorService evaluatorService = Context.getService(EvaluatorService.class);
-		return evaluatorService.evaluate(patient, ObsWithStringRestrictionRule.TOKEN, parameters);
-	}
+    private Boolean isDigit(String string) {
+        for (int i = 0; i < string.length(); i++)
+            if (!Character.isDigit(string.charAt(i)))
+                return Boolean.FALSE;
+        return Boolean.TRUE;
+    }
 
-	private Result searchEncounters(Patient patient) {
+    private List<Obs> searchObservations(Patient patient, Concept concept) {
+        CoreService service = Context.getService(CoreService.class);
+        
+        Collection<OpenmrsObject> concepts = new ArrayList<OpenmrsObject>();
+        concepts.add(concept);
 
-		Map<String, Object> parameters = new HashMap<String, Object>();
-		parameters.put(EvaluableConstants.ENCOUNTER_TYPE,
-				Arrays.asList(EvaluableNameConstants.ENCOUNTER_TYPE_PEDIATRIC_INITIAL, EvaluableNameConstants.ENCOUNTER_TYPE_PEDIATRIC_RETURN));
+        Map<String, Collection<OpenmrsObject>> restrictions = new HashMap<String, Collection<OpenmrsObject>>();
+        restrictions.put("concept", concepts);
 
-		EvaluatorService evaluatorService = Context.getService(EvaluatorService.class);
-		return evaluatorService.evaluate(patient, EncounterWithStringRestrictionRule.TOKEN, parameters);
-	}
+        return service.getPatientObservations(patient.getPatientId(), restrictions, new FetchRestriction());
+    }
+
+    private List<Encounter> searchEncounters(Patient patient) {
+        CoreService service = Context.getService(CoreService.class);
+
+        Map<String, Collection<OpenmrsObject>> restrictions = new HashMap<String, Collection<OpenmrsObject>>();
+        return service.getPatientEncounters(patient.getPatientId(), restrictions, new FetchRestriction());
+    }
 }

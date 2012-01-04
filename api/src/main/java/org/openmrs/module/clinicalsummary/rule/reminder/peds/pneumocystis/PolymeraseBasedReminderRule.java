@@ -14,6 +14,11 @@
 
 package org.openmrs.module.clinicalsummary.rule.reminder.peds.pneumocystis;
 
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Map;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,11 +34,6 @@ import org.openmrs.module.clinicalsummary.rule.medication.PneumocystisCariniiRul
 import org.openmrs.module.clinicalsummary.rule.observation.ObsWithStringRestrictionRule;
 import org.openmrs.module.clinicalsummary.rule.reminder.ReminderParameters;
 import org.openmrs.module.clinicalsummary.rule.reminder.peds.fragment.ValidPolymeraseRule;
-
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Map;
 
 /**
  * Parameters: <ul> <li>[Optional] encounterType: list of all applicable encounter types </ul>
@@ -74,7 +74,7 @@ public class PolymeraseBasedReminderRule extends EvaluableRule {
 
 				Result validPolymeraseResults = validPolymeraseRule.eval(context, patientId, parameters);
 				// if we have less than 2 negative results
-				if (CollectionUtils.size(validPolymeraseResults) < 2) {
+				if (CollectionUtils.isNotEmpty(validPolymeraseResults) && CollectionUtils.size(validPolymeraseResults) < 2) {
 					parameters.remove(EvaluableConstants.OBS_CONCEPT);
 					parameters.remove(EvaluableConstants.OBS_VALUE_CODED);
 					parameters.remove(EvaluableConstants.OBS_FETCH_ORDER);

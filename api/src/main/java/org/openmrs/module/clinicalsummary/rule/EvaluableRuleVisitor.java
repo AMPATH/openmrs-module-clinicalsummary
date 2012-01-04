@@ -111,6 +111,6 @@ public class EvaluableRuleVisitor implements ClassVisitor {
 	public void visitEnd() {
 		// only register when the class is a subclass of the EvaluableRule class and token is not empty
 		if (name != null && token != null)
-			Context.getService(TokenService.class).registerToken(token, new EvaluableRuleProvider(), name);
+			Context.getService(TokenService.class).registerToken(token, new EvaluableSummaryRuleProvider(), name);
 	}
 }

@@ -14,9 +14,11 @@
 
 package org.openmrs.module.clinicalsummary.web.controller.utils;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -24,426 +26,452 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Concept;
 import org.openmrs.Encounter;
+import org.openmrs.EncounterType;
 import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
+import org.openmrs.api.EncounterService;
 import org.openmrs.api.context.Context;
-import org.openmrs.logic.result.Result;
 import org.openmrs.module.clinicalsummary.rule.EvaluableNameConstants;
-import org.openmrs.module.clinicalsummary.rule.medication.AntiRetroViralRule;
-import org.openmrs.module.clinicalsummary.rule.pediatric.AgeWithUnitRule;
-import org.openmrs.module.clinicalsummary.web.controller.WebUtils;
 import org.openmrs.util.OpenmrsUtil;
 
 public class ExtendedData {
 
-	private static final Log log = LogFactory.getLog(ExtendedData.class);
+    private static final Log log = LogFactory.getLog(ExtendedData.class);
 
-	public static final String FIELD_SEPARATOR = ",";
+    private static final String FIELD_SEPARATOR = "|";
 
-	public static final String PAEDIATRICS_WHO_CATEGORY_QUERY = "PEDS WHO CATEGORY QUERY";
+    private Patient patient;
 
-	public static final String PAEDIATRICS_CDC_CATEGORY_QUERY = "PEDS CDC CATEGORY QUERY";
+    private Date referenceDate;
 
-	public static final String MOTHER_DECEASED_STATUS = "MOTHER DECEASED, CODED";
+    private List<Encounter> encounters;
 
-	public static final String FATHER_DECEASED_STATUS = "FATHER DECEASED, CODED";
+    private Map<Concept, List<Obs>> observationsByConcept;
 
-	private Patient patient;
+    public ExtendedData(final Patient patient, final Date referenceDate) {
+        this.referenceDate = referenceDate;
+        this.patient = patient;
+    }
 
-	private Date referenceDate;
+    /**
+     * @return
+     */
+    public Patient getPatient() {
+        return patient;
+    }
 
-	private Integer duplicates;
+    /**
+     * @param patient
+     */
+    public void setPatient(final Patient patient) {
+        this.patient = patient;
+    }
 
-	private Result encounterResults;
+    /**
+     * @return
+     */
+    public Date getReferenceDate() {
+        return referenceDate;
+    }
 
-	private Map<String, Result> conceptResults;
+    /**
+     * @param referenceDate
+     */
+    public void setReferenceDate(final Date referenceDate) {
+        this.referenceDate = referenceDate;
+    }
 
-	private Map<String, Result> tokenResults;
+    /**
+     * @return
+     */
+    public List<Encounter> getEncounters() {
+        if (encounters == null)
+            encounters = new ArrayList<Encounter>();
+        return encounters;
+    }
 
-	public ExtendedData(final Date referenceDate, final Patient patient) {
-		this.referenceDate = referenceDate;
-		this.patient = patient;
-	}
+    /**
+     * @param encounters
+     */
+    public void setEncounters(final List<Encounter> encounters) {
+        this.encounters = encounters;
+    }
 
-	/**
-	 * @return
-	 */
-	public Patient getPatient() {
-		return patient;
-	}
+    /**
+     * @return
+     */
+    public Map<Concept, List<Obs>> getObservationsByConcept() {
+        if (observationsByConcept == null)
+            observationsByConcept = new LinkedHashMap<Concept, List<Obs>>();
+        return observationsByConcept;
+    }
 
-	/**
-	 * @param patient
-	 */
-	public void setPatient(final Patient patient) {
-		this.patient = patient;
-	}
+    /**
+     * @param observationsByConcept
+     */
+    public void setObservationsByConcept(final Map<Concept, List<Obs>> observationsByConcept) {
+        this.observationsByConcept = observationsByConcept;
+    }
 
-	/**
-	 * @return
-	 */
-	public Date getReferenceDate() {
-		return referenceDate;
-	}
+    /**
+     * @param concept
+     * @param observations
+     */
+    public void addObservations(final Concept concept, final List<Obs> observations) {
+        getObservationsByConcept().put(concept, observations);
+    }
 
-	/**
-	 * @param referenceDate
-	 */
-	public void setReferenceDate(final Date referenceDate) {
-		this.referenceDate = referenceDate;
-	}
+    /**
+     * @param concept
+     * @return
+     */
+    public List<Obs> getObservations(final Concept concept) {
+        return getObservationsByConcept().get(concept);
+    }
 
-	/**
-	 * @return
-	 */
-	public Integer getDuplicates() {
-		return duplicates;
-	}
+    /**
+     * Search encounter that occur around the reference date. The reference date is the approximated date of when
+     * the date should be entered by the data assistant.
+     *
+     * @return
+     */
+    private Encounter searchEncounterAroundReferenceDate() {
+        Integer counter = 0;
+        Encounter encounter = null;
+        log.info("Searching encounter from encounter with size: " + encounters.size());
+        while (counter < getEncounters().size() && encounter == null) {
+            Encounter currentEncounter = getEncounters().get(counter++);
+            if (DateUtils.isSameDay(currentEncounter.getEncounterDatetime(), referenceDate))
+                encounter = currentEncounter;
+        }
 
-	/**
-	 * @param duplicates
-	 */
-	public void setDuplicates(final Integer duplicates) {
-		this.duplicates = duplicates;
-	}
+        // if we can't find the encounter yet, then we use approximation here +/- 5 days from the reference date.
+        // maybe we can just go straight to this approximation approach or not!
+        if (encounter == null) {
+            log.info("Can't find encounter with matching datetime: " + Context.getDateFormat().format(referenceDate));
+            Calendar calendar = Calendar.getInstance();
 
-	/**
-	 * @return
-	 */
-	public Result getEncounterResults() {
-		return encounterResults;
-	}
+            calendar.setTime(referenceDate);
+            calendar.add(Calendar.DATE, 5);
+            Date startDate = calendar.getTime();
 
-	/**
-	 * @param encounterResults
-	 */
-	public void setEncounterResults(final Result encounterResults) {
-		this.encounterResults = encounterResults;
-	}
+            calendar.setTime(referenceDate);
+            calendar.add(Calendar.DATE, -5);
+            Date endDate = calendar.getTime();
 
-	/**
-	 * @return
-	 */
-	public Map<String, Result> getConceptResults() {
-		if (conceptResults == null)
-			conceptResults = new LinkedHashMap<String, Result>();
-		return conceptResults;
-	}
+            while (counter < getEncounters().size() && encounter == null) {
+                Encounter currentEncounter = getEncounters().get(counter++);
+                if (startDate.after(currentEncounter.getEncounterDatetime())
+                        && endDate.before(currentEncounter.getEncounterDatetime()))
+                    encounter = currentEncounter;
+            }
+        }
 
-	/**
-	 * @param conceptResults
-	 */
-	public void setConceptResults(final Map<String, Result> conceptResults) {
-		this.conceptResults = conceptResults;
-	}
+        return encounter;
+    }
 
-	/**
-	 * @param concept
-	 * @param result
-	 */
-	public void addConceptResult(final String concept, final Result result) {
-		getConceptResults().put(concept, result);
-	}
+    private Encounter searchExpressEncounterAroundReferenceDate(final EncounterType encounterType) {
+        Encounter expressEncounter = null;
 
-	/**
-	 * @param concept
-	 * @return
-	 */
-	public Result getConceptResult(final String concept) {
-		return getConceptResults().get(concept);
-	}
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(referenceDate);
+        calendar.add(Calendar.DATE, -5);
+        Date enrollmentDate = calendar.getTime();
 
-	/**
-	 * @return
-	 */
-	public Map<String, Result> getTokenResults() {
-		if (tokenResults == null)
-			tokenResults = new LinkedHashMap<String, Result>();
-		return tokenResults;
-	}
+        Integer counter = 0;
+        Boolean shouldStop = Boolean.FALSE;
+        while (counter < getEncounters().size() && !shouldStop) {
+            Encounter encounter = getEncounters().get(counter++);
+            if (encounter.getEncounterDatetime().after(enrollmentDate)
+                    || DateUtils.isSameDay(encounter.getEncounterDatetime(), enrollmentDate)) {
+                if (OpenmrsUtil.nullSafeEquals(encounter.getEncounterType(), encounterType))
+                    expressEncounter = encounter;
+            } else
+                shouldStop = Boolean.TRUE;
+        }
 
-	/**
-	 * @param tokenResults
-	 */
-	public void setTokenResults(final Map<String, Result> tokenResults) {
-		this.tokenResults = tokenResults;
-	}
+        return expressEncounter;
+    }
 
-	/**
-	 * @param token
-	 * @param result
-	 */
-	public void addTokenResult(final String token, final Result result) {
-		getTokenResults().put(token, result);
-	}
+    /**
+     * Search obs that comes after reference date
+     *
+     * @param concept
+     * @return
+     */
+    private Obs searchObservationAroundReferenceDate(final Concept concept) {
+        Obs obs = null;
 
-	/**
-	 * @param token
-	 * @return
-	 */
-	public Result getTokenResult(final String token) {
-		return getTokenResults().get(token);
-	}
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(referenceDate);
+        calendar.add(Calendar.DATE, -5);
+        Date enrollmentDate = calendar.getTime();
 
-	private Result searchValidObsResult(final String concept) {
-		Integer counter = 0;
-		Result result = null;
-		while (counter < getConceptResult(concept).size() && result == null) {
-			Result observationResult = getConceptResult(concept).get(counter++);
-			if (observationResult.getResultDate().before(referenceDate))
-				result = observationResult;
-		}
-		return result;
-	}
+        List<Obs> observations = getObservations(concept);
 
-	/**
-	 * Search for any encounter of a patient to a particular location
-	 *
-	 * @param location
-	 * @return
-	 */
-	private Result searchVisitCountForLocation(final Location location) {
-		Integer counter = 0;
-		Result result = new Result();
-		while (counter < getEncounterResults().size()) {
-			Result encounterResult = getEncounterResults().get(counter++);
-			Encounter encounter = (Encounter) encounterResult.getResultObject();
-			if (OpenmrsUtil.nullSafeEquals(location, encounter.getLocation())
-					&& encounterResult.getResultDate().before(referenceDate))
-				result.add(encounterResult);
-		}
-		return result;
-	}
+        Integer counter = 0;
+        Boolean shouldStop = Boolean.FALSE;
+        while (counter < observations.size() && !shouldStop) {
+            // iterate over all observation for the concept
+            Obs currentObs = observations.get(counter++);
+            // only assign the current one to returned when the result date is after the reference date
+            // at the end of the iteration, the returned result will hold the reference to the latest result after the encounter date
+            if (currentObs.getObsDatetime().after(enrollmentDate)
+                    || DateUtils.isSameDay(currentObs.getObsDatetime(), enrollmentDate))
+                obs = currentObs;
+            else
+                shouldStop = Boolean.TRUE;
+        }
+        return obs;
+    }
 
-	/**
-	 * Search for the patient primary clinic
-	 *
-	 * @return
-	 */
-	private Location searchPrimaryLocation() {
-		Location primaryLocation = null;
-		if (CollectionUtils.isNotEmpty(getEncounterResults())) {
-			Encounter encounter = (Encounter) getEncounterResults().latest().getResultObject();
-			Location currentLocation = primaryLocation = encounter.getLocation();
+    /**
+     * Calculate how many times the same provider provides care to the patient
+     *
+     * @param provider
+     * @return
+     */
+    private List<Encounter> searchProvider(final Person provider) {
+        List<Encounter> encounters = new ArrayList<Encounter>();
+        for (Encounter encounter : getEncounters()) {
+            if (OpenmrsUtil.nullSafeEquals(provider, encounter.getProvider()))
+                encounters.add(encounter);
+        }
+        return encounters;
+    }
 
-			Integer counter = 1;
-			while (counter < getEncounterResults().size() && counter < 3) {
-				encounter = (Encounter) getEncounterResults().get(counter++).getResultObject();
-				if (OpenmrsUtil.nullSafeEquals(encounter.getLocation(), currentLocation)
-						|| OpenmrsUtil.nullSafeEquals(encounter.getLocation(), primaryLocation))
-					return currentLocation;
+    /**
+     * Search for the patient first encounter
+     *
+     * @return the patient first encounter
+     */
+    private Encounter getInitialEncounter() {
+        Encounter initialEncounter = null;
+        if (CollectionUtils.isNotEmpty(encounters))
+            initialEncounter = encounters.get(encounters.size() - 1);
+        return initialEncounter;
+    }
 
-				if (!OpenmrsUtil.nullSafeEquals(encounter.getLocation(), currentLocation))
-					currentLocation = encounter.getLocation();
-			}
-		}
+    /**
+     * Search for the patient primary clinic
+     *
+     * @return the patient primary clinic based on the last 3 encounters
+     */
+    private Location getPrimaryClinic() {
+        Location latestLocation = null;
 
-		return primaryLocation;
-	}
+        if (CollectionUtils.isNotEmpty(getEncounters())) {
 
-	/**
-	 * @return
-	 */
-	private Result searchEnrollmentEncounter() {
-		Integer counter = 0;
-		Result result = null;
-		while (counter < getEncounterResults().size() && result == null) {
-			Result observationResult = getEncounterResults().get(counter++);
-			if (DateUtils.isSameDay(observationResult.getResultDate(), referenceDate))
-				result = observationResult;
-		}
-		// if we can't find the encounter yet, then we use approximation here +/- 5 days from the reference date.
+            Integer counter = 0;
+            Encounter encounter = encounters.get(counter++);
+            latestLocation = encounter.getLocation();
 
-		if (result == null) {
-			Calendar calendar = Calendar.getInstance();
+            Location currentLocation = null;
+            while (counter < getEncounters().size() && counter < 3) {
+                encounter = encounters.get(counter++);
 
-			calendar.setTime(referenceDate);
-			calendar.add(Calendar.DATE, 5);
-			Date startDate = calendar.getTime();
+                if (!OpenmrsUtil.nullSafeEquals(encounter.getLocation(), currentLocation))
+                    currentLocation = encounter.getLocation();
 
-			calendar.setTime(referenceDate);
-			calendar.add(Calendar.DATE, -5);
-			Date endDate = calendar.getTime();
+                if (OpenmrsUtil.nullSafeEquals(encounter.getLocation(), currentLocation)
+                        || OpenmrsUtil.nullSafeEquals(encounter.getLocation(), latestLocation))
+                    return currentLocation;
+            }
+        }
 
-			while (counter < getEncounterResults().size() && result == null) {
-				Result observationResult = getEncounterResults().get(counter++);
-				if (startDate.after(observationResult.getResultDate()) && endDate.before(observationResult.getResultDate()))
-					result = observationResult;
-			}
-		}
+        return latestLocation;
+    }
 
-		return result;
-	}
+    /**
+     * Search for all encounters of the patient to a particular location
+     *
+     * @param location the location
+     * @return list of all relevant encounters
+     */
+    private List<Encounter> searchVisitCountForLocation(final Location location) {
+        List<Encounter> encounterForLocation = new ArrayList<Encounter>();
+        for (Encounter encounter : encounters)
+            if (OpenmrsUtil.nullSafeEquals(location, encounter.getLocation()))
+                encounterForLocation.add(encounter);
 
-	/**
-	 * @param concept
-	 * @return
-	 */
-	private Result searchAfterEnrollmentObservation(final String concept) {
-		Integer counter = 0;
+        return encounterForLocation;
+    }
 
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(referenceDate);
-		calendar.add(Calendar.DATE, -5);
-		Date enrollmentDate = calendar.getTime();
+    public String generatePatientData() {
+        // create the string holder
+        StringBuilder builder = new StringBuilder();
 
-		Result returnedResult = null;
-		while (counter < getConceptResult(concept).size()) {
-			// iterate over all results for the concept
-			Result currentResult = getConceptResult(concept).get(counter);
-			// only assign the current one to returned when the result date is after the reference date
-			// at the end of the iteration, the returned result will hold the reference to the latest result after the encounter date
-			if (currentResult.getResultDate().after(enrollmentDate) || DateUtils.isSameDay(currentResult.getResultDate(), enrollmentDate))
-				returnedResult = currentResult;
-			counter++;
-		}
-		return returnedResult;
-	}
+        // append the initial identifier
+        PatientIdentifier patientIdentifier = patient.getPatientIdentifier();
 
-	/**
-	 * @param concept
-	 * @return
-	 */
-	private Result searchBeforeEnrollmentObservation(final String concept) {
-		Integer counter = 0;
-		Date enrollmentDate = WebUtils.parse("02/28/2011", "MM/dd/yyyy", new Date());
-		while (counter < getConceptResult(concept).size()) {
-			// iterate over all results for the concept
-			Result currentResult = getConceptResult(concept).get(counter++);
-			// only assign the current one to returned when the result date is after the reference date
-			// at the end of the iteration, the returned result will hold the reference to the latest result after the encounter date
-			if (currentResult.getResultDate().before(enrollmentDate))
-				return currentResult;
-		}
-		return null;
-	}
+        String identifier = StringUtils.EMPTY;
+        if (patientIdentifier != null)
+            identifier = patientIdentifier.getIdentifier();
+        builder.append(identifier).append(FIELD_SEPARATOR);
 
-	/**
-	 * @param provider
-	 * @return
-	 */
-	private Result searchProvider(final Person provider) {
-		Integer counter = 0;
-		Result result = new Result();
-		while (counter < getEncounterResults().size()) {
-			Result encounterResult = getEncounterResults().get(counter++);
-			Encounter encounter = (Encounter) encounterResult.getResultObject();
-			if (OpenmrsUtil.nullSafeEquals(provider, encounter.getProvider())
-					&& encounterResult.getResultDate().before(referenceDate))
-				result.add(encounterResult);
-		}
-		return result;
-	}
+        // append the patient internal id
+        builder.append(patient.getPatientId()).append(FIELD_SEPARATOR);
 
-	public String generateExtededData() {
-		// create the string holder
-		StringBuilder builder = new StringBuilder();
-		// append number of patient actually resolved by the patient identifier
-		builder.append(getDuplicates()).append(FIELD_SEPARATOR);
-		// append the initial identifier
-		PatientIdentifier patientIdentifier = getPatient().getPatientIdentifier();
-		builder.append(patientIdentifier != null ? patientIdentifier.getIdentifier() : StringUtils.EMPTY).append(FIELD_SEPARATOR);
-		// append the patient internal id
-		builder.append(getPatient().getPatientId()).append(FIELD_SEPARATOR);
-		// append the patient names
-		PersonName personName = getPatient().getPersonName();
-		builder.append(personName != null ? personName.getFullName() : StringUtils.EMPTY).append(FIELD_SEPARATOR);
-		// append the patient age using the age with unit rule
-		builder.append("\"").append(getTokenResult(AgeWithUnitRule.TOKEN).toString()).append("\"").append(FIELD_SEPARATOR);
-		// append pediatric initial encounter date
-		String initialEncounterDatetime = StringUtils.EMPTY;
-		if (CollectionUtils.isNotEmpty(getEncounterResults())) {
-			Result initialEncounterResult = getEncounterResults().get(getEncounterResults().size() - 1);
-			initialEncounterDatetime = Context.getDateFormat().format(initialEncounterResult.getResultDate());
-		}
-		builder.append(initialEncounterDatetime).append(FIELD_SEPARATOR);
-		// append the primary clinic
-		Location primaryLocation = searchPrimaryLocation();
-		builder.append(primaryLocation == null ? StringUtils.EMPTY : primaryLocation.getName()).append(FIELD_SEPARATOR);
-		// append the gender
-		builder.append(getPatient().getGender()).append(FIELD_SEPARATOR);
-		// append prev module 4 visit
-		Location location = Context.getLocationService().getLocation("MTRH Module 4");
-		Result result = searchVisitCountForLocation(location);
-		builder.append(result.size()).append(FIELD_SEPARATOR);
-		// append WHO stage
-		Result whoStageResult = searchValidObsResult(PAEDIATRICS_WHO_CATEGORY_QUERY);
-		builder.append(whoStageResult != null ? whoStageResult.toString() : StringUtils.EMPTY).append(FIELD_SEPARATOR);
-		// append the cdc class
-		Result cdcClassResult = searchValidObsResult(PAEDIATRICS_CDC_CATEGORY_QUERY);
-		builder.append(cdcClassResult != null ? cdcClassResult.toString() : StringUtils.EMPTY).append(FIELD_SEPARATOR);
-		// append whether patients on arv or not
-		Result antiRetroViralResults = getTokenResult(AntiRetroViralRule.TOKEN);
-		builder.append(CollectionUtils.isNotEmpty(antiRetroViralResults) ? "YES" : "NO").append(FIELD_SEPARATOR);
-		// append mother deceased status
-		Result motherStatusResult = searchValidObsResult(MOTHER_DECEASED_STATUS);
-		builder.append(motherStatusResult != null ? motherStatusResult.toString() : StringUtils.EMPTY).append(FIELD_SEPARATOR);
-		// append father deceased status
-		Result fatherStatusResult = searchValidObsResult(FATHER_DECEASED_STATUS);
-		builder.append(fatherStatusResult != null ? fatherStatusResult.toString() : StringUtils.EMPTY).append(FIELD_SEPARATOR);
+        // append the patient names
+        PersonName patientName = getPatient().getPersonName();
 
-		Result controlResult = searchValidObsResult(EvaluableNameConstants.PEDIATRIC_STUDY_CONTROL_GROUP);
-		Result interventionResult = searchValidObsResult(EvaluableNameConstants.PEDIATRIC_STUDY_INTERVENTION_GROUP);
-		if (controlResult != null)
-			builder.append("CONTROL").append(FIELD_SEPARATOR).append(Context.getDateFormat().format(controlResult.getResultDate()));
-		if (interventionResult != null)
-			builder.append("INTERVENTION").append(FIELD_SEPARATOR).append(Context.getDateFormat().format(interventionResult.getResultDate()));
-		return builder.toString();
-	}
+        String name = StringUtils.EMPTY;
+        if (patientName != null)
+            name = patientName.getFullName();
+        builder.append(name).append(FIELD_SEPARATOR);
 
-	public String generateEncounterData() {
-		StringBuilder builder = new StringBuilder();
-		// append the initial identifier
-		PatientIdentifier patientIdentifier = getPatient().getPatientIdentifier();
-		builder.append(patientIdentifier != null ? patientIdentifier.getIdentifier() : StringUtils.EMPTY).append(FIELD_SEPARATOR);
-		// append the patient internal id
-		builder.append(getPatient().getPatientId()).append(FIELD_SEPARATOR);
-		// append the patient names
-		PersonName personName = getPatient().getPersonName();
-		builder.append(personName != null ? personName.getFullName() : StringUtils.EMPTY).append(FIELD_SEPARATOR);
-		Result enrollmentEncounter = searchEnrollmentEncounter();
-		if (enrollmentEncounter != null) {
-			Encounter encounter = (Encounter) enrollmentEncounter.getResultObject();
-			builder.append(encounter.getEncounterId()).append(FIELD_SEPARATOR);
-			builder.append(Context.getDateFormat().format(encounter.getEncounterDatetime())).append(FIELD_SEPARATOR);
-			builder.append(encounter.getProvider().getPersonId()).append(FIELD_SEPARATOR);
-			builder.append(encounter.getProvider().getPersonName().getFullName()).append(FIELD_SEPARATOR);
-			builder.append(searchProvider(encounter.getProvider()).size()).append(FIELD_SEPARATOR);
-		} else {
-			builder.append(FIELD_SEPARATOR).append(FIELD_SEPARATOR).append(FIELD_SEPARATOR).append(FIELD_SEPARATOR).append(FIELD_SEPARATOR);
-		}
+        // append the patient age
+        builder.append(patient.getAge()).append(FIELD_SEPARATOR);
 
-		for (String concept : getConceptResults().keySet()) {
-			log.info("Searching concept name: " + concept);
-			Result afterEnrollmentObservation = searchAfterEnrollmentObservation(concept);
-			if (afterEnrollmentObservation != null) {
-				Obs obs = (Obs) afterEnrollmentObservation.getResultObject();
-				builder.append(obs.getObsId()).append(FIELD_SEPARATOR);
-				builder.append(Context.getDateFormat().format(afterEnrollmentObservation.getResultDate())).append(FIELD_SEPARATOR);
-				builder.append(afterEnrollmentObservation.toString()).append(FIELD_SEPARATOR);
-			} else {
-				builder.append(FIELD_SEPARATOR).append(FIELD_SEPARATOR).append(FIELD_SEPARATOR);
-			}
-		}
+        // append the gender
+        builder.append(getPatient().getGender()).append(FIELD_SEPARATOR);
 
-		for (String concept : getConceptResults().keySet()) {
-			log.info("Searching concept name: " + concept);
-			Result afterEnrollmentObservation = searchBeforeEnrollmentObservation(concept);
-			if (afterEnrollmentObservation != null) {
-				Obs obs = (Obs) afterEnrollmentObservation.getResultObject();
-				builder.append(obs.getObsId()).append(FIELD_SEPARATOR);
-				builder.append(Context.getDateFormat().format(afterEnrollmentObservation.getResultDate())).append(FIELD_SEPARATOR);
-				builder.append(afterEnrollmentObservation.toString()).append(FIELD_SEPARATOR);
-			} else {
-				builder.append(FIELD_SEPARATOR).append(FIELD_SEPARATOR).append(FIELD_SEPARATOR);
-			}
-		}
+        // append initial encounter date
+        Encounter initialEncounter = getInitialEncounter();
 
-		return builder.toString();
-	}
+        String initialEncounterDatetime = StringUtils.EMPTY;
+        if (initialEncounter != null)
+            initialEncounterDatetime = Context.getDateFormat().format(initialEncounter.getEncounterDatetime());
+        builder.append(initialEncounterDatetime).append(FIELD_SEPARATOR);
+
+        // append the primary clinic
+        Location primaryClinic = getPrimaryClinic();
+
+        String primaryClinicName = StringUtils.EMPTY;
+        if (primaryClinic != null)
+            primaryClinicName = primaryClinic.getName();
+        builder.append(primaryClinicName).append(FIELD_SEPARATOR);
+
+        // append visit count to module 1
+        Location location = Context.getLocationService().getLocation("MTRH Module 1");
+        List<Encounter> encountersForLocation = searchVisitCountForLocation(location);
+        builder.append(encountersForLocation.size()).append(FIELD_SEPARATOR);
+
+        // append visit count to module 2
+        location = Context.getLocationService().getLocation("MTRH Module 2");
+        encountersForLocation = searchVisitCountForLocation(location);
+        builder.append(encountersForLocation.size()).append(FIELD_SEPARATOR);
+
+        // append visit count to module 2
+        location = Context.getLocationService().getLocation("MTRH Module 3");
+        encountersForLocation = searchVisitCountForLocation(location);
+        builder.append(encountersForLocation.size()).append(FIELD_SEPARATOR);
+
+        return builder.toString();
+    }
+
+    public String generateEncounterData() {
+        StringBuilder builder = new StringBuilder();
+
+        // append the initial identifier
+        PatientIdentifier patientIdentifier = patient.getPatientIdentifier();
+
+        String identifier = StringUtils.EMPTY;
+        if (patientIdentifier != null)
+            identifier = patientIdentifier.getIdentifier();
+        builder.append(identifier).append(FIELD_SEPARATOR);
+
+        // append the patient internal id
+        builder.append(patient.getPatientId()).append(FIELD_SEPARATOR);
+
+        // append the patient names
+        PersonName patientName = getPatient().getPersonName();
+        String name = StringUtils.EMPTY;
+        if (patientName != null)
+            name = patientName.getFullName();
+        builder.append(name).append(FIELD_SEPARATOR);
+
+        // Find the encounter data
+        Encounter encounter = searchEncounterAroundReferenceDate();
+
+        String encounterId = StringUtils.EMPTY;
+        if (encounter != null)
+            encounterId = String.valueOf(encounter.getEncounterId());
+        builder.append(encounterId).append(FIELD_SEPARATOR);
+
+        String encounterDatetime = StringUtils.EMPTY;
+        if (encounter != null)
+            encounterDatetime = Context.getDateFormat().format(encounter.getEncounterDatetime());
+        builder.append(encounterDatetime).append(FIELD_SEPARATOR);
+
+        String providerId = StringUtils.EMPTY;
+        if (encounter != null)
+            providerId = String.valueOf(encounter.getProvider().getPersonId());
+        builder.append(providerId).append(FIELD_SEPARATOR);
+
+        String providerName = StringUtils.EMPTY;
+        if (encounter != null)
+            providerName = encounter.getProvider().getPersonName().getFullName();
+        builder.append(providerName).append(FIELD_SEPARATOR);
+
+        String previousVisitCount = StringUtils.EMPTY;
+        if (encounter != null)
+            previousVisitCount = String.valueOf(searchProvider(encounter.getProvider()).size());
+        builder.append(previousVisitCount).append(FIELD_SEPARATOR);
+
+        for (Concept concept : getObservationsByConcept().keySet()) {
+            Obs obs = searchObservationAroundReferenceDate(concept);
+
+            String obsConceptName = StringUtils.EMPTY;
+            if (concept != null)
+                obsConceptName = concept.getName(Context.getLocale()).getName();
+            builder.append(obsConceptName).append(FIELD_SEPARATOR);
+
+            String obsId = StringUtils.EMPTY;
+            if (obs != null)
+                obsId = String.valueOf(obs.getObsId());
+            builder.append(obsId).append(FIELD_SEPARATOR);
+
+            String obsDatetime = StringUtils.EMPTY;
+            if (obs != null)
+                obsDatetime = Context.getDateFormat().format(obs.getObsDatetime());
+            builder.append(obsDatetime).append(FIELD_SEPARATOR);
+
+            String obsValue = StringUtils.EMPTY;
+            if (obs != null)
+                obsValue = obs.getValueAsString(Context.getLocale());
+            builder.append(obsValue).append(FIELD_SEPARATOR);
+        }
+
+        EncounterService service = Context.getEncounterService();
+
+        EncounterType expressHighRiskEncounterType = service.getEncounterType(EvaluableNameConstants.ECHIGHRISK);
+        Encounter expressHighRiskEncounter = searchExpressEncounterAroundReferenceDate(expressHighRiskEncounterType);
+
+        builder.append(EvaluableNameConstants.ECHIGHRISK).append(FIELD_SEPARATOR);
+
+        String expressHighRiskEncounterId = StringUtils.EMPTY;
+        if (expressHighRiskEncounter != null)
+            expressHighRiskEncounterId = String.valueOf(expressHighRiskEncounter.getId());
+        builder.append(expressHighRiskEncounterId).append(FIELD_SEPARATOR);
+
+        String expressHighRiskEncounterDatetime = StringUtils.EMPTY;
+        if (expressHighRiskEncounter != null)
+            expressHighRiskEncounterDatetime = Context.getDateFormat().format(expressHighRiskEncounter.getEncounterDatetime());
+        builder.append(expressHighRiskEncounterDatetime).append(FIELD_SEPARATOR);
+
+        EncounterType expressStableEncounterType = service.getEncounterType(EvaluableNameConstants.ECSTABLE);
+        Encounter expressStableEncounter = searchExpressEncounterAroundReferenceDate(expressStableEncounterType);
+
+        builder.append(EvaluableNameConstants.ECSTABLE).append(FIELD_SEPARATOR);
+
+        String expressStableEncounterId = StringUtils.EMPTY;
+        if (expressStableEncounter != null)
+            expressStableEncounterId = String.valueOf(expressStableEncounter.getId());
+        builder.append(expressStableEncounterId).append(FIELD_SEPARATOR);
+
+        String expressStableEncounterDatetime = StringUtils.EMPTY;
+        if (expressStableEncounter != null)
+            expressStableEncounterDatetime = Context.getDateFormat().format(expressStableEncounter.getEncounterDatetime());
+        builder.append(expressStableEncounterDatetime).append(FIELD_SEPARATOR);
+
+
+        return builder.toString();
+    }
 }

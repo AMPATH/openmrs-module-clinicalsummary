@@ -14,39 +14,33 @@
 
 package org.openmrs.module.clinicalsummary.web.controller.utils;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
-import org.openmrs.Concept;
+import org.openmrs.Encounter;
+import org.openmrs.OpenmrsObject;
 import org.openmrs.Patient;
-import org.openmrs.api.ConceptService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
-import org.openmrs.logic.result.Result;
-import org.openmrs.module.clinicalsummary.rule.EvaluableConstants;
-import org.openmrs.module.clinicalsummary.rule.EvaluableNameConstants;
-import org.openmrs.module.clinicalsummary.rule.ResultCacheInstance;
-import org.openmrs.module.clinicalsummary.rule.encounter.EncounterWithStringRestrictionRule;
-import org.openmrs.module.clinicalsummary.rule.medication.AntiRetroViralRule;
-import org.openmrs.module.clinicalsummary.rule.observation.ObsWithStringRestrictionRule;
-import org.openmrs.module.clinicalsummary.rule.pediatric.AgeWithUnitRule;
 import org.openmrs.module.clinicalsummary.service.CoreService;
-import org.openmrs.module.clinicalsummary.service.EvaluatorService;
+import org.openmrs.module.clinicalsummary.util.FetchRestriction;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  */
@@ -54,112 +48,72 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @RequestMapping("/module/clinicalsummary/utils/extendedDataGeneral")
 public class ExtendedDataGeneralController {
 
-	private static final Log log = LogFactory.getLog(ExtendedDataGeneralController.class);
+    private static final Log log = LogFactory.getLog(ExtendedDataGeneralController.class);
 
-	private static final String OUTPUT_STUDY_DATA = "extended.data.general";
+    private static final String STUDY_DATA = "patientExtendedData";
 
-	private static final String EXTENDED_DATA_COHORT_NAME = "extended.data.cohort";
+    private static final String OUTPUT_PREFIX = "output";
 
-	public static final String JAVA_IO_TMPDIR = "java.io.tmpdir";
+    private static final String INPUT_PREFIX = "input";
 
-	private Date referenceDate;
+    @RequestMapping(method = RequestMethod.GET)
+    public void populatePage(final ModelMap map) {
+    }
 
-	public ExtendedDataGeneralController() {
-		Calendar calendar = Calendar.getInstance();
-		calendar.set(Calendar.YEAR, 2011);
-		calendar.set(Calendar.MONTH, Calendar.MARCH);
-		calendar.set(Calendar.DATE, 1);
-		referenceDate = calendar.getTime();
-	}
+    @RequestMapping(method = RequestMethod.POST)
+    public void processRequest(final @RequestParam(required = true, value = "data") MultipartFile data, HttpServletResponse response) throws IOException {
 
-	@RequestMapping(method = RequestMethod.GET)
-	public void populatePage(final ModelMap map) {
-	}
+        PatientService patientService = Context.getPatientService();
+        PatientSetService patientSetService = Context.getPatientSetService();
 
-	@RequestMapping(method = RequestMethod.POST)
-	public void processRequest() throws IOException {
+        File identifierData = File.createTempFile(STUDY_DATA, INPUT_PREFIX);
+        OutputStream identifierDataStream = new BufferedOutputStream(new FileOutputStream(identifierData));
+        FileCopyUtils.copy(data.getInputStream(), identifierDataStream);
 
-		PatientService patientService = Context.getPatientService();
-		PatientSetService patientSetService = Context.getPatientSetService();
-		ConceptService conceptService = Context.getConceptService();
-		CoreService coreService = Context.getService(CoreService.class);
+        File extendedData = File.createTempFile(STUDY_DATA, OUTPUT_PREFIX);
+        BufferedWriter writer = new BufferedWriter(new FileWriter(extendedData));
 
-		File extendedData = new File(System.getProperty(JAVA_IO_TMPDIR), OUTPUT_STUDY_DATA);
-		BufferedWriter writer = new BufferedWriter(new FileWriter(extendedData));
-		Concept controlConcept = conceptService.getConcept(EvaluableNameConstants.PEDIATRIC_STUDY_CONTROL_GROUP);
-		Concept interventionConcept = conceptService.getConcept(EvaluableNameConstants.PEDIATRIC_STUDY_INTERVENTION_GROUP);
-		// combine both cohort
-		Cohort cohort = Context.getCohortService().getCohort(EXTENDED_DATA_COHORT_NAME);
-		if (cohort == null)
-			cohort = coreService.getObservationCohort(Arrays.asList(controlConcept, interventionConcept), null, null);
-		for (Integer integer : cohort.getMemberIds()) {
-			// get the actual patient object
-			Patient patient = patientService.getPatient(integer);
-			if (patient != null) {
-				ExtendedData extended = new ExtendedData(referenceDate, patient);
-				extended.setDuplicates(cohort.size());
-				extended.setEncounterResults(searchEncounters(patient));
-				extended.addConceptResult(ExtendedData.PAEDIATRICS_WHO_CATEGORY_QUERY,
-						searchObservation(patient, ExtendedData.PAEDIATRICS_WHO_CATEGORY_QUERY));
-				extended.addConceptResult(ExtendedData.PAEDIATRICS_CDC_CATEGORY_QUERY,
-						searchObservation(patient, ExtendedData.PAEDIATRICS_CDC_CATEGORY_QUERY));
-				extended.addConceptResult(ExtendedData.MOTHER_DECEASED_STATUS, searchObservation(patient, ExtendedData.MOTHER_DECEASED_STATUS));
-				extended.addConceptResult(ExtendedData.FATHER_DECEASED_STATUS, searchObservation(patient, ExtendedData.FATHER_DECEASED_STATUS));
-				extended.addConceptResult(ExtendedData.FATHER_DECEASED_STATUS, searchObservation(patient, ExtendedData.FATHER_DECEASED_STATUS));
-				extended.addConceptResult(EvaluableNameConstants.PEDIATRIC_STUDY_CONTROL_GROUP,
-						searchObservation(patient, EvaluableNameConstants.PEDIATRIC_STUDY_CONTROL_GROUP));
-				extended.addConceptResult(EvaluableNameConstants.PEDIATRIC_STUDY_INTERVENTION_GROUP,
-						searchObservation(patient, EvaluableNameConstants.PEDIATRIC_STUDY_INTERVENTION_GROUP));
-				extended.addTokenResult(AntiRetroViralRule.TOKEN, searchMedications(patient, AntiRetroViralRule.TOKEN));
+        String line;
+        BufferedReader reader = new BufferedReader(new FileReader(identifierData));
+        while ((line = reader.readLine()) != null) {
+            Patient patient = null;
+            if (isDigit(StringUtils.trim(line)))
+                patient = patientService.getPatient(NumberUtils.toInt(line));
+            else {
+                Cohort cohort = patientSetService.convertPatientIdentifier(Arrays.asList(line));
+                for (Integer patientId : cohort.getMemberIds())
+                    patient = patientService.getPatient(patientId);
+            }
 
-				Map<String, Object> parameters = new HashMap<String, Object>();
-				parameters.put(AgeWithUnitRule.REFERENCE_DATE, referenceDate);
-				extended.addTokenResult(AgeWithUnitRule.TOKEN, evaluate(patient, AgeWithUnitRule.TOKEN, parameters));
-				writer.write(extended.generateExtededData());
-				writer.newLine();
+            if (patient != null) {
+                ExtendedData extended = new ExtendedData(patient, null);
+                extended.setEncounters(searchEncounters(patient));
+                writer.write(extended.generatePatientData());
+                writer.newLine();
+            } else {
+                writer.write("Unresolved patient id or patient identifier for " + line);
+                writer.newLine();
+            }
+        }
+        reader.close();
+        writer.close();
 
-				ResultCacheInstance.getInstance().clearCache(patient);
-			}
-		}
-		writer.close();
-	}
+        InputStream inputStream = new BufferedInputStream(new FileInputStream(extendedData));
 
-	private Result evaluate(Patient patient, String token, Map<String, Object> parameters) {
-		EvaluatorService evaluatorService = Context.getService(EvaluatorService.class);
-		return evaluatorService.evaluate(patient, token, parameters);
-	}
+        response.setHeader("Content-Disposition", "attachment; filename=" + data.getName());
+        response.setContentType("text/plain");
+        FileCopyUtils.copy(inputStream, response.getOutputStream());
+    }
 
-	private Result searchMedications(Patient patient, String token) {
-		Result encountersResult = searchEncounters(patient);
+    private Boolean isDigit(String string) {
+        for (int i = 0; i < string.length(); i++)
+            if (!Character.isDigit(string.charAt(i)))
+                return Boolean.FALSE;
+        return Boolean.TRUE;
+    }
 
-		Integer counter = 0;
-		Result result = null;
-		while (counter < encountersResult.size() && result == null) {
-			Result encounterResult = encountersResult.get(counter++);
-			if (encounterResult.getResultDate().before(referenceDate)) {
-				Map<String, Object> parameters = new HashMap<String, Object>();
-				parameters.put(EvaluableConstants.OBS_ENCOUNTER, Arrays.asList(encounterResult.getResultObject()));
-				result = evaluate(patient, token, parameters);
-			}
-		}
-		return result;
-	}
-
-	private Result searchObservation(Patient patient, String concept) {
-		Map<String, Object> parameters = new HashMap<String, Object>();
-		parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(concept));
-
-		EvaluatorService evaluatorService = Context.getService(EvaluatorService.class);
-		return evaluatorService.evaluate(patient, ObsWithStringRestrictionRule.TOKEN, parameters);
-	}
-
-	private Result searchEncounters(Patient patient) {
-
-		Map<String, Object> parameters = new HashMap<String, Object>();
-		parameters.put(EvaluableConstants.ENCOUNTER_TYPE,
-				Arrays.asList(EvaluableNameConstants.ENCOUNTER_TYPE_PEDIATRIC_INITIAL, EvaluableNameConstants.ENCOUNTER_TYPE_PEDIATRIC_RETURN));
-
-		EvaluatorService evaluatorService = Context.getService(EvaluatorService.class);
-		return evaluatorService.evaluate(patient, EncounterWithStringRestrictionRule.TOKEN, parameters);
-	}
+    private List<Encounter> searchEncounters(Patient patient) {
+        CoreService service = Context.getService(CoreService.class);
+        return service.getPatientEncounters(patient.getPatientId(), new HashMap<String, Collection<OpenmrsObject>>(), new FetchRestriction());
+    }
 }

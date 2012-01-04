@@ -14,16 +14,7 @@
 
 package org.openmrs.module.clinicalsummary.rule.problem;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
@@ -95,17 +86,18 @@ public class ProblemListRule extends EvaluableRule {
 			Result problemResult = problemResults.get(counter++);
 			if (OpenmrsUtil.compareWithNullAsLatest(referenceDate, problemResult.getResultDate()) == 1) {
 				Obs obs = (Obs) problemResult.getResultObject();
-				if (OpenmrsUtil.nullSafeEquals(obs.getConcept(), resolvedConcept)
-						&& OpenmrsUtil.collectionContains(unresolvedConcepts, obs.getValueCoded()))
-					addedMap.remove(obs.getValueCoded());
-
-				// add the added into the map
-				Result addedMapEntry = addedMap.get(problemResult.toConcept());
-				if (CollectionUtils.isEmpty(addedMapEntry)) {
-					addedMapEntry = new Result();
-					addedMap.put(problemResult.toConcept(), addedMapEntry);
+				if (OpenmrsUtil.nullSafeEquals(obs.getConcept(), resolvedConcept)) {
+					if (OpenmrsUtil.collectionContains(unresolvedConcepts, obs.getValueCoded()))
+						addedMap.remove(obs.getValueCoded());
+				} else {
+					// add the added into the map
+					Result addedMapEntry = addedMap.get(problemResult.toConcept());
+					if (CollectionUtils.isEmpty(addedMapEntry)) {
+						addedMapEntry = new Result();
+						addedMap.put(problemResult.toConcept(), addedMapEntry);
+					}
+					addedMapEntry.add(problemResult);
 				}
-				addedMapEntry.add(problemResult);
 			}
 		}
 

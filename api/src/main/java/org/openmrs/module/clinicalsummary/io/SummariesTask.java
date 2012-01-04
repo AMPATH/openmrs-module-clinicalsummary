@@ -13,9 +13,9 @@
  */
 package org.openmrs.module.clinicalsummary.io;
 
+import javax.crypto.Cipher;
 import java.io.File;
 import java.util.Properties;
-import javax.crypto.Cipher;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -49,15 +49,12 @@ abstract class SummariesTask implements Runnable {
 
 	protected final String password;
 
-	protected final String passphrase;
-
 	protected String filename;
 
 	private TaskStatus status;
 
-	public SummariesTask(final String password, final String passphrase, final String filename) {
+	public SummariesTask(final String password, final String filename) {
 		this.password = password;
-		this.passphrase = passphrase;
 		this.filename = filename;
 		this.status = TaskStatus.TASK_IDLE;
 	}
@@ -93,14 +90,14 @@ abstract class SummariesTask implements Runnable {
 	}
 
 	/**
-	 * @return
+	 * @return the current filename
 	 */
 	public String getFilename() {
 		return filename;
 	}
 
 	/**
-	 * @param filename
+	 * @param filename the filename
 	 */
 	public void setFilename(final String filename) {
 		this.filename = filename;
@@ -122,13 +119,13 @@ abstract class SummariesTask implements Runnable {
 		File zipPath = OpenmrsUtil.getDirectoryInApplicationDataDirectory(Constants.ZIPPED_LOCATION);
 		// clean up old upload and download
 		for (File file : zipPath.listFiles())
-			if (!file.getName().startsWith(filename))
-				file.delete();
+			if (!file.getName().startsWith(filename) && file.delete())
+                log.info("Deleting old zip file: " + file.getName());
 
 		File secretPath = OpenmrsUtil.getDirectoryInApplicationDataDirectory(Constants.ENCRYPTION_LOCATION);
 		for (File file : secretPath.listFiles())
-			if (!file.getName().startsWith(filename))
-				file.delete();
+			if (!file.getName().startsWith(filename) && file.delete())
+                log.info("Deleting old iv file: " + file.getName());
 	}
 
 

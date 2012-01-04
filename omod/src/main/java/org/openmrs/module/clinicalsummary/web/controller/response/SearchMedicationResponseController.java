@@ -14,7 +14,6 @@
 
 package org.openmrs.module.clinicalsummary.web.controller.response;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -47,8 +46,7 @@ public class SearchMedicationResponseController {
 	public
 	@ResponseBody
 	Map<Integer, List<MedicationResponseForm>> searchResponses(final @RequestParam(required = true, value = "locationId") String locationId,
-	                                                           final @RequestParam(required = false, value = "displayType") ResponseDisplayType displayType)
-			throws InvocationTargetException, IllegalAccessException {
+	                                                           final @RequestParam(required = false, value = "displayType") ResponseDisplayType displayType) {
 
 		// TODO: add another grouping by provider name to this json and then in the jsp, add another jQuery.each call!
 		Map<Integer, List<MedicationResponseForm>> responseMap = new HashMap<Integer, List<MedicationResponseForm>>();
@@ -92,27 +90,31 @@ public class SearchMedicationResponseController {
 			UtilService service = Context.getService(UtilService.class);
 			List<MedicationResponse> responses = service.getResponses(MedicationResponse.class, location, startDate, new Date());
 			for (MedicationResponse response : responses) {
-				Integer patientId = response.getPatient().getPatientId();
-				// search if the medication forms for teh patient is already in the map or not
-				List<MedicationResponseForm> responseForms = responseMap.get(patientId);
-				if (responseForms == null) {
-					// initialize when we don't have the list yet
-					responseForms = new ArrayList<MedicationResponseForm>();
-					responseMap.put(patientId, responseForms);
+				try {
+					Integer patientId = response.getPatient().getPatientId();
+					// search if the medication forms for teh patient is already in the map or not
+					List<MedicationResponseForm> responseForms = responseMap.get(patientId);
+					if (responseForms == null) {
+						// initialize when we don't have the list yet
+						responseForms = new ArrayList<MedicationResponseForm>();
+						responseMap.put(patientId, responseForms);
+					}
+					// add the current response to the list
+					MedicationResponseForm responseForm = new MedicationResponseForm();
+					BeanUtils.copyProperties(responseForm, response);
+					responseForm.setPatientId(response.getPatient().getPatientId());
+					responseForm.setPatientName(response.getPatient().getPersonName().getFullName());
+					responseForm.setProviderName(response.getProvider().getPersonName().getFullName());
+					responseForm.setLocationName(response.getLocation().getName());
+					responseForm.setMedicationName(response.getMedication().getName(Context.getLocale()).getName());
+					responseForm.setDatetime(Context.getDateFormat().format(response.getDatetime()));
+					if (response.getActionType() != null)
+						responseForm.setAction(response.getActionType().getValue());
+					// add to the output list
+					responseForms.add(responseForm);
+				} catch (Exception e) {
+					log.error("Exception thrown when serializing responses", e);
 				}
-				// add the current response to the list
-				MedicationResponseForm responseForm = new MedicationResponseForm();
-				BeanUtils.copyProperties(responseForm, response);
-				responseForm.setPatientId(response.getPatient().getPatientId());
-				responseForm.setPatientName(response.getPatient().getPersonName().getFullName());
-				responseForm.setProviderName(response.getProvider().getPersonName().getFullName());
-				responseForm.setLocationName(response.getLocation().getName());
-				responseForm.setMedicationName(response.getMedication().getName(Context.getLocale()).getName());
-				responseForm.setDatetime(Context.getDateFormat().format(response.getDatetime()));
-				if (response.getActionType() != null)
-					responseForm.setAction(response.getActionType().getValue());
-				// add to the output list
-				responseForms.add(responseForm);
 			}
 		}
 		// return the formatted output

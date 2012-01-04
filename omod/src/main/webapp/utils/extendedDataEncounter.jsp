@@ -11,19 +11,19 @@
 
 <div id="container">
 
-	<h3 id="header">Creating Paediatric Study Data</h3>
+	<h3 id="header">Creating Patient Study Data</h3>
 
 	<div id="main">
 		<div id="leftcontent">
 			<form method="post" action="" enctype="multipart/form-data">
 				<fieldset>
 					<ol>
+                        <li>
+                            <label for="conceptNames">Concept Names (Optional)</label>
+                            <input type="text" id="conceptNames" name="conceptNames"/>
+                        </li>
 						<li>
-							<label for="concept">Concept Name</label>
-							<input type="text" id="concept" name="concept"/>
-						</li>
-						<li>
-							<label for="data">Paediatric Data</label>
+							<label for="data">Input Data</label>
 							<input type="file" id="data" name="data"/>
 						</li>
 						<li />

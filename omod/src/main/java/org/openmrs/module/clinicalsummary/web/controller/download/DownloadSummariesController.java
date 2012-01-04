@@ -15,6 +15,7 @@
 package org.openmrs.module.clinicalsummary.web.controller.download;
 
 import java.io.File;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -57,11 +58,10 @@ public class DownloadSummariesController {
 
 	@RequestMapping(method = RequestMethod.POST)
 	public void processSubmit(final @RequestParam(required = true, value = "password") String password,
-	                          final @RequestParam(required = true, value = "passphrase") String passphrase,
 	                          final ModelMap map) {
 		// prepare the page elements
 		preparePage(map);
 		// start the download process
-		SummariesTaskInstance.getInstance().startDownloading(password, passphrase, WebUtils.prepareFilename(null, null));
+		SummariesTaskInstance.getInstance().startDownloading(password, WebUtils.prepareFilename(null, null));
 	}
 }

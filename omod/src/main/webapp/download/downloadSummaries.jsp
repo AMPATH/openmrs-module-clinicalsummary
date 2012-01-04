@@ -91,10 +91,6 @@
 							<label for="password"><spring:message code="clinicalsummary.download.password"/></label>
 							<input type="password" id="password" name="password"/>
 						</li>
-						<li>
-							<label for="passphrase"><spring:message code="clinicalsummary.download.passphrase"/></label>
-							<input type="password" id="passphrase" name="passphrase"/>
-						</li>
 						<li />
 						<li>
 							<input id="submit" type="submit" value="<spring:message code="clinicalsummary.download"/>"/>
