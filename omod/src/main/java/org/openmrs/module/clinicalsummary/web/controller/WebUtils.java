@@ -148,6 +148,15 @@ public final class WebUtils {
 		return filename;
 	}
 
+    /**
+     * Prepare the attachment filename
+     *
+     * @return the filename of the attachment
+     */
+    public static String prepareFilename() {
+        return prepareFilename(null, null);
+    }
+
 	/**
 	 * @param object
 	 * @return

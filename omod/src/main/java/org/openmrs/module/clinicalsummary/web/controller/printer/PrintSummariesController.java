@@ -14,6 +14,14 @@
 
 package org.openmrs.module.clinicalsummary.web.controller.printer;
 
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.util.Arrays;
+import java.util.Date;
+
 import com.lowagie.text.Document;
 import com.lowagie.text.pdf.PdfCopy;
 import com.lowagie.text.pdf.PdfReader;
@@ -38,14 +46,6 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.util.Arrays;
-import java.util.Date;
 
 /**
  */
@@ -87,8 +87,9 @@ public class PrintSummariesController {
 				// collect the cohort and then get the template to be printed
 				if (StringUtils.isNotBlank(patientIdentifiers)) {
 					String[] patientIdentifier = StringUtils.split(patientIdentifiers);
+                    Cohort patients = Context.getPatientSetService().convertPatientIdentifier(Arrays.asList(patientIdentifier));
 					summary = Context.getService(SummaryService.class).getSummary(NumberUtils.toInt(summaryIdentifier, -1));
-					cohort = Context.getPatientSetService().convertPatientIdentifier(Arrays.asList(patientIdentifier));
+                    cohort = Context.getService(IndexService.class).getIndexCohort(patients, summary);
 				} else if (StringUtils.isNotBlank(locationId)) {
 					Location location = Context.getLocationService().getLocation(NumberUtils.toInt(locationId, -1));
 					summary = Context.getService(SummaryService.class).getSummary(NumberUtils.toInt(summaryLocation, -1));
@@ -140,6 +141,7 @@ public class PrintSummariesController {
 
 		FileCopyUtils.copy(new FileInputStream(file), response.getOutputStream());
 
-		file.delete();
+		if (!file.delete())
+            log.info("Deleting temporary file failed!");
 	}
 }

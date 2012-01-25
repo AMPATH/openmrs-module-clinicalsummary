@@ -13,15 +13,15 @@
  */
 package org.openmrs.module.clinicalsummary.db;
 
+import java.util.Date;
+import java.util.List;
+
 import org.openmrs.Cohort;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.module.clinicalsummary.Index;
 import org.openmrs.module.clinicalsummary.Summary;
-
-import java.util.Date;
-import java.util.List;
 
 
 /**
@@ -40,6 +40,8 @@ public interface IndexDAO {
 	List<Index> getIndexes(final Location location, final Summary summary, final Date startVisitDate, final Date endVisitDate) throws DAOException;
 
 	Cohort getIndexCohort(final Location location, final Summary summary, final Date startVisitDate, final Date endVisitDate) throws DAOException;
+
+    Cohort getIndexCohort(final Cohort cohort, final Summary summary) throws DAOException;
 
 	Integer saveInitialDate(final Location location, final Date date) throws DAOException;
 

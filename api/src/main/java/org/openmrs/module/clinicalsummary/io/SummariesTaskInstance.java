@@ -39,9 +39,9 @@ public class SummariesTaskInstance {
 		ourInstance = null;
 	}
 
-	public void startDownloading(final String password, final String filename) {
+	public void startDownloading(final String password, final String filename, final Boolean partial) {
 		if (!isRunning()) {
-			summariesTask = new DownloadSummariesTask(password, filename);
+			summariesTask = new DownloadSummariesTask(password, filename, partial);
 			new Thread(summariesTask).start();
 		}
 	}

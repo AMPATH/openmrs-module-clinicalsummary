@@ -148,6 +148,28 @@ public class HibernateIndexDAO implements IndexDAO {
 		return cohort;
 	}
 
+    /**
+     * @see IndexDAO#getIndexCohort(org.openmrs.Cohort, org.openmrs.module.clinicalsummary.Summary)
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public Cohort getIndexCohort(final Cohort cohort, final Summary summary) throws DAOException {
+        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Index.class);
+        criteria.createAlias("patient", "patient");
+
+        if (summary != null)
+            criteria.add(Restrictions.eq("summary", summary));
+
+        if (cohort != null)
+            criteria.add(Restrictions.in("patient.patientId", cohort.getMemberIds()));
+
+        criteria.setProjection(Projections.property("patient.patientId"));
+
+        Cohort validCohort = new Cohort();
+        validCohort .setMemberIds(new LinkedHashSet<Integer>(criteria.list()));
+        return validCohort ;
+    }
+
 	/**
 	 * @see IndexDAO#saveInitialDate(org.openmrs.Location, java.util.Date)
 	 */

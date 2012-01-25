@@ -14,6 +14,9 @@
 
 package org.openmrs.module.clinicalsummary.service;
 
+import java.util.Date;
+import java.util.List;
+
 import org.openmrs.Cohort;
 import org.openmrs.Location;
 import org.openmrs.Patient;
@@ -24,9 +27,6 @@ import org.openmrs.module.clinicalsummary.Constants;
 import org.openmrs.module.clinicalsummary.Index;
 import org.openmrs.module.clinicalsummary.Summary;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Date;
-import java.util.List;
 
 /**
  * All service contract for operation on the Index object
@@ -128,6 +128,20 @@ public interface IndexService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized({Constants.PRIVILEGE_PRINT_SUMMARY, Constants.PRIVILEGE_VIEW_SUMMARY})
 	Cohort getIndexCohort(final Location location, final Summary summary, final Date startVisitDate, final Date endVisitDate) throws APIException;
+
+    /**
+     * Get all indexes based on the cohort of patient
+     *
+     * @param cohort       the intended cohort
+     * @param summary
+     * @return all indexes for the cohort or empty list when no index are found for the cohort
+     * @throws APIException
+     * @should return all indexes for the cohort
+     * @should return empty list when no index are found for the cohort
+     */
+    @Transactional(readOnly = true)
+    @Authorized({Constants.PRIVILEGE_PRINT_SUMMARY, Constants.PRIVILEGE_VIEW_SUMMARY})
+    Cohort getIndexCohort(Cohort cohort, Summary summary) throws APIException;
 
 	/**
 	 * Save the initial data value for a location. Initial date will be used to prevent printing old summaries for satellite sites.

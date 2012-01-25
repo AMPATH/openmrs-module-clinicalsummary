@@ -16,6 +16,7 @@ package org.openmrs.module.clinicalsummary.web.controller.download;
 
 import java.io.File;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -58,10 +59,14 @@ public class DownloadSummariesController {
 
 	@RequestMapping(method = RequestMethod.POST)
 	public void processSubmit(final @RequestParam(required = true, value = "password") String password,
+                              final @RequestParam(required = false, value = "partial") Boolean partial,
 	                          final ModelMap map) {
 		// prepare the page elements
 		preparePage(map);
 		// start the download process
-		SummariesTaskInstance.getInstance().startDownloading(password, WebUtils.prepareFilename(null, null));
+        String filename = WebUtils.prepareFilename();
+        if (BooleanUtils.isTrue(partial))
+            filename = "Partial_" + filename;
+		SummariesTaskInstance.getInstance().startDownloading(password, filename, partial);
 	}
 }

@@ -135,13 +135,21 @@ public class IndexServiceImpl extends BaseOpenmrsService implements IndexService
 		return indexDAO.getIndexes(location, summary, startVisitDate, endVisitDate);
 	}
 
-	/**
-	 * @see IndexService#getIndexes(org.openmrs.Location, org.openmrs.module.clinicalsummary.Summary, java.util.Date, java.util.Date)
-	 */
-	@Override
-	public Cohort getIndexCohort(final Location location, final Summary summary, final Date startVisitDate, final Date endVisitDate) throws APIException {
-		return indexDAO.getIndexCohort(location, summary, startVisitDate, endVisitDate);
-	}
+    /**
+     * @see IndexService#getIndexCohort(org.openmrs.Location, org.openmrs.module.clinicalsummary.Summary, java.util.Date, java.util.Date)
+     */
+    @Override
+    public Cohort getIndexCohort(final Location location, final Summary summary, final Date startVisitDate, final Date endVisitDate) throws APIException {
+        return indexDAO.getIndexCohort(location, summary, startVisitDate, endVisitDate);
+    }
+
+    /**
+     * @see IndexService#getIndexCohort(org.openmrs.Cohort, org.openmrs.module.clinicalsummary.Summary)
+     */
+    @Override
+    public Cohort getIndexCohort(final Cohort cohort, final Summary summary) throws APIException {
+        return indexDAO.getIndexCohort(cohort, summary);
+    }
 
 	/**
 	 * @see IndexService#saveInitialDate(org.openmrs.Location, java.util.Date)

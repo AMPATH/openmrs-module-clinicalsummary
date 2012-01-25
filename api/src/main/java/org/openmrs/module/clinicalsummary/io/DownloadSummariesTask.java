@@ -36,6 +36,7 @@ import java.util.zip.ZipOutputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -51,9 +52,12 @@ import org.springframework.util.FileCopyUtils;
 class DownloadSummariesTask extends SummariesTask {
 
     private static final Log log = LogFactory.getLog(DownloadSummariesTask.class);
+    
+    private Boolean partial;
 
-    public DownloadSummariesTask(final String password, final String filename) {
+    public DownloadSummariesTask(final String password, final String filename, final Boolean partial) {
         super(password, filename);
+        this.partial = partial;
     }
 
     /**
@@ -110,8 +114,10 @@ class DownloadSummariesTask extends SummariesTask {
         ZipOutputStream zipOutputStream = new ZipOutputStream(new BufferedOutputStream(outputStream));
         
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DATE, -1);
-        Date cutOffDate = calendar.getTime();
+        calendar.add(Calendar.MONTH, -1);
+        Date cutOffDate = null;
+        if (BooleanUtils.isTrue(partial))
+            cutOffDate = calendar.getTime();
 
         File inputPath = TaskUtils.getSummaryOutputPath();
         File[] files = inputPath.listFiles();
@@ -129,7 +135,7 @@ class DownloadSummariesTask extends SummariesTask {
             for (File file : files)
                 processStream(zipOutputStream, basePath, file, cutOffDate);
         } else {
-            if (FileUtils.isFileNewer(currentFile, cutOffDate)) {
+            if (cutOffDate == null || FileUtils.isFileNewer(currentFile, cutOffDate)) {
                 processedFilename = currentFile.getName();
 
                 FileInputStream inputStream = new FileInputStream(currentFile);

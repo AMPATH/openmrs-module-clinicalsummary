@@ -90,7 +90,11 @@
 						<li>
 							<label for="password"><spring:message code="clinicalsummary.download.password"/></label>
 							<input type="password" id="password" name="password"/>
-						</li>
+                        </li>
+                        <li>
+                            <input type="hidden" name="_partial">
+                            <input id="partial" type="checkbox" name="partial" value="true" /> Only Updated Files
+                        </li>
 						<li />
 						<li>
 							<input id="submit" type="submit" value="<spring:message code="clinicalsummary.download"/>"/>
@@ -121,7 +125,6 @@
 					<div><a href="#" id="zip" type="zip" filename="${zipFile}" class="download">${zipFile}</a></div>
 				</div>
 			</c:if>
-			<br /><br />
 			<c:if test="${not empty secretFile}">
 				<div class="file">
 					<spring:message code="clinicalsummary.download.secretFile"/>:
