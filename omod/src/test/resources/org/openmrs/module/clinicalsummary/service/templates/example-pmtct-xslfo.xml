@@ -1,484 +1,629 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fo="http://www.w3.org/1999/XSL/Format"
-                xmlns:fn="http://www.w3.org/2005/xpath-functions" exclude-result-prefixes="fo">
-	<xsl:output method="xml" version="1.0" omit-xml-declaration="no" indent="yes" />
-	<xsl:template match="clinicalSummary">
-		<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format">
-			<fo:layout-master-set>
-				<fo:simple-page-master master-name="simple"
-				                       page-height="297mm" page-width="210mm"
-				                       margin-top="1cm" margin-left="1cm" margin-right="1cm" margin-bottom="1cm">
-					<fo:region-body margin-top="1.2cm" margin-bottom="1.2cm" />
-					<fo:region-before extent="3cm" />
-					<fo:region-after extent="1cm" />
-				</fo:simple-page-master>
-			</fo:layout-master-set>
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:fo="http://www.w3.org/1999/XSL/Format"
+                exclude-result-prefixes="fo">
+    <xsl:output method="xml" version="1.0" omit-xml-declaration="no" indent="yes" />
+    <xsl:template match="clinicalSummary">
+        <fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format">
+            <fo:layout-master-set>
+                <fo:simple-page-master master-name="simple"
+                                       page-height="297mm" page-width="210mm"
+                                       margin-top="1cm" margin-left="1cm" margin-right="1cm" margin-bottom="1cm">
+                    <fo:region-body margin-top="1.2cm" margin-bottom="1.2cm" />
+                    <fo:region-before extent="3cm" />
+                    <fo:region-after extent="1cm" />
+                </fo:simple-page-master>
+            </fo:layout-master-set>
 
-			<!-- xsl processing start -->
-			<fo:page-sequence master-reference="simple">
+            <!-- xsl processing start -->
+            <fo:page-sequence master-reference="simple">
 
-				<!-- header section -->
-				<fo:static-content flow-name="xsl-region-before" font-family="Helvetica">
-					<fo:block text-align="center" border-top="thin solid grey" border-left="thin solid grey"
-					          border-right="thin solid black" border-bottom="thin solid black" background-color="#e0e0e0"
-					          padding="0.2cm" space-after="12pt" font-weight="bold">
-						AMPATH Medical Record System Adult Clinical Summary
-					</fo:block>
-				</fo:static-content>
+                <!-- header section -->
+                <fo:static-content flow-name="xsl-region-before" font-family="Helvetica">
+                    <fo:block text-align="center" border-top="thin solid grey" border-left="thin solid grey"
+                              border-right="thin solid black" border-bottom="thin solid black" background-color="#e0e0e0"
+                              padding="0.2cm" space-after="12pt" font-weight="bold">
+                        AMPATH pMTCT Clinical Summary
+                    </fo:block>
+                </fo:static-content>
 
-				<!-- footer section -->
-				<fo:static-content flow-name="xsl-region-after" font-family="Helvetica">
-					<fo:table table-layout="fixed" width="100%">
-						<fo:table-column column-width="60%" />
-						<fo:table-column column-width="40%" />
-						<fo:table-body>
-							<fo:table-row>
-								<fo:table-cell display-align="center">
-									<fo:block-container text-align="left" font-size="8pt">
-										<fo:block>
-											Last seen
-											<xsl:value-of select="latestEncounter/datetime" />
-											at
-											<xsl:value-of select="latestEncounter/location" />
-											by
-											<xsl:value-of select="latestEncounter/provider" />
-										</fo:block>
-										<fo:block>
-											Encounter entered by
-											<xsl:value-of select="latestEncounter/creator" />
-											on
-											<xsl:value-of select="latestEncounter/dateCreated" />
-										</fo:block>
-										<fo:block>
-											Next scheduled visit:
-											<xsl:value-of select="returnVisit" />
-										</fo:block>
-									</fo:block-container>
-								</fo:table-cell>
-								<fo:table-cell>
-									<fo:block-container text-align="right">
-										<fo:block font-size="16pt" font-weight="bold">
-											<xsl:value-of select="id" />
-										</fo:block>
-										<fo:block font-size="6pt">
-											<fo:block>
-												Generated on
-												<xsl:value-of select="currentDatetime" />
-											</fo:block>
-											<fo:block>
-												Version
-												<xsl:value-of select="moduleVersion" />
-											</fo:block>
-											<fo:block>
-												<xsl:value-of select="templateName" />
-												revision
-												<xsl:value-of select="templateRevision" />
-											</fo:block>
-										</fo:block>
-									</fo:block-container>
-								</fo:table-cell>
-							</fo:table-row>
-						</fo:table-body>
-					</fo:table>
-				</fo:static-content>
+                <!-- footer section -->
+                <fo:static-content flow-name="xsl-region-after" font-family="Helvetica">
+                    <fo:table table-layout="fixed" width="100%">
+                        <fo:table-column column-width="60%" />
+                        <fo:table-column column-width="40%" />
+                        <fo:table-body>
+                            <fo:table-row>
+                                <fo:table-cell display-align="center">
+                                    <fo:block-container text-align="left" font-size="8pt">
+                                        <fo:block>
+                                            Last seen
+                                            <xsl:value-of select="latestEncounter/datetime" />
+                                            at
+                                            <xsl:value-of select="latestEncounter/location" />
+                                            by
+                                            <xsl:value-of select="latestEncounter/provider" />
+                                        </fo:block>
+                                        <fo:block>
+                                            Encounter entered by
+                                            <xsl:value-of select="latestEncounter/creator" />
+                                            on
+                                            <xsl:value-of select="latestEncounter/dateCreated" />
+                                        </fo:block>
+                                        <fo:block>
+                                            Next scheduled visit:
+                                            <xsl:value-of select="returnVisit" />
+                                        </fo:block>
+                                    </fo:block-container>
+                                </fo:table-cell>
+                                <fo:table-cell>
+                                    <fo:block-container text-align="right">
+                                        <fo:block font-size="16pt" font-weight="bold">
+                                            <xsl:value-of select="id" />
+                                        </fo:block>
+                                        <fo:block font-size="6pt">
+                                            <fo:block>
+                                                Generated on
+                                                <xsl:value-of select="currentDatetime" />
+                                            </fo:block>
+                                            <fo:block>
+                                                Version
+                                                <xsl:value-of select="moduleVersion" />
+                                            </fo:block>
+                                            <fo:block>
+                                                <xsl:value-of select="templateName" />
+                                                revision
+                                                <xsl:value-of select="templateRevision" />
+                                            </fo:block>
+                                        </fo:block>
+                                    </fo:block-container>
+                                </fo:table-cell>
+                            </fo:table-row>
+                        </fo:table-body>
+                    </fo:table>
+                </fo:static-content>
 
-				<!-- Begin Page Content -->
-				<fo:flow flow-name="xsl-region-body" font-family="Helvetica" font-size="14pt">
+                <!-- Begin Page Content -->
+                <fo:flow flow-name="xsl-region-body" font-family="Helvetica" font-size="14pt">
 
-					<fo:table table-layout="fixed" width="100%">
-						<fo:table-body>
-							<fo:table-row font-weight="bold" font-size="20pt">
-								<fo:table-cell>
-									<fo:block font-style="italic">
-										<xsl:value-of select="name" />
-									</fo:block>
-								</fo:table-cell>
-								<fo:table-cell text-align="right">
-									<fo:block>
-										<xsl:value-of select="identifier" />
-									</fo:block>
-								</fo:table-cell>
-							</fo:table-row>
-							<fo:table-row>
-								<fo:table-cell>
-									<fo:block font-size="10pt">
-										<xsl:value-of select="gender" />
-										<fo:inline>
-											<xsl:value-of select="age" />
-											<xsl:variable name="birthdateEstimated" select="birthdate/@estimated" />
-											(<xsl:if test="$birthdateEstimated='true'">~</xsl:if><xsl:value-of select="birthdate" />)
-										</fo:inline>
-									</fo:block>
-								</fo:table-cell>
-								<fo:table-cell font-size="10pt" text-align="right">
-									<fo:block>
-										<xsl:variable name="maxIdentifier" select="2" />
-										<xsl:variable name="count" select="count(alternateIdentifier)" />
-										<xsl:for-each select="alternateIdentifier">
-											<xsl:if test="position() &lt;= $maxIdentifier">
-												<fo:block color="#888888">
-													<fo:inline>
-														<xsl:value-of select="." />
-													</fo:inline>
-												</fo:block>
-											</xsl:if>
-										</xsl:for-each>
-										<xsl:if test="$count &gt; $maxIdentifier">
-											<fo:block color="#888888">
-												<fo:inline font-size="6pt" font-style="italic">
-													<xsl:value-of select="($count - $maxIdentifier)" /> more
-												</fo:inline>
-											</fo:block>
-										</xsl:if>
-									</fo:block>
-								</fo:table-cell>
-							</fo:table-row>
-						</fo:table-body>
-					</fo:table>
+                    <fo:table table-layout="fixed" width="100%">
+                        <fo:table-body>
+                            <fo:table-row font-weight="bold" font-size="20pt">
+                                <fo:table-cell>
+                                    <fo:block font-style="italic">
+                                        <xsl:value-of select="name" />
+                                    </fo:block>
+                                </fo:table-cell>
+                                <fo:table-cell text-align="right">
+                                    <fo:block>
+                                        <xsl:value-of select="identifier" />
+                                    </fo:block>
+                                </fo:table-cell>
+                            </fo:table-row>
+                            <fo:table-row>
+                                <fo:table-cell>
+                                    <fo:block font-size="10pt">
+                                        <xsl:value-of select="gender" />
+                                        <xsl:value-of select="age" />
+                                        <xsl:variable name="birthdateEstimated" select="birthdate/@estimated" />
+                                        (<xsl:if test="$birthdateEstimated='true'">~</xsl:if><xsl:value-of select="birthdate" />)
+                                    </fo:block>
+                                </fo:table-cell>
+                                <fo:table-cell font-size="10pt" text-align="right">
+                                    <fo:block>
+                                        <xsl:variable name="maxIdentifier" select="2" />
+                                        <xsl:variable name="count" select="count(alternateIdentifier)" />
+                                        <xsl:for-each select="alternateIdentifier">
+                                            <xsl:if test="position() &lt;= $maxIdentifier">
+                                                <fo:block color="#888888">
+                                                    <fo:inline>
+                                                        <xsl:value-of select="." />
+                                                    </fo:inline>
+                                                </fo:block>
+                                            </xsl:if>
+                                        </xsl:for-each>
+                                        <xsl:if test="$count &gt; $maxIdentifier">
+                                            <fo:block color="#888888">
+                                                <fo:inline font-size="6pt" font-style="italic">
+                                                    <xsl:value-of select="($count - $maxIdentifier)" /> more
+                                                </fo:inline>
+                                            </fo:block>
+                                        </xsl:if>
+                                    </fo:block>
+                                </fo:table-cell>
+                            </fo:table-row>
+                        </fo:table-body>
+                    </fo:table>
 
 
-					<fo:table table-layout="fixed" width="100%" space-before="6pt">
-						<fo:table-column column-width="25%" />
-						<fo:table-column column-width="25%" />
-						<fo:table-column column-width="50%" />
-						<fo:table-body font-size="10pt">
-							<fo:table-row text-align="center" border-bottom="thin solid black" font-weight="bold">
-								<fo:table-cell border-right="thin solid black" padding="2pt">
-									<fo:block>First Encounter</fo:block>
-								</fo:table-cell>
-								<fo:table-cell border-right="thin solid black" padding="2pt">
-									<fo:block>Highest WHO Stage</fo:block>
-								</fo:table-cell>
-								<fo:table-cell padding="2pt">
-									<fo:block>6 Months HIV Rx Adherence</fo:block>
-								</fo:table-cell>
-							</fo:table-row>
-							<fo:table-row text-align="center">
-								<fo:table-cell border-right="thin solid black" padding="2pt">
-									<fo:block>
-										<xsl:value-of select="earliestEncounter/datetime" />
-									</fo:block>
-								</fo:table-cell>
-								<fo:table-cell border-right="thin solid black" padding="2pt">
-									<fo:block>
-										<xsl:value-of select="whoStage" />
-									</fo:block>
-								</fo:table-cell>
-								<fo:table-cell padding="2pt">
-									<fo:block>
-										<xsl:value-of select="drugAdherence" />
-									</fo:block>
-								</fo:table-cell>
-							</fo:table-row>
-						</fo:table-body>
-					</fo:table>
+                    <fo:table table-layout="fixed" width="100%" space-before="6pt">
+                        <fo:table-column column-width="25%" />
+                        <fo:table-column column-width="25%" />
+                        <fo:table-column column-width="50%" />
+                        <fo:table-body font-size="10pt">
+                            <fo:table-row text-align="center" border-bottom="thin solid black" font-weight="bold">
+                                <fo:table-cell border-right="thin solid black" padding="2pt">
+                                    <fo:block>First Encounter</fo:block>
+                                </fo:table-cell>
+                                <fo:table-cell border-right="thin solid black" padding="2pt">
+                                    <fo:block>Highest WHO Stage</fo:block>
+                                </fo:table-cell>
+                                <fo:table-cell padding="2pt">
+                                    <fo:block>6 Months HIV Rx Adherence</fo:block>
+                                </fo:table-cell>
+                            </fo:table-row>
+                            <fo:table-row text-align="center">
+                                <fo:table-cell border-right="thin solid black" padding="2pt">
+                                    <fo:block>
+                                        <xsl:value-of select="earliestEncounter/datetime" />
+                                    </fo:block>
+                                </fo:table-cell>
+                                <fo:table-cell border-right="thin solid black" padding="2pt">
+                                    <fo:block>
+                                        <xsl:value-of select="whoStage" />
+                                    </fo:block>
+                                </fo:table-cell>
+                                <fo:table-cell padding="2pt">
+                                    <fo:block>
+                                        <xsl:value-of select="drugAdherence" />
+                                    </fo:block>
+                                </fo:table-cell>
+                            </fo:table-row>
+                        </fo:table-body>
+                    </fo:table>
 
-					<!-- Problem/Med List table -->
-					<xsl:variable name="maxRows" select="10" />
-					<fo:table table-layout="fixed" width="100%" border-spacing="0.25in" space-before="6pt">
-						<fo:table-column column-width="50%" />
-						<fo:table-column column-width="50%" />
+                    <!-- Problem/Med List table -->
+                    <xsl:variable name="maxRows" select="10" />
+                    <fo:table table-layout="fixed" width="100%" border-spacing="0.25in" space-before="6pt">
+                        <fo:table-column column-width="33%" />
+                        <fo:table-column column-width="34%" />
+                        <fo:table-column column-width="33%" />
 
-						<fo:table-body font-size="20pt">
-							<fo:table-row>
+                        <fo:table-body font-size="20pt">
+                            <fo:table-row>
 
-								<!-- Problem list -->
-								<fo:table-cell>
-									<fo:block font-size="12pt" space-before="6pt" font-weight="bold">
-										<fo:inline text-decoration="underline">Problem List</fo:inline>:
-									</fo:block>
-									<fo:block font-size="8pt" font-style="italic" space-after="3pt">
-										<fo:inline>Remove resolved problems through encounter form</fo:inline>
-									</fo:block>
-									<xsl:choose>
-										<xsl:when test="problemList/problems">
-											<fo:list-block font-size="10pt" space-after="6pt"
-											               provisional-label-separation="1mm"
-											               provisional-distance-between-starts="1mm">
-												<xsl:for-each select="problemList/problems">
-													<xsl:variable name="i" select="position()" />
-													<xsl:if test="$i &lt;= $maxRows">
-														<fo:list-item>
-															<fo:list-item-label end-indent="label-end()" text-align="right">
-																<fo:block>
-																	<xsl:value-of select="position()" />
-																	<xsl:text>.</xsl:text>
-																</fo:block>
-															</fo:list-item-label>
-															<fo:list-item-body start-indent="body-start()">
-																<fo:block>
-																	<xsl:variable name="totalProblem" select="count(problem)" />
-																	<xsl:for-each select="problem">
-																		<xsl:if test="position() = 1">
-																			<xsl:value-of select="value" />
-																			<xsl:if test="datetime">
-																				<fo:inline font-size="8pt" font-style="italic" color="#555">
-																					<xsl:text> (</xsl:text>
-																					<xsl:value-of select="datetime" />
-																					<xsl:if test="$totalProblem > 1">
-																						<xsl:text> ... </xsl:text>
-																						<xsl:value-of select="$totalProblem - 1" />
-																						<xsl:text> more</xsl:text>
-																					</xsl:if>
-																					<xsl:text>)</xsl:text>
-																				</fo:inline>
-																			</xsl:if>
-																		</xsl:if>
-																	</xsl:for-each>
-																</fo:block>
-															</fo:list-item-body>
-														</fo:list-item>
-													</xsl:if>
-												</xsl:for-each>
-												<xsl:if test="count(problemList/problems) > $maxRows">
-													<fo:list-item>
-														<fo:list-item-label end-indent="label-end()">
-															<fo:block></fo:block>
-														</fo:list-item-label>
-														<fo:list-item-body start-indent="body-start()">
-															<fo:block font-style="italic" font-size="6pt">
-																(<xsl:value-of select="count (problemList/problems) - $maxRows" /> more problems)
-															</fo:block>
-														</fo:list-item-body>
-													</fo:list-item>
-												</xsl:if>
-											</fo:list-block>
-										</xsl:when>
-										<xsl:otherwise>
-											<fo:block font-size="10pt">NONE</fo:block>
-										</xsl:otherwise>
-									</xsl:choose>
-								</fo:table-cell>
+                                <!-- Problem list -->
+                                <fo:table-cell>
+                                    <fo:block font-size="12pt" space-before="6pt" font-weight="bold">
+                                        <fo:inline text-decoration="underline">Problem List</fo:inline>:
+                                    </fo:block>
+                                    <fo:block font-size="8pt" font-style="italic" space-after="3pt">
+                                        <fo:inline>Remove resolved problems through encounter form</fo:inline>
+                                    </fo:block>
+                                    <xsl:choose>
+                                        <xsl:when test="problemList/problems">
+                                            <fo:list-block font-size="10pt" space-after="6pt"
+                                                           provisional-label-separation="1mm"
+                                                           provisional-distance-between-starts="1mm">
+                                                <xsl:for-each select="problemList/problems">
+                                                    <xsl:variable name="i" select="position()" />
+                                                    <xsl:if test="$i &lt;= $maxRows">
+                                                        <fo:list-item>
+                                                            <fo:list-item-label end-indent="label-end()" text-align="right">
+                                                                <fo:block>
+                                                                    <xsl:value-of select="position()" />
+                                                                    <xsl:text>.</xsl:text>
+                                                                </fo:block>
+                                                            </fo:list-item-label>
+                                                            <fo:list-item-body start-indent="body-start()">
+                                                                <fo:block>
+                                                                    <xsl:variable name="totalProblem" select="count(problem)" />
+                                                                    <xsl:for-each select="problem">
+                                                                        <xsl:if test="position() = 1">
+                                                                            <xsl:value-of select="value" />
+                                                                            <xsl:if test="datetime">
+                                                                                <fo:inline font-size="8pt" font-style="italic" color="#555">
+                                                                                    <xsl:text> (</xsl:text>
+                                                                                    <xsl:value-of select="datetime" />
+                                                                                    <xsl:if test="$totalProblem > 1">
+                                                                                        <xsl:text> ... </xsl:text>
+                                                                                        <xsl:value-of select="$totalProblem - 1" />
+                                                                                        <xsl:text> more</xsl:text>
+                                                                                    </xsl:if>
+                                                                                    <xsl:text>)</xsl:text>
+                                                                                </fo:inline>
+                                                                            </xsl:if>
+                                                                        </xsl:if>
+                                                                    </xsl:for-each>
+                                                                </fo:block>
+                                                            </fo:list-item-body>
+                                                        </fo:list-item>
+                                                    </xsl:if>
+                                                </xsl:for-each>
+                                                <xsl:if test="count(problemList/problems) > $maxRows">
+                                                    <fo:list-item>
+                                                        <fo:list-item-label end-indent="label-end()">
+                                                            <fo:block></fo:block>
+                                                        </fo:list-item-label>
+                                                        <fo:list-item-body start-indent="body-start()">
+                                                            <fo:block font-style="italic" font-size="6pt">
+                                                                (<xsl:value-of select="count (problemList/problems) - $maxRows" /> more problems)
+                                                            </fo:block>
+                                                        </fo:list-item-body>
+                                                    </fo:list-item>
+                                                </xsl:if>
+                                            </fo:list-block>
+                                        </xsl:when>
+                                        <xsl:otherwise>
+                                            <fo:block font-size="10pt">NONE</fo:block>
+                                        </xsl:otherwise>
+                                    </xsl:choose>
+                                </fo:table-cell>
 
-								<!-- Medications -->
-								<fo:table-cell>
-									<fo:block font-size="12pt" space-before="6pt" space-after="3pt" font-weight="bold">
-										<fo:inline text-decoration="underline">Recent ARVs and OI Meds</fo:inline>:
-									</fo:block>
-									<xsl:choose>
-										<xsl:when test="medications/medication">
-											<fo:list-block font-size="10pt" space-after="6pt"
-											               provisional-label-separation="1mm"
-											               provisional-distance-between-starts="1mm">
-												<xsl:for-each select="medications/medication">
-													<xsl:variable name="i" select="position()" />
-													<xsl:if test="$i &lt;= $maxRows">
-														<fo:list-item>
-															<fo:list-item-label end-indent="label-end()" text-align="right">
-																<fo:block>
-																	<xsl:value-of select="position()" />.
-																</fo:block>
-															</fo:list-item-label>
-															<fo:list-item-body start-indent="body-start()">
-																<fo:block>
-																	<xsl:value-of select="value" />
-																</fo:block>
-															</fo:list-item-body>
-														</fo:list-item>
-													</xsl:if>
-												</xsl:for-each>
-												<xsl:if test="count(medications/medication) > $maxRows">
-													<fo:list-item>
-														<fo:list-item-label end-indent="label-end()">
-															<fo:block></fo:block>
-														</fo:list-item-label>
-														<fo:list-item-body start-indent="body-start()">
-															<fo:block font-size="6pt" font-style="italic">
-																(<xsl:value-of select="count(medications/medication) - $maxRows" /> more meds)
-															</fo:block>
-														</fo:list-item-body>
-													</fo:list-item>
-												</xsl:if>
-											</fo:list-block>
-										</xsl:when>
-										<xsl:otherwise>
-											<fo:block font-size="10pt">NONE</fo:block>
-										</xsl:otherwise>
-									</xsl:choose>
-								</fo:table-cell>
-							</fo:table-row>
-						</fo:table-body>
-					</fo:table>
+                                <!-- Medications -->
+                                <fo:table-cell>
+                                    <fo:block font-size="12pt" space-before="6pt" space-after="3pt" font-weight="bold">
+                                        <fo:inline text-decoration="underline">Recent ARVs and OI Meds</fo:inline>:
+                                    </fo:block>
+                                    <xsl:choose>
+                                        <xsl:when test="medications/medication">
+                                            <fo:list-block font-size="10pt" space-after="6pt"
+                                                           provisional-label-separation="1mm"
+                                                           provisional-distance-between-starts="1mm">
+                                                <xsl:for-each select="medications/medication">
+                                                    <xsl:variable name="i" select="position()" />
+                                                    <xsl:if test="$i &lt;= $maxRows">
+                                                        <fo:list-item>
+                                                            <fo:list-item-label end-indent="label-end()" text-align="right">
+                                                                <fo:block>
+                                                                    <xsl:value-of select="position()" />.
+                                                                </fo:block>
+                                                            </fo:list-item-label>
+                                                            <fo:list-item-body start-indent="body-start()">
+                                                                <fo:block>
+                                                                    <xsl:value-of select="value" />
+                                                                </fo:block>
+                                                            </fo:list-item-body>
+                                                        </fo:list-item>
+                                                    </xsl:if>
+                                                </xsl:for-each>
+                                                <xsl:if test="count(medications/medication) > $maxRows">
+                                                    <fo:list-item>
+                                                        <fo:list-item-label end-indent="label-end()">
+                                                            <fo:block></fo:block>
+                                                        </fo:list-item-label>
+                                                        <fo:list-item-body start-indent="body-start()">
+                                                            <fo:block font-size="6pt" font-style="italic">
+                                                                (<xsl:value-of select="count(medications/medication) - $maxRows" /> more meds)
+                                                            </fo:block>
+                                                        </fo:list-item-body>
+                                                    </fo:list-item>
+                                                </xsl:if>
+                                            </fo:list-block>
+                                        </xsl:when>
+                                        <xsl:otherwise>
+                                            <fo:block font-size="10pt">NONE</fo:block>
+                                        </xsl:otherwise>
+                                    </xsl:choose>
+                                </fo:table-cell>
 
-					<!-- Flowsheet -->
-					<fo:block font-size="12pt" font-weight="bold" space-before="12pt">
-						<fo:block font-size="12pt" font-weight="bold" space-before="12pt">
-							<fo:inline text-decoration="underline">Flowsheet (Initial + Last Four Value)</fo:inline>
-						</fo:block>
-					</fo:block>
-					<fo:table space-after="12pt" width="100%" border-collapse="collapse">
-						<xsl:for-each select="flowsheet/results">
-							<fo:table-column />
-						</xsl:for-each>
-						<fo:table-body>
-							<fo:table-row>
-								<xsl:for-each select="flowsheet/results">
-									<xsl:element name="fo:table-cell">
-										<xsl:attribute name="text-align">center</xsl:attribute>
-										<xsl:attribute name="padding">2pt</xsl:attribute>
-										<xsl:attribute name="border-bottom">thin solid black</xsl:attribute>
-										<xsl:if test="not(position()=last())">
-											<xsl:attribute name="border-right">thin solid black</xsl:attribute>
-										</xsl:if>
-										<fo:block font-size="10">
-											<xsl:value-of select="@name" />
-										</fo:block>
-									</xsl:element>
-								</xsl:for-each>
-							</fo:table-row>
-							<xsl:variable name="results" select="flowsheet/results" />
-							<xsl:for-each select="(1,2,3,4,5)">
-								<xsl:variable name="i" select="position()" />
-								<xsl:element name="fo:table-row">
-									<xsl:attribute name="background-color">
-										<xsl:if test="$i mod 2">#F8F8F8</xsl:if>
-										<xsl:if test="not($i mod 2)">#FFFFFF</xsl:if>
-									</xsl:attribute>
-									<xsl:attribute name="height">1cm</xsl:attribute>
-									<xsl:for-each select="$results">
-										<xsl:variable name="result_name" select="@name" />
-										<xsl:element name="fo:table-cell">
-											<xsl:attribute name="text-align">center</xsl:attribute>
-											<xsl:attribute name="display-align">center</xsl:attribute>
-											<xsl:attribute name="padding">2pt</xsl:attribute>
-											<xsl:if test="not(position()=last())">
-												<xsl:attribute name="border-right">thin solid black</xsl:attribute>
-											</xsl:if>
-											<xsl:choose>
-												<xsl:when test="$i = 1">
-													<xsl:variable name="element" select="result[$i]" />
-													<xsl:variable name="result_date" select="$element/datetime" />
-													<fo:block font-size="10pt" space-after="0pt">
-														<xsl:value-of select="$element/value" />
-														<xsl:if test="$result_name='CD4'">
-															<xsl:if test="$element/percentage">
-																<fo:inline font-size="6pt" font-style="italic">
-																	<xsl:text>(</xsl:text>
-																	<xsl:value-of select="$element/percentage" />
-																	<xsl:text>%)</xsl:text>
-																</fo:inline>
-															</xsl:if>
-														</xsl:if>
-													</fo:block>
-													<xsl:if test="$element/status != ''">
-														<fo:block font-size="6pt" font-style="italic" space-before="0pt">
-															<xsl:text>(</xsl:text>
-															<xsl:value-of select="$element/status" />
-															<xsl:text>)</xsl:text>
-														</fo:block>
-													</xsl:if>
-													<xsl:if test="$element/datetime">
-														<fo:block font-size="6pt" font-style="italic" color="#808080" space-before="0pt">
-															<xsl:value-of select="$element/datetime" />
-														</fo:block>
-													</xsl:if>
-												</xsl:when>
-												<xsl:otherwise>
-													<xsl:variable name="j" select="max((count(element)-5,0)) + $i" />
-													<xsl:variable name="element" select="element[$j]" />
-													<xsl:variable name="result_date" select="$element/datetime" />
-													<fo:block font-size="10pt" space-after="0pt">
-														<xsl:value-of select="$element/value" />
-														<xsl:if test="$result_name='CD4'">
-															<xsl:if test="$element/percentage">
-																<fo:inline font-size="6pt" font-style="italic">
-																	<xsl:text>(</xsl:text>
-																	<xsl:value-of select="$element/percentage" />
-																	<xsl:text>%)</xsl:text>
-																</fo:inline>
-															</xsl:if>
-														</xsl:if>
-													</fo:block>
-													<xsl:if test="$element/status != ''">
-														<fo:block font-size="6pt" font-style="italic" space-before="0pt">
-															<xsl:text>(</xsl:text>
-															<xsl:value-of select="$element/status" />
-															<xsl:text>)</xsl:text>
-														</fo:block>
-													</xsl:if>
-													<xsl:if test="$element/datetime">
-														<fo:block font-size="6pt" font-style="italic" color="#808080" space-before="0pt">
-															<xsl:value-of select="$element/datetime" />
-														</fo:block>
-													</xsl:if>
-												</xsl:otherwise>
-											</xsl:choose>
-										</xsl:element>
-									</xsl:for-each>
-								</xsl:element>
-							</xsl:for-each>
-						</fo:table-body>
-					</fo:table>
+                                <!-- Medications -->
+                                <fo:table-cell>
+                                    <fo:block font-size="12pt" space-before="6pt" space-after="3pt" font-weight="bold">
+                                        <fo:inline text-decoration="underline">ANC Meds Treatment</fo:inline>:
+                                    </fo:block>
+                                    <xsl:choose>
+                                        <xsl:when test="anc-medications/element">
+                                            <fo:list-block font-size="10pt" space-after="6pt"
+                                                           provisional-label-separation="1mm"
+                                                           provisional-distance-between-starts="1mm">
+                                                <xsl:for-each select="anc-medications/element">
+                                                    <xsl:variable name="i" select="position()" />
+                                                    <xsl:if test="$i &lt;= $maxRows">
+                                                        <fo:list-item>
+                                                            <fo:list-item-label end-indent="label-end()" text-align="right">
+                                                                <fo:block>
+                                                                    <xsl:value-of select="position()" />.
+                                                                </fo:block>
+                                                            </fo:list-item-label>
+                                                            <fo:list-item-body start-indent="body-start()">
+                                                                <fo:block>
+                                                                    <xsl:value-of select="." />
+                                                                </fo:block>
+                                                            </fo:list-item-body>
+                                                        </fo:list-item>
+                                                    </xsl:if>
+                                                </xsl:for-each>
+                                                <xsl:if test="count(anc-medications/element) > $maxRows">
+                                                    <fo:list-item>
+                                                        <fo:list-item-label end-indent="label-end()">
+                                                            <fo:block></fo:block>
+                                                        </fo:list-item-label>
+                                                        <fo:list-item-body start-indent="body-start()">
+                                                            <fo:block font-size="6pt" font-style="italic">
+                                                                (<xsl:value-of select="count(anc-medications/element) - $maxRows" /> more meds)
+                                                            </fo:block>
+                                                        </fo:list-item-body>
+                                                    </fo:list-item>
+                                                </xsl:if>
+                                            </fo:list-block>
+                                        </xsl:when>
+                                        <xsl:otherwise>
+                                            <fo:block font-size="10pt">NONE</fo:block>
+                                        </xsl:otherwise>
+                                    </xsl:choose>
+                                </fo:table-cell>
+                            </fo:table-row>
+                        </fo:table-body>
+                    </fo:table>
 
-					<!-- Chest X-ray -->
-					<fo:block font-size="12pt" space-before="12pt" font-weight="bold">
-						<fo:inline text-decoration="underline">Last 2 Chest X-Rays</fo:inline>
-						<fo:inline font-size="8pt" font-style="italic">
-							(check chart as needed for results prior to 14-Feb-2006)
-						</fo:inline>
-					</fo:block>
-					<xsl:choose>
-						<xsl:when test="cxrs/cxr">
-							<fo:list-block font-size="12pt" space-before="6pt">
-								<xsl:for-each select="cxrs/cxr">
-									<fo:list-item>
-										<fo:list-item-label end-indent="label-end()" text-align="right">
-											<fo:block>
-												<xsl:value-of select="position()" />.
-											</fo:block>
-										</fo:list-item-label>
-										<fo:list-item-body start-indent="body-start()">
-											<fo:block space-before="6pt">
-												<xsl:value-of select="datetime" /> :
-												<xsl:value-of select="value" />
-											</fo:block>
-										</fo:list-item-body>
-									</fo:list-item>
-								</xsl:for-each>
-							</fo:list-block>
-						</xsl:when>
-						<xsl:otherwise>
-							<fo:block>
-								<xsl:attribute name="font-size">12pt</xsl:attribute>
-								No chest x-ray results available.
-							</fo:block>
-						</xsl:otherwise>
-					</xsl:choose>
+                    <fo:block font-size="12pt" font-weight="bold" space-before="12pt">
+                        <fo:block font-size="12pt" font-weight="bold" space-before="12pt">
+                            <fo:inline text-decoration="underline">Labs Results</fo:inline>
+                        </fo:block>
+                    </fo:block>
+                    <fo:table table-layout="fixed" width="100%" space-before="3pt">
+                        <xsl:attribute name="font-size">10pt</xsl:attribute>
+                        <fo:table-column column-width="33%" />
+                        <fo:table-column column-width="34%" />
+                        <fo:table-column column-width="33%" />
+                        <fo:table-body>
+                            <fo:table-row>
+                                <fo:table-cell>
+                                    <fo:block>
+                                        <fo:inline font-weight="bold">Blood Group: </fo:inline>
+                                        <xsl:if test="labs/bloodgroup/value != ''">
+                                            <xsl:value-of select="labs/bloodgroup/value" />
+                                            (<xsl:value-of select="labs/bloodgroup/datetime" />)
+                                        </xsl:if>
+                                    </fo:block>
+                                </fo:table-cell>
+                                <fo:table-cell>
+                                    <fo:block>
+                                        <fo:inline font-weight="bold">Rhesus: </fo:inline>
+                                        <xsl:if test="labs/rhesus/value != ''">
+                                            <xsl:value-of select="labs/rhesus/value" />
+                                            (<xsl:value-of select="labs/rhesus/datetime" />)
+                                        </xsl:if>
+                                    </fo:block>
+                                </fo:table-cell>
+                                <fo:table-cell>
+                                    <fo:block>
+                                        <fo:inline font-weight="bold">RPR: </fo:inline>
+                                        <xsl:if test="labs/rpr/value != ''">
+                                            <xsl:value-of select="labs/rpr/value" />
+                                            (<xsl:value-of select="labs/rpr/datetime" />)
+                                        </xsl:if>
+                                    </fo:block>
+                                </fo:table-cell>
+                            </fo:table-row>
+                            <fo:table-row>
+                                <fo:table-cell>
+                                    <fo:block>
+                                        <fo:inline font-weight="bold">Urine Protein: </fo:inline>
+                                        <xsl:if test="labs/protein/value != ''">
+                                            <xsl:variable name="value" select="labs/protein/value" />
+                                            <xsl:choose>
+                                                <xsl:when test="$value = 'POSITIVE'">+</xsl:when>
+                                                <xsl:when test="$value = 'STRONG POSITIVE'">++</xsl:when>
+                                                <xsl:when test="$value = 'STRONGER POSITIVE'">+++</xsl:when>
+                                                <xsl:otherwise>
+                                                    <xsl:value-of select="$value" />
+                                                </xsl:otherwise>
+                                            </xsl:choose>
+                                            (<xsl:value-of select="labs/protein/datetime" />)
+                                        </xsl:if>
+                                    </fo:block>
+                                </fo:table-cell>
+                                <fo:table-cell>
+                                    <fo:block>
+                                        <fo:inline font-weight="bold">Urine Glucose: </fo:inline>
+                                        <xsl:if test="labs/glucose/value != ''">
+                                            <xsl:variable name="value" select="labs/glucose/value" />
+                                            <xsl:choose>
+                                                <xsl:when test="$value = 'POSITIVE'">+</xsl:when>
+                                                <xsl:when test="$value = 'STRONG POSITIVE'">++</xsl:when>
+                                                <xsl:when test="$value = 'STRONGER POSITIVE'">+++</xsl:when>
+                                                <xsl:otherwise>
+                                                    <xsl:value-of select="$value" />
+                                                </xsl:otherwise>
+                                            </xsl:choose>
+                                            (<xsl:value-of select="labs/glucose/datetime" />)
+                                        </xsl:if>
+                                    </fo:block>
+                                </fo:table-cell>
+                                <fo:table-cell>
+                                    <fo:block>
+                                        <fo:inline font-weight="bold">Urine Leukocytes: </fo:inline>
+                                        <xsl:if test="labs/leukocytes/value != ''">
+                                            <xsl:variable name="value" select="labs/leukocytes/value" />
+                                            <xsl:choose>
+                                                <xsl:when test="$value = 'POSITIVE'">+</xsl:when>
+                                                <xsl:when test="$value = 'STRONG POSITIVE'">++</xsl:when>
+                                                <xsl:when test="$value = 'STRONGER POSITIVE'">+++</xsl:when>
+                                                <xsl:otherwise>
+                                                    <xsl:value-of select="$value" />
+                                                </xsl:otherwise>
+                                            </xsl:choose>
+                                            (<xsl:value-of select="labs/leukocytes/datetime" />)
+                                        </xsl:if>
+                                    </fo:block>
+                                </fo:table-cell>
+                            </fo:table-row>
+                            <fo:table-row>
+                                <fo:table-cell>
+                                    <fo:block>
+                                        <fo:inline font-weight="bold">Antibody Screen: </fo:inline>
+                                        <xsl:if test="labs/antibody/value != ''">
+                                            <xsl:variable name="value" select="labs/antibody/value" />
+                                            <xsl:choose>
+                                                <xsl:when test="$value = 'POSITIVE'">+</xsl:when>
+                                                <xsl:when test="$value = 'STRONG POSITIVE'">++</xsl:when>
+                                                <xsl:when test="$value = 'STRONGER POSITIVE'">+++</xsl:when>
+                                                <xsl:otherwise>
+                                                    <xsl:value-of select="$value" />
+                                                </xsl:otherwise>
+                                            </xsl:choose>
+                                            (<xsl:value-of select="labs/antibody/datetime" />)
+                                        </xsl:if>
+                                    </fo:block>
+                                </fo:table-cell>
+                            </fo:table-row>
+                        </fo:table-body>
+                    </fo:table>
 
-					<!-- Reminders -->
-					<fo:block space-before="6pt">
-						<xsl:attribute name="border-bottom">thin solid black</xsl:attribute>
-					</fo:block>
-					<fo:block font-size="12pt" space-before="6pt">
-						<fo:inline font-size="14pt" text-decoration="underline" font-weight="bold">Reminders</fo:inline>
-						(Write number next to each reminder)
-					</fo:block>
-					<fo:block font-size="8pt" font-style="italic">
-						<fo:inline>
-							1-Ordered Today, 2-Not Applicable(Explain), 3-Previously Ordered, 4-Pt Allergic, 5-Pt Refused,
-							6-I Disagree with Reminder(Explain), 7-Other(Explain)
-						</fo:inline>
-					</fo:block>
-					<xsl:if test="reminders/reminder">
-						<fo:list-block font-size="12pt" space-before="6pt">
-							<xsl:for-each select="reminders/reminder">
-								<fo:list-item>
-									<fo:list-item-label end-indent="label-end()" text-align="right">
-										<fo:block><xsl:value-of select="position()" />.
-										</fo:block>
-									</fo:list-item-label>
-									<fo:list-item-body start-indent="body-start()">
-										<fo:block space-before="6pt">
-											<xsl:value-of select="value" /> (___)
-										</fo:block>
-									</fo:list-item-body>
-								</fo:list-item>
-							</xsl:for-each>
-						</fo:list-block>
-					</xsl:if>
+                    <!-- Flowsheet -->
+                    <fo:block font-size="12pt" font-weight="bold" space-before="12pt">
+                        <fo:block font-size="12pt" font-weight="bold" space-before="12pt">
+                            <fo:inline text-decoration="underline">Flowsheet (Initial + Last Four Value)</fo:inline>
+                        </fo:block>
+                    </fo:block>
+                    <fo:table space-after="12pt" width="100%">
+                        <xsl:for-each select="flowsheet/results">
+                            <fo:table-column />
+                        </xsl:for-each>
+                        <fo:table-body>
+                            <fo:table-row>
+                                <xsl:for-each select="flowsheet/results">
+                                    <xsl:element name="fo:table-cell">
+                                        <xsl:attribute name="text-align">center</xsl:attribute>
+                                        <xsl:attribute name="padding">2pt</xsl:attribute>
+                                        <xsl:attribute name="border-bottom">thin solid black</xsl:attribute>
+                                        <xsl:if test="not(position()=last())">
+                                            <xsl:attribute name="border-right">thin solid black</xsl:attribute>
+                                        </xsl:if>
+                                        <fo:block font-size="10">
+                                            <xsl:value-of select="@name" />
+                                        </fo:block>
+                                    </xsl:element>
+                                </xsl:for-each>
+                            </fo:table-row>
+                            <xsl:variable name="results" select="flowsheet/results" />
+                            <xsl:for-each select="(1,2,3,4,5)">
+                                <xsl:variable name="i" select="position()" />
+                                <xsl:element name="fo:table-row">
+                                    <xsl:attribute name="background-color">
+                                        <xsl:if test="$i mod 2">#F8F8F8</xsl:if>
+                                        <xsl:if test="not($i mod 2)">#FFFFFF</xsl:if>
+                                    </xsl:attribute>
+                                    <xsl:attribute name="height">1cm</xsl:attribute>
+                                    <xsl:for-each select="$results">
+                                        <xsl:variable name="result_name" select="@name" />
+                                        <xsl:element name="fo:table-cell">
+                                            <xsl:attribute name="text-align">center</xsl:attribute>
+                                            <xsl:attribute name="display-align">center</xsl:attribute>
+                                            <xsl:attribute name="padding">2pt</xsl:attribute>
+                                            <xsl:if test="not(position()=last())">
+                                                <xsl:attribute name="border-right">thin solid black</xsl:attribute>
+                                            </xsl:if>
+                                            <xsl:variable name="element" select="result[$i]"/>
+                                            <xsl:variable name="result_date" select="$element/datetime"/>
+                                            <fo:block font-size="10pt" space-after="0pt">
+                                                <xsl:value-of select="$element/value"/>
+                                                <xsl:if test="$result_name='CD4'">
+                                                    <xsl:if test="$element/percentage != ''">
+                                                        <fo:inline font-size="6pt" font-style="italic">
+                                                            <xsl:text>(</xsl:text>
+                                                            <xsl:value-of select="$element/percentage"/>
+                                                            <xsl:text>%)</xsl:text>
+                                                        </fo:inline>
+                                                    </xsl:if>
+                                                </xsl:if>
+                                            </fo:block>
+                                            <xsl:if test="$element/status != ''">
+                                                <fo:block font-size="6pt" font-style="italic" space-before="0pt">
+                                                    <xsl:text>(</xsl:text>
+                                                    <xsl:value-of select="$element/status"/>
+                                                    <xsl:text>)</xsl:text>
+                                                </fo:block>
+                                            </xsl:if>
+                                            <xsl:if test="$element/datetime">
+                                                <fo:block font-size="6pt" font-style="italic" color="#808080" space-before="0pt">
+                                                    <xsl:value-of select="$element/datetime"/>
+                                                </fo:block>
+                                            </xsl:if>
+                                        </xsl:element>
+                                    </xsl:for-each>
+                                </xsl:element>
+                            </xsl:for-each>
+                        </fo:table-body>
+                    </fo:table>
 
-				</fo:flow>
-			</fo:page-sequence>
-		</fo:root>
-	</xsl:template>
+                    <!-- Chest X-ray -->
+                    <fo:block font-size="12pt" space-before="12pt" font-weight="bold">
+                        <fo:inline text-decoration="underline">Last 2 Chest X-Rays</fo:inline>
+                        <fo:inline font-size="8pt" font-style="italic">
+                            (check chart as needed for results prior to 14-Feb-2006)
+                        </fo:inline>
+                    </fo:block>
+                    <xsl:choose>
+                        <xsl:when test="cxrs/cxr">
+                            <fo:list-block font-size="12pt" space-before="6pt">
+                                <xsl:for-each select="cxrs/cxr">
+                                    <fo:list-item>
+                                        <fo:list-item-label end-indent="label-end()" text-align="right">
+                                            <fo:block>
+                                                <xsl:value-of select="position()" />.
+                                            </fo:block>
+                                        </fo:list-item-label>
+                                        <fo:list-item-body start-indent="body-start()">
+                                            <fo:block space-before="6pt">
+                                                <xsl:value-of select="datetime" /> :
+                                                <xsl:value-of select="value" />
+                                            </fo:block>
+                                        </fo:list-item-body>
+                                    </fo:list-item>
+                                </xsl:for-each>
+                            </fo:list-block>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <fo:block>
+                                <xsl:attribute name="font-size">12pt</xsl:attribute>
+                                No chest x-ray results available.
+                            </fo:block>
+                        </xsl:otherwise>
+                    </xsl:choose>
+
+                    <!-- Ultrasound -->
+                    <fo:block font-size="12pt" space-before="12pt">
+                        <fo:inline text-decoration="underline" font-weight="bold">Ultrasound:</fo:inline>
+                        <fo:inline>
+                            <xsl:attribute name="font-size">12pt</xsl:attribute>
+                            <xsl:choose>
+                                <xsl:when test="labs/ultrasound/value = 'YES'">
+                                    Done (on <xsl:value-of select="labs/ultrasound/datetime" />)
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    Not Done.
+                                </xsl:otherwise>
+                            </xsl:choose>
+                        </fo:inline>
+                    </fo:block>
+
+                    <!-- Reminders -->
+                    <fo:block space-before="6pt">
+                        <xsl:attribute name="border-bottom">thin solid black</xsl:attribute>
+                    </fo:block>
+                    <fo:block font-size="12pt" space-before="6pt">
+                        <fo:inline font-size="14pt" text-decoration="underline" font-weight="bold">Reminders</fo:inline>
+                        (Write number next to each reminder)
+                    </fo:block>
+                    <fo:block font-size="8pt" font-style="italic">
+                        <fo:inline>
+                            1-Ordered Today, 2-Not Applicable(Explain), 3-Previously Ordered, 4-Pt Allergic, 5-Pt Refused,
+                            6-I Disagree with Reminder(Explain), 7-Other(Explain)
+                        </fo:inline>
+                    </fo:block>
+                    <xsl:if test="reminders/reminder">
+                        <fo:list-block font-size="12pt" space-before="6pt">
+                            <xsl:for-each select="reminders/reminder">
+                                <fo:list-item>
+                                    <fo:list-item-label end-indent="label-end()" text-align="right">
+                                        <fo:block><xsl:value-of select="position()" />.
+                                        </fo:block>
+                                    </fo:list-item-label>
+                                    <fo:list-item-body start-indent="body-start()">
+                                        <fo:block space-before="6pt">
+                                            <xsl:value-of select="value" /> (___)
+                                        </fo:block>
+                                    </fo:list-item-body>
+                                </fo:list-item>
+                            </xsl:for-each>
+                        </fo:list-block>
+                    </xsl:if>
+
+                </fo:flow>
+            </fo:page-sequence>
+        </fo:root>
+    </xsl:template>
 </xsl:stylesheet>

@@ -130,4 +130,16 @@ public class SummaryServiceImpl extends BaseOpenmrsService implements SummarySer
 	public List<Mapping> getMappings(final Summary summary, final EncounterType encounterType, final MappingType mappingType) throws APIException {
 		return summaryDAO.getMappings(summary, encounterType, mappingType);
 	}
+
+    /**
+     * @see SummaryService#getSummariesByMappingType(org.openmrs.module.clinicalsummary.enumeration.MappingType)
+     */
+    @Override
+    public List<Summary> getSummariesByMappingType(final MappingType mappingType) throws APIException {
+        List<Mapping> mappings = getMappings(null, null, mappingType);
+        List<Summary> summaries = new ArrayList<Summary>();
+        for (Mapping mapping : mappings)
+            summaries.add(mapping.getSummary());
+        return summaries;
+    }
 }

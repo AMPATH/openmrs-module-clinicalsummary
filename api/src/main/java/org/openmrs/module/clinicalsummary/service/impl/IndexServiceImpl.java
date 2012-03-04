@@ -63,33 +63,57 @@ public class IndexServiceImpl extends BaseOpenmrsService implements IndexService
 		this.indexDAO = indexDAO;
 	}
 
-	/**
-	 * @see IndexService#saveIndex(org.openmrs.module.clinicalsummary.Index)
-	 */
-	@Override
-	public Index saveIndex(final Index index) throws APIException {
-		return indexDAO.saveIndex(index);
-	}
+    /**
+     * @see IndexService#saveIndex(org.openmrs.module.clinicalsummary.Index)
+     */
+    @Override
+    public Index saveIndex(final Index index) throws APIException {
+        return indexDAO.saveIndex(index);
+    }
+
+    /**
+     * @see IndexService#deleteIndex(org.openmrs.module.clinicalsummary.Index)
+     */
+    @Override
+    public void deleteIndex(final Index index) throws APIException {
+        indexDAO.deleteIndex(index);
+    }
 
 	/**
 	 * @see IndexService#generateIndex(org.openmrs.Patient, org.openmrs.module.clinicalsummary.Summary)
 	 */
 	@Override
 	public Index generateIndex(final Patient patient, final Summary summary) throws APIException {
+        
+        int firstElement = 0;
 
-		Index index = getIndex(patient, summary);
+        SummaryService service = Context.getService(SummaryService.class);
+        // reuse index that's already exists but not needed anymore
+        List<Index> activeIndexes = getIndexes(patient);
+        List<Summary> summaries = service.getSummaries(patient);
+        while(!activeIndexes.isEmpty()) {
+            Index activeIndex = activeIndexes.remove(firstElement);
+            if (CollectionUtils.isNotEmpty(summaries) && !summaries.contains(activeIndex.getSummary()))
+                deleteIndex(activeIndex);
+        }
+
+        // search the index for the summary
+        Index index = getIndex(patient, summary);
+        // if the index doesn't exist, then we can create new index
 		if (index == null)
 			index = new Index(patient, summary, new Date());
+        
+        index.setSummary(summary);
 
-		List<Mapping> mappings = Context.getService(SummaryService.class).getMappings(summary, null, null);
-		List<String> typeNames = new ArrayList<String>();
-		for (Mapping mapping : mappings) {
-			EncounterType encounterType = mapping.getEncounterType();
-			typeNames.add(encounterType.getName());
+		List<Mapping> summaryMappings = Context.getService(SummaryService.class).getMappings(summary, null, null);
+		List<String> encounterTypeNames = new ArrayList<String>();
+		for (Mapping summaryMapping : summaryMappings) {
+			EncounterType encounterType = summaryMapping.getEncounterType();
+            encounterTypeNames.add(encounterType.getName());
 		}
 
 		Map<String, Object> parameters = new HashMap<String, Object>();
-		parameters.put(EvaluableConstants.ENCOUNTER_TYPE, typeNames);
+		parameters.put(EvaluableConstants.ENCOUNTER_TYPE, encounterTypeNames);
 
 		EvaluatorService evaluatorService = Context.getService(EvaluatorService.class);
 		Result encounterResults = evaluatorService.evaluate(patient, IndexGeneratorRule.TOKEN, parameters);

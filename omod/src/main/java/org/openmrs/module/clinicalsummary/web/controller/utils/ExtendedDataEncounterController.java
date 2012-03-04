@@ -96,17 +96,22 @@ public class ExtendedDataEncounterController {
             Patient patient = null;
 
             String[] elements = StringUtils.splitPreserveAllTokens(line, ",");
-            if (isDigit(StringUtils.trim(elements[4])))
-                patient = patientService.getPatient(NumberUtils.toInt(elements[4]));
-            else {
-                Cohort cohort = patientSetService.convertPatientIdentifier(Arrays.asList(elements[4]));
-                for (Integer patientId : cohort.getMemberIds()) {
-                    Patient cohortPatient = patientService.getPatient(patientId);
-                    if (cohortPatient != null && !cohortPatient.isVoided())
-                        patient = cohortPatient;
+            try {
+                if (isDigit(StringUtils.trim(elements[1])))
+                    patient = patientService.getPatient(NumberUtils.toInt(elements[1]));
+                else {
+                    Cohort cohort = patientSetService.convertPatientIdentifier(Arrays.asList(elements[1]));
+                    for (Integer patientId : cohort.getMemberIds()) {
+                        Patient cohortPatient = patientService.getPatient(patientId);
+                        if (cohortPatient != null && !cohortPatient.isVoided())
+                            patient = cohortPatient;
+                    }
                 }
+            } catch (Exception e) {
+                log.error("Unable to resolve patients!", e);
             }
-            Date referenceDate = WebUtils.parse(elements[3], "MM/dd/yyyy", new Date());
+
+            Date referenceDate = WebUtils.parse(elements[2], "MM/dd/yyyy", new Date());
 
             if (patient != null) {
                 ExtendedData extended = new ExtendedData(patient, referenceDate);
@@ -118,7 +123,7 @@ public class ExtendedDataEncounterController {
 
                 ResultCacheInstance.getInstance().clearCache(patient);
             } else {
-                writer.write("Unresolved patient id or patient identifier for " + elements[4]);
+                writer.write("Unresolved patient id or patient identifier for " + elements[1]);
                 writer.newLine();
             }
         }

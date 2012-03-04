@@ -49,14 +49,22 @@ public class HibernateIndexDAO implements IndexDAO {
 		this.sessionFactory = sessionFactory;
 	}
 
-	/**
-	 * @see IndexDAO#saveIndex(org.openmrs.module.clinicalsummary.Index)
-	 */
-	@Override
-	public Index saveIndex(final Index index) throws DAOException {
-		sessionFactory.getCurrentSession().saveOrUpdate(index);
-		return index;
-	}
+    /**
+     * @see IndexDAO#saveIndex(org.openmrs.module.clinicalsummary.Index)
+     */
+    @Override
+    public Index saveIndex(final Index index) throws DAOException {
+        sessionFactory.getCurrentSession().saveOrUpdate(index);
+        return index;
+    }
+
+    /**
+     * @see IndexDAO#deleteIndex(org.openmrs.module.clinicalsummary.Index)
+     */
+    @Override
+    public void deleteIndex(final Index index) throws DAOException {
+        sessionFactory.getCurrentSession().delete(index);
+    }
 
 	/**
 	 * @see IndexDAO#getIndex(Integer)
@@ -166,7 +174,7 @@ public class HibernateIndexDAO implements IndexDAO {
         criteria.setProjection(Projections.property("patient.patientId"));
 
         Cohort validCohort = new Cohort();
-        validCohort .setMemberIds(new LinkedHashSet<Integer>(criteria.list()));
+        validCohort.setMemberIds(new LinkedHashSet<Integer>(criteria.list()));
         return validCohort ;
     }
 

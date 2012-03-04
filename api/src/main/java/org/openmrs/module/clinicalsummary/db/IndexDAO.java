@@ -46,4 +46,6 @@ public interface IndexDAO {
 	Integer saveInitialDate(final Location location, final Date date) throws DAOException;
 
 	Date getInitialDate(final Location location) throws DAOException;
+
+    void deleteIndex(Index index) throws DAOException;
 }

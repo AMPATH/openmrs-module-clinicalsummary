@@ -34,16 +34,27 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public interface IndexService extends OpenmrsService {
 
-	/**
-	 * Save an index entry in the database.
-	 *
-	 * @param index the index to be saved
-	 * @return saved index with assigned id
-	 * @throws APIException
-	 * @should save the Index to the database
-	 */
-	@Authorized({Constants.PRIVILEGE_PRINT_SUMMARY, Constants.PRIVILEGE_VIEW_SUMMARY})
-	Index saveIndex(final Index index) throws APIException;
+    /**
+     * Save an index entry in the database.
+     *
+     * @param index the index to be saved
+     * @return saved index with assigned id
+     * @throws APIException
+     * @should save the Index to the database
+     */
+    @Authorized({Constants.PRIVILEGE_PRINT_SUMMARY, Constants.PRIVILEGE_VIEW_SUMMARY})
+    Index saveIndex(final Index index) throws APIException;
+
+    /**
+     * Delete an index entry in the database.
+     *
+     * @param index the index to be deleted
+     * @return saved index with assigned id
+     * @throws APIException
+     * @should save the Index to the database
+     */
+    @Authorized({Constants.PRIVILEGE_PRINT_SUMMARY, Constants.PRIVILEGE_VIEW_SUMMARY})
+    void deleteIndex(final Index index) throws APIException;
 
 	/**
 	 * Generate an index for a patient and a summary template. The generated index then can be saved to retrieve the summary sheet in the future

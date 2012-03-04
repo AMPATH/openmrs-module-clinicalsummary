@@ -155,22 +155,22 @@ public class ExtendedData {
 
     private Encounter searchEncounterAfterReferenceDate(final List<EncounterType> encounterTypes,
                                                         final Date referenceDate) {
-        Encounter expressEncounter = null;
+        Encounter encounter = null;
 
         Integer counter = 0;
         Boolean shouldStop = Boolean.FALSE;
         while (counter < getEncounters().size() && !shouldStop) {
-            Encounter encounter = getEncounters().get(counter++);
-            if (encounter.getEncounterDatetime().after(referenceDate)
-                    || DateUtils.isSameDay(encounter.getEncounterDatetime(), referenceDate)) {
+            Encounter currentEncounter = getEncounters().get(counter++);
+            if (currentEncounter.getEncounterDatetime().after(referenceDate)
+                    || DateUtils.isSameDay(currentEncounter.getEncounterDatetime(), referenceDate)) {
                 if (CollectionUtils.isEmpty(encounterTypes)
-                        || OpenmrsUtil.collectionContains(encounterTypes, encounter.getEncounterType()))
-                    expressEncounter = encounter;
+                        || OpenmrsUtil.collectionContains(encounterTypes, currentEncounter.getEncounterType()))
+                    encounter = currentEncounter;
             } else
                 shouldStop = Boolean.TRUE;
         }
 
-        return expressEncounter;
+        return encounter;
     }
 
     /**
@@ -446,7 +446,7 @@ public class ExtendedData {
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(getReferenceDate());
-        calendar.add(Calendar.DATE, -5);
+        calendar.add(Calendar.DATE, -3);
         Date referenceDate = calendar.getTime();
 
         // Find the encounter data
