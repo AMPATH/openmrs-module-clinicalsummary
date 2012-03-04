@@ -4,22 +4,9 @@
     <option name="ANALYSIS_IN_BACKGROUND" value="true" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" readonly="true" id="b35bbdc3-ddcb-4118-9869-8451de34a1f9" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/omod/src/test/java/org/openmrs/module/clinicalsummary/evaluator" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/omod/src/test/java/org/openmrs/module/clinicalsummary/evaluator/VelocityEvaluatorTest.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/db/IndexDAO.java" afterPath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/db/IndexDAO.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/db/hibernate/HibernateIndexDAO.java" afterPath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/db/hibernate/HibernateIndexDAO.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/service/IndexService.java" afterPath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/service/IndexService.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/service/SummaryService.java" afterPath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/service/SummaryService.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/service/impl/IndexServiceImpl.java" afterPath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/service/impl/IndexServiceImpl.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/service/impl/SummaryServiceImpl.java" afterPath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/service/impl/SummaryServiceImpl.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/clinicalsummary.ipr" afterPath="$PROJECT_DIR$/clinicalsummary.ipr" />
+    <list default="true" readonly="true" id="b35bbdc3-ddcb-4118-9869-8451de34a1f9" name="Default" comment="clinicalsummary: update on the index creation process">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/rule/problem/ProblemListRule.java" afterPath="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/rule/problem/ProblemListRule.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/clinicalsummary.iws" afterPath="$PROJECT_DIR$/clinicalsummary.iws" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/omod/clinicalsummary-omod.iml" afterPath="$PROJECT_DIR$/omod/clinicalsummary-omod.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/evaluator/EvaluateRuleController.java" afterPath="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/evaluator/EvaluateRuleController.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/utils/ExtendedData.java" afterPath="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/utils/ExtendedData.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/utils/ExtendedDataEncounterController.java" afterPath="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/utils/ExtendedDataEncounterController.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/omod/src/test/resources/org/openmrs/module/clinicalsummary/service/templates/example-pmtct-xslfo.xml" afterPath="$PROJECT_DIR$/omod/src/test/resources/org/openmrs/module/clinicalsummary/service/templates/example-pmtct-xslfo.xml" />
     </list>
     <ignored path="clinicalsummary.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -130,80 +117,7 @@
     <favorites_list name="clinicalsummary" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file leaf-file-name="InitialSummariesController.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/utils/InitialSummariesController.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="33" column="13" selection-start="1297" selection-end="1297" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MappingFormController.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/summary/MappingFormController.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="42" column="13" selection-start="1771" selection-end="1771" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="SummaryFormController.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/summary/SummaryFormController.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="55" column="99" selection-start="2129" selection-end="2217" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="EvaluatePatientController.java" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/evaluator/EvaluatePatientController.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="71" column="7" selection-start="3091" selection-end="3091" vertical-scroll-proportion="0.01724138">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MappingListController.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/summary/MappingListController.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="29" column="13" selection-start="1115" selection-end="1115" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="mappingForm.jsp" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/omod/src/main/webapp/summary/mappingForm.jsp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="11" column="28" selection-start="447" selection-end="447" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="AutocompleteSearchController.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/search/AutocompleteSearchController.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="49" column="13" selection-start="1948" selection-end="1948" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="form.css" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/omod/src/main/webapp/resources/css/form.css">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="46" column="2" selection-start="639" selection-end="1107" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <leaf />
   </component>
   <component name="FindManager">
     <FindUsagesManager>
@@ -218,7 +132,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/WebUtils.java" />
         <option value="$PROJECT_DIR$/omod/src/main/resources/messages.properties" />
         <option value="$PROJECT_DIR$/omod/src/main/webapp/download/downloadSummaries.jsp" />
         <option value="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/download/DownloadSummariesController.java" />
@@ -234,6 +147,7 @@
         <option value="$PROJECT_DIR$/omod/src/test/resources/org/openmrs/module/clinicalsummary/service/templates/example-pmtct-xslfo.xml" />
         <option value="$PROJECT_DIR$/omod/src/test/java/org/openmrs/module/clinicalsummary/evaluator/VelocityEvaluatorTest.java" />
         <option value="$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/utils/ExtendedDataEncounterController.java" />
+        <option value="$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/rule/problem/ProblemListRule.java" />
       </list>
     </option>
   </component>
@@ -1111,6 +1025,78 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="rule" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="clinicalsummary" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="clinicalsummary--trunk" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="api" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="clinicalsummary" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="rule" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="problem" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="clinicalsummary" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="clinicalsummary--trunk" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="api" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="clinicalsummary" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="evaluator" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -1150,6 +1136,78 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="velocity" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="clinicalsummary" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="clinicalsummary--trunk" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="api" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="clinicalsummary" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="db" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="clinicalsummary" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="clinicalsummary--trunk" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="api" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="clinicalsummary" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="db" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="hibernate" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -1682,7 +1740,7 @@
     <layout>
       <window_info id="Data Sources" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3290461" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Persistence" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Persistence" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.37561274" sideWeight="0.3268817" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.31666666" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -1691,18 +1749,18 @@
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32580644" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32685184" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32781863" sideWeight="0.24623656" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.37561274" sideWeight="0.9677419" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.37561274" sideWeight="0.6655914" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32903227" sideWeight="0.0" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Phing Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24938725" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.37311828" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32685184" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3869239" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
@@ -1788,21 +1846,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/omod/src/test/resources/org/openmrs/module/clinicalsummary/service/templates/example-pmtct-xslfo.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="628" column="0" selection-start="43065" selection-end="43065" vertical-scroll-proportion="8.511557" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/omod/src/test/resources/org/openmrs/module/clinicalsummary/service/templates/example-adult-xslfo.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="330" column="12" selection-start="13305" selection-end="13305" vertical-scroll-proportion="3.164869" />
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/commons-io/commons-io/1.4/commons-io-1.4-sources.jar!/org/apache/commons/io/FilenameUtils.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="838" column="25" selection-start="31508" selection-end="31508" vertical-scroll-proportion="0.33301708" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/omod/src/test/java/org/openmrs/module/clinicalsummary/evaluator/VelocityEvaluatorTest.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="97" column="46" selection-start="4233" selection-end="4233" vertical-scroll-proportion="0.0" />
@@ -1823,11 +1866,6 @@
         <state line="32" column="13" selection-start="1298" selection-end="1298" vertical-scroll-proportion="0.11764706" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/printer/PrintSummariesController.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="69" column="68" selection-start="3197" selection-end="3232" vertical-scroll-proportion="0.014231499" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/utils/InitialSummariesController.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="33" column="13" selection-start="1297" selection-end="1297" vertical-scroll-proportion="0.0" />
@@ -1838,26 +1876,11 @@
         <state line="42" column="13" selection-start="1771" selection-end="1771" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/summary/SummaryFormController.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="55" column="99" selection-start="2129" selection-end="2217" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/evaluator/EvaluatePatientController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="71" column="7" selection-start="3091" selection-end="3091" vertical-scroll-proportion="0.01724138">
+        <state line="71" column="7" selection-start="3091" selection-end="3091" vertical-scroll-proportion="0.0">
           <folding />
         </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/summary/MappingListController.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="29" column="13" selection-start="1115" selection-end="1115" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/omod/src/main/webapp/summary/mappingForm.jsp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="11" column="28" selection-start="447" selection-end="447" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/search/AutocompleteSearchController.java">
@@ -1865,9 +1888,60 @@
         <state line="49" column="13" selection-start="1948" selection-end="1948" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/omod/src/main/webapp/summary/mappingForm.jsp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="11" column="28" selection-start="447" selection-end="447" vertical-scroll-proportion="-0.625">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/summary/MappingListController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="29" column="13" selection-start="1115" selection-end="1115" vertical-scroll-proportion="0.1659292">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/summary/SummaryFormController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="55" column="99" selection-start="2129" selection-end="2217" vertical-scroll-proportion="0.5143805">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/omod/src/main/webapp/resources/css/form.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="46" column="2" selection-start="639" selection-end="1107" vertical-scroll-proportion="0.0" />
+        <state line="46" column="2" selection-start="639" selection-end="1107" vertical-scroll-proportion="0.17035398">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../openmrs--1.8.x/api/src/main/java/org/openmrs/util/OpenmrsUtil.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="659" column="22" selection-start="20366" selection-end="20366" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/db/hibernate/HibernateCoreDAO.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="52" column="13" selection-start="1831" selection-end="1831" vertical-scroll-proportion="-0.033670034">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/omod/src/main/java/org/openmrs/module/clinicalsummary/web/controller/printer/PrintSummariesController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="113" column="18" selection-start="5551" selection-end="5551" vertical-scroll-proportion="0.65656567">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/api/src/main/java/org/openmrs/module/clinicalsummary/rule/problem/ProblemListRule.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="98" column="53" selection-start="4696" selection-end="4696" vertical-scroll-proportion="0.6734007">
+          <folding />
+        </state>
       </provider>
     </entry>
   </component>
