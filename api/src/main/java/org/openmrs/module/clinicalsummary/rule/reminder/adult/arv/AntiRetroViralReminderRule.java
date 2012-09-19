@@ -14,6 +14,9 @@
 
 package org.openmrs.module.clinicalsummary.rule.reminder.adult.arv;
 
+import java.util.Arrays;
+import java.util.Map;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,9 +32,6 @@ import org.openmrs.module.clinicalsummary.rule.observation.ObsWithStringRestrict
 import org.openmrs.module.clinicalsummary.rule.reminder.ReminderParameters;
 import org.openmrs.module.clinicalsummary.rule.reminder.adult.BaselineReminderRule;
 
-import java.util.Arrays;
-import java.util.Map;
-
 /**
  * Parameters: <ul> <li>concept: the concept for the result (eg. CD4 COUNT)</li> <li>valueCoded: the values for the test
  * ordered</li> <li>encounterType: limit the anti retro viral digging to certain encounter types only</li> </ul>
@@ -42,7 +42,7 @@ public class AntiRetroViralReminderRule extends EvaluableRule {
 
 	private static final Log log = LogFactory.getLog(AntiRetroViralReminderRule.class);
 
-	private static final Integer MINIMUM_RESULT_VALUE = 250;
+	private static final Integer MINIMUM_RESULT_VALUE = 350;
 
 	public static final String TOKEN = "Anti Retro Viral Reminder";
 
@@ -52,11 +52,9 @@ public class AntiRetroViralReminderRule extends EvaluableRule {
 	@Override
 	protected Result evaluate(final LogicContext context, final Integer patientId, final Map<String, Object> parameters) throws LogicException {
 		Result result = new Result();
-
-		if (log.isDebugEnabled())
-			log.debug("Processing anti retroviral reminder ...");
-
 		BaselineReminderRule baselineReminderRule = new BaselineReminderRule();
+        parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(EvaluableNameConstants.CD4_COUNT));
+        parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList(EvaluableNameConstants.CD4_PANEL));
 		Result baselineReminderResults = baselineReminderRule.eval(context, patientId, parameters);
 
 		if (CollectionUtils.isNotEmpty(baselineReminderResults)) {

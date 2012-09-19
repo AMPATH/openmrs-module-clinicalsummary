@@ -1,0 +1,131 @@
+<?xml version="1.0"?>
+<clinicalSummary>
+    <currentDatetime>$!{fn.getCurrentDatetime()}</currentDatetime>
+    <moduleVersion>$!{fn.getModuleVersion("clinicalsummary")}</moduleVersion>
+    <templateRevision>$!{summary.getRevision()}</templateRevision>
+    <templateName>$!{summary.getName()}</templateName>
+    <id>$!{patientId}</id>
+
+    #foreach($id in $!{patient.getActiveIdentifiers()})
+        #if ($velocityCount == 1)
+        <identifier>$!{id}</identifier>
+        #else
+        <alternateIdentifier>$!{id}</alternateIdentifier>
+        #end
+    #end
+
+    <name>
+        $!{patient.getGivenName()}
+        $!{patient.getMiddleName()}
+        $!{patient.getFamilyName()}
+    </name>
+
+    <birthdate estimated="$!{patient.getBirthdateEstimated()}">$!{fn.format($!{patient.getBirthdate()})}</birthdate>
+
+    #set($params = {})
+    #set($ageWithUnitResult = $fn.evaluate($patient, "Age With Unit", $params))
+    <age>$!{ageWithUnitResult}</age>
+
+    #set($params = {"encounterType": ["ADULTINITIAL", "ADULTRETURN", "ADULTNONCLINICALMEDICATION", "MPerinatalInitial", "MRHCMain"],
+                    "encounter.size": 1,
+                    "concept": ["RETURN VISIT DATE"],
+                    "obs.size": 1})
+    #set($returnVisit = $fn.evaluate($patient, "Encounter Based Obs", $params))
+    <returnVisit>$!{fn.format($returnVisit.toDatetime())}</returnVisit>
+
+    #set($params = {"encounterType": ["ADULTINITIAL", "ADULTRETURN", "ADULTNONCLINICALMEDICATION", "MPerinatalInitial", "MRHCMain"],
+                    "encounter.order": "asc",
+                    "encounter.size": 1})
+    #set($encounterResults = $fn.evaluate($patient, "Encounter String Restrictions", $params))
+    #set($earliestEncounter = $encounterResults.latest())
+    <earliestEncounter>
+        <datetime>$!{fn.extractProperty($earliestEncounter.getResultObject(), "encounterDatetime")}</datetime>
+    </earliestEncounter>
+
+    #set($params = {"encounterType": ["ADULTINITIAL", "ADULTRETURN", "ADULTNONCLINICALMEDICATION", "MPerinatalInitial", "MRHCMain"],
+                    "encounter.size": 1})
+    #set($encounterResults = $fn.evaluate($patient, "Encounter String Restrictions", $params))
+    #set($latestEncounter = $encounterResults.latest())
+    <latestEncounter>
+        <datetime>$!{fn.extractProperty($latestEncounter.getResultObject(), "encounterDatetime")}</datetime>
+        <location>$!{fn.extractProperty($latestEncounter.getResultObject(), "location")}</location>
+        <provider>$!{fn.extractProperty($latestEncounter.getResultObject(), "provider.personName")}</provider>
+        <creator>$!{fn.extractProperty($latestEncounter.getResultObject(), "creator.personName")}</creator>
+        <dateCreated>$!{fn.extractProperty($latestEncounter.getResultObject(), "dateCreated")}</dateCreated>
+    </latestEncounter>
+
+    #set($params = {})
+    #set($problems = $fn.evaluate($patient, "Problem List", $params))
+    <problemList>
+        #foreach($problem in $problems)
+            <problems>
+                #foreach($element in $problem)
+                    <problem>
+                        <datetime>$!{fn.format($element.getResultDate())}</datetime>
+                        <value>$!{fn.format($element)}</value>
+                    </problem>
+                #end
+            </problems>
+        #end
+    </problemList>
+
+    <flowsheet>
+        <results name="WT (KG)">
+            #set($params = {"concept": ["WEIGHT (KG)"]})
+            #set($weight = $fn.evaluate($patient, "Obs Flowsheet", $params))
+            #foreach($element in $weight)
+                <result>
+                    <datetime>$!{fn.format($element.getResultDate())}</datetime>
+                    <value>$!{element.toNumber()}</value>
+                </result>
+            #end
+        </results>
+        <results name="HT (CM)">
+            #set($params = {"concept": ["HEIGHT (CM)"]})
+            #set($height = $fn.evaluate($patient, "Obs Flowsheet", $params))
+            #foreach($element in $height)
+                <result>
+                    <datetime>$!{fn.format($element.getResultDate())}</datetime>
+                    <value>$!{element.toNumber()}</value>
+                </result>
+            #end
+        </results>
+        <results name="BP">
+            #set($params = {"concept": ["SYSTOLIC BLOOD PRESSURE"],
+                            "obs.merged": ["DIASTOLIC BLOOD PRESSURE"]})
+            #set($sbp = $fn.evaluate($patient, "Obs Merged Flowsheet", $params))
+            #foreach($element in $sbp)
+                <result>
+                    <datetime>$!{fn.format($element.getResultDate())}</datetime>
+                    <sbp>$!{fn.format($element.toNumber())}</sbp>
+                    <dbp>$!{element.getResultObject()}</dbp>
+                </result>
+            #end
+        </results>
+        <results name="A1C">
+            #set($params = {"concept": ["GLYCOSYLATED HEMOGLOBIN"]})
+            #set($glycosylated = $fn.evaluate($patient, "Obs Flowsheet", $params))
+            #foreach($element in $glycosylated)
+                <result>
+                    <datetime>$!{fn.format($element.getResultDate())}</datetime>
+                    <value>$!{element.toNumber()}</value>
+                </result>
+            #end
+        </results>
+    </flowsheet>
+
+    <labs>
+    </labs>
+
+    <encounters>
+        #set($encounters = $fn.evaluate($patient, "Encounter Diagnosis And Medication", {}))
+        #foreach ($encounter in $encounters)
+            <result>
+                <type>$!{fn.format($encounter.get(0))}</type>
+                <datetime>$!{fn.format($encounter.get(0).getResultDate())}</datetime>
+                <problems>$!{fn.format($encounter.get(1))}</problems>
+                <medication>$!{fn.format($encounter.get(2))}</medication>
+            </result>
+        #end
+    </encounters>
+</clinicalSummary>

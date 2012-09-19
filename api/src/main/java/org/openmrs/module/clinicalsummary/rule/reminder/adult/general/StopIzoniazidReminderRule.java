@@ -14,6 +14,11 @@
 
 package org.openmrs.module.clinicalsummary.rule.reminder.adult.general;
 
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Map;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,15 +30,12 @@ import org.openmrs.module.clinicalsummary.cache.CacheUtils;
 import org.openmrs.module.clinicalsummary.rule.EvaluableConstants;
 import org.openmrs.module.clinicalsummary.rule.EvaluableNameConstants;
 import org.openmrs.module.clinicalsummary.rule.EvaluableRule;
+import org.openmrs.module.clinicalsummary.rule.medication.TuberculosisRule;
 import org.openmrs.module.clinicalsummary.rule.observation.ObsWithRestrictionRule;
 import org.openmrs.module.clinicalsummary.rule.observation.ObsWithStringRestrictionRule;
 import org.openmrs.module.clinicalsummary.rule.reminder.ReminderParameters;
+import org.openmrs.module.clinicalsummary.rule.treatment.TuberculosisTreatmentRule;
 import org.openmrs.util.OpenmrsUtil;
-
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Map;
 
 public class StopIzoniazidReminderRule extends EvaluableRule {
 
@@ -74,8 +76,27 @@ public class StopIzoniazidReminderRule extends EvaluableRule {
 			Date nineMonthsAgo = calendar.getTime();
 
 			if (OpenmrsUtil.compareWithNullAsLatest(stopDrugDate, startDrugDate) == 1
-					&& OpenmrsUtil.compareWithNullAsLatest(nineMonthsAgo, startDrugDate) == 1)
-				result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
+					&& OpenmrsUtil.compareWithNullAsLatest(nineMonthsAgo, startDrugDate) == 1) {
+
+                Result tbMedications = new Result();
+
+                TuberculosisRule tuberculosisRule = new TuberculosisRule();
+                parameters.put(EvaluableConstants.ENCOUNTER_TYPE, Arrays.asList(EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_INITIAL,
+                        EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_RETURN, EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_NONCLINICALMEDICATION));
+                Result tbResults = tuberculosisRule.eval(context, patientId, parameters);
+                tbMedications.addAll(tbResults);
+
+                TuberculosisTreatmentRule tuberculosisTreatmentRule = new TuberculosisTreatmentRule();
+                parameters.put(EvaluableConstants.ENCOUNTER_TYPE, Arrays.asList(EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_INITIAL,
+                        EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_RETURN, EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_NONCLINICALMEDICATION));
+                Result tbTreatmentResults = tuberculosisTreatmentRule.eval(context, patientId, parameters);
+                tbMedications.addAll(tbTreatmentResults);
+
+                Concept isoniazidConcept = CacheUtils.getConcept(EvaluableNameConstants.ISONIAZID);
+
+                if (tbMedications.size() == 1 && tbMedications.contains(isoniazidConcept))
+                    result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
+            }
 		}
 
 		return result;

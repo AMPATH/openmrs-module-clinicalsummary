@@ -75,6 +75,9 @@ public class AbnormalCXRReminderRule extends EvaluableRule {
 			if (concepts.contains(cxrResult.toConcept())
 					&& cxrResult.getResultDate().before(oneMonthAgo) && cxrResult.getResultDate().after(oneYearAgo)) {
 
+                // TODO: check every encounter after the last abnormal chest xray for any tbmeds,
+                // TODO: if there's tb meds, then the reminder shouldn't be triggered
+
 				Boolean displayReminder = Boolean.TRUE;
 
 				parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(EvaluableNameConstants.TESTS_ORDERED));

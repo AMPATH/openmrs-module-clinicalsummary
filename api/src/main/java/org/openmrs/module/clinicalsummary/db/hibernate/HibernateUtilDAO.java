@@ -270,8 +270,9 @@ public class HibernateUtilDAO implements UtilDAO {
 	                                                 final Date startDate, final Date endDate) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(clasz);
 
-		criteria.add(Restrictions.eq("location", location));
-		if (startDate != null)
+        if (location != null)
+            criteria.add(Restrictions.eq("location", location));
+        if (startDate != null)
 			criteria.add(Restrictions.ge("dateCreated", startDate));
 		if (endDate != null)
 			criteria.add(Restrictions.le("dateCreated", endDate));

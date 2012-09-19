@@ -285,7 +285,7 @@
 		#end
 
 		#set($params = {"reminder": "Consider starting ARV Medications. CD4 count < 250."})
-		#set($reminder = $fn.evaluate($patient, "Cluster Anti Retro Viral Reminder", $params))
+		#set($reminder = $fn.evaluate($patient, "Anti Retro Viral Reminder", $params))
 		#foreach($element in $reminder)
 		<reminder>
 			<id>23</id>
@@ -314,7 +314,7 @@
 		</reminder>
 		#end
 
-		#set($params = {"reminder": "Consider high risk EC referral.  New Pt, CD4 < 100 with no high risk EC referral."})
+		#set($params = {"reminder": "Consider high risk EC referral (if available).  New Pt, CD4 < 100 with no high risk EC referral."})
 		#set($reminder = $fn.evaluate($patient, "Adult High Risk Express Care Referral Reminder", $params))
 		#foreach($element in $reminder)
 		<reminder>
@@ -474,7 +474,7 @@
 		</reminder>
 		#end
 
-		#set($params = {"reminder": "Consider Low risk (Stable) EC referral. CD4 > 300 on ARVs."})
+		#set($params = {"reminder": "Consider Low risk (Stable) EC referral (if available). CD4 > 300 on ARVs."})
 		#set($reminder = $fn.evaluate($patient, "Over 300 CD4 Express Care Referral Reminder", $params))
 		#foreach($element in $reminder)
 		<reminder>

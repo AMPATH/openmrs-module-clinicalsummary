@@ -17,6 +17,7 @@ package org.openmrs.module.clinicalsummary.rule.reminder.adult.cluster;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.context.Context;
 import org.openmrs.logic.LogicContext;
 import org.openmrs.logic.LogicException;
 import org.openmrs.logic.result.Result;
@@ -61,7 +62,7 @@ public class FallingCD4OnARVReminderRule extends EvaluableRule {
 			Result currentClusterResult = clusterResults.get(0);
 			Result previousClusterResult = clusterResults.get(1);
 			Double percentage = (previousClusterResult.toNumber() - currentClusterResult.toNumber()) / previousClusterResult.toNumber();
-			if (currentClusterResult.getResultDate().before(threeMonthsAgo) && percentage > 0.25) {
+			if (currentClusterResult.getResultDate().before(threeMonthsAgo) && percentage > 0.5) {
 
 				AntiRetroViralRule antiRetroViralRule = new AntiRetroViralRule();
 				// prepare the encounter types
@@ -83,16 +84,12 @@ public class FallingCD4OnARVReminderRule extends EvaluableRule {
 					Date threeMonthsAfterResult = calendar.getTime();
 
 					Boolean testExists = Boolean.FALSE;
-					Boolean beforeDate = Boolean.FALSE;
 
 					Integer testCounter = 0;
-					while (testCounter < testResults.size() && !testExists && !beforeDate) {
+					while (testCounter < testResults.size() && !testExists) {
 						Result testResult = testResults.get(testCounter++);
-						// results are ordered by datetime
-						// if current result already before 3 months, then all of them are before the cutoff point date
-						if (testResult.getResultDate().before(threeMonthsAfterResult))
-							beforeDate = Boolean.TRUE;
-						else
+						if (testResult.getResultDate().before(threeMonthsAfterResult)
+                                && testResult.getResultDate().after(currentClusterResult.getResultDate()))
 							testExists = Boolean.TRUE;
 					}
 

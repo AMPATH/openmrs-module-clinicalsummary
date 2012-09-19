@@ -38,17 +38,18 @@ public class VelocityEvaluatorTest {
 
     private static final Log log = LogFactory.getLog(VelocityEvaluatorTest.class);
 
+    @Test
     public void evaluate_shouldEvaluateAndGenerateSummary() throws Exception {
         FopFactory fopFactory = FopFactory.newInstance();
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
-        File file = new File("/home/nribeka/OutputExample.pdf");
+        File file = new File("/home/nribeka/Summary/OutputExample.pdf");
         OutputStream out = new BufferedOutputStream(new FileOutputStream(file));
 
         FOUserAgent agent = fopFactory.newFOUserAgent();
         Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, agent, out);
 
-        BufferedInputStream xmlInputStream = new BufferedInputStream(new FileInputStream("/home/nribeka/85255.xml"));
-        BufferedInputStream xsltInputStream = new BufferedInputStream(new FileInputStream("/home/nribeka/pediatric.xml"));
+        BufferedInputStream xmlInputStream = new BufferedInputStream(new FileInputStream("/home/nribeka/Summary/phc-adult.xml"));
+        BufferedInputStream xsltInputStream = new BufferedInputStream(new FileInputStream("/home/nribeka/Summary/phc-adult-xslfo.xml"));
 
         Source xsltSource = new StreamSource(xsltInputStream);
         Transformer transformer = transformerFactory.newTransformer(xsltSource);
@@ -60,7 +61,6 @@ public class VelocityEvaluatorTest {
         out.close();
     }
 
-    @Test
     public void evaluate_shouldSubstituteString() throws Exception {
         File directory = new File("/home/nribeka/Desktop/Yaw");
 

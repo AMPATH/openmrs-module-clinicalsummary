@@ -23,6 +23,8 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -42,6 +44,7 @@ import org.openmrs.module.clinicalsummary.io.utils.TaskConstants;
 import org.openmrs.module.clinicalsummary.web.controller.MimeType;
 import org.openmrs.module.clinicalsummary.web.controller.WebUtils;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.web.WebConstants;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.FileCopyUtils;
@@ -84,6 +87,8 @@ public class UploadSummariesController {
 	                   final MultipartFile summaries,
 	                   final HttpServletRequest request,
 	                   final HttpServletResponse response) {
+
+        HttpSession session = request.getSession();
 		try {
 
 			log.info("Creating filename!");
@@ -103,7 +108,6 @@ public class UploadSummariesController {
 
 			log.info("Processing zip file and init vector!");
 			SummariesTaskInstance.getInstance().startUploading(password, filename);
-
 			response.sendRedirect(request.getHeader("referer"));
 		} catch (IOException e) {
 			log.error("Uploading zipped file failed ...", e);

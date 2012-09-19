@@ -60,13 +60,13 @@ public class SummariesTaskInstance {
 	}
 
 	public String getCurrentFilename() {
-		if (isRunning())
+		if (summariesTask != null)
 			return summariesTask.getProcessedFilename();
 		return StringUtils.EMPTY;
 	}
 
 	public String getCurrentTask() {
-		if (isRunning())
+		if (summariesTask != null)
 			return summariesTask.getStatus().getValue();
 		return StringUtils.EMPTY;
 	}

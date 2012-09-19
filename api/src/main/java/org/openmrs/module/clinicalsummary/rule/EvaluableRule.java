@@ -22,6 +22,7 @@ import org.openmrs.logic.LogicContext;
 import org.openmrs.logic.LogicException;
 import org.openmrs.logic.result.Result;
 import org.openmrs.logic.rule.AbstractRule;
+import org.openmrs.module.clinicalsummary.rule.medication.AntiRetroViralRule;
 
 import java.util.HashMap;
 import java.util.HashSet;

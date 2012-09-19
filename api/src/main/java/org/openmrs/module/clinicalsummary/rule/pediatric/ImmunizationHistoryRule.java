@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
@@ -82,8 +83,10 @@ public class ImmunizationHistoryRule extends EvaluableRule {
 					Concept immunizationObsMemberConcept = immunizationObsMember.getConcept();
 					if (OpenmrsUtil.nullSafeEquals(immunizationObsMemberConcept, previousAdministeredConcept)) {
 						administeredImmunization = immunizationObsMember.getValueCoded();
-						if (OpenmrsUtil.nullSafeEquals(immunizationObsMember.getValueCoded(), completeAdministeredConcept))
-							return new Result(completeAdministeredConcept);
+						if (OpenmrsUtil.nullSafeEquals(administeredImmunization, completeAdministeredConcept)) {
+                            result.add(new Result(completeAdministeredConcept));
+							return result;
+                        }
 					}
 					if (OpenmrsUtil.nullSafeEquals(immunizationObsMemberConcept, dosesAdministeredConcept))
 						dosesAdministered = immunizationObsMember.getValueNumeric();
@@ -101,11 +104,14 @@ public class ImmunizationHistoryRule extends EvaluableRule {
 		}
 
 		for (Concept administered : immunizationAdministered.keySet()) {
-			Result administeredResult = new Result(administered);
+			Result administeredResult = new Result();
+            // remove the data type to prevent auto formatting by the logic's Result toString() method
+            administeredResult.setDatatype(null);
+            administeredResult.setValueCoded(administered);
 			Double doses = immunizationAdministered.get(administered);
-			if (doses == null)
+			if (doses == null || OpenmrsUtil.nullSafeEquals(doses, 0D))
 				administeredResult.setValueText("No Dosing");
-			administeredResult.setValueNumeric(doses);
+			administeredResult.setValueText(String.valueOf(doses));
 			result.add(administeredResult);
 		}
 

@@ -117,8 +117,6 @@
     <orderEntry type="library" name="Maven: org.apache.avalon.framework:avalon-framework-api:4.3.1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.avalon.framework:avalon-framework-impl:4.3.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.openmrs.module.logic:logic-api:0.5-SNAPSHOT" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.codehaus.groovy:groovy:1.7.6" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: asm:asm-analysis:3.2" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.tomcat:catalina:6.0.32" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.tomcat:servlet-api:6.0.32" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.tomcat:juli:6.0.32" level="project" />

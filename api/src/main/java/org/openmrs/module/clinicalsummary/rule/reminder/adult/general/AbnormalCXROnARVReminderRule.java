@@ -96,6 +96,8 @@ public class AbnormalCXROnARVReminderRule extends EvaluableRule {
 							displayReminder = Boolean.FALSE;
 					}
 
+                    // TODO: only display reminder if they are not on any TB meds
+
 					if (displayReminder)
 						result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
 				}

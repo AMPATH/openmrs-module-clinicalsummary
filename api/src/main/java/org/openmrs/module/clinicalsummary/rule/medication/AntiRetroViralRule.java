@@ -89,7 +89,8 @@ public class AntiRetroViralRule extends EvaluableRule {
 					parameters.remove(EvaluableConstants.OBS_VALUE_CODED);
 					parameters.put(EvaluableConstants.OBS_CONCEPT,
 							Arrays.asList(EvaluableNameConstants.CURRENT_ANTIRETROVIRAL_DRUGS_USED_FOR_TRANSMISSION_PROPHYLAXIS,
-									EvaluableNameConstants.ANTIRETROVIRAL_DRUGS_USED_FOR_TREATMENT,
+                                    EvaluableNameConstants.ANTIRETROVIRAL_DRUGS_USED_FOR_TREATMENT,
+                                    EvaluableNameConstants.PATIENT_REPORTED_CURRENT_ANTIRETROVIRAL_TREATMENT,
 									EvaluableNameConstants.PATIENT_REPORTED_PAST_ANTIRETROVIRAL_TREATMENT));
 					Result initialResults = obsWithRestrictionRule.eval(context, patientId, parameters);
 					if (CollectionUtils.isNotEmpty(initialResults))

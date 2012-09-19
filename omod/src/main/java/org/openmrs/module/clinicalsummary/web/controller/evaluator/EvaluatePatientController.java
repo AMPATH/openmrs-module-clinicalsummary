@@ -44,6 +44,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  */
@@ -92,9 +93,9 @@ public class EvaluatePatientController {
 				} catch (Exception e) {
 					log.error("Failed adding summary for patient " + patientId + " with " + summaryFile.getName(), e);
 				}
-			}
 
-			ResultCacheInstance.getInstance().clearCache(patient);
+                ResultCacheInstance.getInstance().clearCache(patient);
+			}
 
 			document.close();
 			outputStream.close();

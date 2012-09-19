@@ -29,6 +29,8 @@
 				$j("#rightcontent").show();
 				timeout = setTimeout("startWatcherIfNeeded()", 3000);
 			} else {
+                if (data.task != "Failed")
+                    $j("#openmrs_msg").html("Summaries uploaded successfully!");
 				// hide the progress bar
 				$j("#rightcontent").hide();
 				clearTimeout(timeout);
