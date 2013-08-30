@@ -143,10 +143,14 @@
 										<fo:inline font-weight="bold">EDD: </fo:inline>
 										<xsl:value-of select="pregnancyHistory/estimatedDeliveryDate" />
 									</fo:block>
-									<fo:block>
-										<fo:inline font-weight="bold">Ultrasound Done: </fo:inline>
-										<xsl:value-of select="pregnancyHistory/ultrasound" />
-									</fo:block>
+                                    <fo:block>
+                                        <fo:inline font-weight="bold">Ultrasound Done: </fo:inline>
+                                        <xsl:value-of select="pregnancyHistory/ultrasound" />
+                                    </fo:block>
+                                    <fo:block>
+                                        <fo:inline font-weight="bold">Gestational Age: </fo:inline>
+                                        <xsl:value-of select="pregnancyHistory/gestationalAge" />
+                                    </fo:block>
 									<fo:block font-weight="bold" margin-top="10pt">
 										Partner Information:
 									</fo:block>
@@ -306,15 +310,24 @@
 												<fo:inline>YES</fo:inline>
 											</xsl:otherwise>
 										</xsl:choose>
-										<fo:inline font-weight="bold"> IPT2: </fo:inline>
-										<xsl:choose>
-											<xsl:when test="currentMedications/secondPreventiveTreatment = ''">
-												<fo:inline>NO</fo:inline>
-											</xsl:when>
-											<xsl:otherwise>
-												<fo:inline>YES</fo:inline>
-											</xsl:otherwise>
-										</xsl:choose>
+                                        <fo:inline font-weight="bold"> IPT2: </fo:inline>
+                                        <xsl:choose>
+                                            <xsl:when test="currentMedications/secondPreventiveTreatment = ''">
+                                                <fo:inline>NO</fo:inline>
+                                            </xsl:when>
+                                            <xsl:otherwise>
+                                                <fo:inline>YES</fo:inline>
+                                            </xsl:otherwise>
+                                        </xsl:choose>
+                                        <fo:inline font-weight="bold"> ITN: </fo:inline>
+                                        <xsl:choose>
+                                            <xsl:when test="currentMedications/itn= ''">
+                                                <fo:inline>NO</fo:inline>
+                                            </xsl:when>
+                                            <xsl:otherwise>
+                                                <fo:inline>YES</fo:inline>
+                                            </xsl:otherwise>
+                                        </xsl:choose>
 									</fo:block>
 									<fo:block>
 										<fo:inline font-weight="bold">ANTI-D: </fo:inline>

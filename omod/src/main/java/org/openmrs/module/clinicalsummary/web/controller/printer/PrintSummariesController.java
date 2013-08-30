@@ -16,9 +16,13 @@ package org.openmrs.module.clinicalsummary.web.controller.printer;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -36,6 +40,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.clinicalsummary.Summary;
 import org.openmrs.module.clinicalsummary.evaluator.Evaluator;
 import org.openmrs.module.clinicalsummary.evaluator.EvaluatorUtils;
+import org.openmrs.module.clinicalsummary.evaluator.LoggerUtils;
 import org.openmrs.module.clinicalsummary.service.IndexService;
 import org.openmrs.module.clinicalsummary.service.SummaryService;
 import org.openmrs.module.clinicalsummary.web.controller.WebUtils;
@@ -46,6 +51,7 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.xml.sax.InputSource;
 
 /**
  */
@@ -109,6 +115,12 @@ public class PrintSummariesController {
 					} catch (Exception e) {
 						log.error("Failed adding summary for patient " + patientId + " with " + summaryFile.getName(), e);
 					}
+
+                    File summaryXmlFile = new File(outputDirectory, StringUtils.join(Arrays.asList(patientId, Evaluator.FILE_TYPE_XML), "."));
+                    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+                    DocumentBuilder db = dbf.newDocumentBuilder();
+                    InputSource is = new InputSource(new BufferedReader(new FileReader(summaryXmlFile)));
+                    LoggerUtils.extractLogInformation(db.parse(is), LoggerUtils.getViewingLogFile());
 				}
 
 				document.close();

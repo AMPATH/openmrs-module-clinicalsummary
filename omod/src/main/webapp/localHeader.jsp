@@ -1,3 +1,5 @@
+<jsp:directive.page import="org.openmrs.module.clinicalsummary.util.ServerUtil"/>
+
 <ul id="menu">
 	<li class="first">
 		<a href="${pageContext.request.contextPath}/admin"><spring:message code="admin.title.short"/></a>
@@ -37,6 +39,8 @@
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
+
+    <c:if test="<%= !ServerUtil.isCentral() %>">
 	<openmrs:hasPrivilege privilege="Manage Summaries">
 		<li <c:if test='<%= request.getRequestURI().contains("uploadSummaries") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/module/clinicalsummary/upload/uploadSummaries.form">
@@ -44,6 +48,8 @@
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
+    </c:if>
+
 	<openmrs:hasPrivilege privilege="Manage Summaries">
 		<li <c:if test='<%= request.getRequestURI().contains("fileSize") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/module/clinicalsummary/utils/fileSize.list">

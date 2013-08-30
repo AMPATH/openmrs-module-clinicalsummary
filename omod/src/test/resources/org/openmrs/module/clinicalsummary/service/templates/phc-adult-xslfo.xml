@@ -145,6 +145,79 @@
                         </fo:table-body>
                     </fo:table>
 
+                    <xsl:variable name="maxRows" select="10" />
+                    <fo:table table-layout="fixed" width="100%" border-spacing="0.25in" space-before="6pt">
+                        <fo:table-body font-size="12pt">
+                            <fo:table-row>
+
+                                <!-- Problem list -->
+                                <fo:table-cell>
+                                    <fo:block font-size="12pt" space-before="6pt" font-weight="bold">
+                                        <fo:inline text-decoration="underline">Problem List</fo:inline>:
+                                    </fo:block>
+                                    <xsl:choose>
+                                        <xsl:when test="problemList/problems">
+                                            <fo:list-block font-size="10pt" space-after="6pt"
+                                                           provisional-label-separation="1mm"
+                                                           provisional-distance-between-starts="1mm">
+                                                <xsl:for-each select="problemList/problems">
+                                                    <xsl:variable name="i" select="position()" />
+                                                    <xsl:if test="$i &lt;= $maxRows">
+                                                        <fo:list-item>
+                                                            <fo:list-item-label end-indent="label-end()" text-align="right">
+                                                                <fo:block>
+                                                                    <xsl:value-of select="position()" />
+                                                                    <xsl:text>.</xsl:text>
+                                                                </fo:block>
+                                                            </fo:list-item-label>
+                                                            <fo:list-item-body start-indent="body-start()">
+                                                                <fo:block>
+                                                                    <xsl:variable name="totalProblem" select="count(problem)" />
+                                                                    <xsl:for-each select="problem">
+                                                                        <xsl:if test="position() = 1">
+                                                                            <xsl:value-of select="value" />
+                                                                            <xsl:if test="datetime">
+                                                                                <fo:inline font-size="8pt" font-style="italic" color="#555">
+                                                                                    <xsl:text> (</xsl:text>
+                                                                                    <xsl:value-of select="datetime" />
+                                                                                    <xsl:if test="$totalProblem > 1">
+                                                                                        <xsl:text> ... </xsl:text>
+                                                                                        <xsl:value-of select="$totalProblem - 1" />
+                                                                                        <xsl:text> more</xsl:text>
+                                                                                    </xsl:if>
+                                                                                    <xsl:text>)</xsl:text>
+                                                                                </fo:inline>
+                                                                            </xsl:if>
+                                                                        </xsl:if>
+                                                                    </xsl:for-each>
+                                                                </fo:block>
+                                                            </fo:list-item-body>
+                                                        </fo:list-item>
+                                                    </xsl:if>
+                                                </xsl:for-each>
+                                                <xsl:if test="count(problemList/problems) > $maxRows">
+                                                    <fo:list-item>
+                                                        <fo:list-item-label end-indent="label-end()">
+                                                            <fo:block></fo:block>
+                                                        </fo:list-item-label>
+                                                        <fo:list-item-body start-indent="body-start()">
+                                                            <fo:block font-style="italic" font-size="6pt">
+                                                                (<xsl:value-of select="count (problemList/problems) - $maxRows" /> more problems)
+                                                            </fo:block>
+                                                        </fo:list-item-body>
+                                                    </fo:list-item>
+                                                </xsl:if>
+                                            </fo:list-block>
+                                        </xsl:when>
+                                        <xsl:otherwise>
+                                            <fo:block font-size="10pt">NONE</fo:block>
+                                        </xsl:otherwise>
+                                    </xsl:choose>
+                                </fo:table-cell>
+                            </fo:table-row>
+                        </fo:table-body>
+                    </fo:table>
+
                     <!-- Encounters Section -->
                     <fo:block font-size="12pt" font-weight="bold" space-before="12pt">
                         <fo:block font-size="12pt" font-weight="bold" space-before="12pt">
@@ -189,42 +262,56 @@
                                         </fo:block>
                                     </fo:table-cell>
                                     <fo:table-cell border-right="thin solid black" padding="2pt">
-                                        <fo:list-block>
-                                            <xsl:for-each select="problems/problem">
-                                                <fo:list-item>
-                                                    <fo:list-item-label end-indent="label-end()" text-align="right">
-                                                        <fo:block>
-                                                            <xsl:value-of select="position()" />
-                                                            <xsl:text>.</xsl:text>
-                                                        </fo:block>
-                                                    </fo:list-item-label>
-                                                    <fo:list-item-body start-indent="body-start()">
-                                                        <fo:block>
-                                                            <xsl:value-of select="." />
-                                                        </fo:block>
-                                                    </fo:list-item-body>
-                                                </fo:list-item>
-                                            </xsl:for-each>
-                                        </fo:list-block>
+                                        <xsl:choose>
+                                            <xsl:when test="problems/problem">
+                                                <fo:list-block>
+                                                    <xsl:for-each select="problems/problem">
+                                                        <fo:list-item>
+                                                            <fo:list-item-label end-indent="label-end()" text-align="right">
+                                                                <fo:block>
+                                                                    <xsl:value-of select="position()" />
+                                                                    <xsl:text>.</xsl:text>
+                                                                </fo:block>
+                                                            </fo:list-item-label>
+                                                            <fo:list-item-body start-indent="body-start()">
+                                                                <fo:block>
+                                                                    <xsl:value-of select="." />
+                                                                </fo:block>
+                                                            </fo:list-item-body>
+                                                        </fo:list-item>
+                                                    </xsl:for-each>
+                                                </fo:list-block>
+                                            </xsl:when>
+                                            <xsl:otherwise>
+                                                <fo:block text-align="center">NONE</fo:block>
+                                            </xsl:otherwise>
+                                        </xsl:choose>
                                     </fo:table-cell>
                                     <fo:table-cell padding="2pt">
-                                        <fo:list-block>
-                                            <xsl:for-each select="medications/medication">
-                                                <fo:list-item>
-                                                    <fo:list-item-label end-indent="label-end()" text-align="right">
-                                                        <fo:block>
-                                                            <xsl:value-of select="position()" />
-                                                            <xsl:text>.</xsl:text>
-                                                        </fo:block>
-                                                    </fo:list-item-label>
-                                                    <fo:list-item-body start-indent="body-start()">
-                                                        <fo:block>
-                                                            <xsl:value-of select="." />
-                                                        </fo:block>
-                                                    </fo:list-item-body>
-                                                </fo:list-item>
-                                            </xsl:for-each>
-                                        </fo:list-block>
+                                        <xsl:choose>
+                                            <xsl:when test="medications/medication">
+                                                <fo:list-block>
+                                                    <xsl:for-each select="medications/medication">
+                                                        <fo:list-item>
+                                                            <fo:list-item-label end-indent="label-end()" text-align="right">
+                                                                <fo:block>
+                                                                    <xsl:value-of select="position()" />
+                                                                    <xsl:text>.</xsl:text>
+                                                                </fo:block>
+                                                            </fo:list-item-label>
+                                                            <fo:list-item-body start-indent="body-start()">
+                                                                <fo:block>
+                                                                    <xsl:value-of select="." />
+                                                                </fo:block>
+                                                            </fo:list-item-body>
+                                                        </fo:list-item>
+                                                    </xsl:for-each>
+                                                </fo:list-block>
+                                            </xsl:when>
+                                            <xsl:otherwise>
+                                                <fo:block text-align="center">NONE</fo:block>
+                                            </xsl:otherwise>
+                                        </xsl:choose>
                                     </fo:table-cell>
                                 </fo:table-row>
                             </xsl:for-each>
@@ -309,34 +396,70 @@
                         </fo:table-body>
                     </fo:table>
 
-                    <!-- Flowsheet -->
+                    <!-- Labsheet -->
                     <fo:block font-size="12pt" font-weight="bold" space-before="12pt">
                         <fo:block font-size="12pt" font-weight="bold" space-before="12pt">
-                            <fo:inline text-decoration="underline">Lab Results</fo:inline>
+                            <fo:inline text-decoration="underline">Tests Results</fo:inline>
                         </fo:block>
                     </fo:block>
                     <xsl:choose>
                         <xsl:when test="labs/results">
-                            <fo:list-block font-size="12pt" space-before="6pt">
-                                <xsl:for-each select="labs/results">
-                                    <fo:list-item>
-                                        <fo:list-item-label end-indent="label-end()" text-align="right">
-                                            <fo:block>
-                                                <xsl:value-of select="position()" />.
-                                            </fo:block>
-                                        </fo:list-item-label>
-                                        <fo:list-item-body start-indent="body-start()">
-                                            <fo:block space-before="6pt">
-                                                <fo:inline font-weight="bold"><xsl:value-of select="@name" /></fo:inline> :
-                                                <xsl:for-each select="result">
-                                                    <xsl:value-of select="value" /> (<xsl:value-of select="datetime" />)
-                                                    <xsl:if test="position() != last()">, </xsl:if>
+                            <xsl:variable name="labcount" select="count(labs/results)" />
+                            <fo:table table-layout="fixed" width="100%" space-before="6pt">
+                                <fo:table-column column-width="50%" />
+                                <fo:table-column column-width="50%" />
+                                <fo:table-body font-size="10pt">
+                                    <fo:table-row text-align="left" border-bottom="thin solid black">
+                                        <fo:table-cell border-right="thin solid black" padding="2pt">
+                                            <fo:list-block font-size="8pt" space-before="6pt">
+                                                <xsl:for-each select="labs/results[position() &lt; (($labcount div 2) + ($labcount mod 2)) or  position() = (($labcount div 2) + ($labcount mod 2))]">
+                                                    <fo:list-item>
+                                                        <fo:list-item-label end-indent="label-end()" text-align="right">
+                                                            <fo:block>*</fo:block>
+                                                        </fo:list-item-label>
+                                                        <fo:list-item-body start-indent="body-start()">
+                                                            <fo:block space-before="6pt">
+                                                                <fo:inline font-weight="bold"><xsl:value-of select="@name" /></fo:inline> :
+                                                                <xsl:for-each select="result">
+                                                                    <xsl:value-of select="value" /> (<xsl:value-of select="datetime" />)
+                                                                    <xsl:if test="position() != last()">, </xsl:if>
+                                                                </xsl:for-each>
+                                                            </fo:block>
+                                                        </fo:list-item-body>
+                                                    </fo:list-item>
                                                 </xsl:for-each>
-                                            </fo:block>
-                                        </fo:list-item-body>
-                                    </fo:list-item>
-                                </xsl:for-each>
-                            </fo:list-block>
+                                            </fo:list-block>
+                                        </fo:table-cell>
+                                        <fo:table-cell border-right="thin solid black" padding="2pt">
+                                            <xsl:choose>
+                                                <xsl:when test="$labcount div 2 > 0">
+                                                    <fo:list-block font-size="8pt" space-before="6pt">
+                                                        <xsl:for-each select="labs/results[position() > (($labcount div 2) + ($labcount mod 2))]">
+                                                            <fo:list-item>
+                                                                <fo:list-item-label end-indent="label-end()" text-align="right">
+                                                                    <fo:block>*</fo:block>
+                                                                </fo:list-item-label>
+                                                                <fo:list-item-body start-indent="body-start()">
+                                                                    <fo:block space-before="6pt">
+                                                                        <fo:inline font-weight="bold"><xsl:value-of select="@name" /></fo:inline> :
+                                                                        <xsl:for-each select="result">
+                                                                            <xsl:value-of select="value" /> (<xsl:value-of select="datetime" />)
+                                                                            <xsl:if test="position() != last()">, </xsl:if>
+                                                                        </xsl:for-each>
+                                                                    </fo:block>
+                                                                </fo:list-item-body>
+                                                            </fo:list-item>
+                                                        </xsl:for-each>
+                                                    </fo:list-block>
+                                                </xsl:when>
+                                                <xsl:otherwise>
+                                                    <fo:block><xsl:value-of select="$labcount" /></fo:block>
+                                                </xsl:otherwise>
+                                            </xsl:choose>
+                                        </fo:table-cell>
+                                    </fo:table-row>
+                                </fo:table-body>
+                            </fo:table>
                         </xsl:when>
                         <xsl:otherwise>
                             <fo:block>
@@ -345,6 +468,38 @@
                             </fo:block>
                         </xsl:otherwise>
                     </xsl:choose>
+
+                    <!-- Care Suggestions -->
+                    <fo:block font-size="8pt" space-before="10pt">
+                        <fo:inline font-size="12pt" text-decoration="underline" font-weight="bold">Care Suggestions</fo:inline>
+                        (Write number next to each care suggestion)
+                    </fo:block>
+                    <fo:block font-size="8pt" font-style="italic" space-before="6pt">
+                        <fo:inline>
+                            1-Ordered Today, 2-Not Applicable(Explain), 3-Previously Ordered, 4-Pt Allergic, 5-Pt Refused,
+                            6-I Disagree with Reminder(Explain), 7-Other(Explain)
+                        </fo:inline>
+                    </fo:block>
+                    <xsl:if test="reminders/@displayText = 'true'">
+                        <xsl:if test="reminders/reminder">
+                            <fo:list-block font-size="10pt" space-before="6pt">
+                                <xsl:for-each select="reminders/reminder">
+                                    <fo:list-item space-before="6pt">
+                                        <fo:list-item-label end-indent="label-end()" text-align="right" >
+                                            <fo:block space-before="6pt">
+                                                <xsl:value-of select="position()" />.
+                                            </fo:block>
+                                        </fo:list-item-label>
+                                        <fo:list-item-body start-indent="body-start()">
+                                            <fo:block space-before="6pt">
+                                                <xsl:value-of select="value" /> (___)
+                                            </fo:block>
+                                        </fo:list-item-body>
+                                    </fo:list-item>
+                                </xsl:for-each>
+                            </fo:list-block>
+                        </xsl:if>
+                    </xsl:if>
 
                 </fo:flow>
             </fo:page-sequence>

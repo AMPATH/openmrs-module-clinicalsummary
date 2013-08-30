@@ -71,7 +71,7 @@
 
     <flowsheet>
         <results name="WT (KG)">
-            #set($params = {"concept": ["WEIGHT (KG)"]})
+            #set($params = {"concept": ["WT (KG)"]})
             #set($weight = $fn.evaluate($patient, "Obs Flowsheet", $params))
             #foreach($element in $weight)
                 <result>
@@ -81,9 +81,9 @@
             #end
         </results>
         <results name="HT (CM)">
-            #set($params = {"concept": ["HEIGHT (CM)"]})
-            #set($height = $fn.evaluate($patient, "Obs Flowsheet", $params))
-            #foreach($element in $height)
+            #set($params = {"concept": ["HT (CM)"]})
+            #set($weight = $fn.evaluate($patient, "Obs Flowsheet", $params))
+            #foreach($element in $weight)
                 <result>
                     <datetime>$!{fn.format($element.getResultDate())}</datetime>
                     <value>$!{element.toNumber()}</value>
@@ -92,7 +92,7 @@
         </results>
         <results name="BP">
             #set($params = {"concept": ["SYSTOLIC BLOOD PRESSURE"],
-                            "obs.merged": ["DIASTOLIC BLOOD PRESSURE"]})
+            "obs.merged": ["DIASTOLIC BLOOD PRESSURE"]})
             #set($sbp = $fn.evaluate($patient, "Obs Merged Flowsheet", $params))
             #foreach($element in $sbp)
                 <result>
@@ -102,10 +102,10 @@
                 </result>
             #end
         </results>
-        <results name="A1C">
-            #set($params = {"concept": ["GLYCOSYLATED HEMOGLOBIN"]})
-            #set($glycosylated = $fn.evaluate($patient, "Obs Flowsheet", $params))
-            #foreach($element in $glycosylated)
+        <results name="TEMP">
+            #set($params = {"concept": ["TEMP"]})
+            #set($weight = $fn.evaluate($patient, "Obs Flowsheet", $params))
+            #foreach($element in $weight)
                 <result>
                     <datetime>$!{fn.format($element.getResultDate())}</datetime>
                     <value>$!{element.toNumber()}</value>
@@ -115,6 +115,61 @@
     </flowsheet>
 
     <labs>
+        #set($params = {"concept":
+        ["CD4 PANEL",
+        "CEREBROSPINAL FLUID GLUCOSE TEST",
+        "CEREBROSPINAL FLUID PROTEIN TEST",
+        "COMPLETE BLOOD COUNT",
+        "CULTURE FOR ACID FAST BACILLI",
+        "GAMMA-GLUTAMYL TRANSFERASE",
+        "GLYCOSYLATED HEMOGLOBIN",
+        "HBV ANTIGEN",
+        "HEMOGLOBIN",
+        "HEPATITIS B TEST, QUALITATIVE",
+        "HEPATITIS C TEST, QUALITATIVE",
+        "HEPATITIS C TEST, RAPID",
+        "HIV RAPID TEST 2, QUALITATIVE",
+        "HIV RAPID TEST, QUALITATIVE",
+        "LIPID PANEL",
+        "LIVER FUNCTION TESTS",
+        "MALARIAL SMEAR",
+        "PAPANICOLAOU SMEAR",
+        "PERIPHERAL BLOOD FILM",
+        "PRESENCE OF KETONE, URINE",
+        "RANDOM BLOOD SUGAR, DETAILED",
+        "RHESUS FACTOR",
+        "SERUM ALBUMIN",
+        "SERUM ALKALINE PHOSPHATASE",
+        "SERUM AMYLASE",
+        "SERUM BLOOD UREA NITROGEN",
+        "SERUM CREATININE",
+        "SERUM DIRECT BILIRUBIN",
+        "SERUM ELECTROLYTES",
+        "SERUM GLUCOSE",
+        "SERUM GLUCOSE, FASTING",
+        "SERUM TOTAL BILIRUBIN",
+        "SERUM URIC ACID TEST",
+        "SPUTUM FOR ACID FAST BACILLI",
+        "STOOL EXAM",
+        "SYPHILIS - VDRL, QUALITATIVE",
+        "URINALYSIS",
+        "URINARY ALBUMIN",
+        "URINE GLUCOSE",
+        "URINE MICROSCOPY",
+        "URINE PREGNANCY TEST, QUALITATIVE",
+        "VDRL TITRE",
+        "WIDAL TEST"]})
+        #set($groupedObservations = $fn.evaluate($patient, "Grouped Observation", $params))
+        #foreach($groupedObservation in $groupedObservations)
+            <results name="$!{fn.format($groupedObservation.toConcept())}">
+                #foreach($element in $groupedObservations)
+                    <result>
+                        <datetime>$!{fn.format($element.getResultDate())}</datetime>
+                        <value>$!{fn.format($element)}</value>
+                    </result>
+                #end
+            </results>
+        #end
     </labs>
 
     <encounters>
@@ -123,8 +178,16 @@
             <result>
                 <type>$!{fn.format($encounter.get(0))}</type>
                 <datetime>$!{fn.format($encounter.get(0).getResultDate())}</datetime>
-                <problems>$!{fn.format($encounter.get(1))}</problems>
-                <medication>$!{fn.format($encounter.get(2))}</medication>
+                <problems>
+                    #foreach($problem in $encounter.get(1))
+                        <problem>$!{fn.format($problem)}</problem>
+                    #end$
+                </problems>
+                <medications>
+                    #foreach($medication in $encounter.get(2))
+                        <medication>$!{fn.format($medication)}</medication>
+                    #end
+                </medications>
             </result>
         #end
     </encounters>

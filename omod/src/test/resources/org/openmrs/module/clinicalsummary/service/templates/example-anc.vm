@@ -138,6 +138,13 @@
 		#set($deliveryDate = $fn.evaluate($patient, "Encounter Based Obs", $params))
 		<estimatedDeliveryDate>$!{fn.format($deliveryDate)}</estimatedDeliveryDate>
 
+        #set($params = {"encounterType" : ["ANCINITIAL"],
+                        "encounter.size": 1,
+                        "concept": ["NUMBER OF WEEKS PREGNANT"],
+                        "obs.size" : 1})
+        #set($gestational = $fn.evaluate($patient, "Encounter Based Obs", $params))
+        <gestationalAge>$!{fn.format($gestational.latest())}</gestationalAge>
+
 		#set($params = {"encounterType" : ["ANCINITIAL"],
 		                "encounter.size": 1,
 		                "concept": ["OBSTETRIC ULTRASOUND DONE"],
@@ -304,6 +311,14 @@
 		                "obs.size" : 1})
 		#set($anti = $fn.evaluate($patient, "Encounter Based Obs", $params))
 		<anti-d>$!{fn.format($anti)}</anti-d>
+
+        #set($params = {"encounterType" : ["ANCINITIAL", "ANCRETURN"],
+                        "encounter.size": 1,
+                        "concept": ["RECIEVED ANTENATAL CARE SERVICE THIS VISIT"],
+                        "valueCoded": ["INTERMITTENT PREVENTIVE TREATMENT 2"],
+                        "obs.size" : 1})
+        #set($bednet = $fn.evaluate($patient, "Encounter Based Obs", $params))
+        <itn>$!{fn.format($bednet)}</itn>
 
 		#set($params = {"encounterType" : ["ANCINITIAL"],
 		                "encounter.size": 1,
@@ -536,6 +551,7 @@
 
 		<results>
 			<header>
+                <element>HIV</element>
 				<element>HGB</element>
 				<element>BS</element>
 				<element>PBS</element>
@@ -544,8 +560,9 @@
 				<element>Gluc</element>
 				<element>Leuc</element>
 			</header>
-			#set($params = {"concept": ["HEMOGLOBIN", "SERUM GLUCOSE", "MALARIAL SMEAR", "SYPHILIS - VDRL, QUALITATIVE", "PRESENCE OF PROTEIN",
-			                            "PRESENCE OF SUGAR", "PRESENCE OF LEUKOCYTES"]})
+			#set($params = {"concept": ["HIV RAPID TEST, QUALITATIVE", "HEMOGLOBIN", "SERUM GLUCOSE", "MALARIAL SMEAR",
+                                        "SYPHILIS - VDRL, QUALITATIVE", "PRESENCE OF PROTEIN", "PRESENCE OF SUGAR",
+                                        "PRESENCE OF LEUKOCYTES"]})
 			#set($labResults = $fn.evaluate($patient, "Datetime Based Concept Filtered", $params))
 			#foreach ($labResult in $labResults)
 				<entry>

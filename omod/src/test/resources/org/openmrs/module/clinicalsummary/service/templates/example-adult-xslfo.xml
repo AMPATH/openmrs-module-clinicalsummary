@@ -443,23 +443,43 @@
 							6-I Disagree with Reminder(Explain), 7-Other(Explain)
 						</fo:inline>
 					</fo:block>
-					<xsl:if test="reminders/reminder">
-						<fo:list-block font-size="12pt" space-before="6pt">
-							<xsl:for-each select="reminders/reminder">
-								<fo:list-item>
-									<fo:list-item-label end-indent="label-end()" text-align="right">
-										<fo:block><xsl:value-of select="position()" />.
-										</fo:block>
-									</fo:list-item-label>
-									<fo:list-item-body start-indent="body-start()">
-										<fo:block space-before="6pt">
-											<xsl:value-of select="value" /> (___)
-										</fo:block>
-									</fo:list-item-body>
-								</fo:list-item>
-							</xsl:for-each>
-						</fo:list-block>
-					</xsl:if>
+                    <xsl:if test="reminders/reminder">
+                        <fo:list-block font-size="12pt" space-before="6pt">
+                            <xsl:for-each select="reminders/reminder">
+                                <fo:list-item>
+                                    <fo:list-item-label end-indent="label-end()" text-align="right">
+                                        <fo:block><xsl:value-of select="position()" />.
+                                        </fo:block>
+                                    </fo:list-item-label>
+                                    <fo:list-item-body start-indent="body-start()">
+                                        <fo:block space-before="6pt">
+                                            <xsl:value-of select="value" /> (___)
+                                        </fo:block>
+                                    </fo:list-item-body>
+                                </fo:list-item>
+                            </xsl:for-each>
+                        </fo:list-block>
+                    </xsl:if>
+                    <xsl:variable name="reminderCount" select="count(reminders/reminder)" />
+                    <xsl:if test="tb-reminders/tb-reminder">
+                        <fo:list-block font-size="12pt">
+                            <xsl:for-each select="tb-reminders/tb-reminder">
+                                <fo:list-item>
+                                    <fo:list-item-label end-indent="label-end()" text-align="right">
+                                        <fo:block>
+                                            <xsl:variable name="position" select="position()"/>
+                                            <xsl:value-of select="$reminderCount + $position" />.
+                                        </fo:block>
+                                    </fo:list-item-label>
+                                    <fo:list-item-body start-indent="body-start()">
+                                        <fo:block space-before="6pt">
+                                            <xsl:value-of select="value" /> (___)
+                                        </fo:block>
+                                    </fo:list-item-body>
+                                </fo:list-item>
+                            </xsl:for-each>
+                        </fo:list-block>
+                    </xsl:if>
 
 				</fo:flow>
 			</fo:page-sequence>

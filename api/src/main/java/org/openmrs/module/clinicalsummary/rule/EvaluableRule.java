@@ -57,9 +57,12 @@ public abstract class EvaluableRule extends AbstractRule {
 		validateParameters(parameters);
 
 		Result results;
-		if (!cacheable())
-			results = evaluate(context, patientId, parameters);
-		else {
+		if (!cacheable()) {
+            if (parameters == null)
+                results = evaluate(context, patientId, new HashMap<String, Object>());
+            else
+                results = evaluate(context, patientId, parameters);
+        } else {
 			String token = getEvaluableToken();
 			Map<String, Object> effectiveParameters = getEffectiveParameters(parameters);
 
@@ -73,7 +76,10 @@ public abstract class EvaluableRule extends AbstractRule {
 			}
 
 			if (results == null) {
-				results = evaluate(context, patientId, parameters);
+                if (parameters == null)
+                    results = evaluate(context, patientId, new HashMap<String, Object>());
+                else
+                    results = evaluate(context, patientId, parameters);
 				cacheResults(cacheKey, results);
 			}
 		}

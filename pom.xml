@@ -24,26 +24,6 @@
 
 	<dependencyManagement>
 		<dependencies>
-			<!--
-			Libraries from lib to add as dependencies with compile or runtime scope:
-			lib/serializer-2.7.0.jar
-lib/fop.jar
-lib/UmlGraph-5.3.jar
-lib/jackson-core-asl-1.5.0.jar
-lib/iText.jar
-lib/avalon-framework-4.2.0.jar
-lib/xmlgraphics-commons-1.4.jar
-lib/batik-all-1.7.jar
-lib/jackson-mapper-asl-1.5.0.jar
-				
-			Find matching dependencies in maven central repository.
-			<dependency>
-				<groupId>org.other.library</groupId>
-				<artifactId>library-name</artifactId>
-				<version>library.version</version>
-				<scope>compile</scope>
-			</dependency>
-			-->
 			<dependency>
 				<groupId>org.openmrs.api</groupId>
 				<artifactId>openmrs-api</artifactId>
@@ -104,9 +84,9 @@ lib/jackson-mapper-asl-1.5.0.jar
 				</exclusions>
 			</dependency>
 			<dependency>
-				<groupId>org.openmrs.module.logic</groupId>
-				<artifactId>logic-api</artifactId>
-				<version>0.5-SNAPSHOT</version>
+				<groupId>org.openmrs.module</groupId>
+				<artifactId>logic</artifactId>
+				<version>0.5</version>
 				<type>jar</type>
 				<scope>provided</scope>
 			</dependency>
@@ -141,7 +121,7 @@ lib/jackson-mapper-asl-1.5.0.jar
 	</dependencyManagement>
 
 	<properties>
-		<openMRSVersion>1.8.0-SNAPSHOT</openMRSVersion>
+		<openMRSVersion>1.8.3</openMRSVersion>
 	</properties>
 
 	<build>

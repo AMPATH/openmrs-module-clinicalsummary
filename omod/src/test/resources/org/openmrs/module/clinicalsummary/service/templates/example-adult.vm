@@ -486,4 +486,36 @@
 
 	</reminders>
 
+    <tb-reminders>
+        #set($params = {"reminder": "TB: Symptoms include chronic cough, fever, night sweats & weight loss. Screen today for TB."})
+        #set($reminder = $fn.evaluate($patient, "Tuberculosis:INH Screening Reminder", $params))
+        #foreach($element in $reminder)
+            <tb-reminder>
+                <id>60</id>
+                <token>Tuberculosis:INH Screening Reminder</token>
+                <value>$!{fn.format($element)}</value>
+            </tb-reminder>
+        #end
+
+        #set($params = {"reminder": "TB: Missing CXR. Check for CXR results, sputum results, & TB symptoms to start INH."})
+        #set($reminder = $fn.evaluate($patient, "Tuberculosis:INH Screening Test Reminder", $params))
+        #foreach($element in $reminder)
+            <tb-reminder>
+                <id>61</id>
+                <token>Tuberculosis:INH Screening Test Result Reminder</token>
+                <value>$!{fn.format($element)}</value>
+            </tb-reminder>
+        #end
+
+        #set($params = {"reminder": "TB: Pt has no evidence of active TB. If no TB symptoms today, start INH."})
+        #set($reminder = $fn.evaluate($patient, "Tuberculosis:Initiate INH Reminder", $params))
+        #foreach($element in $reminder)
+            <tb-reminder>
+                <id>62</id>
+                <token>Tuberculosis:Initiate INH</token>
+                <value>$!{fn.format($element)}</value>
+            </tb-reminder>
+        #end
+    </tb-reminders>
+
 </clinicalSummary>

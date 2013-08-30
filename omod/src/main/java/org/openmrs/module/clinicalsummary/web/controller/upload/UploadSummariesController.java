@@ -41,6 +41,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.module.clinicalsummary.Constants;
 import org.openmrs.module.clinicalsummary.io.SummariesTaskInstance;
 import org.openmrs.module.clinicalsummary.io.utils.TaskConstants;
+import org.openmrs.module.clinicalsummary.util.ServerUtil;
 import org.openmrs.module.clinicalsummary.web.controller.MimeType;
 import org.openmrs.module.clinicalsummary.web.controller.WebUtils;
 import org.openmrs.util.OpenmrsUtil;
@@ -76,11 +77,13 @@ public class UploadSummariesController {
 	                          final @RequestParam(required = true, value = "summaries") MultipartFile summaries,
 	                          final HttpServletRequest request,
 	                          final HttpServletResponse response) {
-		if (StringUtils.equalsIgnoreCase(action, ACTION_UPLOAD))
-			upload(password, secret, summaries, request, response);
-		else if (StringUtils.equalsIgnoreCase(action, ACTION_VALIDATE))
-			validate(password, secret, summaries, request, response);
-	}
+        if (!ServerUtil.isCentral()) {
+            if (StringUtils.equalsIgnoreCase(action, ACTION_UPLOAD))
+                upload(password, secret, summaries, request, response);
+            else if (StringUtils.equalsIgnoreCase(action, ACTION_VALIDATE))
+                validate(password, secret, summaries, request, response);
+        }
+    }
 
 	public void upload(final String password,
 	                   final MultipartFile secret,
@@ -107,7 +110,7 @@ public class UploadSummariesController {
 			FileCopyUtils.copy(summaries.getInputStream(), summariesOutputStream);
 
 			log.info("Processing zip file and init vector!");
-			SummariesTaskInstance.getInstance().startUploading(password, filename);
+//			SummariesTaskInstance.getInstance().startUploading(password, filename);
 			response.sendRedirect(request.getHeader("referer"));
 		} catch (IOException e) {
 			log.error("Uploading zipped file failed ...", e);

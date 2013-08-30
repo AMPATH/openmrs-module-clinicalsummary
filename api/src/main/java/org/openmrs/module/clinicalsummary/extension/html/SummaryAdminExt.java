@@ -19,6 +19,7 @@ import java.util.Map;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.Extension;
 import org.openmrs.module.clinicalsummary.Constants;
+import org.openmrs.module.clinicalsummary.util.ServerUtil;
 import org.openmrs.module.web.extension.AdministrationSectionExt;
 
 public class SummaryAdminExt extends AdministrationSectionExt {
@@ -51,7 +52,10 @@ public class SummaryAdminExt extends AdministrationSectionExt {
 
 		if (Context.hasPrivilege(Constants.PRIVILEGE_MANAGE_SUMMARY)) {
 			map.put("module/clinicalsummary/download/downloadSummaries.list", "clinicalsummary.download");
-			map.put("module/clinicalsummary/upload/uploadSummaries.list", "clinicalsummary.upload");
+
+            if (!ServerUtil.isCentral())
+                map.put("module/clinicalsummary/upload/uploadSummaries.list", "clinicalsummary.upload");
+
 			map.put("module/clinicalsummary/utils/fileSize.list", "clinicalsummary.filesize");
 			map.put("module/clinicalsummary/utils/initialSummaries.form", "clinicalsummary.initial");
 			map.put("module/clinicalsummary/utils/orderedObsList.list", "clinicalsummary.ordered");
