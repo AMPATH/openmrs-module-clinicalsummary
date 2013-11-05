@@ -55,6 +55,7 @@ public class TuberculosisHistoryExistsRule extends EvaluableRule {
         Result tbHistoryResults;
         ObsWithRestrictionRule obsWithRestrictionRule = new ObsWithStringRestrictionRule();
 
+        // 2d. Rule out history of TB treatment plan
         String TUBERCULOSIS_TREATMENT_PLAN = "TUBERCULOSIS TREATMENT PLAN";
         String CONTINUE_REGIMEN = "CONTINUE REGIMEN";
         String START_DRUGS = "START DRUGS";
@@ -65,22 +66,30 @@ public class TuberculosisHistoryExistsRule extends EvaluableRule {
         String TUBERCULOSIS_DEFAULTER_REGIMEN_BY_USING_STREPTOMYCIN = "TUBERCULOSIS DEFAULTER REGIMEN BY USING STREPTOMYCIN";
         String MULTIDRUG_RESISTANT_TUBERCULOSIS_REGIMEN = "MULTIDRUG-RESISTANT TUBERCULOSIS REGIMEN";
         String REFILLED = "REFILLED";
-        String NOT_REFILLED = "NOT REFILLED";
         String DRUG_SUBSTITUTION = "DRUG SUBSTITUTION";
-        String CONTINUE_TO_RECEIVE_MEDICATIONS_FROM_ANOTHER_LOCATION = "CONTINUE TO RECEIVE MEDICATIONS FROM ANOTHER LOCATION";
 
         parameters.put(EvaluableConstants.ENCOUNTER_FETCH_SIZE, 1);
         parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(TUBERCULOSIS_TREATMENT_PLAN));
         parameters.put(EvaluableConstants.OBS_VALUE_CODED,
                 Arrays.asList(CONTINUE_REGIMEN, START_DRUGS, STOP_ALL_MEDICATIONS, CHANGE_REGIMEN, DOSING_CHANGE,
                         DRUG_RESTART, TUBERCULOSIS_DEFAULTER_REGIMEN_BY_USING_STREPTOMYCIN,
-                        MULTIDRUG_RESISTANT_TUBERCULOSIS_REGIMEN, REFILLED, NOT_REFILLED, DRUG_SUBSTITUTION,
-                        CONTINUE_TO_RECEIVE_MEDICATIONS_FROM_ANOTHER_LOCATION));
+                        MULTIDRUG_RESISTANT_TUBERCULOSIS_REGIMEN, REFILLED, DRUG_SUBSTITUTION));
         tbHistoryResults = obsWithRestrictionRule.eval(context, patientId, parameters);
         if (!tbHistoryResults.isEmpty()) {
             return new Result(Boolean.TRUE);
         }
 
+        // 2d. Rule out history of TB treatment plan
+        String REASON_TUBERCULOSIS_TREATMENT_STOPPED = "REASON TUBERCULOSIS TREATMENT STOPPED";
+
+        parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(REASON_TUBERCULOSIS_TREATMENT_STOPPED));
+        parameters.remove(EvaluableConstants.OBS_VALUE_CODED);
+        tbHistoryResults = obsWithRestrictionRule.eval(context, patientId, parameters);
+        if (!tbHistoryResults.isEmpty()) {
+            return new Result(Boolean.TRUE);
+        }
+
+        // 2c. Rule out patient reported history of anti-TB meds
         String PATIENT_REPORTED_CURRENT_TUBERCULOSIS_TREATMENT = "PATIENT REPORTED CURRENT TUBERCULOSIS TREATMENT";
         String PYRAZINAMIDE = "PYRAZINAMIDE";
         String STREPTOMYCIN = "STREPTOMYCIN";
@@ -140,6 +149,7 @@ public class TuberculosisHistoryExistsRule extends EvaluableRule {
             return new Result(Boolean.TRUE);
         }
 
+        // 2b. Rule out patient-reported history of TB treatment
         String TUBERCULOSIS_TREATMENT_STATUS = "TUBERCULOSIS TREATMENT STATUS";
         String TREATMENT_COMPLETED = "TREATMENT COMPLETED";
         String CURRENTLY_ON_TREATMENT = "CURRENTLY ON TREATMENT";
@@ -169,15 +179,6 @@ public class TuberculosisHistoryExistsRule extends EvaluableRule {
         parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(REFERRALS_ORDERED));
         parameters.put(EvaluableConstants.OBS_VALUE_CODED,
                 Arrays.asList(TUBERCULOSIS_TREATMENT_OR_DOT_PROGRAM, TB_CLINIC));
-        tbHistoryResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-        if (!tbHistoryResults.isEmpty()) {
-            return new Result(Boolean.TRUE);
-        }
-
-        String REASON_TUBERCULOSIS_TREATMENT_STOPPED = "REASON TUBERCULOSIS TREATMENT STOPPED";
-
-        parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(REASON_TUBERCULOSIS_TREATMENT_STOPPED));
-        parameters.remove(EvaluableConstants.OBS_VALUE_CODED);
         tbHistoryResults = obsWithRestrictionRule.eval(context, patientId, parameters);
         if (!tbHistoryResults.isEmpty()) {
             return new Result(Boolean.TRUE);

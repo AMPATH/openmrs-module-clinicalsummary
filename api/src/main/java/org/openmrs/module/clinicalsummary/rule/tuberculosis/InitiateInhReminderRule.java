@@ -80,6 +80,12 @@ public class InitiateInhReminderRule extends EvaluableRule {
             return result;
         }
 
+        NormalCXRExistsRule normalCxrExistsRule = new NormalCXRExistsRule();
+        Result normalCxrExistsResult = normalCxrExistsRule.eval(context, patientId, parameters);
+        if (!normalCxrExistsResult.toBoolean()) {
+            return result;
+        }
+
         ProphylaxisHistoryExistsRule prophylaxisHistoryExistsRule = new ProphylaxisHistoryExistsRule();
         Result prophylaxisHistoryExistsResult = prophylaxisHistoryExistsRule.eval(context, patientId, parameters);
         if (prophylaxisHistoryExistsResult.toBoolean()) {
