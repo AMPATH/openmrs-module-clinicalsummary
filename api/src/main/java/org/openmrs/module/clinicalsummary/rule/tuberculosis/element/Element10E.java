@@ -28,7 +28,7 @@ import java.util.Map;
  */
 public class Element10E extends EvaluableRule {
 
-    public static final String TOKEN = "Tuberculosis:Exclusion 2D";
+    public static final String TOKEN = "Tuberculosis:Exclusion 10E";
 
     /**
      * @param context
