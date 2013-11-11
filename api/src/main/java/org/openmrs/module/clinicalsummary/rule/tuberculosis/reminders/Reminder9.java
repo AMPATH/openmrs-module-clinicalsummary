@@ -11,23 +11,24 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion;
+package org.openmrs.module.clinicalsummary.rule.tuberculosis.reminders;
 
 import org.openmrs.logic.LogicContext;
 import org.openmrs.logic.result.Result;
-import org.openmrs.module.clinicalsummary.rule.EvaluableConstants;
 import org.openmrs.module.clinicalsummary.rule.EvaluableRule;
-import org.openmrs.module.clinicalsummary.rule.observation.ObsWithRestrictionRule;
-import org.openmrs.module.clinicalsummary.rule.observation.ObsWithStringRestrictionRule;
+import org.openmrs.module.clinicalsummary.rule.reminder.ReminderParameters;
+import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element9A;
+import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element9B;
+import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element9C;
 
 import java.util.Map;
 
 /**
  * TODO: Write brief description about the class here.
  */
-public class Exclusion1B extends EvaluableRule {
+public class Reminder9 extends EvaluableRule {
 
-    public static final String TOKEN = "Tuberculosis:Exclusion 1B";
+    public static final String TOKEN = "Tuberculosis: Reminder 1";
 
     /**
      * @param context
@@ -38,14 +39,27 @@ public class Exclusion1B extends EvaluableRule {
      */
     @Override
     protected Result evaluate(final LogicContext context, final Integer patientId, final Map<String, Object> parameters) {
-        Result result = new Result(Boolean.FALSE);
-        ObsWithRestrictionRule obsWithRestrictionRule = new ObsWithStringRestrictionRule();
+        Result result = new Result();
 
-        parameters.put(EvaluableConstants.OBS_FETCH_SIZE, 1);
-        Result obsResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-        if (!obsResults.isEmpty()) {
-            result = new Result(Boolean.TRUE);
+        Element9A element9A = new Element9A();
+        Result element9AResult = element9A.eval(context, patientId, parameters);
+        if (element9AResult.toBoolean()) {
+            return result;
         }
+
+        Element9B element9B = new Element9B();
+        Result element9BResult = element9B.eval(context, patientId, parameters);
+        if (element9BResult.toBoolean()) {
+            return result;
+        }
+
+        Element9C element9C = new Element9C();
+        Result element9CResult = element9C.eval(context, patientId, parameters);
+        if (element9CResult.toBoolean()) {
+            return result;
+        }
+        
+        result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
         return result;
     }
 
