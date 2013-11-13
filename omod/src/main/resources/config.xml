@@ -5,7 +5,7 @@
 	<!-- Base Module Properties -->
 	<id>@MODULE_ID@</id>
 	<name>@MODULE_NAME@</name>
-	<version>4.0.3</version>
+	<version>4.0.4</version>
 	<package>@MODULE_PACKAGE@</package>
 	<author>Nyoman Ribeka</author>
 	<description>
