@@ -57,33 +57,33 @@ public class Reminder4Rule extends EvaluableRule {
     protected Result evaluate(final LogicContext context, final Integer patientId, final Map<String, Object> parameters) {
         Result result = new Result();
 
-        Exclusion1ARule exclusion1ARule = new Exclusion1ARule();
-        Result exclusion1AResult = exclusion1ARule.eval(context, patientId, parameters);
-        if (exclusion1AResult.toBoolean()) {
-            result.add(new Result("Excluded by Ex1A"));
-            return result;
-        }
-
-        Exclusion1BRule exclusion1BRule = new Exclusion1BRule();
-        Result exclusion1BResult = exclusion1BRule.eval(context, patientId, parameters);
-        if (exclusion1BResult.toBoolean()) {
-            result.add(new Result("Excluded by Ex1B"));
-            return result;
-        }
-
-        Exclusion1CRule exclusion1CRule = new Exclusion1CRule();
-        Result exclusion1CResult = exclusion1CRule.eval(context, patientId, parameters);
-        if (exclusion1CResult.toBoolean()) {
-            result.add(new Result("Excluded by Ex1C"));
-            return result;
-        }
-
-        Exclusion1DRule exclusion1DRule = new Exclusion1DRule();
-        Result exclusion1DResult = exclusion1DRule.eval(context, patientId, parameters);
-        if (exclusion1DResult.toBoolean()) {
-            result.add(new Result("Excluded by Ex1D"));
-            return result;
-        }
+//        Exclusion1ARule exclusion1ARule = new Exclusion1ARule();
+//        Result exclusion1AResult = exclusion1ARule.eval(context, patientId, parameters);
+//        if (exclusion1AResult.toBoolean()) {
+//            result.add(new Result("Excluded by Ex1A"));
+//            return result;
+//        }
+//
+//        Exclusion1BRule exclusion1BRule = new Exclusion1BRule();
+//        Result exclusion1BResult = exclusion1BRule.eval(context, patientId, parameters);
+//        if (exclusion1BResult.toBoolean()) {
+//            result.add(new Result("Excluded by Ex1B"));
+//            return result;
+//        }
+//
+//        Exclusion1CRule exclusion1CRule = new Exclusion1CRule();
+//        Result exclusion1CResult = exclusion1CRule.eval(context, patientId, parameters);
+//        if (exclusion1CResult.toBoolean()) {
+//            result.add(new Result("Excluded by Ex1C"));
+//            return result;
+//        }
+//
+//        Exclusion1DRule exclusion1DRule = new Exclusion1DRule();
+//        Result exclusion1DResult = exclusion1DRule.eval(context, patientId, parameters);
+//        if (exclusion1DResult.toBoolean()) {
+//            result.add(new Result("Excluded by Ex1D"));
+//            return result;
+//        }
 
         Exclusion2ARule exclusion2ARule = new Exclusion2ARule();
         Result exclusion2AResult = exclusion2ARule.eval(context, patientId, parameters);

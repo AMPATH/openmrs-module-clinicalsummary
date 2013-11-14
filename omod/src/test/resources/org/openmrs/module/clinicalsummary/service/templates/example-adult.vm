@@ -487,7 +487,7 @@
 	</reminders>
 
     <tb-reminders>
-        #set($params = {"reminder": "TB: TB symptomatic screening results not recorded in previous encounter. Patient has Abnormal CXR. If patient has symptoms, should consider initiating TB treatment. TB treatment saves lives."})
+        #set($params = {"reminder": "TB: TB symptoms include chronic cough, fever, & weight loss. Please screen patients at every visit by asking all symptoms questions in short form and ordering/interpreting a CXR. Most HIV+ patients should begin either anti-TB meds or IPT."})
         #set($reminder = $fn.evaluate($patient, "Tuberculosis: Reminder 1", $params))
         #foreach($element in $reminder)
             <tb-reminder>
@@ -497,7 +497,7 @@
             </tb-reminder>
         #end
 
-        #set($params = {"reminder": "TB: TB symptomatic screening results not recorded in previous encounter. Patient has Abnormal CXR. If patient has symptoms, should consider initiating TB treatment. TB treatment saves lives."})
+        #set($params = {"reminder": "TB: TB symptomatic screening results not recorded in previous encounter. Patient has normal CXR. If no symptoms, should consider initiating IPT. IPT saves lives."})
         #set($reminder = $fn.evaluate($patient, "Tuberculosis: Reminder 2", $params))
         #foreach($element in $reminder)
             <tb-reminder>
