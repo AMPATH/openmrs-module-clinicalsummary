@@ -20,6 +20,23 @@ import org.openmrs.module.clinicalsummary.rule.reminder.ReminderParameters;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element5ARule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element5BRule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element5CRule;
+import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion1ARule;
+import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion1BRule;
+import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion1CRule;
+import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion1DRule;
+import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion2ARule;
+import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion2BRule;
+import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion2CRule;
+import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion2DRule;
+import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion2ERule;
+import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion2FRule;
+import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion3ARule;
+import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion3BRule;
+import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion3DRule;
+import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion4ARule;
+import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion4BRule;
+import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion4CRule;
+import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion4DRule;
 
 import java.util.Map;
 
@@ -40,6 +57,108 @@ public class Reminder5Rule extends EvaluableRule {
     @Override
     protected Result evaluate(final LogicContext context, final Integer patientId, final Map<String, Object> parameters) {
         Result result = new Result();
+
+        Exclusion1ARule exclusion1ARule = new Exclusion1ARule();
+        Result exclusion1AResult = exclusion1ARule.eval(context, patientId, parameters);
+        if (exclusion1AResult.toBoolean()) {
+            return result;
+        }
+
+        Exclusion1BRule exclusion1BRule = new Exclusion1BRule();
+        Result exclusion1BResult = exclusion1BRule.eval(context, patientId, parameters);
+        if (exclusion1BResult.toBoolean()) {
+            return result;
+        }
+
+        Exclusion1CRule exclusion1CRule = new Exclusion1CRule();
+        Result exclusion1CResult = exclusion1CRule.eval(context, patientId, parameters);
+        if (exclusion1CResult.toBoolean()) {
+            return result;
+        }
+
+        Exclusion1DRule exclusion1DRule = new Exclusion1DRule();
+        Result exclusion1DResult = exclusion1DRule.eval(context, patientId, parameters);
+        if (exclusion1DResult.toBoolean()) {
+            return result;
+        }
+
+        Exclusion2ARule exclusion2ARule = new Exclusion2ARule();
+        Result exclusion2AResult = exclusion2ARule.eval(context, patientId, parameters);
+        if (exclusion2AResult.toBoolean()) {
+            return result;
+        }
+
+        Exclusion2BRule exclusion2BRule = new Exclusion2BRule();
+        Result exclusion2BResult = exclusion2BRule.eval(context, patientId, parameters);
+        if (exclusion2BResult.toBoolean()) {
+            return result;
+        }
+
+        Exclusion2CRule exclusion2CRule = new Exclusion2CRule();
+        Result exclusion2CResult = exclusion2CRule.eval(context, patientId, parameters);
+        if (exclusion2CResult.toBoolean()) {
+            return result;
+        }
+
+        Exclusion2DRule exclusion2DRule = new Exclusion2DRule();
+        Result exclusion2DResult = exclusion2DRule.eval(context, patientId, parameters);
+        if (exclusion2DResult.toBoolean()) {
+            return result;
+        }
+
+        Exclusion2FRule exclusion2FRule = new Exclusion2FRule();
+        Result exclusion2FResult = exclusion2FRule.eval(context, patientId, parameters);
+        if (exclusion2FResult.toBoolean()) {
+            return result;
+        }
+
+        Exclusion2ERule exclusion2ERule = new Exclusion2ERule();
+        Result exclusion2EResult = exclusion2ERule.eval(context, patientId, parameters);
+        if (exclusion2EResult.toBoolean()) {
+            return result;
+        }
+
+        Exclusion3ARule exclusion3ARule = new Exclusion3ARule();
+        Result exclusion3AResult = exclusion3ARule.eval(context, patientId, parameters);
+        if (exclusion3AResult.toBoolean()) {
+            return result;
+        }
+
+        Exclusion3BRule exclusion3BRule = new Exclusion3BRule();
+        Result exclusion3BResult = exclusion3BRule.eval(context, patientId, parameters);
+        if (exclusion3BResult.toBoolean()) {
+            return result;
+        }
+
+        Exclusion3DRule exclusion3DRule = new Exclusion3DRule();
+        Result exclusion3DResult = exclusion3DRule.eval(context, patientId, parameters);
+        if (exclusion3DResult.toBoolean()) {
+            return result;
+        }
+
+        Exclusion4ARule exclusion4ARule = new Exclusion4ARule();
+        Result exclusion4AResult = exclusion4ARule.eval(context, patientId, parameters);
+        if (exclusion4AResult.toBoolean()) {
+            return result;
+        }
+
+        Exclusion4BRule exclusion4BRule = new Exclusion4BRule();
+        Result exclusion4BResult = exclusion4BRule.eval(context, patientId, parameters);
+        if (exclusion4BResult.toBoolean()) {
+            return result;
+        }
+
+        Exclusion4CRule exclusion4CRule = new Exclusion4CRule();
+        Result exclusion4CResult = exclusion4CRule.eval(context, patientId, parameters);
+        if (exclusion4CResult.toBoolean()) {
+            return result;
+        }
+
+        Exclusion4DRule exclusion4DRule = new Exclusion4DRule();
+        Result exclusion4DResult = exclusion4DRule.eval(context, patientId, parameters);
+        if (exclusion4DResult.toBoolean()) {
+            return result;
+        }
 
         Element5ARule element5ARule = new Element5ARule();
         Result element5AResult = element5ARule.eval(context, patientId, parameters);
