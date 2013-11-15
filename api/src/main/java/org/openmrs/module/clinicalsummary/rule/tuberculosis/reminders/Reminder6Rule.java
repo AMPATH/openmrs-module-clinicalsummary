@@ -71,12 +71,12 @@ public class Reminder6Rule extends EvaluableRule {
 //            return result;
 //        }
 //
-//        Exclusion1CRule exclusion1CRule = new Exclusion1CRule();
-//        Result exclusion1CResult = exclusion1CRule.eval(context, patientId, parameters);
-//        if (exclusion1CResult.toBoolean()) {
-//            result.add(new Result("Excluded by Ex1C"));
-//            return result;
-//        }
+        Exclusion1CRule exclusion1CRule = new Exclusion1CRule();
+        Result exclusion1CResult = exclusion1CRule.eval(context, patientId, parameters);
+        if (exclusion1CResult.toBoolean()) {
+            result.add(new Result("Excluded by Ex1C"));
+            return result;
+        }
 //
 //        Exclusion1DRule exclusion1DRule = new Exclusion1DRule();
 //        Result exclusion1DResult = exclusion1DRule.eval(context, patientId, parameters);

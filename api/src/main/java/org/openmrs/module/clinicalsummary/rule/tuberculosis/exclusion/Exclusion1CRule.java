@@ -16,10 +16,14 @@ package org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion;
 import org.openmrs.logic.LogicContext;
 import org.openmrs.logic.result.Result;
 import org.openmrs.module.clinicalsummary.rule.EvaluableConstants;
+import org.openmrs.module.clinicalsummary.rule.EvaluableNameConstants;
 import org.openmrs.module.clinicalsummary.rule.EvaluableRule;
+import org.openmrs.module.clinicalsummary.rule.encounter.EncounterWithRestrictionRule;
+import org.openmrs.module.clinicalsummary.rule.encounter.EncounterWithStringRestrictionRule;
 import org.openmrs.module.clinicalsummary.rule.observation.ObsWithRestrictionRule;
 import org.openmrs.module.clinicalsummary.rule.observation.ObsWithStringRestrictionRule;
 
+import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -39,12 +43,14 @@ public class Exclusion1CRule extends EvaluableRule {
     @Override
     protected Result evaluate(final LogicContext context, final Integer patientId, final Map<String, Object> parameters) {
         Result result = new Result(Boolean.FALSE);
-        ObsWithRestrictionRule obsWithRestrictionRule = new ObsWithStringRestrictionRule();
-
-        parameters.put(EvaluableConstants.OBS_FETCH_SIZE, 1);
-        Result obsResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-        if (!obsResults.isEmpty()) {
-            result = new Result(Boolean.TRUE);
+        parameters.put(EvaluableConstants.ENCOUNTER_TYPE,
+                Arrays.asList(EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_INITIAL,
+                        EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_RETURN));
+        parameters.put(EvaluableConstants.ENCOUNTER_FETCH_SIZE, 1);
+        EncounterWithRestrictionRule encounterWithRestrictionRule = new EncounterWithStringRestrictionRule();
+        Result encounterResults = encounterWithRestrictionRule.eval(context, patientId, parameters);
+        if (!encounterResults.isEmpty()) {
+            return new Result(Boolean.TRUE);
         }
         return result;
     }
