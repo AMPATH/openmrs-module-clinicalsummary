@@ -49,7 +49,7 @@ public class Exclusion1CRule extends EvaluableRule {
         parameters.put(EvaluableConstants.ENCOUNTER_FETCH_SIZE, 1);
         EncounterWithRestrictionRule encounterWithRestrictionRule = new EncounterWithStringRestrictionRule();
         Result encounterResults = encounterWithRestrictionRule.eval(context, patientId, parameters);
-        if (!encounterResults.isEmpty()) {
+        if (encounterResults.isEmpty()) {
             return new Result(Boolean.TRUE);
         }
         return result;
