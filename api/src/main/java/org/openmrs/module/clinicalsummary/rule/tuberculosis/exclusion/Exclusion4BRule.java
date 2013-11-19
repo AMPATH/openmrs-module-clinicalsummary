@@ -46,6 +46,7 @@ public class Exclusion4BRule extends EvaluableRule {
 
         parameters.put(EvaluableConstants.OBS_FETCH_SIZE, 1);
         parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(TB_PROPHYLAXIS_START_DATE));
+        parameters.remove(EvaluableConstants.OBS_VALUE_CODED);
         Result obsResults = obsWithRestrictionRule.eval(context, patientId, parameters);
         if (!obsResults.isEmpty()) {
             // TODO: Tuberculosis! Add start study date checking!

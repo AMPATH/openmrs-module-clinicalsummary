@@ -43,15 +43,16 @@ public class Exclusion2BRule extends EvaluableRule {
         ObsWithRestrictionRule obsWithRestrictionRule = new ObsWithStringRestrictionRule();
 
         // 2b. Rule out patient-reported history of TB treatment
-        String TUBERCULOSIS_TREATMENT_STATUS = "TUBERCULOSIS TREATMENT STATUS";
-        String TREATMENT_COMPLETED = "TREATMENT COMPLETED";
-        String CURRENTLY_ON_TREATMENT = "CURRENTLY ON TREATMENT";
-        String PATIENT_DEFAULTED = "PATIENT DEFAULTED";
+        String TUBERCULOSIS_TREATMENT_STATUS = "TUBERCULOSIS TREATMENT STATUS"; // 5965
+        String TREATMENT_COMPLETED = "TREATMENT COMPLETED"; // 1267
+        String CURRENTLY_ON_TREATMENT = "CURRENTLY ON TREATMENT"; // 1065
+        String PATIENT_DEFAULTED = "PATIENT DEFAULTED"; // 1595
+        String INTERRUPTED = "INTERRUPTED"; // 1794
 
         parameters.put(EvaluableConstants.OBS_FETCH_SIZE, 1);
         parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(TUBERCULOSIS_TREATMENT_STATUS));
         parameters.put(EvaluableConstants.OBS_VALUE_CODED,
-                Arrays.asList(TREATMENT_COMPLETED, CURRENTLY_ON_TREATMENT, PATIENT_DEFAULTED));
+                Arrays.asList(TREATMENT_COMPLETED, CURRENTLY_ON_TREATMENT, PATIENT_DEFAULTED, INTERRUPTED));
         Result obsResults = obsWithRestrictionRule.eval(context, patientId, parameters);
         if (!obsResults.isEmpty()) {
             return new Result(Boolean.TRUE);

@@ -54,7 +54,7 @@ public class Exclusion2DRule extends EvaluableRule {
                 "TUBERCULOSIS DEFAULTER REGIMEN BY USING STREPTOMYCIN"; // 2160
         String MULTIDRUG_RESISTANT_TUBERCULOSIS_REGIMEN = "MULTIDRUG-RESISTANT TUBERCULOSIS REGIMEN"; // 2161
         String REFILLED = "REFILLED"; // 1406
-        String NOT_REFILLED = "NOT REFILLED"; // 1407
+        // String NOT_REFILLED = "NOT REFILLED"; // 1407
         String DRUG_SUBSTITUTION = "DRUG SUBSTITUTION"; // 1849
 
         parameters.put(EvaluableConstants.ENCOUNTER_FETCH_SIZE, 1);
@@ -62,7 +62,7 @@ public class Exclusion2DRule extends EvaluableRule {
         parameters.put(EvaluableConstants.OBS_VALUE_CODED,
                 Arrays.asList(CONTINUE_REGIMEN, START_DRUGS, STOP_ALL_MEDICATIONS, CHANGE_REGIMEN, DOSING_CHANGE,
                         DRUG_RESTART, TUBERCULOSIS_DEFAULTER_REGIMEN_BY_USING_STREPTOMYCIN,
-                        MULTIDRUG_RESISTANT_TUBERCULOSIS_REGIMEN, REFILLED, NOT_REFILLED, DRUG_SUBSTITUTION));
+                        MULTIDRUG_RESISTANT_TUBERCULOSIS_REGIMEN, REFILLED, DRUG_SUBSTITUTION));
         Result obsResults = obsWithRestrictionRule.eval(context, patientId, parameters);
         if (!obsResults.isEmpty()) {
             return new Result(Boolean.TRUE);
