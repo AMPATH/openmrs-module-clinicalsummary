@@ -20,10 +20,7 @@ import org.openmrs.module.clinicalsummary.rule.reminder.ReminderParameters;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element2ARule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element2BRule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element2CRule;
-import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion1ARule;
-import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion1BRule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion1CRule;
-import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion1DRule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion2ARule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion2BRule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion2CRule;
@@ -61,140 +58,140 @@ public class Reminder2Rule extends EvaluableRule {
 //        Exclusion1ARule exclusion1ARule = new Exclusion1ARule();
 //        Result exclusion1AResult = exclusion1ARule.eval(context, patientId, parameters);
 //        if (exclusion1AResult.toBoolean()) {
-//            result.add(new Result("Excluded by Ex1A"));
+//            result.add(new Result("Reminder 2 excluded by Ex1A"));
 //            return result;
 //        }
 //
 //        Exclusion1BRule exclusion1BRule = new Exclusion1BRule();
 //        Result exclusion1BResult = exclusion1BRule.eval(context, patientId, parameters);
 //        if (exclusion1BResult.toBoolean()) {
-//            result.add(new Result("Excluded by Ex1B"));
+//            result.add(new Result("Reminder 2 excluded by Ex1B"));
 //            return result;
 //        }
 //
         Exclusion1CRule exclusion1CRule = new Exclusion1CRule();
         Result exclusion1CResult = exclusion1CRule.eval(context, patientId, parameters);
         if (exclusion1CResult.toBoolean()) {
-            result.add(new Result("Excluded by Ex1C"));
+            result.add(new Result("Reminder 2 excluded by Ex1C"));
             return result;
         }
 //
 //        Exclusion1DRule exclusion1DRule = new Exclusion1DRule();
 //        Result exclusion1DResult = exclusion1DRule.eval(context, patientId, parameters);
 //        if (exclusion1DResult.toBoolean()) {
-//            result.add(new Result("Excluded by Ex1D"));
+//            result.add(new Result("Reminder 2 excluded by Ex1D"));
 //            return result;
 //        }
 
         Exclusion2ARule exclusion2ARule = new Exclusion2ARule();
         Result exclusion2AResult = exclusion2ARule.eval(context, patientId, parameters);
         if (exclusion2AResult.toBoolean()) {
-            result.add(new Result("Excluded by Ex2A"));
+            result.add(new Result("Reminder 2 excluded by Ex2A"));
             return result;
         }
 
         Exclusion2BRule exclusion2BRule = new Exclusion2BRule();
         Result exclusion2BResult = exclusion2BRule.eval(context, patientId, parameters);
         if (exclusion2BResult.toBoolean()) {
-            result.add(new Result("Excluded by Ex2B"));
+            result.add(new Result("Reminder 2 excluded by Ex2B"));
             return result;
         }
 
         Exclusion2CRule exclusion2CRule = new Exclusion2CRule();
         Result exclusion2CResult = exclusion2CRule.eval(context, patientId, parameters);
         if (exclusion2CResult.toBoolean()) {
-            result.add(new Result("Excluded by Ex2C"));
+            result.add(new Result("Reminder 2 excluded by Ex2C"));
             return result;
         }
 
         Exclusion2DRule exclusion2DRule = new Exclusion2DRule();
         Result exclusion2DResult = exclusion2DRule.eval(context, patientId, parameters);
         if (exclusion2DResult.toBoolean()) {
-            result.add(new Result("Excluded by Ex2D"));
+            result.add(new Result("Reminder 2 excluded by Ex2D"));
             return result;
         }
 
         Exclusion2FRule exclusion2FRule = new Exclusion2FRule();
         Result exclusion2FResult = exclusion2FRule.eval(context, patientId, parameters);
         if (exclusion2FResult.toBoolean()) {
-            result.add(new Result("Excluded by Ex2F"));
+            result.add(new Result("Reminder 2 excluded by Ex2F"));
             return result;
         }
 
         Exclusion2ERule exclusion2ERule = new Exclusion2ERule();
         Result exclusion2EResult = exclusion2ERule.eval(context, patientId, parameters);
         if (exclusion2EResult.toBoolean()) {
-            result.add(new Result("Excluded by Ex2E"));
+            result.add(new Result("Reminder 2 excluded by Ex2E"));
             return result;
         }
 
         Exclusion3ARule exclusion3ARule = new Exclusion3ARule();
         Result exclusion3AResult = exclusion3ARule.eval(context, patientId, parameters);
         if (exclusion3AResult.toBoolean()) {
-            result.add(new Result("Excluded by Ex3A"));
+            result.add(new Result("Reminder 2 excluded by Ex3A"));
             return result;
         }
 
         Exclusion3BRule exclusion3BRule = new Exclusion3BRule();
         Result exclusion3BResult = exclusion3BRule.eval(context, patientId, parameters);
         if (exclusion3BResult.toBoolean()) {
-            result.add(new Result("Excluded by Ex3B"));
+            result.add(new Result("Reminder 2 excluded by Ex3B"));
             return result;
         }
 
         Exclusion3DRule exclusion3DRule = new Exclusion3DRule();
         Result exclusion3DResult = exclusion3DRule.eval(context, patientId, parameters);
         if (exclusion3DResult.toBoolean()) {
-            result.add(new Result("Excluded by Ex3D"));
+            result.add(new Result("Reminder 2 excluded by Ex3D"));
             return result;
         }
 
         Exclusion4ARule exclusion4ARule = new Exclusion4ARule();
         Result exclusion4AResult = exclusion4ARule.eval(context, patientId, parameters);
         if (exclusion4AResult.toBoolean()) {
-            result.add(new Result("Excluded by Ex4A"));
+            result.add(new Result("Reminder 2 excluded by Ex4A"));
             return result;
         }
 
         Exclusion4BRule exclusion4BRule = new Exclusion4BRule();
         Result exclusion4BResult = exclusion4BRule.eval(context, patientId, parameters);
         if (exclusion4BResult.toBoolean()) {
-            result.add(new Result("Excluded by Ex4B"));
+            result.add(new Result("Reminder 2 excluded by Ex4B"));
             return result;
         }
 
         Exclusion4CRule exclusion4CRule = new Exclusion4CRule();
         Result exclusion4CResult = exclusion4CRule.eval(context, patientId, parameters);
         if (exclusion4CResult.toBoolean()) {
-            result.add(new Result("Excluded by Ex4C"));
+            result.add(new Result("Reminder 2 excluded by Ex4C"));
             return result;
         }
 
         Exclusion4DRule exclusion4DRule = new Exclusion4DRule();
         Result exclusion4DResult = exclusion4DRule.eval(context, patientId, parameters);
         if (exclusion4DResult.toBoolean()) {
-            result.add(new Result("Excluded by Ex4D"));
+            result.add(new Result("Reminder 2 excluded by Ex4D"));
             return result;
         }
 
         Element2ARule element2ARule = new Element2ARule();
         Result element2AResult = element2ARule.eval(context, patientId, parameters);
         if (element2AResult.toBoolean()) {
-            result.add(new Result("Excluded by E2A"));
+            result.add(new Result("Reminder 2 excluded by E2A"));
             return result;
         }
 
         Element2BRule element2BRule = new Element2BRule();
         Result element2BResult = element2BRule.eval(context, patientId, parameters);
         if (element2BResult.toBoolean()) {
-            result.add(new Result("Excluded by E2B"));
+            result.add(new Result("Reminder 2 excluded by E2B"));
             return result;
         }
 
         Element2CRule element2CRule = new Element2CRule();
         Result element2CResult = element2CRule.eval(context, patientId, parameters);
         if (element2CResult.toBoolean()) {
-            result.add(new Result("Excluded by E2C"));
+            result.add(new Result("Reminder 2 excluded by E2C"));
             return result;
         }
         

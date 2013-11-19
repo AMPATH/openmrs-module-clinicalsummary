@@ -20,8 +20,6 @@ import org.openmrs.module.clinicalsummary.rule.EvaluableNameConstants;
 import org.openmrs.module.clinicalsummary.rule.EvaluableRule;
 import org.openmrs.module.clinicalsummary.rule.encounter.EncounterWithRestrictionRule;
 import org.openmrs.module.clinicalsummary.rule.encounter.EncounterWithStringRestrictionRule;
-import org.openmrs.module.clinicalsummary.rule.observation.ObsWithRestrictionRule;
-import org.openmrs.module.clinicalsummary.rule.observation.ObsWithStringRestrictionRule;
 
 import java.util.Arrays;
 import java.util.Map;
