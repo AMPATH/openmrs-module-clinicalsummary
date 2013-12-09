@@ -44,7 +44,7 @@ public class Exclusion4CRule extends EvaluableRule {
         Result result = new Result(Boolean.FALSE);
         ObsWithRestrictionRule obsWithRestrictionRule = new ObsWithStringRestrictionRule();
 
-        String TB_PROPHYLAXIS_ADHERENCE = "TB PROPHYLAXIS ADHERENCE"; // 1165
+        String TB_PROPHYLAXIS_ADHERENCE = "TB PROPHYLAXIS ADHERENCE, PAST WEEK"; // 1165
         String FEW = "FEW"; // 1160
         String HALF = "HALF"; // 1161
         String MOST = "MOST"; // 1162

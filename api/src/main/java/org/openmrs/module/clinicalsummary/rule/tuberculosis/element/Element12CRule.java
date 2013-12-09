@@ -56,7 +56,7 @@ public class Element12CRule extends EvaluableRule {
             Encounter encounter = (Encounter) encounterResult.getResultObject();
 
             ObsWithRestrictionRule obsWithRestrictionRule = new ObsWithStringRestrictionRule();
-            String TB_PROPHYLAXIS_ADHERENCE = "TB PROPHYLAXIS ADHERENCE "; // 1165
+            String TB_PROPHYLAXIS_ADHERENCE = "TB PROPHYLAXIS ADHERENCE, PAST WEEK"; // 1165
 
             parameters.put(EvaluableConstants.OBS_FETCH_SIZE, 1);
             parameters.put(EvaluableConstants.OBS_CONCEPT,Arrays.asList(TB_PROPHYLAXIS_ADHERENCE));
