@@ -13,6 +13,7 @@
  */
 package org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion;
 
+import org.openmrs.Obs;
 import org.openmrs.logic.LogicContext;
 import org.openmrs.logic.result.Result;
 import org.openmrs.module.clinicalsummary.rule.EvaluableConstants;
@@ -21,6 +22,7 @@ import org.openmrs.module.clinicalsummary.rule.observation.ObsWithRestrictionRul
 import org.openmrs.module.clinicalsummary.rule.observation.ObsWithStringRestrictionRule;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Map;
 
 /**
@@ -50,7 +52,17 @@ public class Exclusion4ARule extends EvaluableRule {
         parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList(ISONIAZID));
         Result obsResults = obsWithRestrictionRule.eval(context, patientId, parameters);
         if (!obsResults.isEmpty()) {
-            result = new Result(Boolean.TRUE);
+            Result cxrResult = obsResults.get(0);
+            Obs obs = (Obs) cxrResult.getResultObject();
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.YEAR, 2013);
+            calendar.set(Calendar.MONTH, Calendar.SEPTEMBER);
+            calendar.set(Calendar.DATE, 1);
+
+            if (obs.getObsDatetime().before(calendar.getTime())) {
+                result = new Result(Boolean.TRUE);
+            }
         }
         return result;
     }

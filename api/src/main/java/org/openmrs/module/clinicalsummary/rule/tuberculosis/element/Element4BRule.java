@@ -13,10 +13,14 @@
  */
 package org.openmrs.module.clinicalsummary.rule.tuberculosis.element;
 
+import org.openmrs.Encounter;
 import org.openmrs.logic.LogicContext;
 import org.openmrs.logic.result.Result;
 import org.openmrs.module.clinicalsummary.rule.EvaluableConstants;
+import org.openmrs.module.clinicalsummary.rule.EvaluableNameConstants;
 import org.openmrs.module.clinicalsummary.rule.EvaluableRule;
+import org.openmrs.module.clinicalsummary.rule.encounter.EncounterWithRestrictionRule;
+import org.openmrs.module.clinicalsummary.rule.encounter.EncounterWithStringRestrictionRule;
 import org.openmrs.module.clinicalsummary.rule.observation.ObsWithRestrictionRule;
 import org.openmrs.module.clinicalsummary.rule.observation.ObsWithStringRestrictionRule;
 
@@ -40,32 +44,44 @@ public class Element4BRule extends EvaluableRule {
     @Override
     protected Result evaluate(final LogicContext context, final Integer patientId, final Map<String, Object> parameters) {
         Result result = new Result(Boolean.FALSE);
-        ObsWithRestrictionRule obsWithRestrictionRule = new ObsWithStringRestrictionRule();
-        parameters.put(EvaluableConstants.OBS_FETCH_SIZE, 1);
 
-        String GENERAL_REVIEW_OF_SYSTEM = "REVIEW OF SYSTEMS, GENERAL"; // 1069
+        parameters.put(EvaluableConstants.ENCOUNTER_TYPE,
+                Arrays.asList(EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_INITIAL,
+                        EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_RETURN));
+        parameters.put(EvaluableConstants.ENCOUNTER_FETCH_SIZE, 1);
+        EncounterWithRestrictionRule encounterWithRestrictionRule = new EncounterWithStringRestrictionRule();
+        Result encounterResults = encounterWithRestrictionRule.eval(context, patientId, parameters);
+        if (!encounterResults.isEmpty()) {
+            Result encounterResult = encounterResults.get(0);
+            Encounter encounter = (Encounter) encounterResult.getResultObject();
 
-        parameters.remove(EvaluableConstants.OBS_VALUE_CODED);
-        parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(GENERAL_REVIEW_OF_SYSTEM));
-        Result generalReviewResults = obsWithRestrictionRule.eval(context, patientId, parameters);
+            ObsWithRestrictionRule obsWithRestrictionRule = new ObsWithStringRestrictionRule();
+            parameters.put(EvaluableConstants.OBS_FETCH_SIZE, 1);
+            parameters.put(EvaluableConstants.OBS_ENCOUNTER, Arrays.asList(encounter));
 
-        String REVIEW_OF_CARDIOPULMONARY = "REVIEW OF SYSTEMS, CARDIOPULMONARY"; // 1071
+            String GENERAL_REVIEW_OF_SYSTEM = "REVIEW OF SYSTEMS, GENERAL"; // 1069
 
-        parameters.remove(EvaluableConstants.OBS_VALUE_CODED);
-        parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(REVIEW_OF_CARDIOPULMONARY));
-        Result cardioReviewResults = obsWithRestrictionRule.eval(context, patientId, parameters);
+            parameters.remove(EvaluableConstants.OBS_VALUE_CODED);
+            parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(GENERAL_REVIEW_OF_SYSTEM));
+            Result generalReviewResults = obsWithRestrictionRule.eval(context, patientId, parameters);
 
-        if (!generalReviewResults.isEmpty() && !cardioReviewResults.isEmpty()) {
-            return new Result(Boolean.TRUE);
-        }
+            String REVIEW_OF_CARDIOPULMONARY = "REVIEW OF SYSTEMS, CARDIOPULMONARY"; // 1071
 
-        String REVIEW_OF_TUBERCULOSIS_SCREENING_QUESTIONS = "REVIEW OF TUBERCULOSIS SCREENING QUESTIONS"; // 6174
+            parameters.remove(EvaluableConstants.OBS_VALUE_CODED);
+            parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(REVIEW_OF_CARDIOPULMONARY));
+            Result cardioReviewResults = obsWithRestrictionRule.eval(context, patientId, parameters);
+            if (!generalReviewResults.isEmpty() && !cardioReviewResults.isEmpty()) {
+                return new Result(Boolean.TRUE);
+            }
 
-        parameters.remove(EvaluableConstants.OBS_VALUE_CODED);
-        parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(REVIEW_OF_TUBERCULOSIS_SCREENING_QUESTIONS));
-        Result tuberculosisQuestionResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-        if (!tuberculosisQuestionResults.isEmpty()) {
-            return new Result(Boolean.TRUE);
+            String REVIEW_OF_TUBERCULOSIS_SCREENING_QUESTIONS = "REVIEW OF TUBERCULOSIS SCREENING QUESTIONS"; // 6174
+
+            parameters.remove(EvaluableConstants.OBS_VALUE_CODED);
+            parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(REVIEW_OF_TUBERCULOSIS_SCREENING_QUESTIONS));
+            Result tuberculosisQuestionResults = obsWithRestrictionRule.eval(context, patientId, parameters);
+            if (!tuberculosisQuestionResults.isEmpty()) {
+                return new Result(Boolean.TRUE);
+            }
         }
 
         return result;
