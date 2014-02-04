@@ -14,9 +14,13 @@
 
 package org.openmrs.module.clinicalsummary.web.controller.service;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.XML;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.module.clinicalsummary.Summary;
@@ -46,15 +50,18 @@ public class PatientSummaryController {
 	/**
 	 * @param patientId
 	 * @param summaryId
+     * @param json
 	 * @param response
-	 * @should return summary data for patient and summary
-	 * @should return empty data when no index found for the patient and summary
+     * @should return summary data in xml for patient and summary when boolean param json is not used or is false
+     * @should return summary data in JSON only when boolean param with json=true is passed
+     * @should return empty data when no index found for the patient and summary
 	 */
 	@RequestMapping(method = RequestMethod.GET)
 	public void searchSummary(@RequestParam(required = false, value = "username") String username,
 	                          @RequestParam(required = false, value = "password") String password,
 	                          @RequestParam(required = false, value = "patientId") String patientId,
 	                          @RequestParam(required = false, value = "summaryId") Integer summaryId,
+                              @RequestParam(required = false, value = "json") boolean json,
 	                          HttpServletResponse response) throws IOException {
 
 		try {
@@ -65,12 +72,19 @@ public class PatientSummaryController {
 
 			File outputDirectory = EvaluatorUtils.getOutputDirectory(summary);
 			File summaryFile = new File(outputDirectory, StringUtils.join(Arrays.asList(patientId, Evaluator.FILE_TYPE_XML), "."));
-			if (summaryFile.exists()) {
-				FileInputStream inputStream = new FileInputStream(summaryFile);
-				FileCopyUtils.copy(inputStream, response.getOutputStream());
-			}
+            if (summaryFile.exists()) {
+                FileInputStream inputStream = new FileInputStream(summaryFile);
+                if (json) {
+                    JSONObject jsonObject = XML.toJSONObject(IOUtils.toString(inputStream));
+                    FileCopyUtils.copy(jsonObject.toString().getBytes(), response.getOutputStream());
+                } else {
+                    FileCopyUtils.copy(inputStream, response.getOutputStream());
+                }
+            }
 		} catch (ContextAuthenticationException e) {
 			response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-		}
-	}
+		} catch (JSONException e) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+        }
+    }
 }
