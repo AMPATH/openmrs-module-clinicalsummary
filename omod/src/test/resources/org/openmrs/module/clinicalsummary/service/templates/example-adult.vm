@@ -557,7 +557,7 @@
             </tb-reminder>
         #end
 
-        #set($params = {"reminder": "TB: Test results do NOT suggest active TB. If patient still does NOT report TB symptoms, consider initiating IPT. IPT is effective and could save patient's life."})
+        #set($params = {"reminder": "TB: If patient still does NOT report TB symptoms, a normal CXR would suggest patient is eligible for IPT, which could save patient's life. Order CXR to determine if IPT is indicated or record existing results to terminate this reminder."})
         #set($reminder = $fn.evaluate($patient, "Tuberculosis: Reminder 9", $params))
         #foreach($element in $reminder)
             <tb-reminder>
@@ -567,7 +567,7 @@
             </tb-reminder>
         #end
 
-        #set($params = {"reminder": "TB: Test results do NOT suggest active TB. If patient still does NOT report TB symptoms, consider initiating IPT. IPT is effective and could save [his/her depending on gender] life."})
+        #set($params = {"reminder": "TB: Test results do NOT suggest active TB. If patient still does NOT report TB symptoms, consider initiating IPT. IPT is effective and could save patient's life."})
         #set($reminder = $fn.evaluate($patient, "Tuberculosis: Reminder 10", $params))
         #foreach($element in $reminder)
             <tb-reminder>

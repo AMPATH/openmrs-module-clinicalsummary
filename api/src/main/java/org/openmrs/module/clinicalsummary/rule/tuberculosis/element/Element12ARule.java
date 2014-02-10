@@ -48,36 +48,21 @@ public class Element12ARule extends EvaluableRule {
     protected Result evaluate(final LogicContext context, final Integer patientId, final Map<String, Object> parameters) {
         Result result = new Result(Boolean.FALSE);
 
-        parameters.put(EvaluableConstants.ENCOUNTER_TYPE,
-                Arrays.asList(EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_INITIAL,
-                        EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_RETURN));
-        parameters.put(EvaluableConstants.ENCOUNTER_FETCH_SIZE, 1);
-        EncounterWithRestrictionRule encounterWithRestrictionRule = new EncounterWithStringRestrictionRule();
-        Result encounterResults = encounterWithRestrictionRule.eval(context, patientId, parameters);
-        if (!encounterResults.isEmpty()) {
-            Result encounterResult = encounterResults.get(0);
-            Encounter encounter = (Encounter) encounterResult.getResultObject();
+        String TUBERCULOSIS_PROPHYLAXIS_PLAN = "TUBERCULOSIS PROPHYLAXIS PLAN"; // 1265
+        String NONE = "NONE"; // 664
 
-            String TUBERCULOSIS_PROPHYLAXIS_PLAN = "TUBERCULOSIS PROPHYLAXIS PLAN"; // 1265
-            String START_DRUGS = "START DRUGS"; // 1256
-
-            ObsWithRestrictionRule obsWithRestrictionRule = new ObsWithStringRestrictionRule();
-            parameters.put(EvaluableConstants.OBS_FETCH_SIZE, 1);
-            parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(TUBERCULOSIS_PROPHYLAXIS_PLAN));
-            parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList(START_DRUGS));
-            Result obsResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-            if (!obsResults.isEmpty()) {
-                Result obsResult = obsResults.get(0);
-                Obs obs = (Obs) obsResult.getResultObject();
-
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTime(encounter.getEncounterDatetime());
-                calendar.add(Calendar.MONTH, -9);
-                Date sixMonthsBefore = calendar.getTime();
-                if (obs.getObsDatetime().after(sixMonthsBefore)) {
-                    return new Result(Boolean.TRUE);
-                }
+        ObsWithRestrictionRule obsWithRestrictionRule = new ObsWithStringRestrictionRule();
+        parameters.put(EvaluableConstants.OBS_FETCH_SIZE, 1);
+        parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(TUBERCULOSIS_PROPHYLAXIS_PLAN));
+        Result obsResults = obsWithRestrictionRule.eval(context, patientId, parameters);
+        if (!obsResults.isEmpty()) {
+            parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList(NONE));
+            obsResults = obsWithRestrictionRule.eval(context, patientId, parameters);
+            if (obsResults.isEmpty()) {
+                return new Result(Boolean.TRUE);
             }
+        } else {
+            return new Result(Boolean.TRUE);
         }
 
         return result;

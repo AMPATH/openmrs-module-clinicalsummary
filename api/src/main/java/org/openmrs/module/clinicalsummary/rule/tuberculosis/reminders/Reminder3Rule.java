@@ -17,6 +17,8 @@ import org.openmrs.logic.LogicContext;
 import org.openmrs.logic.result.Result;
 import org.openmrs.module.clinicalsummary.rule.EvaluableRule;
 import org.openmrs.module.clinicalsummary.rule.reminder.ReminderParameters;
+import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element3DRule;
+import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element3ERule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element3ARule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element3BRule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element3CRule;
@@ -193,6 +195,20 @@ public class Reminder3Rule extends EvaluableRule {
         Result element3CResult = element3CRule.eval(context, patientId, new HashMap<String, Object>());
         if (element3CResult.toBoolean()) {
             result.add(new Result("Reminder 3 excluded by E3C"));
+            return result;
+        }
+
+        Element3DRule element3DRule = new Element3DRule();
+        Result element3DResult = element3DRule.eval(context, patientId, new HashMap<String, Object>());
+        if (element3DResult.toBoolean()) {
+            result.add(new Result("Reminder 2 excluded by E3D"));
+            return result;
+        }
+
+        Element3ERule element3ERule = new Element3ERule();
+        Result element3EResult = element3ERule.eval(context, patientId, new HashMap<String, Object>());
+        if (element3EResult.toBoolean()) {
+            result.add(new Result("Reminder 2 excluded by E3E"));
             return result;
         }
         

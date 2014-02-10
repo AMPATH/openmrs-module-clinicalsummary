@@ -24,6 +24,9 @@ import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element10DRu
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element10ERule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element10FRule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element10GRule;
+import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element10HRule;
+import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element10IRule;
+import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element10JRule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion1CRule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion2ARule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion2BRule;
@@ -225,6 +228,27 @@ public class Reminder10Rule extends EvaluableRule {
         Result element10GResult = element10GRule.eval(context, patientId, new HashMap<String, Object>());
         if (element10GResult.toBoolean()) {
             result.add(new Result("Reminder 10 excluded by E10G"));
+            return result;
+        }
+
+        Element10HRule element10HRule = new Element10HRule();
+        Result element10HResult = element10HRule.eval(context, patientId, new HashMap<String, Object>());
+        if (element10HResult.toBoolean()) {
+            result.add(new Result("Reminder 10 excluded by E10H"));
+            return result;
+        }
+
+        Element10IRule element10IRule = new Element10IRule();
+        Result element10IResult = element10IRule.eval(context, patientId, new HashMap<String, Object>());
+        if (element10IResult.toBoolean()) {
+            result.add(new Result("Reminder 10 excluded by E10I"));
+            return result;
+        }
+
+        Element10JRule element10JRule = new Element10JRule();
+        Result element10JResult = element10GRule.eval(context, patientId, new HashMap<String, Object>());
+        if (element10JResult.toBoolean()) {
+            result.add(new Result("Reminder 10 excluded by E10J"));
             return result;
         }
 

@@ -19,6 +19,7 @@ import org.openmrs.module.clinicalsummary.rule.EvaluableRule;
 import org.openmrs.module.clinicalsummary.rule.reminder.ReminderParameters;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element6ARule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element6BRule;
+import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element6CRule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion1CRule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion2ARule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion2BRule;
@@ -185,6 +186,13 @@ public class Reminder6Rule extends EvaluableRule {
         Result element6BResult = element6BRule.eval(context, patientId, new HashMap<String, Object>());
         if (element6BResult.toBoolean()) {
             result.add(new Result("Reminder 6 excluded by E6B"));
+            return result;
+        }
+
+        Element6CRule element6CRule = new Element6CRule();
+        Result element6CResult = element6CRule.eval(context, patientId, new HashMap<String, Object>());
+        if (element6CResult.toBoolean()) {
+            result.add(new Result("Reminder 6 excluded by E6C"));
             return result;
         }
         

@@ -20,6 +20,7 @@ import org.openmrs.module.clinicalsummary.rule.reminder.ReminderParameters;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element7ARule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element7BRule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element7CRule;
+import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element7DRule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion1CRule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion2ARule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion2BRule;
@@ -193,6 +194,13 @@ public class Reminder7Rule extends EvaluableRule {
         Result element7CResult = element7CRule.eval(context, patientId, new HashMap<String, Object>());
         if (element7CResult.toBoolean()) {
             result.add(new Result("Reminder 7 excluded by E7C"));
+            return result;
+        }
+
+        Element7DRule element7DRule = new Element7DRule();
+        Result element7DResult = element7DRule.eval(context, patientId, new HashMap<String, Object>());
+        if (element7DResult.toBoolean()) {
+            result.add(new Result("Reminder 7 excluded by E7D"));
             return result;
         }
         

@@ -59,6 +59,8 @@ public class Element6ARule extends EvaluableRule {
             parameters.put(EvaluableConstants.OBS_FETCH_SIZE, 1);
             parameters.put(EvaluableConstants.OBS_ENCOUNTER, Arrays.asList(encounter));
 
+            String NONE = "NONE"; // 664
+
             String GENERAL_REVIEW_OF_SYSTEM = "REVIEW OF SYSTEMS, GENERAL"; // 1069
             String FEVER = "FEVER"; // 5945
             String NIGHT_SWEATS = "NIGHT SWEATS"; // 6029
@@ -67,6 +69,8 @@ public class Element6ARule extends EvaluableRule {
             parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(GENERAL_REVIEW_OF_SYSTEM));
             parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList(FEVER, NIGHT_SWEATS, WEIGHT_LOSS));
             Result generalReviewResults = obsWithRestrictionRule.eval(context, patientId, parameters);
+            parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList(NONE));
+            Result noneGeneralReviewResults = obsWithRestrictionRule.eval(context, patientId, parameters);
 
             String REVIEW_OF_CARDIOPULMONARY = "REVIEW OF SYSTEMS, CARDIOPULMONARY"; // 1071
             String COUGH = "COUGH"; // 107
@@ -75,8 +79,14 @@ public class Element6ARule extends EvaluableRule {
             parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(REVIEW_OF_CARDIOPULMONARY));
             parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList(COUGH, PRODUCTIVE_COUGH));
             Result cardioReviewResults = obsWithRestrictionRule.eval(context, patientId, parameters);
+            parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList(NONE));
+            Result noneCardioReviewResults = obsWithRestrictionRule.eval(context, patientId, parameters);
 
             if (generalReviewResults.isEmpty() && cardioReviewResults.isEmpty()) {
+                return new Result(Boolean.TRUE);
+            }
+
+            if (!noneGeneralReviewResults.isEmpty() && !noneCardioReviewResults.isEmpty()) {
                 return new Result(Boolean.TRUE);
             }
 
@@ -85,7 +95,7 @@ public class Element6ARule extends EvaluableRule {
             String FEVER_MORE_THAN_TWO_WEEKS = "FEVER MORE THAN TWO WEEKS"; // 8065
             // String WEIGHT_LOSS = "WEIGHT LOSS"; // 832
             String NIGHT_SWEATS_MORE_THAN_TWO_WEEKS = "NIGHT SWEATS MORE THAN TWO WEEKS"; // 8061
-            String HOUSEHOLD_MEMBER_DIAGNOSED_WITH_TUBERCULOSIS = " HOUSEHOLD MEMBER DIAGNOSED WITH TUBERCULOSIS"; // 2020
+            String HOUSEHOLD_MEMBER_DIAGNOSED_WITH_TUBERCULOSIS = "HOUSEHOLD MEMBER DIAGNOSED WITH TUBERCULOSIS"; // 2020
 
             parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(REVIEW_OF_TUBERCULOSIS_SCREENING_QUESTIONS));
             parameters.put(EvaluableConstants.OBS_VALUE_CODED,

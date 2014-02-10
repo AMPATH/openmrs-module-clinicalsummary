@@ -26,9 +26,9 @@ import java.util.Map;
 /**
  * TODO: Write brief description about the class here.
  */
-public class Element10GRule extends EvaluableRule {
+public class Element10HRule extends EvaluableRule {
 
-    public static final String TOKEN = "Tuberculosis:Element 10G";
+    public static final String TOKEN = "Tuberculosis:Element 10H";
 
     /**
      * @param context
@@ -40,25 +40,17 @@ public class Element10GRule extends EvaluableRule {
     @Override
     protected Result evaluate(final LogicContext context, final Integer patientId, final Map<String, Object> parameters) {
         Result result = new Result(Boolean.FALSE);
+        String XRAY_CHEST_PRELIMINARY_FINDINGS = "X-RAY, CHEST, PRELIMINARY FINDINGS";
+
         ObsWithRestrictionRule obsWithRestrictionRule = new ObsWithStringRestrictionRule();
-
-        String TUBERCULOSIS_PROPHYLAXIS_PLAN = "TUBERCULOSIS PROPHYLAXIS PLAN"; // 1265
-        String START_DRUGS = "START DRUGS"; // 1256
-        String CONTINUE_REGIMEN = "CONTINUE REGIMEN"; // 1257
-        String DRUG_RESTART = "DRUG RESTART"; // 1850
-        String DOSING_CHANGE = "DOSING CHANGE"; // 981
-        String REFILLED = "REFILLED"; // 1406
-        String DRUG_SUBSTITUTION = "DRUG SUBSTITUTION"; // 1849
-
         parameters.put(EvaluableConstants.OBS_FETCH_SIZE, 1);
-        parameters.put(EvaluableConstants.OBS_CONCEPT,
-                Arrays.asList(TUBERCULOSIS_PROPHYLAXIS_PLAN));
-        parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList(START_DRUGS, CONTINUE_REGIMEN, DRUG_RESTART,
-                DOSING_CHANGE, REFILLED, DRUG_SUBSTITUTION));
-        Result obsResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-        if (!obsResults.isEmpty()) {
+        parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(XRAY_CHEST_PRELIMINARY_FINDINGS));
+        parameters.remove(EvaluableConstants.OBS_VALUE_CODED);
+        Result cxrResults = obsWithRestrictionRule.eval(context, patientId, parameters);
+        if (cxrResults.isEmpty()) {
             return new Result(Boolean.TRUE);
         }
+
         return result;
     }
 

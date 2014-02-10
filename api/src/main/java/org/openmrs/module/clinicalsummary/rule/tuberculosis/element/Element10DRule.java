@@ -13,6 +13,7 @@
  */
 package org.openmrs.module.clinicalsummary.rule.tuberculosis.element;
 
+import org.apache.commons.lang.time.DateUtils;
 import org.openmrs.Encounter;
 import org.openmrs.Obs;
 import org.openmrs.logic.LogicContext;
@@ -83,7 +84,7 @@ public class Element10DRule extends EvaluableRule {
             if (!cxrResults.isEmpty()) {
                 Result cxrResult = cxrResults.get(0);
                 Obs obs = (Obs) cxrResult.getResultObject();
-                if (obs.getObsDatetime().after(sixMonthsBefore)) {
+                if (!obs.getObsDatetime().before(sixMonthsBefore)) {
                     return new Result(Boolean.TRUE);
                 }
             }
@@ -101,7 +102,7 @@ public class Element10DRule extends EvaluableRule {
             if (!sputumResults.isEmpty()) {
                 Result sputumResult = sputumResults.get(0);
                 Obs obs = (Obs) sputumResult.getResultObject();
-                if (obs.getObsDatetime().after(sixMonthsBefore)) {
+                if (!obs.getObsDatetime().before(sixMonthsBefore)) {
                     return new Result(Boolean.TRUE);
                 }
             }
@@ -117,7 +118,7 @@ public class Element10DRule extends EvaluableRule {
             if (!afbResults.isEmpty()) {
                 Result afbResult = afbResults.get(0);
                 Obs obs = (Obs) afbResult.getResultObject();
-                if (obs.getObsDatetime().after(sixMonthsBefore)) {
+                if (!obs.getObsDatetime().before(sixMonthsBefore)) {
                     return new Result(Boolean.TRUE);
                 }
             }

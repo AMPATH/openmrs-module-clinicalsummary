@@ -83,7 +83,7 @@ public class Element9CRule extends EvaluableRule {
                 calendar.setTime(encounter.getEncounterDatetime());
                 calendar.add(Calendar.MONTH, -6);
                 Date sixMonthsBefore = calendar.getTime();
-                if (obs.getObsDatetime().before(sixMonthsBefore)) {
+                if (obs.getObsDatetime().after(sixMonthsBefore)) {
                     return new Result(Boolean.TRUE);
                 }
             }
