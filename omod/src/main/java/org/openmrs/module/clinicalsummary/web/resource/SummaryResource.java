@@ -13,9 +13,9 @@ import org.openmrs.module.webservices.rest.web.RestConstants;
 import org.openmrs.module.webservices.rest.web.annotation.Resource;
 import org.openmrs.module.webservices.rest.web.representation.Representation;
 import org.openmrs.module.webservices.rest.web.resource.api.PageableResult;
-import org.openmrs.module.webservices.rest.web.resource.impl.DelegatingCrudResource;
 import org.openmrs.module.webservices.rest.web.resource.impl.DelegatingResourceDescription;
 import org.openmrs.module.webservices.rest.web.resource.impl.EmptySearchResult;
+import org.openmrs.module.webservices.rest.web.resource.impl.MetadataDelegatingCrudResource;
 import org.openmrs.module.webservices.rest.web.resource.impl.NeedsPaging;
 import org.openmrs.module.webservices.rest.web.response.ResponseException;
 
@@ -31,7 +31,7 @@ import java.util.List;
         supportedClass = Summary.class,
         supportedOpenmrsVersions = {"1.8.*", "1.9.*"})
 
-public class SummaryResource extends DelegatingCrudResource<Summary> {
+public class SummaryResource extends MetadataDelegatingCrudResource<Summary> {
     @Override
     public PageableResult doSearch(final RequestContext context) throws ResponseException {
         HttpServletRequest request = context.getRequest();
@@ -51,7 +51,12 @@ public class SummaryResource extends DelegatingCrudResource<Summary> {
             return new NeedsPaging<String>(summaries, context);
         }
         return new EmptySearchResult();
+    }
 
+    @Override
+    protected NeedsPaging<Summary> doGetAll(RequestContext context) throws ResponseException {
+            List<Summary> allSummaries = Context.getService(SummaryService.class).getAllSummaries();
+        return new NeedsPaging<Summary>(allSummaries, context);
     }
 
     private JSONObject getJSONObject(File file) {
@@ -80,11 +85,6 @@ public class SummaryResource extends DelegatingCrudResource<Summary> {
     }
 
     @Override
-    protected void delete(Summary summary, String s, RequestContext requestContext) throws ResponseException {
-
-    }
-
-    @Override
     public Summary newDelegate() {
         return null;
     }
@@ -101,6 +101,7 @@ public class SummaryResource extends DelegatingCrudResource<Summary> {
 
     @Override
     public DelegatingResourceDescription getRepresentationDescription(Representation representation) {
+
         return null;
     }
 

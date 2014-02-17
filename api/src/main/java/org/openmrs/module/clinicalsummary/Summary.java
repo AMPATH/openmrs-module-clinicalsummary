@@ -16,6 +16,8 @@ package org.openmrs.module.clinicalsummary;
 
 import org.openmrs.BaseOpenmrsMetadata;
 
+import java.io.Serializable;
+
 /**
  * An object that will hold a xml to generate a summary for a patient. There are two main components of a xml. <ul> <li>xml, is a velocity xml string
  * to generate the xml metadata of a summary.</li> <li>xslt, is an xslt string to generate the summary file. To generate the pdf file, we use <a
@@ -32,7 +34,7 @@ import org.openmrs.BaseOpenmrsMetadata;
  * </pre>
  * <p/>
  */
-public class Summary extends BaseOpenmrsMetadata {
+public class Summary extends BaseOpenmrsMetadata implements Serializable {
 
 	private Integer id;
 
