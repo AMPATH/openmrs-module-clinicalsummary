@@ -1,4 +1,4 @@
-package org.openmrs.module.clinicalsummary.resource;
+package org.openmrs.module.clinicalsummary.web.resource;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
@@ -36,7 +36,7 @@ public class SummaryResource extends DelegatingCrudResource<Summary> {
     public PageableResult doSearch(final RequestContext context) throws ResponseException {
         HttpServletRequest request = context.getRequest();
         Integer summaryId = getInteger(request, "id");
-        List<JSONObject> summaries = new ArrayList<JSONObject>();
+        List<String> summaries = new ArrayList<String>();
         if (summaryId != null) {
             Summary summary = Context.getService(SummaryService.class).getSummary(summaryId);
             File outputDirectory = EvaluatorUtils.getOutputDirectory(summary);
@@ -44,11 +44,11 @@ public class SummaryResource extends DelegatingCrudResource<Summary> {
                 File[] files = outputDirectory.listFiles();
                 if (files != null) {
                     for (File file : files) {
-                        summaries.add(getJSONObject(file));
+                        summaries.add(getJSONObject(file).toString());
                     }
                 }
             }
-            return new NeedsPaging<JSONObject>(summaries, context);
+            return new NeedsPaging<String>(summaries, context);
         }
         return new EmptySearchResult();
 

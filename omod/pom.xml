@@ -48,6 +48,18 @@
 			<artifactId>logic</artifactId>
 			<type>jar</type>
 		</dependency>
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>webservices.rest-omod-common</artifactId>
+            <version>${webservicesRestVersion}</version>
+            <type>jar</type>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20080701</version>
+        </dependency>
 	</dependencies>
 
 	<build>
@@ -115,9 +127,10 @@
 
 	<properties>
 		<MODULE_ID>${project.parent.artifactId}</MODULE_ID>
-		<MODULE_NAME>Clinical Summary</MODULE_NAME>
-		<MODULE_VERSION>${project.parent.version}</MODULE_VERSION>
-		<MODULE_PACKAGE>${project.parent.groupId}</MODULE_PACKAGE>
-	</properties>
+        <MODULE_NAME>Clinical Summary</MODULE_NAME>
+        <MODULE_VERSION>${project.parent.version}</MODULE_VERSION>
+        <MODULE_PACKAGE>${project.parent.groupId}</MODULE_PACKAGE>
+        <webservicesRestVersion>2.1</webservicesRestVersion>
+    </properties>
 
 </project>
