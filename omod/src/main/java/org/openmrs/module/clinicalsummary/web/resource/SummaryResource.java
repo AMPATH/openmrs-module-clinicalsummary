@@ -1,11 +1,13 @@
 package org.openmrs.module.clinicalsummary.web.resource;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.XML;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.clinicalsummary.Summary;
+import org.openmrs.module.clinicalsummary.evaluator.Evaluator;
 import org.openmrs.module.clinicalsummary.evaluator.EvaluatorUtils;
 import org.openmrs.module.clinicalsummary.service.SummaryService;
 import org.openmrs.module.webservices.rest.web.RequestContext;
@@ -25,6 +27,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Resource(name = RestConstants.VERSION_1 + "/summary",
@@ -36,16 +39,16 @@ public class SummaryResource extends MetadataDelegatingCrudResource<Summary> {
     public PageableResult doSearch(final RequestContext context) throws ResponseException {
         HttpServletRequest request = context.getRequest();
         Integer summaryId = getInteger(request, "id");
+        String[] patientIds = request.getParameterValues("patientId");
         List<String> summaries = new ArrayList<String>();
         if (summaryId != null) {
             Summary summary = Context.getService(SummaryService.class).getSummary(summaryId);
             File outputDirectory = EvaluatorUtils.getOutputDirectory(summary);
             if (isSummaryDirExists(outputDirectory)) {
-                File[] files = outputDirectory.listFiles();
-                if (files != null) {
-                    for (File file : files) {
-                        summaries.add(getJSONObject(file).toString());
-                    }
+                if (patientIds != null && patientIds.length > 0) {
+                    summaries = getPatientRecords(patientIds, outputDirectory);
+                } else {
+                    summaries = getAllPatientRecords(outputDirectory);
                 }
             }
             return new NeedsPaging<String>(summaries, context);
@@ -55,7 +58,7 @@ public class SummaryResource extends MetadataDelegatingCrudResource<Summary> {
 
     @Override
     protected NeedsPaging<Summary> doGetAll(RequestContext context) throws ResponseException {
-            List<Summary> allSummaries = Context.getService(SummaryService.class).getAllSummaries();
+        List<Summary> allSummaries = Context.getService(SummaryService.class).getAllSummaries();
         return new NeedsPaging<Summary>(allSummaries, context);
     }
 
@@ -111,6 +114,26 @@ public class SummaryResource extends MetadataDelegatingCrudResource<Summary> {
         } catch (NumberFormatException e) {
             return null;
         }
+    }
+
+    private List<String> getPatientRecords(String[] patientIds, File outputDirectory) {
+        List<String> summaries = new ArrayList<String>();
+        for (String patientId : patientIds) {
+            File file = new File(outputDirectory, StringUtils.join(Arrays.asList(patientId, Evaluator.FILE_TYPE_XML), "."));
+            summaries.add(getJSONObject(file).toString());
+        }
+        return summaries;
+    }
+
+    private List<String> getAllPatientRecords(File outputDirectory) {
+        List<String> summaries = new ArrayList<String>();
+        File[] files = outputDirectory.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                summaries.add(getJSONObject(file).toString());
+            }
+        }
+        return summaries;
     }
 
 }
