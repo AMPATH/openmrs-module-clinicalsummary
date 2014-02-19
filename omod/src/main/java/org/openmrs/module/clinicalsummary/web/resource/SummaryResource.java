@@ -5,6 +5,8 @@ import org.apache.commons.lang.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.XML;
+import org.openmrs.Patient;
+import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.clinicalsummary.Summary;
 import org.openmrs.module.clinicalsummary.evaluator.Evaluator;
@@ -38,15 +40,15 @@ public class SummaryResource extends MetadataDelegatingCrudResource<Summary> {
     @Override
     public PageableResult doSearch(final RequestContext context) throws ResponseException {
         HttpServletRequest request = context.getRequest();
-        Integer summaryId = getInteger(request, "id");
-        String[] patientIds = request.getParameterValues("patientId");
+        String summaryUUID = request.getParameter("uuid");
+        String[] patientUuids = request.getParameterValues("patientUuid");
         List<String> summaries = new ArrayList<String>();
-        if (summaryId != null) {
-            Summary summary = Context.getService(SummaryService.class).getSummary(summaryId);
+        if (summaryUUID != null) {
+            Summary summary = Context.getService(SummaryService.class).getSummaryByUuid(summaryUUID);
             File outputDirectory = EvaluatorUtils.getOutputDirectory(summary);
             if (isSummaryDirExists(outputDirectory)) {
-                if (patientIds != null && patientIds.length > 0) {
-                    summaries = getPatientRecords(patientIds, outputDirectory);
+                if (patientUuids != null && patientUuids.length > 0) {
+                    summaries = getPatientRecords(patientUuids, outputDirectory);
                 } else {
                     summaries = getAllPatientRecords(outputDirectory);
                 }
@@ -108,18 +110,12 @@ public class SummaryResource extends MetadataDelegatingCrudResource<Summary> {
         return null;
     }
 
-    private Integer getInteger(HttpServletRequest request, String paramName) {
-        try {
-            return Integer.valueOf(request.getParameter(paramName));
-        } catch (NumberFormatException e) {
-            return null;
-        }
-    }
-
     private List<String> getPatientRecords(String[] patientIds, File outputDirectory) {
         List<String> summaries = new ArrayList<String>();
+        PatientService patientService = Context.getService(PatientService.class);
         for (String patientId : patientIds) {
-            File file = new File(outputDirectory, StringUtils.join(Arrays.asList(patientId, Evaluator.FILE_TYPE_XML), "."));
+            Patient patientByUuid = patientService.getPatientByUuid(patientId);
+            File file = new File(outputDirectory, StringUtils.join(Arrays.asList(patientByUuid.getId(), Evaluator.FILE_TYPE_XML), "."));
             summaries.add(getJSONObject(file).toString());
         }
         return summaries;
