@@ -38,6 +38,8 @@ public class Summary extends BaseOpenmrsMetadata implements Serializable {
 
 	private Integer id;
 
+    private String uuid;
+
 	private String xml;
 
 	private String xslt;
@@ -132,7 +134,24 @@ public class Summary extends BaseOpenmrsMetadata implements Serializable {
 		return "SummaryTemplate: " + getName();
 	}
 
-	@Override
+    /**
+     *
+     * @return UUID of the summary object
+     */
+    public String getUuid() {
+        return uuid;
+    }
+
+    /**
+     * Set the uuid value.
+     *
+     * @param uuid to be set
+     */
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    @Override
 	public boolean equals(final Object o) {
 		if (this == o) return true;
 

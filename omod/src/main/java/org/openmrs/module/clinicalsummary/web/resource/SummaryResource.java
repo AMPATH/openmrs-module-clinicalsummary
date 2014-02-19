@@ -84,7 +84,7 @@ public class SummaryResource extends MetadataDelegatingCrudResource<Summary> {
 
     @Override
     public Summary getByUniqueId(String uniqueId) {
-        return null;
+        return Context.getService(SummaryService.class).getSummaryByUuid(uniqueId);
     }
 
     @Override

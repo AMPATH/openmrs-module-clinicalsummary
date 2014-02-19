@@ -13,19 +13,21 @@
  */
 package org.openmrs.module.clinicalsummary.db;
 
-import java.util.List;
-
 import org.openmrs.EncounterType;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.module.clinicalsummary.Mapping;
 import org.openmrs.module.clinicalsummary.Summary;
 import org.openmrs.module.clinicalsummary.enumeration.MappingType;
 
+import java.util.List;
+
 public interface SummaryDAO {
 
 	Summary saveSummary(final Summary summary) throws DAOException;
 
 	Summary getSummary(final Integer id) throws DAOException;
+
+	Summary getSummaryByUuid(final String uuid) throws DAOException;
 
 	List<Summary> getAllSummaries(final Boolean includeRetired) throws DAOException;
 

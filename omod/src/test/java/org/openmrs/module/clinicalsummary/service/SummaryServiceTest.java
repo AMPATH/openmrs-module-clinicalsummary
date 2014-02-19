@@ -1,8 +1,5 @@
 package org.openmrs.module.clinicalsummary.service;
 
-import java.util.Date;
-import java.util.List;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -16,6 +13,12 @@ import org.openmrs.module.clinicalsummary.Mapping;
 import org.openmrs.module.clinicalsummary.Summary;
 import org.openmrs.module.clinicalsummary.enumeration.MappingType;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
+
+import java.util.Date;
+import java.util.List;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  */
@@ -41,7 +44,7 @@ public class SummaryServiceTest extends BaseModuleContextSensitiveTest {
 		summary.setXml("Some xml text");
 		summary.setXslt("Some xslt text");
 
-		Assert.assertNull(summary.getId());
+		assertNull(summary.getId());
 		Assert.assertEquals(Integer.valueOf(0), summary.getRevision());
 
 		SummaryService summaryService = Context.getService(SummaryService.class);
@@ -100,7 +103,7 @@ public class SummaryServiceTest extends BaseModuleContextSensitiveTest {
 		SummaryService summaryService = Context.getService(SummaryService.class);
 
 		Summary summary = summaryService.getSummary(10);
-		Assert.assertNull(summary);
+		assertNull(summary);
 	}
 
 	/**
@@ -160,7 +163,7 @@ public class SummaryServiceTest extends BaseModuleContextSensitiveTest {
 		mapping.setSummary(summary);
 		mapping.setMappingType(MappingType.LATEST_ENCOUNTER);
 
-		Assert.assertNull(mapping.getId());
+		assertNull(mapping.getId());
 
 		summaryService.saveMapping(mapping);
 
@@ -234,4 +237,20 @@ public class SummaryServiceTest extends BaseModuleContextSensitiveTest {
 		for (Mapping mapping : mappings)
 			Assert.assertEquals(encounterType, mapping.getEncounterType());
 	}
+
+    @Test
+    public void getSummaryByUuid_shouldReturnSummaryObjectWithUUID() throws Exception {
+        SummaryService summaryService = Context.getService(SummaryService.class);
+        Summary summaryByUuid = summaryService.getSummaryByUuid("61ae96f4-6afe-4351-b6f8-fd4fc383cce1");
+
+        assertNotNull(summaryByUuid);
+    }
+
+    @Test
+    public void getSummaryByUuid_shouldReturnNullWithNotObjectWithUUID() throws Exception {
+        SummaryService summaryService = Context.getService(SummaryService.class);
+        Summary summaryByUuid = summaryService.getSummaryByUuid("random-uuid");
+
+        assertNull(summaryByUuid);
+    }
 }
