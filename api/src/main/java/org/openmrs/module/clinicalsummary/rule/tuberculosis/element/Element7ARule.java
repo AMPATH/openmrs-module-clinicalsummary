@@ -82,11 +82,8 @@ public class Element7ARule extends EvaluableRule {
             parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList(NONE));
             Result noneCardioReviewResults = obsWithRestrictionRule.eval(context, patientId, parameters);
 
-            if (generalReviewResults.isEmpty() && cardioReviewResults.isEmpty()) {
-                return new Result(Boolean.TRUE);
-            }
-
-            if (!noneGeneralReviewResults.isEmpty() && !noneCardioReviewResults.isEmpty()) {
+            if ((generalReviewResults.isEmpty() || !noneGeneralReviewResults.isEmpty())
+                    && (cardioReviewResults.isEmpty() || !noneCardioReviewResults.isEmpty())) {
                 return new Result(Boolean.TRUE);
             }
 

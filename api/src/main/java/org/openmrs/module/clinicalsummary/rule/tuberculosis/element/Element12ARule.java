@@ -54,11 +54,12 @@ public class Element12ARule extends EvaluableRule {
         ObsWithRestrictionRule obsWithRestrictionRule = new ObsWithStringRestrictionRule();
         parameters.put(EvaluableConstants.OBS_FETCH_SIZE, 1);
         parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(TUBERCULOSIS_PROPHYLAXIS_PLAN));
+        parameters.remove(EvaluableConstants.OBS_VALUE_CODED);
         Result obsResults = obsWithRestrictionRule.eval(context, patientId, parameters);
         if (!obsResults.isEmpty()) {
             parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList(NONE));
             obsResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-            if (obsResults.isEmpty()) {
+            if (!obsResults.isEmpty()) {
                 return new Result(Boolean.TRUE);
             }
         } else {

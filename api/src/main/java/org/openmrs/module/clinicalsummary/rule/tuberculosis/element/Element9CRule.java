@@ -59,21 +59,11 @@ public class Element9CRule extends EvaluableRule {
             Encounter encounter = (Encounter) encounterResult.getResultObject();
 
             String XRAY_CHEST_PRELIMINARY_FINDINGS = "X-RAY, CHEST, PRELIMINARY FINDINGS"; // 012
-            String PULMONARY_EFFUSION = "PULMONARY EFFUSION"; // 1136
-            String MILIARY_CHANGES = "MILIARY CHANGES"; // 1137
-            String EVIDENCE_OF_CARDIAC_ENLARGEMENT = "EVIDENCE OF CARDIAC ENLARGEMENT"; // 5158
-            String OTHER_NON_CODED = "OTHER NON-CODED"; // 5622
-            String INFILTRATE = "INFILTRATE"; //
-            String DIFFUSE_NON_MILIARY_CHANGES = "DIFFUSE NON-MILIARY CHANGES"; // 6050
-            String CAVITARY_LESION = "CAVITARY LESION"; // 6052
-            String ABNORMAL = "ABNORMAL"; // 1116
 
             ObsWithRestrictionRule obsWithRestrictionRule = new ObsWithStringRestrictionRule();
             parameters.put(EvaluableConstants.OBS_FETCH_SIZE, 1);
             parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(XRAY_CHEST_PRELIMINARY_FINDINGS));
-            parameters.put(EvaluableConstants.OBS_VALUE_CODED,
-                    Arrays.asList(PULMONARY_EFFUSION, MILIARY_CHANGES, EVIDENCE_OF_CARDIAC_ENLARGEMENT,
-                            OTHER_NON_CODED, INFILTRATE, DIFFUSE_NON_MILIARY_CHANGES, CAVITARY_LESION, ABNORMAL));
+            parameters.remove(EvaluableConstants.OBS_VALUE_CODED);
             Result cxrResults = obsWithRestrictionRule.eval(context, patientId, parameters);
             if (!cxrResults.isEmpty()) {
                 Result cxrResult = cxrResults.get(0);
@@ -83,7 +73,13 @@ public class Element9CRule extends EvaluableRule {
                 calendar.setTime(encounter.getEncounterDatetime());
                 calendar.add(Calendar.MONTH, -6);
                 Date sixMonthsBefore = calendar.getTime();
-                if (obs.getObsDatetime().after(sixMonthsBefore)) {
+                calendar.setTime(encounter.getEncounterDatetime());
+                calendar.add(Calendar.MONTH, 6);
+                Date sixMonthsAfter = calendar.getTime();
+                // the cxr obs is after the encounter and within 6 months of the encounter, exclude
+                // what happen if the obs is after 6 months of the encounter?
+                if (obs.getObsDatetime().before(sixMonthsAfter)
+                        && obs.getObsDatetime().after(sixMonthsBefore)) {
                     return new Result(Boolean.TRUE);
                 }
             }
