@@ -1,5 +1,6 @@
 package org.openmrs.module.clinicalsummary.web.resource;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONException;
@@ -123,7 +124,8 @@ public class SummaryResource extends MetadataDelegatingCrudResource<Summary> {
 
     private List<String> getAllPatientRecords(File outputDirectory) {
         List<String> summaries = new ArrayList<String>();
-        File[] files = outputDirectory.listFiles();
+        String[] extensions = {"xml"};
+        File[] files = FileUtils.convertFileCollectionToFileArray(FileUtils.listFiles(outputDirectory, extensions, true));
         if (files != null) {
             for (File file : files) {
                 summaries.add(getJSONObject(file).toString());
