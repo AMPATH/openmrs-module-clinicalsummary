@@ -65,6 +65,7 @@
 			<artifactId>itext</artifactId>
 			<type>jar</type>
 		</dependency>
-	</dependencies>
+
+    </dependencies>
 
 </project>

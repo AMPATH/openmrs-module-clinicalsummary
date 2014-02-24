@@ -14,6 +14,7 @@
 
 	<require_modules>
 		<require_module version="0.5">org.openmrs.logic</require_module>
+        <require_module version="${webservicesRestVersion}">org.openmrs.module.webservices.rest</require_module>
 	</require_modules>
 
 	<activator>@MODULE_PACKAGE@.activator.SummaryActivator</activator>

@@ -13,8 +13,6 @@
  */
 package org.openmrs.module.clinicalsummary.service;
 
-import java.util.List;
-
 import org.openmrs.EncounterType;
 import org.openmrs.Patient;
 import org.openmrs.annotation.Authorized;
@@ -25,6 +23,8 @@ import org.openmrs.module.clinicalsummary.Mapping;
 import org.openmrs.module.clinicalsummary.Summary;
 import org.openmrs.module.clinicalsummary.enumeration.MappingType;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * Service contract for operation on Summary object
@@ -43,6 +43,20 @@ public interface SummaryService extends OpenmrsService {
      */
     @Authorized({Constants.PRIVILEGE_MANAGE_SUMMARY})
     Summary saveSummary(final Summary summary) throws APIException;
+
+    /**
+     * Get a summary object based on the uuid of the summary
+     *
+     * @param uuid of the summary object to be retrieved
+     * @return summary object when a summary with specified uuid in the database or null when no summary object found in the
+     *         database
+     * @throws APIException
+     * @should return summary object with the input uuid
+     * @should return null when no summary found with the input uuid
+     */
+    @Transactional(readOnly = true)
+    @Authorized({Constants.PRIVILEGE_VIEW_SUMMARY})
+    Summary getSummaryByUuid(final String uuid) throws APIException;
 
     /**
      * Get a summary object based on the id of the summary

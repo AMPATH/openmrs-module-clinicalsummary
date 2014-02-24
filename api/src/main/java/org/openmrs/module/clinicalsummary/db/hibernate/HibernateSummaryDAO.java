@@ -14,8 +14,6 @@
 
 package org.openmrs.module.clinicalsummary.db.hibernate;
 
-import java.util.List;
-
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
@@ -25,6 +23,8 @@ import org.openmrs.module.clinicalsummary.Mapping;
 import org.openmrs.module.clinicalsummary.Summary;
 import org.openmrs.module.clinicalsummary.db.SummaryDAO;
 import org.openmrs.module.clinicalsummary.enumeration.MappingType;
+
+import java.util.List;
 
 /**
  * Hibernate operation from the summary module
@@ -50,6 +50,16 @@ public class HibernateSummaryDAO implements SummaryDAO {
 		sessionFactory.getCurrentSession().saveOrUpdate(summary);
 		return summary;
 	}
+
+    /**
+     * @see org.openmrs.module.clinicalsummary.db.SummaryDAO#getSummary(Integer)
+     */
+    @Override
+    public Summary getSummaryByUuid(final String uuid) throws DAOException {
+        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Summary.class);
+        criteria.add(Restrictions.eq("uuid", uuid));
+        return (Summary)criteria.uniqueResult();
+    }
 
 	/**
 	 * @see org.openmrs.module.clinicalsummary.db.SummaryDAO#getSummary(Integer)

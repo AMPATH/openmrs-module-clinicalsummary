@@ -14,11 +14,6 @@
 
 package org.openmrs.module.clinicalsummary.service.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.EncounterType;
@@ -34,6 +29,11 @@ import org.openmrs.module.clinicalsummary.enumeration.MappingType;
 import org.openmrs.module.clinicalsummary.rule.evaluator.SummaryValidatorRule;
 import org.openmrs.module.clinicalsummary.service.EvaluatorService;
 import org.openmrs.module.clinicalsummary.service.SummaryService;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  */
@@ -64,6 +64,14 @@ public class SummaryServiceImpl extends BaseOpenmrsService implements SummarySer
 		summary.setRevision(summary.getRevision() + 1);
 		return summaryDAO.saveSummary(summary);
 	}
+
+    /**
+     * @see org.openmrs.module.clinicalsummary.service.SummaryService#getSummary(Integer)
+     */
+    @Override
+    public Summary getSummaryByUuid(final String uuid) throws APIException {
+        return summaryDAO.getSummaryByUuid(uuid);
+    }
 
 	/**
 	 * @see org.openmrs.module.clinicalsummary.service.SummaryService#getSummary(Integer)
