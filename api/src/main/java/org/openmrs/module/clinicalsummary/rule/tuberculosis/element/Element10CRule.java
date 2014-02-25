@@ -13,10 +13,14 @@
  */
 package org.openmrs.module.clinicalsummary.rule.tuberculosis.element;
 
+import org.openmrs.Encounter;
 import org.openmrs.logic.LogicContext;
 import org.openmrs.logic.result.Result;
 import org.openmrs.module.clinicalsummary.rule.EvaluableConstants;
+import org.openmrs.module.clinicalsummary.rule.EvaluableNameConstants;
 import org.openmrs.module.clinicalsummary.rule.EvaluableRule;
+import org.openmrs.module.clinicalsummary.rule.encounter.EncounterWithRestrictionRule;
+import org.openmrs.module.clinicalsummary.rule.encounter.EncounterWithStringRestrictionRule;
 import org.openmrs.module.clinicalsummary.rule.observation.ObsWithRestrictionRule;
 import org.openmrs.module.clinicalsummary.rule.observation.ObsWithStringRestrictionRule;
 
@@ -40,45 +44,58 @@ public class Element10CRule extends EvaluableRule {
     @Override
     protected Result evaluate(final LogicContext context, final Integer patientId, final Map<String, Object> parameters) {
         Result result = new Result(Boolean.FALSE);
-        ObsWithRestrictionRule obsWithRestrictionRule = new ObsWithStringRestrictionRule();
 
-        String LYMPH_NODE_EXAM_FINDINGS = "LYMPH NODE EXAM FINDINGS"; // 1121
-        String SUBMANDIBULAR = "SUBMANDIBULAR"; // 504
-        String SUPRACLAVICULAR = "SUPRACLAVICULAR"; // 505
-        String INGUINAL = "INGUINAL"; // 506
-        String CERVICAL = "CERVICAL"; // 643
-        String ABNORMAL = "ABNORMAL"; // 1116
-        String AXILLARY = "AXILLARY"; // 5112
-        String LYMPHADENOPATHY = "LYMPHADENOPATHY"; // 161
-        String OTHER_NON_CODED = "OTHER NON-CODED"; // 5622
+        parameters.put(EvaluableConstants.ENCOUNTER_TYPE,
+                Arrays.asList(EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_INITIAL,
+                        EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_RETURN));
+        parameters.put(EvaluableConstants.ENCOUNTER_FETCH_SIZE, 1);
+        EncounterWithRestrictionRule encounterWithRestrictionRule = new EncounterWithStringRestrictionRule();
+        Result encounterResults = encounterWithRestrictionRule.eval(context, patientId, parameters);
+        if (!encounterResults.isEmpty()) {
+            Result encounterResult = encounterResults.get(0);
+            Encounter encounter = (Encounter) encounterResult.getResultObject();
 
-        parameters.put(EvaluableConstants.OBS_FETCH_SIZE, 1);
-        parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(LYMPH_NODE_EXAM_FINDINGS));
-        parameters.put(EvaluableConstants.OBS_VALUE_CODED,
-                Arrays.asList(SUBMANDIBULAR, SUPRACLAVICULAR, INGUINAL, CERVICAL, ABNORMAL, AXILLARY,
-                        LYMPHADENOPATHY, OTHER_NON_CODED));
-        Result obsResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-        if (!obsResults.isEmpty()) {
-            return new Result(Boolean.TRUE);
-        }
+            ObsWithRestrictionRule obsWithRestrictionRule = new ObsWithStringRestrictionRule();
+            parameters.put(EvaluableConstants.OBS_ENCOUNTER, Arrays.asList(encounter));
 
-        String CHEST_EXAM_FINDINGS = "CHEST EXAM FINDINGS"; // 1121
-        // String ABNORMAL = "ABNORMAL"; // 1116
-        String DIMINISHED_BREATH_SOUNDS = "DIMINISHED BREATH SOUNDS"; // 5115
-        String BRONCHIAL_BREATH_SOUNDS = "BRONCHIAL BREATH SOUNDS"; // 5116
-        String CREPITATIONS = "CREPITATIONS"; // 5127
-        String DULLNESS_TO_PERCUSSION = "DULLNESS TO PERCUSSION"; // 5138
-        String RHONCHI = "RHONCHI"; // 5181
-        String WHEEZE = "WHEEZE"; // 5209
+            String LYMPH_NODE_EXAM_FINDINGS = "LYMPH NODE EXAM FINDINGS"; // 1121
+            String SUBMANDIBULAR = "SUBMANDIBULAR"; // 504
+            String SUPRACLAVICULAR = "SUPRACLAVICULAR"; // 505
+            String INGUINAL = "INGUINAL"; // 506
+            String CERVICAL = "CERVICAL"; // 643
+            String ABNORMAL = "ABNORMAL"; // 1116
+            String AXILLARY = "AXILLARY"; // 5112
+            String LYMPHADENOPATHY = "LYMPHADENOPATHY"; // 161
+            String OTHER_NON_CODED = "OTHER NON-CODED"; // 5622
 
-        parameters.put(EvaluableConstants.OBS_FETCH_SIZE, 1);
-        parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(CHEST_EXAM_FINDINGS));
-        parameters.put(EvaluableConstants.OBS_VALUE_CODED,
-                Arrays.asList(ABNORMAL, DIMINISHED_BREATH_SOUNDS, BRONCHIAL_BREATH_SOUNDS, CREPITATIONS,
-                        DULLNESS_TO_PERCUSSION, RHONCHI, WHEEZE));
-        obsResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-        if (!obsResults.isEmpty()) {
-            return new Result(Boolean.TRUE);
+            parameters.put(EvaluableConstants.OBS_FETCH_SIZE, 1);
+            parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(LYMPH_NODE_EXAM_FINDINGS));
+            parameters.put(EvaluableConstants.OBS_VALUE_CODED,
+                    Arrays.asList(SUBMANDIBULAR, SUPRACLAVICULAR, INGUINAL, CERVICAL, ABNORMAL, AXILLARY,
+                            LYMPHADENOPATHY, OTHER_NON_CODED));
+            Result obsResults = obsWithRestrictionRule.eval(context, patientId, parameters);
+            if (!obsResults.isEmpty()) {
+                return new Result(Boolean.TRUE);
+            }
+
+            String CHEST_EXAM_FINDINGS = "CHEST EXAM FINDINGS"; // 1121
+            // String ABNORMAL = "ABNORMAL"; // 1116
+            String DIMINISHED_BREATH_SOUNDS = "DIMINISHED BREATH SOUNDS"; // 5115
+            String BRONCHIAL_BREATH_SOUNDS = "BRONCHIAL BREATH SOUNDS"; // 5116
+            String CREPITATIONS = "CREPITATIONS"; // 5127
+            String DULLNESS_TO_PERCUSSION = "DULLNESS TO PERCUSSION"; // 5138
+            String RHONCHI = "RHONCHI"; // 5181
+            String WHEEZE = "WHEEZE"; // 5209
+
+            parameters.put(EvaluableConstants.OBS_FETCH_SIZE, 1);
+            parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(CHEST_EXAM_FINDINGS));
+            parameters.put(EvaluableConstants.OBS_VALUE_CODED,
+                    Arrays.asList(ABNORMAL, DIMINISHED_BREATH_SOUNDS, BRONCHIAL_BREATH_SOUNDS, CREPITATIONS,
+                            DULLNESS_TO_PERCUSSION, RHONCHI, WHEEZE));
+            obsResults = obsWithRestrictionRule.eval(context, patientId, parameters);
+            if (!obsResults.isEmpty()) {
+                return new Result(Boolean.TRUE);
+            }
         }
         return result;
     }

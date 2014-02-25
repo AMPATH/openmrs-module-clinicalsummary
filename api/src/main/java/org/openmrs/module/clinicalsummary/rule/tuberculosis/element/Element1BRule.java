@@ -33,7 +33,7 @@ import java.util.Map;
 /**
  * TODO: Write brief description about the class here.
  */
-public class Element1BRule extends EvaluableRule {
+public class    Element1BRule extends EvaluableRule {
 
     public static final String TOKEN = "Tuberculosis:Element 1B";
 

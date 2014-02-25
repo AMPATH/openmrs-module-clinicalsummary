@@ -29,6 +29,7 @@ import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion2
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion2DRule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion2ERule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion2FRule;
+import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion2GRule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion3ARule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion3BRule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion3DRule;
@@ -125,6 +126,13 @@ public class Reminder3Rule extends EvaluableRule {
         Result exclusion2EResult = exclusion2ERule.eval(context, patientId, new HashMap<String, Object>());
         if (exclusion2EResult.toBoolean()) {
             result.add(new Result("Reminder 3 excluded by Ex2E"));
+            return result;
+        }
+
+        Exclusion2GRule exclusion2GRule = new Exclusion2GRule();
+        Result exclusion2GResult = exclusion2GRule.eval(context, patientId, new HashMap<String, Object>());
+        if (exclusion2GResult.toBoolean()) {
+            result.add(new Result("Reminder 3 excluded by Ex2G"));
             return result;
         }
 
