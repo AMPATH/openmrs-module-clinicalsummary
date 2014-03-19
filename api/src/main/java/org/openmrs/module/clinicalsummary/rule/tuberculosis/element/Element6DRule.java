@@ -13,29 +13,22 @@
  */
 package org.openmrs.module.clinicalsummary.rule.tuberculosis.element;
 
-import org.openmrs.Encounter;
-import org.openmrs.Obs;
 import org.openmrs.logic.LogicContext;
 import org.openmrs.logic.result.Result;
 import org.openmrs.module.clinicalsummary.rule.EvaluableConstants;
-import org.openmrs.module.clinicalsummary.rule.EvaluableNameConstants;
 import org.openmrs.module.clinicalsummary.rule.EvaluableRule;
-import org.openmrs.module.clinicalsummary.rule.encounter.EncounterWithRestrictionRule;
-import org.openmrs.module.clinicalsummary.rule.encounter.EncounterWithStringRestrictionRule;
 import org.openmrs.module.clinicalsummary.rule.observation.ObsWithRestrictionRule;
 import org.openmrs.module.clinicalsummary.rule.observation.ObsWithStringRestrictionRule;
 
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Map;
 
 /**
  * TODO: Write brief description about the class here.
  */
-public class Element12ARule extends EvaluableRule {
+public class Element6DRule extends EvaluableRule {
 
-    public static final String TOKEN = "Tuberculosis:Element 12A";
+    public static final String TOKEN = "Tuberculosis:Element 6D";
 
     /**
      * @param context
@@ -46,26 +39,16 @@ public class Element12ARule extends EvaluableRule {
      */
     @Override
     protected Result evaluate(final LogicContext context, final Integer patientId, final Map<String, Object> parameters) {
-        Result result = new Result(Boolean.TRUE);
-
-        String TUBERCULOSIS_PROPHYLAXIS_PLAN = "TUBERCULOSIS PROPHYLAXIS PLAN"; // 1265
-        String START_DRUGS = "START DRUGS"; // 1256
-        String DRUG_RESTART = "DRUG RESTART"; // 1850
+        Result result = new Result(Boolean.FALSE);
+        String XRAY_CHEST_PRELIMINARY_FINDINGS = "X-RAY, CHEST, PRELIMINARY FINDINGS";
 
         ObsWithRestrictionRule obsWithRestrictionRule = new ObsWithStringRestrictionRule();
         parameters.put(EvaluableConstants.OBS_FETCH_SIZE, 1);
-        parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(TUBERCULOSIS_PROPHYLAXIS_PLAN));
-        parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList(START_DRUGS, DRUG_RESTART));
-        Result obsResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-        if (!obsResults.isEmpty()) {
-            Result obsResult = obsResults.get(0);
-            Obs obs = (Obs) obsResult.getResultObject();
-            Calendar calendar = Calendar.getInstance();
-            calendar.add(Calendar.MONTH, -9);
-            System.out.println("Obs.obsDatetime: " + obs.getObsDatetime() + ", calendar time: " + calendar.getTime());
-            if (obs.getObsDatetime().after(calendar.getTime())) {
-                return new Result(Boolean.FALSE);
-            }
+        parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(XRAY_CHEST_PRELIMINARY_FINDINGS));
+        parameters.remove(EvaluableConstants.OBS_VALUE_CODED);
+        Result cxrResults = obsWithRestrictionRule.eval(context, patientId, parameters);
+        if (cxrResults.isEmpty()) {
+            return new Result(Boolean.TRUE);
         }
 
         return result;

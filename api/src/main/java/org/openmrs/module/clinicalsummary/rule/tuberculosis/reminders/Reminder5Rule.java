@@ -21,6 +21,7 @@ import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element5ARul
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element5BRule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element5CRule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element5ERule;
+import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element5FRule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion1CRule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion2ARule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion2BRule;
@@ -209,6 +210,13 @@ public class Reminder5Rule extends EvaluableRule {
         Result element5EResult = element5ERule.eval(context, patientId, new HashMap<String, Object>());
         if (element5EResult.toBoolean()) {
             result.add(new Result("Reminder 5 excluded by E5E"));
+            return result;
+        }
+
+        Element5FRule element5FRule = new Element5FRule();
+        Result element5FResult = element5FRule.eval(context, patientId, new HashMap<String, Object>());
+        if (element5FResult.toBoolean()) {
+            result.add(new Result("Reminder 5 excluded by E5F"));
             return result;
         }
 

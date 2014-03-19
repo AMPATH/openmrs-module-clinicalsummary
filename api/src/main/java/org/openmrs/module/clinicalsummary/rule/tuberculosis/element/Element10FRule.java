@@ -42,7 +42,7 @@ public class Element10FRule extends EvaluableRule {
         Result result = new Result(Boolean.FALSE);
         ObsWithRestrictionRule obsWithRestrictionRule = new ObsWithStringRestrictionRule();
 
-        String REFERRALS_ORDERED = "REFERRALS ORDERED"; // 1265
+        String REFERRALS_ORDERED = "REFERRALS ORDERED"; // 1272
         String TUBERCULOSIS_TREATMENT_OR_DOT_PROGRAM = "TUBERCULOSIS TREATMENT OR DOT PROGRAM"; // 5487
 
         parameters.put(EvaluableConstants.OBS_FETCH_SIZE, 1);

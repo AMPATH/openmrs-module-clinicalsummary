@@ -71,14 +71,11 @@ public class Element11ARule extends EvaluableRule {
             String REVIEW_OF_CARDIOPULMONARY = "REVIEW OF SYSTEMS, CARDIOPULMONARY"; // 1071
             String COUGH = "COUGH"; // 107
             String PRODUCTIVE_COUGH = "PRODUCTIVE COUGH"; // 5957
+            String TUBERCULOSIS = "TUBERCULOSIS"; // 58
 
             parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(REVIEW_OF_CARDIOPULMONARY));
-            parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList(COUGH, PRODUCTIVE_COUGH));
+            parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList(COUGH, PRODUCTIVE_COUGH, TUBERCULOSIS));
             Result cardioReviewResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-
-            if (!generalReviewResults.isEmpty() && !cardioReviewResults.isEmpty()) {
-                return new Result(Boolean.TRUE);
-            }
 
             String REVIEW_OF_TUBERCULOSIS_SCREENING_QUESTIONS = "REVIEW OF TUBERCULOSIS SCREENING QUESTIONS"; // 6174
             String COUGH_FOR_MORE_THAN_TWO_WEEKS = "COUGH FOR MORE THAN TWO WEEKS"; // 6171
@@ -93,7 +90,7 @@ public class Element11ARule extends EvaluableRule {
                             NIGHT_SWEATS_MORE_THAN_TWO_WEEKS, HOUSEHOLD_MEMBER_DIAGNOSED_WITH_TUBERCULOSIS));
             Result screeningResults = obsWithRestrictionRule.eval(context, patientId, parameters);
 
-            if (!screeningResults.isEmpty()) {
+            if (!generalReviewResults.isEmpty() && !cardioReviewResults.isEmpty() && !screeningResults.isEmpty()) {
                 return new Result(Boolean.TRUE);
             }
         }

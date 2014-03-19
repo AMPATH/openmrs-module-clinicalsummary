@@ -21,6 +21,7 @@ import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element11ARu
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element11BRule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element11CRule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element11DRule;
+import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element11ERule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion1CRule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion2ARule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion2BRule;
@@ -209,6 +210,13 @@ public class Reminder11Rule extends EvaluableRule {
         Result element11DResult = element11DRule.eval(context, patientId, new HashMap<String, Object>());
         if (element11DResult.toBoolean()) {
             result.add(new Result("Reminder 11 excluded by E11D"));
+            return result;
+        }
+
+        Element11ERule element11ERule = new Element11ERule();
+        Result element11EResult = element11ERule.eval(context, patientId, new HashMap<String, Object>());
+        if (element11EResult.toBoolean()) {
+            result.add(new Result("Reminder 11 excluded by E11E"));
             return result;
         }
 

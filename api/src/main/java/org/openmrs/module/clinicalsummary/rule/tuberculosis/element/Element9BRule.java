@@ -45,11 +45,12 @@ public class Element9BRule extends EvaluableRule {
         String TUBERCULOSIS_PROPHYLAXIS_PLAN = "TUBERCULOSIS PROPHYLAXIS PLAN"; // 1265
         String TUBERCULOSIS_TREATMENT_PLAN = "TUBERCULOSIS TREATMENT PLAN"; // 1268
         String START_DRUGS = "START DRUGS"; // 1256
+        String CONTINUE_REGIMEN = "CONTINUE REGIMEN"; // 1257
 
         parameters.put(EvaluableConstants.OBS_FETCH_SIZE, 1);
         parameters.put(EvaluableConstants.OBS_CONCEPT,
                 Arrays.asList(TUBERCULOSIS_PROPHYLAXIS_PLAN, TUBERCULOSIS_TREATMENT_PLAN));
-        parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList(START_DRUGS));
+        parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList(START_DRUGS, CONTINUE_REGIMEN));
         Result obsResults = obsWithRestrictionRule.eval(context, patientId, parameters);
         if (!obsResults.isEmpty()) {
             return new Result(Boolean.TRUE);

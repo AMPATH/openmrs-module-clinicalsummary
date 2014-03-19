@@ -20,6 +20,8 @@ import org.openmrs.module.clinicalsummary.rule.reminder.ReminderParameters;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element6ARule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element6BRule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element6CRule;
+import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element6DRule;
+import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element6ERule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion1CRule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion2ARule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion2BRule;
@@ -201,6 +203,20 @@ public class Reminder6Rule extends EvaluableRule {
         Result element6CResult = element6CRule.eval(context, patientId, new HashMap<String, Object>());
         if (element6CResult.toBoolean()) {
             result.add(new Result("Reminder 6 excluded by E6C"));
+            return result;
+        }
+
+        Element6DRule element6DRule = new Element6DRule();
+        Result element6DResult = element6DRule.eval(context, patientId, new HashMap<String, Object>());
+        if (element6DResult.toBoolean()) {
+            result.add(new Result("Reminder 6 excluded by E6D"));
+            return result;
+        }
+
+        Element6ERule element6ERule = new Element6ERule();
+        Result element6EResult = element6ERule.eval(context, patientId, new HashMap<String, Object>());
+        if (element6EResult.toBoolean()) {
+            result.add(new Result("Reminder 6 excluded by E6E"));
             return result;
         }
         
