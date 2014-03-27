@@ -74,17 +74,11 @@ public class Element7CRule extends EvaluableRule {
                 calendar.setTime(encounter.getEncounterDatetime());
                 calendar.add(Calendar.MONTH, -6);
                 Date sixMonthsBefore = calendar.getTime();
-                calendar.setTime(encounter.getEncounterDatetime());
-                calendar.add(Calendar.MONTH, 6);
-                Date sixMonthsAfter = calendar.getTime();
                 // the cxr obs is after the encounter and within 6 months of the encounter, exclude
                 // what happen if the obs is after 6 months of the encounter?
-                if (obs.getObsDatetime().before(sixMonthsAfter)
-                        && obs.getObsDatetime().after(sixMonthsBefore)) {
+                if (obs.getObsDatetime().after(sixMonthsBefore)) {
                     return new Result(Boolean.TRUE);
                 }
-            } else {
-                return new Result(Boolean.TRUE);
             }
         }
 

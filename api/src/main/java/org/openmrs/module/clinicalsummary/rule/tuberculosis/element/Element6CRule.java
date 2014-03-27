@@ -77,7 +77,7 @@ public class Element6CRule extends EvaluableRule {
             parameters.remove(EvaluableConstants.OBS_VALUE_CODED);
             Result screeningResults = obsWithRestrictionRule.eval(context, patientId, parameters);
 
-            if (screeningResults.isEmpty() || generalReviewResults.isEmpty() || cardioReviewResults.isEmpty()) {
+            if (screeningResults.isEmpty() && generalReviewResults.isEmpty() && cardioReviewResults.isEmpty()) {
                 return new Result(Boolean.TRUE);
             }
         }

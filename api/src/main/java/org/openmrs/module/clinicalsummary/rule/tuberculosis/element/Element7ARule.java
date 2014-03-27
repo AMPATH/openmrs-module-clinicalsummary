@@ -59,8 +59,6 @@ public class Element7ARule extends EvaluableRule {
             parameters.put(EvaluableConstants.OBS_FETCH_SIZE, 1);
             parameters.put(EvaluableConstants.OBS_ENCOUNTER, Arrays.asList(encounter));
 
-            String NONE = "NONE"; // 664
-
             String GENERAL_REVIEW_OF_SYSTEM = "REVIEW OF SYSTEMS, GENERAL"; // 1069
             String FEVER = "FEVER"; // 5945
             String NIGHT_SWEATS = "NIGHT SWEATS"; // 6029
@@ -69,8 +67,6 @@ public class Element7ARule extends EvaluableRule {
             parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(GENERAL_REVIEW_OF_SYSTEM));
             parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList(FEVER, NIGHT_SWEATS, WEIGHT_LOSS));
             Result generalReviewResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-            parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList(NONE));
-            Result noneGeneralReviewResults = obsWithRestrictionRule.eval(context, patientId, parameters);
 
             String REVIEW_OF_CARDIOPULMONARY = "REVIEW OF SYSTEMS, CARDIOPULMONARY"; // 1071
             String COUGH = "COUGH"; // 107
@@ -80,8 +76,6 @@ public class Element7ARule extends EvaluableRule {
             parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(REVIEW_OF_CARDIOPULMONARY));
             parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList(COUGH, PRODUCTIVE_COUGH, TUBERCULOSIS));
             Result cardioReviewResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-            parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList(NONE));
-            Result noneCardioReviewResults = obsWithRestrictionRule.eval(context, patientId, parameters);
 
             String REVIEW_OF_TUBERCULOSIS_SCREENING_QUESTIONS = "REVIEW OF TUBERCULOSIS SCREENING QUESTIONS"; // 6174
             String COUGH_FOR_MORE_THAN_TWO_WEEKS = "COUGH FOR MORE THAN TWO WEEKS"; // 6171
@@ -96,9 +90,7 @@ public class Element7ARule extends EvaluableRule {
                             NIGHT_SWEATS_MORE_THAN_TWO_WEEKS, HOUSEHOLD_MEMBER_DIAGNOSED_WITH_TUBERCULOSIS));
             Result screeningResults = obsWithRestrictionRule.eval(context, patientId, parameters);
 
-            if ((generalReviewResults.isEmpty() && !noneGeneralReviewResults.isEmpty())
-                    && (cardioReviewResults.isEmpty() && !noneCardioReviewResults.isEmpty())
-                    && screeningResults.isEmpty()) {
+            if (!generalReviewResults.isEmpty() || !cardioReviewResults.isEmpty() || !screeningResults.isEmpty()) {
                 return new Result(Boolean.TRUE);
             }
         }

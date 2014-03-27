@@ -73,14 +73,14 @@ public class LoggerUtils {
         List<String> tbReminders = extractNodeValues(element, "tb-reminder");
 
         StringBuilder logBuilder = new StringBuilder();
-        logBuilder.append(identifier).append(",");
-        logBuilder.append(id).append(",");
-        logBuilder.append(generationDate).append(",");
-        logBuilder.append(currentDatetime).append(",");
-        logBuilder.append(requestedBy).append(",");
-        logBuilder.append(reminders.size());
+        logBuilder.append(identifier).append(", ");
+        logBuilder.append(id).append(", ");
+        logBuilder.append(generationDate).append(", ");
+        logBuilder.append(currentDatetime).append(", ");
+        logBuilder.append(requestedBy).append(", ");
+        logBuilder.append(reminders.size()).append(", ");
         if (!CollectionUtils.isEmpty(tbReminders)) {
-            logBuilder.append(StringUtils.join(tbReminders, ","));
+            logBuilder.append(StringUtils.join(tbReminders, ", "));
         }
 
         BufferedWriter outputWriter = new BufferedWriter(new FileWriter(file, true));

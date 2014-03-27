@@ -90,7 +90,7 @@ public class Element9ARule extends EvaluableRule {
                             NIGHT_SWEATS_MORE_THAN_TWO_WEEKS, HOUSEHOLD_MEMBER_DIAGNOSED_WITH_TUBERCULOSIS));
             Result screeningResults = obsWithRestrictionRule.eval(context, patientId, parameters);
 
-            if (!generalReviewResults.isEmpty() && !cardioReviewResults.isEmpty() && !screeningResults.isEmpty()) {
+            if (!generalReviewResults.isEmpty() || !cardioReviewResults.isEmpty() || !screeningResults.isEmpty()) {
                 return new Result(Boolean.TRUE);
             }
         }

@@ -60,22 +60,22 @@ public class Element4BRule extends EvaluableRule {
             parameters.put(EvaluableConstants.OBS_ENCOUNTER, Arrays.asList(encounter));
 
             String GENERAL_REVIEW_OF_SYSTEM = "REVIEW OF SYSTEMS, GENERAL"; // 1069
-
             parameters.remove(EvaluableConstants.OBS_VALUE_CODED);
             parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(GENERAL_REVIEW_OF_SYSTEM));
             Result generalReviewResults = obsWithRestrictionRule.eval(context, patientId, parameters);
+            if (!generalReviewResults.isEmpty()) {
+                return new Result(Boolean.TRUE);
+            }
 
             String REVIEW_OF_CARDIOPULMONARY = "REVIEW OF SYSTEMS, CARDIOPULMONARY"; // 1071
-
             parameters.remove(EvaluableConstants.OBS_VALUE_CODED);
             parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(REVIEW_OF_CARDIOPULMONARY));
             Result cardioReviewResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-            if (!generalReviewResults.isEmpty() && !cardioReviewResults.isEmpty()) {
+            if (!cardioReviewResults.isEmpty()) {
                 return new Result(Boolean.TRUE);
             }
 
             String REVIEW_OF_TUBERCULOSIS_SCREENING_QUESTIONS = "REVIEW OF TUBERCULOSIS SCREENING QUESTIONS"; // 6174
-
             parameters.remove(EvaluableConstants.OBS_VALUE_CODED);
             parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(REVIEW_OF_TUBERCULOSIS_SCREENING_QUESTIONS));
             Result tuberculosisQuestionResults = obsWithRestrictionRule.eval(context, patientId, parameters);
