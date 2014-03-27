@@ -74,7 +74,6 @@ public class Reminder1Rule extends EvaluableRule {
         Exclusion1CRule exclusion1CRule = new Exclusion1CRule();
         Result exclusion1CResult = exclusion1CRule.eval(context, patientId, new HashMap<String, Object>());
         if (exclusion1CResult.toBoolean()) {
-            result.add(new Result("Reminder 1 excluded by Ex1C"));
             return result;
         }
 //
@@ -88,119 +87,102 @@ public class Reminder1Rule extends EvaluableRule {
         Exclusion2ARule exclusion2ARule = new Exclusion2ARule();
         Result exclusion2AResult = exclusion2ARule.eval(context, patientId, new HashMap<String, Object>());
         if (exclusion2AResult.toBoolean()) {
-            result.add(new Result("Reminder 1 excluded by Ex2A"));
             return result;
         }
 
         Exclusion2BRule exclusion2BRule = new Exclusion2BRule();
         Result exclusion2BResult = exclusion2BRule.eval(context, patientId, new HashMap<String, Object>());
         if (exclusion2BResult.toBoolean()) {
-            result.add(new Result("Reminder 1 excluded by Ex2B"));
             return result;
         }
 
         Exclusion2CRule exclusion2CRule = new Exclusion2CRule();
         Result exclusion2CResult = exclusion2CRule.eval(context, patientId, new HashMap<String, Object>());
         if (exclusion2CResult.toBoolean()) {
-            result.add(new Result("Reminder 1 excluded by Ex2C"));
             return result;
         }
 
         Exclusion2DRule exclusion2DRule = new Exclusion2DRule();
         Result exclusion2DResult = exclusion2DRule.eval(context, patientId, new HashMap<String, Object>());
         if (exclusion2DResult.toBoolean()) {
-            result.add(new Result("Reminder 1 excluded by Ex2D"));
             return result;
         }
 
         Exclusion2FRule exclusion2FRule = new Exclusion2FRule();
         Result exclusion2FResult = exclusion2FRule.eval(context, patientId, new HashMap<String, Object>());
         if (exclusion2FResult.toBoolean()) {
-            result.add(new Result("Reminder 1 excluded by Ex2F"));
             return result;
         }
 
         Exclusion2ERule exclusion2ERule = new Exclusion2ERule();
         Result exclusion2EResult = exclusion2ERule.eval(context, patientId, new HashMap<String, Object>());
         if (exclusion2EResult.toBoolean()) {
-            result.add(new Result("Reminder 1 excluded by Ex2E"));
             return result;
         }
 
         Exclusion2GRule exclusion2GRule = new Exclusion2GRule();
         Result exclusion2GResult = exclusion2GRule.eval(context, patientId, new HashMap<String, Object>());
         if (exclusion2GResult.toBoolean()) {
-            result.add(new Result("Reminder 1 excluded by Ex2G"));
             return result;
         }
 
         Exclusion3ARule exclusion3ARule = new Exclusion3ARule();
         Result exclusion3AResult = exclusion3ARule.eval(context, patientId, new HashMap<String, Object>());
         if (exclusion3AResult.toBoolean()) {
-            result.add(new Result("Reminder 1 excluded by Ex3A"));
             return result;
         }
 
         Exclusion3BRule exclusion3BRule = new Exclusion3BRule();
         Result exclusion3BResult = exclusion3BRule.eval(context, patientId, new HashMap<String, Object>());
         if (exclusion3BResult.toBoolean()) {
-            result.add(new Result("Reminder 1 excluded by Ex3B"));
             return result;
         }
 
         Exclusion3DRule exclusion3DRule = new Exclusion3DRule();
         Result exclusion3DResult = exclusion3DRule.eval(context, patientId, new HashMap<String, Object>());
         if (exclusion3DResult.toBoolean()) {
-            result.add(new Result("Reminder 1 excluded by Ex3D"));
             return result;
         }
 
         Exclusion4ARule exclusion4ARule = new Exclusion4ARule();
         Result exclusion4AResult = exclusion4ARule.eval(context, patientId, new HashMap<String, Object>());
         if (exclusion4AResult.toBoolean()) {
-            result.add(new Result("Reminder 1 excluded by Ex4A"));
             return result;
         }
 
         Exclusion4BRule exclusion4BRule = new Exclusion4BRule();
         Result exclusion4BResult = exclusion4BRule.eval(context, patientId, new HashMap<String, Object>());
         if (exclusion4BResult.toBoolean()) {
-            result.add(new Result("Reminder 1 excluded by Ex4B"));
             return result;
         }
 
         Exclusion4CRule exclusion4CRule = new Exclusion4CRule();
         Result exclusion4CResult = exclusion4CRule.eval(context, patientId, new HashMap<String, Object>());
         if (exclusion4CResult.toBoolean()) {
-            result.add(new Result("Reminder 1 excluded by Ex4C"));
             return result;
         }
 
         Exclusion4DRule exclusion4DRule = new Exclusion4DRule();
         Result exclusion4DResult = exclusion4DRule.eval(context, patientId, new HashMap<String, Object>());
         if (exclusion4DResult.toBoolean()) {
-            result.add(new Result("Reminder 1 excluded by Ex4D"));
             return result;
         }
 
         Element1ARule element1ARule = new Element1ARule();
         Result element1AResult = element1ARule.eval(context, patientId, new HashMap<String, Object>());
         if (element1AResult.toBoolean()) {
-            result.add(new Result("Reminder 1 excluded by E1A"));
             return result;
         }
 
         Element1BRule element1BRule = new Element1BRule();
         Result element1BResult = element1BRule.eval(context, patientId, new HashMap<String, Object>());
         if (element1BResult.toBoolean()) {
-            result.add(new Result("Reminder 1 excluded by E1B"));
             return result;
         }
 
         Element1CRule element1CRule = new Element1CRule();
         Result element1CResult = element1CRule.eval(context, patientId, new HashMap<String, Object>());
         if (element1CResult.toBoolean()) {
-            result.add(new Result("Reminder 1 excluded by E1C"));
             return result;
         }
 
