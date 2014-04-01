@@ -62,7 +62,6 @@ public class Element12ARule extends EvaluableRule {
             Obs obs = (Obs) obsResult.getResultObject();
             Calendar calendar = Calendar.getInstance();
             calendar.add(Calendar.MONTH, -9);
-            System.out.println("Obs.obsDatetime: " + obs.getObsDatetime() + ", calendar time: " + calendar.getTime());
             if (obs.getObsDatetime().after(calendar.getTime())) {
                 return new Result(Boolean.FALSE);
             }

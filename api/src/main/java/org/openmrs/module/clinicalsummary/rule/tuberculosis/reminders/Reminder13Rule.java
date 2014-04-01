@@ -25,6 +25,7 @@ import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element10ERu
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element12ARule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element12BRule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element13BRule;
+import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element13DRule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion1CRule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion2ARule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion2BRule;
@@ -188,6 +189,12 @@ public class Reminder13Rule extends EvaluableRule {
         Element13BRule element13BRule = new Element13BRule();
         Result element13BResult = element13BRule.eval(context, patientId, new HashMap<String, Object>());
         if (element13BResult.toBoolean()) {
+            return result;
+        }
+
+        Element13DRule element13DRule = new Element13DRule();
+        Result element13DResult = element13DRule.eval(context, patientId, new HashMap<String, Object>());
+        if (element13DResult.toBoolean()) {
             return result;
         }
 

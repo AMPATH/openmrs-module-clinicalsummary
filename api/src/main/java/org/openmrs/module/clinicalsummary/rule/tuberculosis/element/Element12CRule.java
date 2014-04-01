@@ -57,11 +57,15 @@ public class Element12CRule extends EvaluableRule {
 
             ObsWithRestrictionRule obsWithRestrictionRule = new ObsWithStringRestrictionRule();
             String TB_PROPHYLAXIS_ADHERENCE = "TB PROPHYLAXIS ADHERENCE, PAST WEEK"; // 1165
+            String FEW = "FEW"; // 1160
+            String HALF = "HALF"; // 1161
+            String MOST = "MOST"; // 1162
+            String ALL = "ALL";// 1163
 
             parameters.put(EvaluableConstants.OBS_FETCH_SIZE, 1);
-            parameters.put(EvaluableConstants.OBS_CONCEPT,Arrays.asList(TB_PROPHYLAXIS_ADHERENCE));
             parameters.put(EvaluableConstants.OBS_ENCOUNTER, Arrays.asList(encounter));
-            parameters.remove(EvaluableConstants.OBS_VALUE_CODED);
+            parameters.put(EvaluableConstants.OBS_CONCEPT,Arrays.asList(TB_PROPHYLAXIS_ADHERENCE));
+            parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList(FEW, HALF, MOST, ALL));
             Result obsResults = obsWithRestrictionRule.eval(context, patientId, parameters);
             if (!obsResults.isEmpty()) {
                 return new Result(Boolean.TRUE);
