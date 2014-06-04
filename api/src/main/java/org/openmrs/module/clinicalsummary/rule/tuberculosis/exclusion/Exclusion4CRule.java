@@ -59,9 +59,9 @@ public class Exclusion4CRule extends EvaluableRule {
             Obs obs = (Obs) cxrResult.getResultObject();
 
             Calendar calendar = Calendar.getInstance();
-            calendar.set(Calendar.YEAR, 2013);
-            calendar.set(Calendar.MONTH, Calendar.SEPTEMBER);
-            calendar.set(Calendar.DATE, 1);
+            calendar.set(Calendar.YEAR, 2014);
+            calendar.set(Calendar.MONTH, Calendar.APRIL);
+            calendar.set(Calendar.DATE, 11);
 
             if (obs.getObsDatetime().before(calendar.getTime())) {
                 result = new Result(Boolean.TRUE);

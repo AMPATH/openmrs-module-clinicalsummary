@@ -15,7 +15,13 @@ package org.openmrs.module.clinicalsummary.evaluator;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.openmrs.Encounter;
+import org.openmrs.Location;
+import org.openmrs.OpenmrsObject;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.clinicalsummary.enumeration.FetchOrdering;
+import org.openmrs.module.clinicalsummary.service.CoreService;
+import org.openmrs.module.clinicalsummary.util.FetchRestriction;
 import org.openmrs.util.OpenmrsUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -25,9 +31,13 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * TODO: Write brief description about the class here.
@@ -67,10 +77,35 @@ public class LoggerUtils {
         if (!CollectionUtils.isEmpty(generationDates)) {
             generationDate = generationDates.get(0);
         }
-        String currentDatetime = Context.getDateFormat().format(new Date());
-        String requestedBy = String.valueOf(Context.getAuthenticatedUser());
+
+        DateFormat dateFormat = Context.getDateFormat();
+
+        String currentDatetime = StringUtils.defaultString(dateFormat.format(new Date()), StringUtils.EMPTY);
+        String requestedBy = StringUtils.defaultString(
+                String.valueOf(Context.getAuthenticatedUser()), StringUtils.EMPTY);
         List<String> reminders = extractNodeValues(element, "reminder");
         List<String> tbReminders = extractNodeValues(element, "tb-reminder");
+
+        FetchRestriction fetchRestriction = new FetchRestriction();
+        fetchRestriction.setSize(1);
+        fetchRestriction.setStart(0);
+        fetchRestriction.setFetchOrdering(FetchOrdering.ORDER_DESCENDING);
+
+        Map<String, Collection<OpenmrsObject>> restrictions = Collections.emptyMap();
+
+        CoreService coreService = Context.getService(CoreService.class);
+        List<Encounter> encounters = coreService.getPatientEncounters(Integer.parseInt(id), restrictions, fetchRestriction);
+
+        String locationId = StringUtils.EMPTY;
+        String encounterId = StringUtils.EMPTY;
+        String encounterDatetime = StringUtils.EMPTY;
+        if (!encounters.isEmpty()) {
+            Encounter encounter = encounters.get(0);
+            Location location = encounter.getLocation();
+            locationId = StringUtils.defaultString(String.valueOf(location.getLocationId()), StringUtils.EMPTY);
+            encounterId = StringUtils.defaultString(String.valueOf(encounter.getEncounterId()), StringUtils.EMPTY);
+            encounterDatetime = StringUtils.defaultString(dateFormat.format(encounter.getEncounterDatetime()), StringUtils.EMPTY);
+        }
 
         StringBuilder logBuilder = new StringBuilder();
         logBuilder.append(identifier).append(", ");
@@ -79,6 +114,9 @@ public class LoggerUtils {
         logBuilder.append(currentDatetime).append(", ");
         logBuilder.append(requestedBy).append(", ");
         logBuilder.append(reminders.size()).append(", ");
+        logBuilder.append(locationId).append(", ");
+        logBuilder.append(encounterId).append(", ");
+        logBuilder.append(encounterDatetime).append(", ");
         if (!CollectionUtils.isEmpty(tbReminders)) {
             logBuilder.append(StringUtils.join(tbReminders, ", "));
         }

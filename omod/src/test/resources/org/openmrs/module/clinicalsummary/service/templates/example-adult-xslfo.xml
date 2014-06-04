@@ -462,6 +462,7 @@
                     </xsl:if>
                     <xsl:variable name="reminderCount" select="count(reminders/reminder)" />
                     <xsl:if test="tb-reminders/tb-reminder">
+                    <xsl:if test="tb-reminders/@displayText = 'true'">
                         <fo:list-block font-size="12pt">
                             <xsl:for-each select="tb-reminders/tb-reminder">
                                 <fo:list-item>
@@ -480,7 +481,7 @@
                             </xsl:for-each>
                         </fo:list-block>
                     </xsl:if>
-
+                    </xsl:if>
 				</fo:flow>
 			</fo:page-sequence>
 		</fo:root>

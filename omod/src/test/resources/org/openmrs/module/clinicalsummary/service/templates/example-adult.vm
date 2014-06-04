@@ -486,7 +486,7 @@
 
 	</reminders>
 
-    <tb-reminders>
+    <tb-reminders displayText="true">
         #set($params = {"reminder": "TB: TB symptoms include chronic cough, fever, & weight loss. Please screen patients at every visit by asking all symptoms questions in short form and ordering/interpreting a CXR. Most HIV+ patients should begin either anti-TB meds or IPT."})
         #set($reminder = $fn.evaluate($patient, "Tuberculosis: Reminder 1", $params))
         #foreach($element in $reminder)
