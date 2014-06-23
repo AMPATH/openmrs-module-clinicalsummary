@@ -72,7 +72,8 @@ public class HibernateCoreDAO implements CoreDAO {
 	public List<Obs> getPatientObservations(final Integer patientId, final Map<String, Collection<OpenmrsObject>> restrictions,
 	                                        final FetchRestriction fetchRestriction) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Obs.class);
-		criteria.add(Restrictions.eq("personId", patientId));
+        criteria.createAlias("person", "person");
+		criteria.add(Restrictions.eq("person.personId", patientId));
 
 		criteria.setFirstResult(0);
 		if (fetchRestriction.getStart() != null)
@@ -133,7 +134,8 @@ public class HibernateCoreDAO implements CoreDAO {
 		// create a hibernate criteria on the encounter object
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Encounter.class);
 		// restrict the encounter that will be returned to specific patient only
-		criteria.add(Restrictions.eq("patientId", patientId));
+        criteria.createAlias("patient", "patient");
+		criteria.add(Restrictions.eq("patient.patientId", patientId));
 
 		// default ordering for the returned encounter is descending on encounter datetime
 		Order order = Order.desc("encounterDatetime");

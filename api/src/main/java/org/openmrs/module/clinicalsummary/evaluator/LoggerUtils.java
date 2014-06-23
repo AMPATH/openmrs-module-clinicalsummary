@@ -107,6 +107,8 @@ public class LoggerUtils {
             encounterDatetime = StringUtils.defaultString(dateFormat.format(encounter.getEncounterDatetime()), StringUtils.EMPTY);
         }
 
+        String tbReminderDisplayed = extractAttributeValue(element, "tb-reminders", "displayText");
+
         StringBuilder logBuilder = new StringBuilder();
         logBuilder.append(identifier).append(", ");
         logBuilder.append(id).append(", ");
@@ -117,6 +119,7 @@ public class LoggerUtils {
         logBuilder.append(locationId).append(", ");
         logBuilder.append(encounterId).append(", ");
         logBuilder.append(encounterDatetime).append(", ");
+        logBuilder.append(tbReminderDisplayed).append(", ");
         if (!CollectionUtils.isEmpty(tbReminders)) {
             logBuilder.append(StringUtils.join(tbReminders, ", "));
         }
@@ -147,5 +150,17 @@ public class LoggerUtils {
             }
         }
         return values;
+    }
+
+    private static String extractAttributeValue(final Element parentElement, final String tag, final String attribute) {
+        String attributeValue = StringUtils.EMPTY;
+        NodeList nodeList = parentElement.getElementsByTagName(tag);
+        if (nodeList != null) {
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                Element nodeElement = (Element) nodeList.item(i);
+                attributeValue = nodeElement.getAttribute(attribute);
+            }
+        }
+        return attributeValue;
     }
 }
