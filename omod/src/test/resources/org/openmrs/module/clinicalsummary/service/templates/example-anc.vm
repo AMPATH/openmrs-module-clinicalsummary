@@ -560,8 +560,8 @@
 				<element>Gluc</element>
 				<element>Leuc</element>
 			</header>
-			#set($params = {"concept": ["HIV RAPID TEST, QUALITATIVE", "HEMOGLOBIN", "SERUM GLUCOSE", "MALARIAL SMEAR",
-                                        "SYPHILIS - VDRL, QUALITATIVE", "PRESENCE OF PROTEIN", "PRESENCE OF SUGAR",
+			#set($params = {"concept": ["HIV RAPID ELISA", "HEMOGLOBIN", "SERUM GLUCOSE", "MALARIAL SMEAR",
+                                        "SYPHILIS - VDRL, QUALITATIVE", "PROTEINURIA", "GLYCOSURIA",
                                         "PRESENCE OF LEUKOCYTES"]})
 			#set($labResults = $fn.evaluate($patient, "Datetime Based Concept Filtered", $params))
 			#foreach ($labResult in $labResults)

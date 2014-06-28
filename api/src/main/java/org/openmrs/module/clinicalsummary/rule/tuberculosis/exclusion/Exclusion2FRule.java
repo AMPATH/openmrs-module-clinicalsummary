@@ -42,7 +42,7 @@ public class Exclusion2FRule extends EvaluableRule {
         Result result = new Result(Boolean.FALSE);
         ObsWithRestrictionRule obsWithRestrictionRule = new ObsWithStringRestrictionRule();
 
-        String ANTI_TB_ADHERENCE = "ANTI-TB ADHERENCE"; // 6077
+        String ANTI_TB_ADHERENCE = "ANTI-TB ADHERENCE, PAST WEEK"; // 6077
         String FEW = "FEW"; // 1160
         String HALF = "HALF"; // 1161
         String MOST = "MOST"; // 1162

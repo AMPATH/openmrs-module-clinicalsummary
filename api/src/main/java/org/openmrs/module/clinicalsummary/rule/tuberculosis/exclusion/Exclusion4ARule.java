@@ -44,7 +44,7 @@ public class Exclusion4ARule extends EvaluableRule {
         Result result = new Result(Boolean.FALSE);
         ObsWithRestrictionRule obsWithRestrictionRule = new ObsWithStringRestrictionRule();
 
-        String CURRENT_TB_PROPHYLAXIS = "CURRENT TB PROPHYLAXIS"; // 1110
+        String CURRENT_TB_PROPHYLAXIS = "PATIENT REPORTED CURRENT TB PROPHYLAXIS"; // 1110
         String ISONIAZID = "ISONIAZID"; // 656
 
         parameters.put(EvaluableConstants.OBS_FETCH_SIZE, 1);

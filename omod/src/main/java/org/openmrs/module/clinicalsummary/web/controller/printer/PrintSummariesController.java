@@ -14,25 +14,14 @@
 
 package org.openmrs.module.clinicalsummary.web.controller.printer;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.util.Arrays;
-import java.util.Date;
-
-import com.lowagie.text.Document;
-import com.lowagie.text.pdf.PdfCopy;
-import com.lowagie.text.pdf.PdfReader;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.fop.apps.FOUserAgent;
+import org.apache.fop.apps.Fop;
+import org.apache.fop.apps.FopFactory;
+import org.apache.pdfbox.util.PDFMergerUtility;
 import org.apache.xmlgraphics.util.MimeConstants;
 import org.openmrs.Cohort;
 import org.openmrs.Location;
@@ -51,7 +40,24 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.xml.sax.InputSource;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.sax.SAXResult;
+import javax.xml.transform.stream.StreamSource;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.StringReader;
+import java.util.Arrays;
+import java.util.Date;
 
 /**
  */
@@ -80,12 +86,19 @@ public class PrintSummariesController {
 			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, " clinicalsummary.invalid.parameters");
 		} else {
 			try {
-				File attachmentFile = new File(System.getProperty("java.io.tmpdir"), WebUtils.prepareFilename(null, Evaluator.FILE_TYPE_PDF));
-				FileOutputStream outputStream = new FileOutputStream(attachmentFile);
+                String filenamePdf = WebUtils.prepareFilename(null, Evaluator.FILE_TYPE_PDF);
+                File attachmentFile = new File(System.getProperty("java.io.tmpdir"), filenamePdf);
+                BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(attachmentFile));
 
-				Document document = new Document();
-				PdfCopy copy = new PdfCopy(document, outputStream);
-				document.open();
+                PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
+                pdfMergerUtility.setDestinationStream(outputStream);
+
+                FopFactory fopFactory = FopFactory.newInstance();
+                FOUserAgent foUserAgent = fopFactory.newFOUserAgent();
+                TransformerFactory transformerFactory = TransformerFactory.newInstance();
+
+                DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+                DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
 
 				Cohort cohort = new Cohort();
 
@@ -104,29 +117,35 @@ public class PrintSummariesController {
 					cohort = Context.getService(IndexService.class).getIndexCohort(location, summary, startReturnDate, endReturnDate);
 				}
 
-				File outputDirectory = EvaluatorUtils.getOutputDirectory(summary);
-				for (Integer patientId : cohort.getMemberIds()) {
-					File summaryFile = new File(outputDirectory, StringUtils.join(Arrays.asList(patientId, Evaluator.FILE_TYPE_PDF), "."));
-					try {
-						PdfReader reader = new PdfReader(new FileInputStream(summaryFile));
-						int pageCount = reader.getNumberOfPages();
-						for (int i = 1; i <= pageCount; i++)
-							copy.addPage(copy.getImportedPage(reader, i));
-					} catch (Exception e) {
-						log.error("Failed adding summary for patient " + patientId + " with " + summaryFile.getName(), e);
-					}
+                if (summary != null) {
+                    File outputDirectory = EvaluatorUtils.getOutputDirectory(summary);
+                    for (Integer patientId : cohort.getMemberIds()) {
+                        try {
+                            String filenameXml = StringUtils.join(Arrays.asList(patientId, Evaluator.FILE_TYPE_XML), ".");
+                            File summaryXmlFile = new File(outputDirectory, filenameXml);
 
-                    File summaryXmlFile = new File(outputDirectory, StringUtils.join(Arrays.asList(patientId, Evaluator.FILE_TYPE_XML), "."));
-                    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-                    DocumentBuilder db = dbf.newDocumentBuilder();
-                    InputSource is = new InputSource(new BufferedReader(new FileReader(summaryXmlFile)));
-                    LoggerUtils.extractLogInformation(db.parse(is), LoggerUtils.getViewingLogFile());
-				}
+                            File tempFile = File.createTempFile("summary", "temp");
+                            BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(tempFile));
+                            Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, foUserAgent, bufferedOutputStream);
 
-				document.close();
-				outputStream.close();
+                            Source xsltSource = new StreamSource(new StringReader(summary.getXslt()));
+                            Transformer transformer = transformerFactory.newTransformer(xsltSource);
 
-				attachAndPurgeFile(response, attachmentFile);
+                            Result result = new SAXResult(fop.getDefaultHandler());
+                            Source source = new StreamSource(summaryXmlFile);
+                            transformer.transform(source, result);
+
+                            bufferedOutputStream.close();
+                            pdfMergerUtility.addSource(tempFile);
+
+                            LoggerUtils.extractLogInformation(documentBuilder.parse(summaryXmlFile), LoggerUtils.getViewingLogFile());
+                        } catch (Exception e) {
+                            log.error("Summary with type: " + summary.getName() + " for patient: " + patientId, e);
+                        }
+                    }
+                    pdfMergerUtility.mergeDocuments();
+                    attachAndPurgeFile(response, attachmentFile);
+                }
 				return null;
 			} catch (Exception e) {
 				log.error("Failed generating attachment for patients", e);
@@ -153,7 +172,8 @@ public class PrintSummariesController {
 
 		FileCopyUtils.copy(new FileInputStream(file), response.getOutputStream());
 
-		if (!file.delete())
+		if (!file.delete()) {
             log.info("Deleting temporary file failed!");
+        }
 	}
 }

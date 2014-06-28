@@ -130,7 +130,7 @@ class DownloadSummariesTask extends SummariesTask {
     private void processStream(ZipOutputStream zipOutputStream, String basePath, File currentFile, Date cutOffDate) throws Exception {
         byte data[] = new byte[TaskConstants.BUFFER_SIZE];
         if (currentFile.isDirectory()) {
-            FileFilter fileFilter = new WildcardFileFilter(StringUtils.join(Arrays.asList("*", Evaluator.FILE_TYPE_PDF), "."));
+            FileFilter fileFilter = new WildcardFileFilter(StringUtils.join(Arrays.asList("*", Evaluator.FILE_TYPE_XML), "."));
             File[] files = currentFile.listFiles(fileFilter);
             for (File file : files)
                 processStream(zipOutputStream, basePath, file, cutOffDate);

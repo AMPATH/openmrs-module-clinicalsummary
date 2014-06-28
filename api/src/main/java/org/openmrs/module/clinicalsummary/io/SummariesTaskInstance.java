@@ -46,7 +46,14 @@ public class SummariesTaskInstance {
 		}
 	}
 
-	public String getSummariesFilename() {
+    public void startUploading(final String password, final String filename) {
+        if (!isRunning()) {
+            summariesTask = new UploadSummariesTask(password, filename);
+            new Thread(summariesTask).start();
+        }
+    }
+
+    public String getSummariesFilename() {
 		if (summariesTask != null)
 			return summariesTask.getFilename();
 		return StringUtils.EMPTY;

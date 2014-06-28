@@ -14,12 +14,13 @@
 
 package org.openmrs.module.clinicalsummary.web.controller.evaluator;
 
-import com.lowagie.text.Document;
-import com.lowagie.text.pdf.PdfCopy;
-import com.lowagie.text.pdf.PdfReader;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.fop.apps.FOUserAgent;
+import org.apache.fop.apps.Fop;
+import org.apache.fop.apps.FopFactory;
+import org.apache.pdfbox.util.PDFMergerUtility;
 import org.apache.xmlgraphics.util.MimeConstants;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
@@ -29,27 +30,30 @@ import org.openmrs.module.clinicalsummary.evaluator.EvaluatorUtils;
 import org.openmrs.module.clinicalsummary.evaluator.LoggerUtils;
 import org.openmrs.module.clinicalsummary.evaluator.velocity.VelocityEvaluator;
 import org.openmrs.module.clinicalsummary.rule.ResultCacheInstance;
-import org.openmrs.module.clinicalsummary.service.EvaluatorService;
 import org.openmrs.module.clinicalsummary.service.IndexService;
 import org.openmrs.module.clinicalsummary.service.SummaryService;
 import org.openmrs.module.clinicalsummary.web.controller.WebUtils;
-import org.openmrs.util.OpenmrsUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.xml.sax.InputSource;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.BufferedReader;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.sax.SAXResult;
+import javax.xml.transform.stream.StreamSource;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
+import java.io.StringReader;
 import java.util.Arrays;
 
 /**
@@ -58,84 +62,95 @@ import java.util.Arrays;
 @RequestMapping(value = "/module/clinicalsummary/evaluator/evaluatePatient")
 public class EvaluatePatientController {
 
-	private static final Log log = LogFactory.getLog(EvaluatePatientController.class);
+    private static final Log log = LogFactory.getLog(EvaluatePatientController.class);
 
-	@RequestMapping(method = RequestMethod.GET)
-	public String populatePage(final @RequestParam("patientId") Integer patientId,
-	                           final HttpServletRequest request,
-	                           final HttpServletResponse response) {
+    @RequestMapping(method = RequestMethod.GET)
+    public String populatePage(final @RequestParam("patientId") Integer patientId,
+                               final HttpServletRequest request,
+                               final HttpServletResponse response) {
 
-		IndexService indexService = Context.getService(IndexService.class);
+        IndexService indexService = Context.getService(IndexService.class);
 
-		Patient patient = Context.getPatientService().getPatient(patientId);
-		try {
-			File attachmentFile = new File(System.getProperty("java.io.tmpdir"), WebUtils.prepareFilename(patientId, Evaluator.FILE_TYPE_PDF));
-			FileOutputStream outputStream = new FileOutputStream(attachmentFile);
+        Patient patient = Context.getPatientService().getPatient(patientId);
+        try {
+            String filenamePdf = WebUtils.prepareFilename(patientId, Evaluator.FILE_TYPE_PDF);
+            File attachmentFile = new File(System.getProperty("java.io.tmpdir"), filenamePdf);
+            BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(attachmentFile));
 
-			Document document = new Document();
-			PdfCopy copy = new PdfCopy(document, outputStream);
-			document.open();
+            PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
+            pdfMergerUtility.setDestinationStream(outputStream);
 
-			Evaluator evaluator = new VelocityEvaluator();
+            FopFactory fopFactory = FopFactory.newInstance();
+            FOUserAgent foUserAgent = fopFactory.newFOUserAgent();
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
 
-			SummaryService summaryService = Context.getService(SummaryService.class);
-			for (Summary summary : summaryService.getSummaries(patient)) {
-				double start = System.currentTimeMillis();
+            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
 
-				evaluator.evaluate(summary, patient, Boolean.TRUE);
-				indexService.saveIndex(indexService.generateIndex(patient, summary));
+            Evaluator evaluator = new VelocityEvaluator();
+            SummaryService summaryService = Context.getService(SummaryService.class);
 
-				double elapsed = System.currentTimeMillis() - start;
-				log.info("Velocity evaluator running for " + elapsed + "ms (" + (elapsed / 1000) + "s)");
+            String filenameXml = StringUtils.join(Arrays.asList(patientId, Evaluator.FILE_TYPE_XML), ".");
+            for (Summary summary : summaryService.getSummaries(patient)) {
+                try {
+                    double start = System.currentTimeMillis();
 
-				File outputDirectory = EvaluatorUtils.getOutputDirectory(summary);
-				File summaryFile = new File(outputDirectory, StringUtils.join(Arrays.asList(patientId, Evaluator.FILE_TYPE_PDF), "."));
-				try {
-					PdfReader reader = new PdfReader(new FileInputStream(summaryFile));
-					int pageCount = reader.getNumberOfPages();
-					for (int i = 1; i <= pageCount; i++)
-						copy.addPage(copy.getImportedPage(reader, i));
-				} catch (Exception e) {
-					log.error("Failed adding summary for patient " + patientId + " with " + summaryFile.getName(), e);
-				}
+                    evaluator.evaluate(summary, patient, Boolean.TRUE);
+                    indexService.saveIndex(indexService.generateIndex(patient, summary));
 
-                File summaryXmlFile = new File(outputDirectory, StringUtils.join(Arrays.asList(patientId, Evaluator.FILE_TYPE_XML), "."));
-                DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-                DocumentBuilder db = dbf.newDocumentBuilder();
-                InputSource is = new InputSource(new BufferedReader(new FileReader(summaryXmlFile)));
+                    File outputDirectory = EvaluatorUtils.getOutputDirectory(summary);
+                    File summaryXmlFile = new File(outputDirectory, filenameXml);
 
-                LoggerUtils.extractLogInformation(db.parse(is), LoggerUtils.getViewingLogFile());
+                    File tempFile = File.createTempFile("summary", "temp");
+                    BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(tempFile));
+                    Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, foUserAgent, bufferedOutputStream);
 
-                ResultCacheInstance.getInstance().clearCache(patient);
-			}
+                    Source xsltSource = new StreamSource(new StringReader(summary.getXslt()));
+                    Transformer transformer = transformerFactory.newTransformer(xsltSource);
 
-			document.close();
-			outputStream.close();
+                    Result result = new SAXResult(fop.getDefaultHandler());
+                    Source source = new StreamSource(summaryXmlFile);
+                    transformer.transform(source, result);
 
-			attachAndPurgeFile(response, attachmentFile);
-			return null;
-		} catch (Exception e) {
-			log.error("Failed generating attachment for patient " + patientId, e);
-		}
+                    bufferedOutputStream.close();
+                    pdfMergerUtility.addSource(tempFile);
 
-		return "redirect:" + request.getHeader("Referer");
-	}
+                    LoggerUtils.extractLogInformation(documentBuilder.parse(summaryXmlFile), LoggerUtils.getViewingLogFile());
+                    ResultCacheInstance.getInstance().clearCache(patient);
 
-	/**
-	 * Attach the file to the servlet response body
-	 *
-	 * @param response the response
-	 * @param file     the file
-	 * @throws Exception
-	 */
-	private void attachAndPurgeFile(final HttpServletResponse response, final File file) throws Exception {
-		response.setHeader("Content-Disposition", "attachment; filename=" + file.getName());
-		response.setContentType(MimeConstants.MIME_PDF);
-		response.setContentLength((int) file.length());
+                    double elapsed = System.currentTimeMillis() - start;
+                    log.info("Velocity evaluator running for " + elapsed + "ms (" + (elapsed / 1000) + "s)");
+                } catch (Exception e) {
+                    log.error("Summary with type: " + summary.getName() + " for patient: " + patientId, e);
+                }
+            }
+            pdfMergerUtility.mergeDocuments();
+            attachAndPurgeFile(response, attachmentFile);
+            return null;
+        } catch (Exception e) {
+            log.error("Failed generating attachment for patient " + patientId, e);
+        }
 
-		FileCopyUtils.copy(new FileInputStream(file), response.getOutputStream());
+        return "redirect:" + request.getHeader("Referer");
+    }
 
-		file.delete();
-	}
+    /**
+     * Attach the file to the servlet response body
+     *
+     * @param response the response
+     * @param file     the file
+     * @throws Exception
+     */
+    private void attachAndPurgeFile(final HttpServletResponse response, final File file) throws Exception {
+        response.setHeader("Content-Disposition", "attachment; filename=" + file.getName());
+        response.setContentType(MimeConstants.MIME_PDF);
+        response.setContentLength((int) file.length());
+
+        FileCopyUtils.copy(new FileInputStream(file), response.getOutputStream());
+
+        if (!file.delete()) {
+            log.info("Deleting temporary file failed!");
+        }
+    }
 
 }
