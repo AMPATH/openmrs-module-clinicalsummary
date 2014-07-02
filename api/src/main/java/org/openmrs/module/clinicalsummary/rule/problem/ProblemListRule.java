@@ -87,8 +87,9 @@ public class ProblemListRule extends EvaluableRule {
 			if (OpenmrsUtil.compareWithNullAsLatest(referenceDate, problemResult.getResultDate()) == 1) {
 				Obs obs = (Obs) problemResult.getResultObject();
 				if (OpenmrsUtil.nullSafeEquals(obs.getConcept(), resolvedConcept)) {
-					if (!OpenmrsUtil.collectionContains(unresolvedConcepts, obs.getValueCoded()))
-						addedMap.remove(obs.getValueCoded());
+                    Concept valueCoded = obs.getValueCoded();
+					if (!OpenmrsUtil.collectionContains(unresolvedConcepts, valueCoded))
+						addedMap.remove(valueCoded);
 				} else {
 					// add the added into the map
 					Result addedMapEntry = addedMap.get(problemResult.toConcept());
