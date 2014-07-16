@@ -110,7 +110,7 @@ public class UploadSummariesController {
 			FileCopyUtils.copy(summaries.getInputStream(), summariesOutputStream);
 
 			log.info("Processing zip file and init vector!");
-			SummariesTaskInstance.getInstance().startUploading(password, filename);
+//			SummariesTaskInstance.getInstance().startUploading(password, filename);
 			response.sendRedirect(request.getHeader("referer"));
 		} catch (IOException e) {
 			log.error("Uploading zipped file failed ...", e);

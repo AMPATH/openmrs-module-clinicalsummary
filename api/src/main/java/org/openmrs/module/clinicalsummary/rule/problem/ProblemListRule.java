@@ -76,8 +76,9 @@ public class ProblemListRule extends EvaluableRule {
 		Collection<ConceptSet> conceptSets = (concept == null ? new HashSet<ConceptSet>() : concept.getConceptSets());
 		// process the unresolved problems
 		List<Concept> unresolvedConcepts = new ArrayList<Concept>();
-		for (ConceptSet conceptSet : conceptSets)
-			unresolvedConcepts.add(conceptSet.getConcept());
+		for (ConceptSet conceptSet : conceptSets) {
+            unresolvedConcepts.add(conceptSet.getConcept());
+        }
 
 		// create a map of problems added to the system
 		Integer counter = 0;
@@ -88,8 +89,20 @@ public class ProblemListRule extends EvaluableRule {
 				Obs obs = (Obs) problemResult.getResultObject();
 				if (OpenmrsUtil.nullSafeEquals(obs.getConcept(), resolvedConcept)) {
                     Concept valueCoded = obs.getValueCoded();
-					if (!OpenmrsUtil.collectionContains(unresolvedConcepts, valueCoded))
-						addedMap.remove(valueCoded);
+                    boolean found = false;
+                    int unresolvedCounter = 0;
+                    while (!found && unresolvedCounter < unresolvedConcepts.size()) {
+                        Concept unresolvedConcept = unresolvedConcepts.get(unresolvedCounter);
+                        if (unresolvedConcept != null && valueCoded != null
+                                && unresolvedConcept.getConceptId() != null && valueCoded.getConceptId() != null
+                                && unresolvedConcept.getConceptId().equals(valueCoded.getConceptId())) {
+                            found = true;
+                        }
+                        unresolvedCounter ++;
+                    }
+                    if (!found) {
+                        addedMap.remove(valueCoded);
+                    }
 				} else {
 					// add the added into the map
 					Result addedMapEntry = addedMap.get(problemResult.toConcept());

@@ -50,8 +50,8 @@ public class EvaluateCohortController {
 	@RequestMapping(method = RequestMethod.POST)
 	public String processForm(final @RequestParam(required = false, value = "patientIdentifiers") String patientIdentifiers,
 	                          final @RequestParam(required = false, value = "locationId") String locationId,
-	                          final @RequestParam(required = false, value = "obsStartDate") String obsStartDate,
-	                          final @RequestParam(required = false, value = "obsEndDate") String obsEndDate,
+	                          final @RequestParam(required = false, value = "obsStartDate") Date startDate,
+	                          final @RequestParam(required = false, value = "obsEndDate") Date endDate,
 	                          final HttpSession session) {
 
 		int maxInactiveInterval = session.getMaxInactiveInterval();
@@ -66,11 +66,10 @@ public class EvaluateCohortController {
 				cohort = Context.getPatientSetService().convertPatientIdentifier(Arrays.asList(patientIdentifier));
 			} else if (StringUtils.isNotBlank(locationId)) {
 				Location location = Context.getLocationService().getLocation(NumberUtils.toInt(locationId, -1));
-				Date startDate = WebUtils.parse(obsStartDate, null);
-				Date endDate = WebUtils.parse(obsEndDate, null);
 				cohort = Context.getService(CoreService.class).getDateCreatedCohort(location, startDate, endDate);
 			}
-			SummaryCohortEvaluatorInstance.getInstance().evaluate(cohort);
+            SummaryCohortEvaluatorInstance instance = SummaryCohortEvaluatorInstance.getInstance();
+            instance.evaluate(cohort);
 		}
 		session.setMaxInactiveInterval(maxInactiveInterval);
 		return "redirect:evaluateCohort.form";

@@ -109,6 +109,10 @@ class DownloadSummariesTask extends SummariesTask {
      * @throws Exception
      */
     protected final void processSummaries() throws Exception {
+        // TODO: The better approach would be to create zip file and then encrypt it.
+        // And then Content of the zip file:
+        // * Zipped file of summary files and sql file
+        // * Sample file to be used for decryption testing
         String zippedFilename = StringUtils.join(Arrays.asList(filename, TaskConstants.FILE_TYPE_ZIP), ".");
         FileOutputStream outputStream = new FileOutputStream(new File(TaskUtils.getZippedOutputPath(), zippedFilename));
         ZipOutputStream zipOutputStream = new ZipOutputStream(new BufferedOutputStream(outputStream));

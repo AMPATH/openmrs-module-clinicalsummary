@@ -54,7 +54,9 @@ public class EvaluatePatientsController {
 
 		Summary summary = Context.getService(SummaryService.class).getSummary(summaryId);
 		Cohort cohort = Context.getCohortService().getCohort(cohortId);
-		SummaryCohortEvaluatorInstance.getInstance().evaluate(new Cohort(cohort.getMemberIds()), Arrays.asList(summary));
+
+        SummaryCohortEvaluatorInstance instance = SummaryCohortEvaluatorInstance.getInstance();
+        instance.evaluate(new Cohort(cohort.getMemberIds()), Arrays.asList(summary));
 
 		session.setMaxInactiveInterval(maxInactiveInterval);
 		return "redirect:evaluatePatients.form";

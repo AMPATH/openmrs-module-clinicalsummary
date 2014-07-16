@@ -118,7 +118,7 @@ public class DateCreatedEvaluatorProcessor {
 						indexService.saveIndex(indexService.generateIndex(patient, summary));
 
 						double elapsed = System.currentTimeMillis() - start;
-						log.info("Velocity evaluator running for " + elapsed + "ms (" + (elapsed / 1000) + "s)");
+						log.info("Velocity evaluator running for " + elapsed + "ms");
 					}
 				}
 

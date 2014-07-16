@@ -50,16 +50,12 @@ public class ReminderResponseController {
     public
     @ResponseBody
     List<String[]> process(final @RequestParam(required = false, value = "locationId") String locationId,
-                           final @RequestParam(required = false, value = "endTime") String endTimeString,
-                           final @RequestParam(required = false, value = "startTime") String startTimeString) {
+                           final @RequestParam(required = false, value = "endTime") Date startTime,
+                           final @RequestParam(required = false, value = "startTime") Date endTime) {
         UtilService utilService = Context.getService(UtilService.class);
 
         List<String[]> serialized = new ArrayList<String[]>();
 
-        DateFormat format = new SimpleDateFormat("dd-MMM-yyyy");
-
-        Date startTime = WebUtils.parse(startTimeString, new Date());
-        Date endTime = WebUtils.parse(endTimeString, new Date());
         Location location = Context.getLocationService().getLocation(locationId);
         List<ReminderResponse> reminderResponses = utilService.getResponses(ReminderResponse.class, location, startTime, endTime);
         for (ReminderResponse reminderResponse : reminderResponses) {
@@ -71,7 +67,7 @@ public class ReminderResponseController {
             strings.add(provider.getPersonName().getFullName());
 
             Date datetime = reminderResponse.getDatetime();
-            strings.add(format.format(datetime));
+            strings.add(Context.getDateFormat().format(datetime));
 
             strings.add(reminderResponse.getToken());
             strings.add(String.valueOf(reminderResponse.getResponse()));

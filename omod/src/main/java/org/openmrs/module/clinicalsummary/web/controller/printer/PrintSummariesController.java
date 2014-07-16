@@ -77,8 +77,8 @@ public class PrintSummariesController {
 	                             final @RequestParam(required = false, value = "summaryIdentifier") String summaryIdentifier,
 	                             final @RequestParam(required = false, value = "locationId") String locationId,
 	                             final @RequestParam(required = false, value = "summaryLocation") String summaryLocation,
-	                             final @RequestParam(required = false, value = "endReturnDate") String endReturn,
-	                             final @RequestParam(required = false, value = "startReturnDate") String startReturn,
+	                             final @RequestParam(required = false, value = "endReturnDate") Date endReturn,
+	                             final @RequestParam(required = false, value = "startReturnDate") Date startReturn,
 	                             final HttpServletResponse response, final HttpSession session) {
 
 
@@ -112,9 +112,9 @@ public class PrintSummariesController {
 				} else if (StringUtils.isNotBlank(locationId)) {
 					Location location = Context.getLocationService().getLocation(NumberUtils.toInt(locationId, -1));
 					summary = Context.getService(SummaryService.class).getSummary(NumberUtils.toInt(summaryLocation, -1));
-					Date startReturnDate = WebUtils.parse(startReturn, new Date());
-					Date endReturnDate = WebUtils.parse(endReturn, startReturnDate);
-					cohort = Context.getService(IndexService.class).getIndexCohort(location, summary, startReturnDate, endReturnDate);
+//					Date startReturnDate = WebUtils.parse(startReturn, new Date());
+//					Date endReturnDate = WebUtils.parse(endReturn, startReturnDate);
+					cohort = Context.getService(IndexService.class).getIndexCohort(location, summary, startReturn, endReturn);
 				}
 
                 if (summary != null) {
@@ -123,22 +123,23 @@ public class PrintSummariesController {
                         try {
                             String filenameXml = StringUtils.join(Arrays.asList(patientId, Evaluator.FILE_TYPE_XML), ".");
                             File summaryXmlFile = new File(outputDirectory, filenameXml);
+                            if (summaryXmlFile.exists()) {
+                                File tempFile = File.createTempFile("summary", "temp");
+                                BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(tempFile));
+                                Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, foUserAgent, bufferedOutputStream);
 
-                            File tempFile = File.createTempFile("summary", "temp");
-                            BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(tempFile));
-                            Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, foUserAgent, bufferedOutputStream);
+                                Source xsltSource = new StreamSource(new StringReader(summary.getXslt()));
+                                Transformer transformer = transformerFactory.newTransformer(xsltSource);
 
-                            Source xsltSource = new StreamSource(new StringReader(summary.getXslt()));
-                            Transformer transformer = transformerFactory.newTransformer(xsltSource);
+                                Result result = new SAXResult(fop.getDefaultHandler());
+                                Source source = new StreamSource(summaryXmlFile);
+                                transformer.transform(source, result);
 
-                            Result result = new SAXResult(fop.getDefaultHandler());
-                            Source source = new StreamSource(summaryXmlFile);
-                            transformer.transform(source, result);
+                                bufferedOutputStream.close();
+                                pdfMergerUtility.addSource(tempFile);
 
-                            bufferedOutputStream.close();
-                            pdfMergerUtility.addSource(tempFile);
-
-                            LoggerUtils.extractLogInformation(documentBuilder.parse(summaryXmlFile), LoggerUtils.getViewingLogFile());
+                                LoggerUtils.extractLogInformation(documentBuilder.parse(summaryXmlFile), LoggerUtils.getViewingLogFile());
+                            }
                         } catch (Exception e) {
                             log.error("Summary with type: " + summary.getName() + " for patient: " + patientId, e);
                         }

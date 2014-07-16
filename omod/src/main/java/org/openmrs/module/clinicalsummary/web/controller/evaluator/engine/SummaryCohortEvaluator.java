@@ -134,22 +134,21 @@ class SummaryCohortEvaluator implements Runnable {
 			Evaluator evaluator = new VelocityEvaluator();
 
 			ResultCacheInstance cacheInstance = ResultCacheInstance.getInstance();
+            SummaryService summaryService = Context.getService(SummaryService.class);
 
 			for (Integer patientId : cohort.getMemberIds()) {
 				setCurrentPatientId(patientId);
 				Patient patient = Context.getPatientService().getPatient(patientId);
 				if (patient != null) {
-					SummaryService summaryService = Context.getService(SummaryService.class);
-					if (CollectionUtils.isEmpty(summaries))
-						summaries = summaryService.getSummaries(patient);
+                    summaries = summaryService.getSummaries(patient);
 					for (Summary summary : summaries) {
 						double start = System.currentTimeMillis();
 
-						evaluator.evaluate(summary, patient, Boolean.TRUE);
+                        evaluator.evaluate(summary, patient, Boolean.TRUE);
 						indexService.saveIndex(indexService.generateIndex(patient, summary));
 
 						double elapsed = System.currentTimeMillis() - start;
-						log.info("Velocity evaluator running for " + elapsed + "ms (" + (elapsed / 1000) + "s)");
+						log.info("Velocity evaluator running for " + elapsed + "ms");
 					}
 
 					cacheInstance.clearCache(patient);

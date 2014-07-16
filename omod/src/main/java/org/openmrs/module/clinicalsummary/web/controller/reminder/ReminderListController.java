@@ -66,19 +66,12 @@ public class ReminderListController {
 	List<String[]> processSubmit(final @RequestParam(required = true, value = "displayType") ReportDisplayType displayType,
 	                             final @RequestParam(required = false, value = "locations") Collection<String> locationNames,
 	                             final @RequestParam(required = false, value = "tokens") Collection<String> tokens,
-	                             final @RequestParam(required = false, value = "startTime") String startTime,
-	                             final @RequestParam(required = false, value = "endTime") String endTime, final ModelMap map) {
+	                             final @RequestParam(required = false, value = "startTime") Date startDate,
+	                             final @RequestParam(required = false, value = "endTime") Date endDate,
+                                 final ModelMap map) {
 
 		map.addAttribute("displayTypes", Arrays.asList(ReportDisplayType.DISPLAY_REPORT_BY_PROVIDER,
 				ReportDisplayType.DISPLAY_REPORT_BY_LOCATION));
-
-		Date startDate = null;
-		if (StringUtils.isNotEmpty(startTime))
-			startDate = WebUtils.parse(startTime, new Date());
-
-		Date endDate = null;
-		if (StringUtils.isNotEmpty(endTime))
-			endDate = WebUtils.parse(endTime, new Date());
 
 		Map<String, Collection<OpenmrsObject>> restrictions = new Hashtable<String, Collection<OpenmrsObject>>();
 		restrictions.put("location", WebUtils.getOpenmrsObjects(locationNames, Location.class));

@@ -51,15 +51,13 @@ public class EvaluateRuleController {
 
     @RequestMapping(method = RequestMethod.POST)
     public String processForm(final @RequestParam(required = false, value = "locationId") String locationId,
-                              final @RequestParam(required = false, value = "obsStartDate") String obsStartDate,
-                              final @RequestParam(required = false, value = "obsEndDate") String obsEndDate,
+                              final @RequestParam(required = false, value = "obsStartDate") Date startDate,
+                              final @RequestParam(required = false, value = "obsEndDate") Date endDate,
                               final HttpSession session) {
 
         int maxInactiveInterval = session.getMaxInactiveInterval();
         session.setMaxInactiveInterval(-1);
         Location location = Context.getLocationService().getLocation(NumberUtils.toInt(locationId, -1));
-        Date startDate = WebUtils.parse(obsStartDate, null);
-        Date endDate = WebUtils.parse(obsEndDate, null);
         Cohort cohort = Context.getService(CoreService.class).getDateCreatedCohort(location, startDate, endDate);
 
         Integer counter = 0;

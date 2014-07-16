@@ -73,7 +73,7 @@ public class ReturnDateEvaluatorProcessor {
 					} else {
 						// regenerate when there's new obs
 						Calendar calendar = Calendar.getInstance();
-						calendar.add(Calendar.DATE, clusterName.length * 2);
+						calendar.add(Calendar.DATE, clusterName.length * 5);
 						Date date = calendar.getTime();
 						cohort = Context.getService(CoreService.class).getReturnDateCohort(location, new Date(), date);
 					}
@@ -104,7 +104,7 @@ public class ReturnDateEvaluatorProcessor {
 						indexService.saveIndex(indexService.generateIndex(patient, summary));
 
 						double elapsed = System.currentTimeMillis() - start;
-						log.info("Velocity evaluator running for " + elapsed + "ms (" + (elapsed / 1000) + "s)");
+						log.info("Velocity evaluator running for " + elapsed + "ms");
 					}
 				}
 
