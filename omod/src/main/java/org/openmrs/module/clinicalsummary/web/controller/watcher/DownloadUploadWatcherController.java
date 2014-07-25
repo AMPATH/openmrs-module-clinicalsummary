@@ -15,6 +15,7 @@
 package org.openmrs.module.clinicalsummary.web.controller.watcher;
 
 import java.io.IOException;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -51,12 +52,12 @@ public class DownloadUploadWatcherController {
 		generator.writeStringField("task", instance.getCurrentTask());
 
 		String summariesFilename = instance.getSummariesFilename();
-		if (!instance.isRunning() && StringUtils.isNotEmpty(summariesFilename))
-			generator.writeStringField("file", summariesFilename);
-
+		if (!instance.isRunning() && StringUtils.isNotEmpty(summariesFilename)) {
+            generator.writeStringField("file", summariesFilename);
+            SummariesTaskInstance.removeInstance();
+        }
 
 		generator.writeEndObject();
-
 		generator.close();
 	}
 }

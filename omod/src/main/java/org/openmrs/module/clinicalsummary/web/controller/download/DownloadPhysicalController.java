@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.clinicalsummary.Constants;
 import org.openmrs.module.clinicalsummary.io.utils.TaskConstants;
 import org.openmrs.module.clinicalsummary.web.controller.MimeType;
@@ -45,22 +46,24 @@ public class DownloadPhysicalController {
 	public void retrieveFile(final @RequestParam(required = true, value = "type") String type,
 	                         final @RequestParam(required = true, value = "filename") String filename,
 	                         final HttpServletResponse response) {
-		try {
-			String folder = Constants.ENCRYPTION_LOCATION;
-			String contentType = MimeType.TEXT_PLAIN;
-			if (StringUtils.equals(type, TaskConstants.FILE_TYPE_ZIP)) {
-				folder = Constants.ZIPPED_LOCATION;
-				contentType = MimeType.APPLICATION_ZIP;
-			}
+        if (Context.isAuthenticated()) {
+            try {
+                String folder = Constants.ENCRYPTION_LOCATION;
+                String contentType = MimeType.TEXT_PLAIN;
+                if (StringUtils.equals(type, TaskConstants.FILE_TYPE_ZIP)) {
+                    folder = Constants.ZIPPED_LOCATION;
+                    contentType = MimeType.APPLICATION_ZIP;
+                }
 
-			File directory = OpenmrsUtil.getDirectoryInApplicationDataDirectory(folder);
-			InputStream inputStream = new BufferedInputStream(new FileInputStream(new File(directory, filename)));
+                File directory = OpenmrsUtil.getDirectoryInApplicationDataDirectory(folder);
+                InputStream inputStream = new BufferedInputStream(new FileInputStream(new File(directory, filename)));
 
-			response.setHeader("Content-Disposition", "attachment; filename=" + filename);
-			response.setContentType(contentType);
-			FileCopyUtils.copy(inputStream, response.getOutputStream());
-		} catch (IOException e) {
-			log.error("Download process failed for: " + filename, e);
-		}
+                response.setHeader("Content-Disposition", "attachment; filename=" + filename);
+                response.setContentType(contentType);
+                FileCopyUtils.copy(inputStream, response.getOutputStream());
+            } catch (IOException e) {
+                log.error("Download process failed for: " + filename, e);
+            }
+        }
 	}
 }

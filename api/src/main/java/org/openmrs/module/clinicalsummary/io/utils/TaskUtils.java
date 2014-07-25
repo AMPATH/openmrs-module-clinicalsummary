@@ -62,7 +62,7 @@ public class TaskUtils {
 	 *
 	 * @return the folder of the secret file
 	 */
-	public static File getSecretOutputPath() {
+	public static File getEncryptedOutputPath() {
 		return OpenmrsUtil.getDirectoryInApplicationDataDirectory(Constants.ENCRYPTION_LOCATION);
 	}
 

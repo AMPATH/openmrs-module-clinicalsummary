@@ -20,6 +20,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.clinicalsummary.Constants;
 import org.openmrs.module.clinicalsummary.io.SummariesTaskInstance;
 import org.openmrs.module.clinicalsummary.web.controller.WebUtils;
@@ -39,17 +40,15 @@ public class DownloadSummariesController {
 	private static final Log log = LogFactory.getLog(DownloadSummariesController.class);
 
 	private void preparePage(final ModelMap map) {
-		String zipFile = StringUtils.EMPTY;
-		File zipPath = OpenmrsUtil.getDirectoryInApplicationDataDirectory(Constants.ZIPPED_LOCATION);
-		for (File file : zipPath.listFiles())
-			zipFile = file.getName();
-		map.put("zipFile", zipFile);
-
 		String secretFile = StringUtils.EMPTY;
-		File secretPath = OpenmrsUtil.getDirectoryInApplicationDataDirectory(Constants.ENCRYPTION_LOCATION);
-		for (File file : secretPath.listFiles())
-			secretFile = file.getName();
-		map.put("secretFile", secretFile);
+		File encryptedFiles = OpenmrsUtil.getDirectoryInApplicationDataDirectory(Constants.ENCRYPTION_LOCATION);
+        File[] files = encryptedFiles.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                secretFile = file.getName();
+            }
+        }
+		map.put("encryptedFile", secretFile);
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
@@ -61,12 +60,14 @@ public class DownloadSummariesController {
 	public void processSubmit(final @RequestParam(required = true, value = "password") String password,
                               final @RequestParam(required = false, value = "partial") Boolean partial,
 	                          final ModelMap map) {
-		// prepare the page elements
-		preparePage(map);
-		// start the download process
-        String filename = WebUtils.prepareFilename();
-        if (BooleanUtils.isTrue(partial))
-            filename = "Partial_" + filename;
-		SummariesTaskInstance.getInstance().startDownloading(password, filename, partial);
+        if (Context.isAuthenticated()) {
+            // prepare the page elements
+            preparePage(map);
+            // start the download process
+            String filename = WebUtils.prepareFilename();
+            if (BooleanUtils.isTrue(partial))
+                filename = "Partial_" + filename;
+            SummariesTaskInstance.getInstance().startDownloading(password, filename, partial);
+        }
 	}
 }

@@ -30,8 +30,9 @@ public class SummariesTaskInstance {
 	}
 
 	public static synchronized SummariesTaskInstance getInstance() {
-		if (ourInstance == null)
-			ourInstance = new SummariesTaskInstance();
+		if (ourInstance == null) {
+            ourInstance = new SummariesTaskInstance();
+        }
 		return ourInstance;
 	}
 
@@ -54,31 +55,29 @@ public class SummariesTaskInstance {
     }
 
     public String getSummariesFilename() {
-		if (summariesTask != null)
-			return summariesTask.getFilename();
+		if (summariesTask != null) {
+            return summariesTask.getFilename();
+        }
 		return StringUtils.EMPTY;
 	}
 
 	public String getCurrentFilename() {
-		if (summariesTask != null)
-			return summariesTask.getProcessedFilename();
+		if (summariesTask != null) {
+            return summariesTask.getProcessedFilename();
+        }
 		return StringUtils.EMPTY;
 	}
 
 	public String getCurrentTask() {
-		if (summariesTask != null)
-			return summariesTask.getStatus().getValue();
+		if (summariesTask != null) {
+            return summariesTask.getStatus().getValue();
+        }
 		return StringUtils.EMPTY;
 	}
 
 	public Boolean isRunning() {
-		if (summariesTask == null)
-			return Boolean.FALSE;
-
-		if (OpenmrsUtil.nullSafeEquals(TaskStatus.TASK_RUNNING_UPLOAD, summariesTask.getStatus())
-				|| OpenmrsUtil.nullSafeEquals(TaskStatus.TASK_RUNNING_DOWNLOAD, summariesTask.getStatus()))
-			return Boolean.TRUE;
-
-		return Boolean.FALSE;
+        return summariesTask != null
+                && (OpenmrsUtil.nullSafeEquals(TaskStatus.TASK_RUNNING_UPLOAD, summariesTask.getStatus())
+                || OpenmrsUtil.nullSafeEquals(TaskStatus.TASK_RUNNING_DOWNLOAD, summariesTask.getStatus()));
 	}
 }

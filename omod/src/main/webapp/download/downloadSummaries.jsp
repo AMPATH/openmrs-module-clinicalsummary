@@ -12,6 +12,7 @@
 
 	$j = jQuery.noConflict();
 	$j(function() {
+        $j("#rightcontent").hide();
 		$j("#progressbar").progressbar({
 			value: 100
 		});
@@ -23,8 +24,8 @@
 			$j("input:hidden[id='type']").attr("value", type);
 			$j("#downloadPhysical").submit();
 		});
-
-		startWatcherIfNeeded();
+        // start watcher
+        startWatcherIfNeeded();
 	});
 
 	function startWatcherIfNeeded() {
@@ -38,13 +39,13 @@
 				$j("#rightcontent").show();
 				timeout = setTimeout("startWatcherIfNeeded()", 3000);
 			} else {
-				if (typeof data.file  != "undefined") {
-					$j(".file").show();
-					$j("#zip").attr("filename", data.file + ".zip");
-					$j("#zip").html(data.file + ".zip");
-					$j("#secret").attr("filename", data.file + ".secret");
-					$j("#secret").html(data.file + ".secret");
-				}
+                if (data.task != "") {
+                    if (data.file  !== "undefined") {
+                        $j(".file").show();
+                        $j("#encrypted").attr("filename", data.file + ".encrypted");
+                        $j("#encrypted").html(data.file + ".encrypted");
+                    }
+                }
 				$j("input").removeAttr("disabled");
 				// hide the progress bar
 				$j("#rightcontent").hide();
@@ -52,6 +53,11 @@
 			}
 		});
 	}
+
+    function downloadSummaries() {
+        var form = document.getElementById("download");
+        form.submit();
+    }
 
 </script>
 
@@ -84,7 +90,7 @@
 
 	<div id="main">
 		<div id="sidebar">
-			<form method="post" enctype="multipart/form-data" action="">
+			<form id="download" method="post" enctype="multipart/form-data" action="">
 				<fieldset>
 					<ol>
 						<li>
@@ -97,7 +103,7 @@
                         </li>
 						<li />
 						<li>
-							<input id="submit" type="submit" value="<spring:message code="clinicalsummary.download"/>"/>
+							<input id="button" type="submit" onclick="downloadSummaries()" value="<spring:message code="clinicalsummary.download"/>"/>
 						</li>
 					</ol>
 				</fieldset>
@@ -119,16 +125,10 @@
 				<input id="filename" name="filename" type="hidden" />
 				<input id="type" name="type" type="hidden" />
 			</form>
-			<c:if test="${not empty zipFile}">
+			<c:if test="${not empty encryptedFile}">
 				<div class="file">
 					<spring:message code="clinicalsummary.download.summariesFile"/>:
-					<div><a href="#" id="zip" type="zip" filename="${zipFile}" class="download">${zipFile}</a></div>
-				</div>
-			</c:if>
-			<c:if test="${not empty secretFile}">
-				<div class="file">
-					<spring:message code="clinicalsummary.download.secretFile"/>:
-					<div><a href="#" id="secret" type="secret" filename="${secretFile}" class="download">${secretFile}</a></div>
+					<div><a href="#" id="encrypted" type="encrypted" filename="${encryptedFile}" class="download">${encryptedFile}</a></div>
 				</div>
 			</c:if>
 		</div>

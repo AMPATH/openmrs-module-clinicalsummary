@@ -14,6 +14,7 @@
 package org.openmrs.module.clinicalsummary.io;
 
 import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
@@ -26,9 +27,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.security.spec.KeySpec;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.lang.StringUtils;
@@ -61,10 +65,20 @@ class UploadSummariesTask extends SummariesTask {
      * @throws Exception
      */
     protected void processInitVector() throws Exception {
-        String secretFilename = StringUtils.join(Arrays.asList(filename, TaskConstants.FILE_TYPE_SECRET), ".");
-        initVector = FileCopyUtils.copyToByteArray(new File(TaskUtils.getSecretOutputPath(), secretFilename));
-        if (initVector.length != IV_SIZE)
-            throw new Exception("Secret file is corrupted or invalid secret file are being used.");
+        String encryptedFilename = StringUtils.join(Arrays.asList(filename, TaskConstants.FILE_TYPE_ENCRYPTED), ".");
+        ZipFile encryptedFile = new ZipFile(new File(TaskUtils.getEncryptedOutputPath(), encryptedFilename));
+
+        Enumeration<? extends ZipEntry> entries = encryptedFile.entries();
+        while (entries.hasMoreElements()) {
+            ZipEntry zipEntry = entries.nextElement();
+            if (zipEntry.getName().endsWith(TaskConstants.FILE_TYPE_SECRET)) {
+                InputStream inputStream = encryptedFile.getInputStream(zipEntry);
+                initVector = FileCopyUtils.copyToByteArray(inputStream);
+                if (initVector.length != IV_SIZE) {
+                    throw new Exception("Secret file is corrupted or invalid secret file are being used.");
+                }
+            }
+        }
     }
 
     /**
@@ -93,38 +107,43 @@ class UploadSummariesTask extends SummariesTask {
      * @throws Exception
      */
     protected void processSummaries() throws Exception {
+        String zipFilename = StringUtils.join(Arrays.asList(filename, TaskConstants.FILE_TYPE_ZIP), ".");
+        String encryptedFilename = StringUtils.join(Arrays.asList(filename, TaskConstants.FILE_TYPE_ENCRYPTED), ".");
 
-        File outputPath = TaskUtils.getSummaryOutputPath();
+        File file = new File(TaskUtils.getZippedOutputPath(), zipFilename);
+        OutputStream outStream = new BufferedOutputStream(new FileOutputStream(file));
+        ZipFile encryptedFile = new ZipFile(new File(TaskUtils.getEncryptedOutputPath(), encryptedFilename));
 
-        String zippedFilename = StringUtils.join(Arrays.asList(filename, TaskConstants.FILE_TYPE_ZIP), ".");
-        InputStream inputStream = new FileInputStream(new File(TaskUtils.getZippedOutputPath(), zippedFilename));
-        ZipInputStream zis = new ZipInputStream(new BufferedInputStream(inputStream));
-
-        byte data[] = new byte[TaskConstants.BUFFER_SIZE];
-
-        ZipEntry entry;
-        CipherOutputStream destination;
-        while ((entry = zis.getNextEntry()) != null) {
-
-            processedFilename = entry.getName();
-
-            File file = new File(outputPath, entry.getName());
-
-            // ensure that the parent path exists
-            File parent = file.getParentFile();
-            if (parent.exists() || parent.mkdirs()) {
-
-                destination = new CipherOutputStream(new BufferedOutputStream(new FileOutputStream(file)), cipher);
-
+        Enumeration<? extends ZipEntry> entries = encryptedFile.entries();
+        while (entries.hasMoreElements()) {
+            ZipEntry zipEntry = entries.nextElement();
+            String zipEntryName = zipEntry.getName();
+            if (!zipEntryName.endsWith(TaskConstants.FILE_TYPE_SAMPLE)
+                    && !zipEntryName.endsWith(TaskConstants.FILE_TYPE_SECRET)) {
                 int count;
-                while ((count = zis.read(data, 0, TaskConstants.BUFFER_SIZE)) != -1)
-                    destination.write(data, 0, count);
-
-                destination.close();
+                byte[] data = new byte[TaskConstants.BUFFER_SIZE];
+                CipherInputStream zipCipherInputStream = new CipherInputStream(encryptedFile.getInputStream(zipEntry), cipher);
+                while ((count = zipCipherInputStream.read(data, 0, TaskConstants.BUFFER_SIZE)) != -1) {
+                    outStream.write(data, 0, count);
+                }
+                zipCipherInputStream.close();
             }
         }
+        outStream.close();
 
-        zis.close();
+        File outputPath = TaskUtils.getSummaryOutputPath();
+        ZipFile zipFile = new ZipFile(file);
+        Enumeration<? extends ZipEntry> zipEntries = zipFile.entries();
+        while (zipEntries.hasMoreElements()) {
+            ZipEntry zipEntry = zipEntries.nextElement();
+            processedFilename = zipEntry.getName();
+            File f = new File(outputPath, zipEntry.getName());
+            // ensure that the parent path exists
+            File parent = f.getParentFile();
+            if (parent.exists() || parent.mkdirs()) {
+                FileCopyUtils.copy(zipFile.getInputStream(zipEntry), new BufferedOutputStream(new FileOutputStream(f)));
+            }
+        }
     }
 
     /**

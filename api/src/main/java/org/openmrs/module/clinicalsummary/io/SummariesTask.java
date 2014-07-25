@@ -118,14 +118,24 @@ abstract class SummariesTask implements Runnable {
 		// clean the file system
 		File zipPath = OpenmrsUtil.getDirectoryInApplicationDataDirectory(Constants.ZIPPED_LOCATION);
 		// clean up old upload and download
-		for (File file : zipPath.listFiles())
-			if (!file.getName().startsWith(filename) && file.delete())
-                log.info("Deleting old zip file: " + file.getName());
+        File[] zipPathFiles = zipPath.listFiles();
+        if (zipPathFiles != null) {
+            for (File file : zipPathFiles) {
+                if (!file.getName().startsWith(filename) && file.delete()) {
+                    log.info("Deleting old zip file: " + file.getName());
+                }
+            }
+        }
 
 		File secretPath = OpenmrsUtil.getDirectoryInApplicationDataDirectory(Constants.ENCRYPTION_LOCATION);
-		for (File file : secretPath.listFiles())
-			if (!file.getName().startsWith(filename) && file.delete())
-                log.info("Deleting old iv file: " + file.getName());
+        File[] secretPathFiles = secretPath.listFiles();
+        if (secretPathFiles != null) {
+            for (File file : secretPathFiles) {
+                if (!file.getName().startsWith(filename) && file.delete()) {
+                    log.info("Deleting old iv file: " + file.getName());
+                }
+            }
+        }
 	}
 
 

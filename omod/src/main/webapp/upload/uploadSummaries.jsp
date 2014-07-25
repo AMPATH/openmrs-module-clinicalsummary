@@ -12,11 +12,12 @@
 
 	$j = jQuery.noConflict();
 	$j(function() {
+        $j("#rightcontent").hide();
 		$j("#progressbar").progressbar({
 			value: 100
 		});
-
-		startWatcherIfNeeded();
+        // start watcher
+        startWatcherIfNeeded();
 	});
 
 	function startWatcherIfNeeded() {
@@ -29,28 +30,27 @@
 				$j("#rightcontent").show();
 				timeout = setTimeout("startWatcherIfNeeded()", 3000);
 			} else {
-                if (data.task != "Failed")
-                    $j("#openmrs_msg").html("Summaries uploaded successfully!");
+                if (data.task != "") {
+                    if (data.task != "Failed") {
+                        $j("#processor-message").html("Summaries uploaded successfully!");
+                        $j("#processor-message").show();
+                    } else {
+                        $j("#processor-error").html("Unable to process uploaded summaries!");
+                        $j("#processor-error").show();
+                    }
+                }
 				// hide the progress bar
 				$j("#rightcontent").hide();
 				clearTimeout(timeout);
 			}
 		});
-	};
-
-	function validate() {
-		var form = document.getElementById("upload");
-		var hiddenElement = document.getElementById("uploadAction");
-		hiddenElement.setAttribute("value", "validate");
-		form.submit();
-	};
-
-	function upload() {
-		var form = document.getElementById("upload");
-		var hiddenElement = document.getElementById("uploadAction");
-		hiddenElement.setAttribute("value", "upload");
-		form.submit();
 	}
+
+    function uploadSummaries() {
+        var form = document.getElementById("upload");
+        form.submit();
+    }
+
 </script>
 
 <style type="text/css">
@@ -74,10 +74,21 @@
 	.padded-div {
 		padding: 1em 1em 0 1em;
 	}
+
+    .processor-error {
+        display: none;
+        background-color: #ffb6c1;
+        margin-bottom: 5px;
+    }
+
+    .processor-message {
+        display: none;
+        background-color: #f5f5dc;
+        margin-bottom: 5px;
+    }
 </style>
 
 <spring:message code="clinicalsummary.upload.instructions"/>
-
 <div id="container">
 	<div id="main">
 		<h3 id="header"><spring:message code="clinicalsummary.upload.header"/></h3>
@@ -91,10 +102,6 @@
 							<input type="password" id="password" name="password"/>
 						</li>
 						<li>
-							<label for="secretFile"><spring:message code="clinicalsummary.upload.secret"/></label>
-							<input type="file" id="secretFile" name="secretFile"/>
-						</li>
-						<li>
 							<label for="summaries"><spring:message code="clinicalsummary.upload.summaries"/></label>
 							<input type="file" id="summaries" name="summaries"/>
 						</li>
@@ -102,14 +109,13 @@
 							<input type="hidden" id="uploadAction" name="action"/>
 						</li>
 						<li>
-							<input type="button" value="<spring:message code="clinicalsummary.upload.validate"/>" onclick="validate();" />
-						</li>
-						<li>
-							<input type="button" value="<spring:message code="clinicalsummary.upload"/>" onclick="upload();" />
+							<input type="button" onclick="uploadSummaries()" value="<spring:message code="clinicalsummary.upload"/>" />
 						</li>
 					</ol>
 				</fieldset>
 			</form>
+            <span id="processor-error" class="processor-error"></span>
+            <span id="processor-message" class="processor-message"></span>
 		</div>
 		<div id="rightcontent">
 			<fieldset id="progress">

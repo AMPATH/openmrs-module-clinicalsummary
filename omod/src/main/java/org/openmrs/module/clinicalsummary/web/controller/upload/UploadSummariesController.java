@@ -14,35 +14,15 @@
 
 package org.openmrs.module.clinicalsummary.web.controller.upload;
 
-import javax.crypto.Cipher;
-import javax.crypto.CipherOutputStream;
-import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.PBEKeySpec;
-import javax.crypto.spec.SecretKeySpec;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.security.spec.KeySpec;
-import java.util.Arrays;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.clinicalsummary.Constants;
 import org.openmrs.module.clinicalsummary.io.SummariesTaskInstance;
 import org.openmrs.module.clinicalsummary.io.utils.TaskConstants;
+import org.openmrs.module.clinicalsummary.io.utils.TaskUtils;
 import org.openmrs.module.clinicalsummary.util.ServerUtil;
-import org.openmrs.module.clinicalsummary.web.controller.MimeType;
 import org.openmrs.module.clinicalsummary.web.controller.WebUtils;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
@@ -54,112 +34,115 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.SecretKeySpec;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.security.spec.KeySpec;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+
 /**
  */
 @Controller
 @RequestMapping("/module/clinicalsummary/upload/uploadSummaries")
 public class UploadSummariesController {
 
-	private static final Log log = LogFactory.getLog(UploadSummariesController.class);
+    private static final Log log = LogFactory.getLog(UploadSummariesController.class);
 
-	public static final String ACTION_UPLOAD = "upload";
+    private static final int IV_SIZE = 16;
 
-	public static final String ACTION_VALIDATE = "validate";
-
-	@RequestMapping(method = RequestMethod.GET)
-	public void populatePage(final ModelMap map) {
-	}
-
-	@RequestMapping(method = RequestMethod.POST)
-	public void processSubmit(final @RequestParam(required = true, value = "password") String password,
-	                          final @RequestParam(required = true, value = "action") String action,
-	                          final @RequestParam(required = true, value = "secretFile") MultipartFile secret,
-	                          final @RequestParam(required = true, value = "summaries") MultipartFile summaries,
-	                          final HttpServletRequest request,
-	                          final HttpServletResponse response) {
-        if (!ServerUtil.isCentral()) {
-            if (StringUtils.equalsIgnoreCase(action, ACTION_UPLOAD))
-                upload(password, secret, summaries, request, response);
-            else if (StringUtils.equalsIgnoreCase(action, ACTION_VALIDATE))
-                validate(password, secret, summaries, request, response);
-        }
+    @RequestMapping(method = RequestMethod.GET)
+    public void populatePage(final ModelMap map) {
     }
 
-	public void upload(final String password,
-	                   final MultipartFile secret,
-	                   final MultipartFile summaries,
-	                   final HttpServletRequest request,
-	                   final HttpServletResponse response) {
+    @RequestMapping(method = RequestMethod.POST)
+    public String processSubmit(final @RequestParam(required = true, value = "password") String password,
+                              final @RequestParam(required = true, value = "summaries") MultipartFile summaries,
+                              final HttpServletRequest request) {
+        if (Context.isAuthenticated()) {
+            if (!ServerUtil.isCentral()) {
+                try {
+                    String filename = WebUtils.prepareFilename(null, null);
+                    log.info("Creating zipped file: " + filename);
+                    File encryptedPath = OpenmrsUtil.getDirectoryInApplicationDataDirectory(Constants.ENCRYPTION_LOCATION);
+                    String encryptedFilename = StringUtils.join(Arrays.asList(filename, TaskConstants.FILE_TYPE_ENCRYPTED), ".");
+                    OutputStream encryptedOutputStream = new FileOutputStream(new File(encryptedPath, encryptedFilename));
+                    FileCopyUtils.copy(summaries.getInputStream(), encryptedOutputStream);
+                    validate(filename, password);
+                    upload(filename, password);
+                } catch (Exception e) {
+                    log.error("Unable to process uploaded documents.", e);
+                    HttpSession session = request.getSession();
+                    session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Unable to validate upload parameters. Please try again.");
+                    return "redirect:" + request.getHeader("Referer");
+                }
+            }
+        }
+        return null;
+    }
 
-        HttpSession session = request.getSession();
-		try {
+    public void upload(final String filename, final String password) throws Exception {
+        log.info("Processing zip file and init vector!");
+        SummariesTaskInstance.getInstance().startUploading(password, filename);
+    }
 
-			log.info("Creating filename!");
-			String filename = WebUtils.prepareFilename(null, null);
+    public void validate(final String filename, final String password) throws Exception {
+        String encryptedFilename = StringUtils.join(Arrays.asList(filename, TaskConstants.FILE_TYPE_ENCRYPTED), ".");
+        ZipFile encryptedFile = new ZipFile(new File(TaskUtils.getEncryptedOutputPath(), encryptedFilename));
 
-			log.info("Creating secret init vector file!");
-			File initVectorPath = OpenmrsUtil.getDirectoryInApplicationDataDirectory(Constants.ENCRYPTION_LOCATION);
-			String secretFilename = StringUtils.join(Arrays.asList(filename, TaskConstants.FILE_TYPE_SECRET), ".");
-			OutputStream secretOutputStream = new FileOutputStream(new File(initVectorPath, secretFilename));
-			FileCopyUtils.copy(secret.getInputStream(), secretOutputStream);
+        byte[] initVector = null;
+        byte[] encryptedSampleBytes = null;
+        Enumeration<? extends ZipEntry> entries = encryptedFile.entries();
+        while (entries.hasMoreElements()) {
+            ZipEntry zipEntry = entries.nextElement();
+            String zipEntryName = zipEntry.getName();
+            if (zipEntryName.endsWith(TaskConstants.FILE_TYPE_SECRET)) {
+                InputStream inputStream = encryptedFile.getInputStream(zipEntry);
+                initVector = FileCopyUtils.copyToByteArray(inputStream);
+                if (initVector.length != IV_SIZE) {
+                    throw new Exception("Secret file is corrupted or invalid secret file are being used.");
+                }
+            } else if (zipEntryName.endsWith(TaskConstants.FILE_TYPE_SAMPLE)) {
+                InputStream inputStream = encryptedFile.getInputStream(zipEntry);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                FileCopyUtils.copy(inputStream, baos);
+                encryptedSampleBytes = baos.toByteArray();
+            }
+        }
 
-			log.info("Creating zipped file!");
-			File zippedPath = OpenmrsUtil.getDirectoryInApplicationDataDirectory(Constants.ZIPPED_LOCATION);
-			String zippedFilename = StringUtils.join(Arrays.asList(filename, TaskConstants.FILE_TYPE_ZIP), ".");
-			OutputStream summariesOutputStream = new FileOutputStream(new File(zippedPath, zippedFilename));
-			FileCopyUtils.copy(summaries.getInputStream(), summariesOutputStream);
+        if (initVector != null && encryptedSampleBytes != null) {
+            SecretKeyFactory factory = SecretKeyFactory.getInstance(TaskConstants.SECRET_KEY_FACTORY);
+            KeySpec spec = new PBEKeySpec(password.toCharArray(), password.getBytes(), 1024, 128);
+            SecretKey tmp = factory.generateSecret(spec);
+            // generate the secret key
+            SecretKey secretKey = new SecretKeySpec(tmp.getEncoded(), TaskConstants.KEY_SPEC);
+            // create the cipher
+            Cipher cipher = Cipher.getInstance(TaskConstants.CIPHER_CONFIGURATION);
+            cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(initVector));
+            // decrypt the sample
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(encryptedSampleBytes);
+            CipherInputStream cipherInputStream = new CipherInputStream(byteArrayInputStream, cipher);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            FileCopyUtils.copy(cipherInputStream, baos);
 
-			log.info("Processing zip file and init vector!");
-//			SummariesTaskInstance.getInstance().startUploading(password, filename);
-			response.sendRedirect(request.getHeader("referer"));
-		} catch (IOException e) {
-			log.error("Uploading zipped file failed ...", e);
-		}
-	}
-
-	public void validate(final String password,
-	                     final MultipartFile secret,
-	                     final MultipartFile summaries,
-	                     final HttpServletRequest request,
-	                     final HttpServletResponse response) {
-		try {
-			byte[] initVector = FileCopyUtils.copyToByteArray(secret.getInputStream());
-
-			SecretKeyFactory factory = SecretKeyFactory.getInstance(TaskConstants.SECRET_KEY_FACTORY);
-			KeySpec spec = new PBEKeySpec(password.toCharArray(), password.getBytes(), 1024, 128);
-			SecretKey tmp = factory.generateSecret(spec);
-
-			SecretKey secretKey = new SecretKeySpec(tmp.getEncoded(), TaskConstants.KEY_SPEC);
-
-			Cipher cipher = Cipher.getInstance(TaskConstants.CIPHER_CONFIGURATION);
-			cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(initVector));
-
-			ZipInputStream zis = new ZipInputStream(new BufferedInputStream(summaries.getInputStream()));
-
-			byte data[] = new byte[TaskConstants.BUFFER_SIZE];
-
-			// get a sample of pdf file from the zipped document
-			ZipEntry entry;
-			while ((entry = zis.getNextEntry()) != null)
-				if (StringUtils.endsWithIgnoreCase(entry.getName(), "xml"))
-					break;
-
-			if (entry != null) {
-				response.setHeader("Content-Disposition", "attachment; filename=example.xml");
-				response.setContentType(MimeType.APPLICATION_PDF);
-				response.setContentLength((int) entry.getSize());
-
-				CipherOutputStream dest = new CipherOutputStream(response.getOutputStream(), cipher);
-
-				int count;
-				while ((count = zis.read(data, 0, TaskConstants.BUFFER_SIZE)) != -1)
-					dest.write(data, 0, count);
-
-				dest.close();
-			}
-			zis.close();
-		} catch (Exception e) {
-			log.error("Uploading zipped file failed ...", e);
-		}
-	}
+            String sampleText = baos.toString();
+            if (!sampleText.contains("This is sample text")) {
+                throw new Exception("Upload parameters incorrect!");
+            }
+        }
+    }
 }

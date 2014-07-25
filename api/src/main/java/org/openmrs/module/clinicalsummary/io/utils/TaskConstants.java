@@ -20,7 +20,11 @@ public interface TaskConstants {
 
 	String FILE_TYPE_ZIP = "zip";
 
-	String FILE_TYPE_SECRET = "secret";
+    String FILE_TYPE_SECRET = "secret";
+
+    String FILE_TYPE_SAMPLE = "sample";
+
+    String FILE_TYPE_ENCRYPTED = "encrypted";
 
 	// encryption parameters
 	String SECRET_KEY_FACTORY = "PBKDF2WithHmacSHA1";

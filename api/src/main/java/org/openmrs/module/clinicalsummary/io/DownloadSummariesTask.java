@@ -20,11 +20,14 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.security.AlgorithmParameters;
 import java.security.spec.KeySpec;
 import java.util.Arrays;
@@ -44,7 +47,6 @@ import org.openmrs.module.clinicalsummary.enumeration.TaskStatus;
 import org.openmrs.module.clinicalsummary.evaluator.Evaluator;
 import org.openmrs.module.clinicalsummary.io.utils.TaskConstants;
 import org.openmrs.module.clinicalsummary.io.utils.TaskUtils;
-import org.springframework.util.FileCopyUtils;
 
 /**
  *
@@ -52,7 +54,7 @@ import org.springframework.util.FileCopyUtils;
 class DownloadSummariesTask extends SummariesTask {
 
     private static final Log log = LogFactory.getLog(DownloadSummariesTask.class);
-    
+
     private Boolean partial;
 
     public DownloadSummariesTask(final String password, final String filename, final Boolean partial) {
@@ -113,22 +115,66 @@ class DownloadSummariesTask extends SummariesTask {
         // And then Content of the zip file:
         // * Zipped file of summary files and sql file
         // * Sample file to be used for decryption testing
-        String zippedFilename = StringUtils.join(Arrays.asList(filename, TaskConstants.FILE_TYPE_ZIP), ".");
-        FileOutputStream outputStream = new FileOutputStream(new File(TaskUtils.getZippedOutputPath(), zippedFilename));
-        ZipOutputStream zipOutputStream = new ZipOutputStream(new BufferedOutputStream(outputStream));
-        
+        String zipFilename = StringUtils.join(Arrays.asList(filename, TaskConstants.FILE_TYPE_ZIP), ".");
+        File zipFile = new File(TaskUtils.getZippedOutputPath(), zipFilename);
+        ZipOutputStream zipOutStream = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(zipFile)));
+
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.MONTH, -1);
         Date cutOffDate = null;
-        if (BooleanUtils.isTrue(partial))
+        if (BooleanUtils.isTrue(partial)) {
             cutOffDate = calendar.getTime();
+        }
 
         File inputPath = TaskUtils.getSummaryOutputPath();
         File[] files = inputPath.listFiles();
-        for (File file : files)
-            processStream(zipOutputStream, inputPath.getAbsolutePath(), file, cutOffDate);
+        if (files != null) {
+            for (File file : files) {
+                processStream(zipOutStream, inputPath.getAbsolutePath(), file, cutOffDate);
+            }
+        }
+        zipOutStream.close();
 
-        zipOutputStream.close();
+        String encryptedFilename = StringUtils.join(Arrays.asList(filename, TaskConstants.FILE_TYPE_ENCRYPTED), ".");
+        File encryptedOutFile = new File(TaskUtils.getEncryptedOutputPath(), encryptedFilename);
+        ZipOutputStream encryptedZipOutStream = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(encryptedOutFile)));
+
+        int count;
+        byte[] data;
+        // add the 16 bytes init vector for the cipher into the output stream
+        String secretFilename = StringUtils.join(Arrays.asList(filename, TaskConstants.FILE_TYPE_SECRET), ".");
+        ZipEntry ivZipEntry = new ZipEntry(secretFilename);
+        encryptedZipOutStream.putNextEntry(ivZipEntry);
+        // write the 16 bytes init vector for the cipher into the output stream
+        AlgorithmParameters params = cipher.getParameters();
+        byte[] initVector = params.getParameterSpec(IvParameterSpec.class).getIV();
+        encryptedZipOutStream.write(initVector);
+        // add the sample file entry
+        String sampleFilename = StringUtils.join(Arrays.asList(filename, TaskConstants.FILE_TYPE_SAMPLE), ".");
+        ZipEntry sampleZipEntry = new ZipEntry(sampleFilename);
+        encryptedZipOutStream.putNextEntry(sampleZipEntry);
+        // write the sample file
+        data = new byte[TaskConstants.BUFFER_SIZE];
+        String sampleText = "This is sample text inside encrypted document. " +
+                "If you see this text, that means your decryption parameters is correct";
+        InputStream inStream = new ByteArrayInputStream(sampleText.getBytes());
+        CipherInputStream sampleCipherInStream = new CipherInputStream(inStream, cipher);
+        while ((count = sampleCipherInStream.read(data, 0, TaskConstants.BUFFER_SIZE)) != -1) {
+            encryptedZipOutStream.write(data, 0, count);
+        }
+        sampleCipherInStream.close();
+        // add the zipped summaries
+        ZipEntry zipEntry = new ZipEntry(zipFile.getName());
+        encryptedZipOutStream.putNextEntry(zipEntry);
+        // write the zipped summaries
+        data = new byte[TaskConstants.BUFFER_SIZE];
+        InputStream zipInStream = new BufferedInputStream(new FileInputStream(zipFile));
+        CipherInputStream zipCipherInStream = new CipherInputStream(zipInStream, cipher);
+        while ((count = zipCipherInStream.read(data, 0, TaskConstants.BUFFER_SIZE)) != -1) {
+            encryptedZipOutStream.write(data, 0, count);
+        }
+        zipCipherInStream.close();
+        encryptedZipOutStream.close();
     }
 
     private void processStream(ZipOutputStream zipOutputStream, String basePath, File currentFile, Date cutOffDate) throws Exception {
@@ -136,29 +182,23 @@ class DownloadSummariesTask extends SummariesTask {
         if (currentFile.isDirectory()) {
             FileFilter fileFilter = new WildcardFileFilter(StringUtils.join(Arrays.asList("*", Evaluator.FILE_TYPE_XML), "."));
             File[] files = currentFile.listFiles(fileFilter);
-            for (File file : files)
+            for (File file : files) {
                 processStream(zipOutputStream, basePath, file, cutOffDate);
+            }
         } else {
             if (cutOffDate == null || FileUtils.isFileNewer(currentFile, cutOffDate)) {
                 processedFilename = currentFile.getName();
-
-                FileInputStream inputStream = new FileInputStream(currentFile);
-                CipherInputStream origin = new CipherInputStream(inputStream, cipher);
-
-                String parentPath = currentFile.getParent();
-                String zipParentPath = StringUtils.remove(parentPath, basePath);
-                String zipEntryName = currentFile.getName();
-                if (StringUtils.isNotEmpty(zipParentPath))
-                    zipEntryName = StringUtils.join(Arrays.asList(zipParentPath, currentFile.getName()), File.separator);
-
+                // add the zip entry
+                String zipEntryName = StringUtils.remove(currentFile.getAbsolutePath(), basePath);
                 ZipEntry entry = new ZipEntry(zipEntryName);
                 zipOutputStream.putNextEntry(entry);
-
+                // write the entry
                 int count;
-                while ((count = origin.read(data, 0, TaskConstants.BUFFER_SIZE)) != -1)
+                InputStream inStream = new BufferedInputStream(new FileInputStream(currentFile));
+                while ((count = inStream.read(data, 0, TaskConstants.BUFFER_SIZE)) != -1) {
                     zipOutputStream.write(data, 0, count);
-
-                origin.close();
+                }
+                inStream.close();
             }
         }
     }
@@ -170,10 +210,19 @@ class DownloadSummariesTask extends SummariesTask {
      * @throws Exception
      */
     protected final void processInitVector() throws Exception {
+        String secretFilename = StringUtils.join(Arrays.asList(filename, TaskConstants.FILE_TYPE_SECRET), ".");
+        String encryptedFilename = StringUtils.join(Arrays.asList(filename, TaskConstants.FILE_TYPE_ENCRYPTED), ".");
+        // get the zip file
+        File encryptedFile = new File(TaskUtils.getEncryptedOutputPath(), encryptedFilename);
+        ZipOutputStream encryptedOutStream = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(encryptedFile)));
+        // add the 16 bytes init vector for the cipher into the output stream
+        ZipEntry ivZipEntry = new ZipEntry(secretFilename);
+        encryptedOutStream.putNextEntry(ivZipEntry);
+        // write the 16 bytes init vector for the cipher into the output stream
         AlgorithmParameters params = cipher.getParameters();
         byte[] initVector = params.getParameterSpec(IvParameterSpec.class).getIV();
-        String secretFilename = StringUtils.join(Arrays.asList(filename, TaskConstants.FILE_TYPE_SECRET), ".");
-        FileCopyUtils.copy(initVector, new File(TaskUtils.getSecretOutputPath(), secretFilename));
+        encryptedOutStream.write(initVector);
+        encryptedOutStream.close();
     }
 
     /**
@@ -186,6 +235,5 @@ class DownloadSummariesTask extends SummariesTask {
         initializeCipher();
         processIndex();
         processSummaries();
-        processInitVector();
     }
 }
