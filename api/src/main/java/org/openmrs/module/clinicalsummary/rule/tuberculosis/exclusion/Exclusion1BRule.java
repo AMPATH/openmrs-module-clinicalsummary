@@ -13,13 +13,20 @@
  */
 package org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion;
 
+import org.openmrs.Encounter;
+import org.openmrs.Obs;
 import org.openmrs.logic.LogicContext;
 import org.openmrs.logic.result.Result;
 import org.openmrs.module.clinicalsummary.rule.EvaluableConstants;
+import org.openmrs.module.clinicalsummary.rule.EvaluableNameConstants;
 import org.openmrs.module.clinicalsummary.rule.EvaluableRule;
+import org.openmrs.module.clinicalsummary.rule.encounter.EncounterWithRestrictionRule;
+import org.openmrs.module.clinicalsummary.rule.encounter.EncounterWithStringRestrictionRule;
 import org.openmrs.module.clinicalsummary.rule.observation.ObsWithRestrictionRule;
 import org.openmrs.module.clinicalsummary.rule.observation.ObsWithStringRestrictionRule;
 
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Map;
 
 /**
@@ -39,12 +46,23 @@ public class Exclusion1BRule extends EvaluableRule {
     @Override
     protected Result evaluate(final LogicContext context, final Integer patientId, final Map<String, Object> parameters) {
         Result result = new Result(Boolean.FALSE);
-        ObsWithRestrictionRule obsWithRestrictionRule = new ObsWithStringRestrictionRule();
+        parameters.put(EvaluableConstants.ENCOUNTER_TYPE,
+                Arrays.asList(EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_INITIAL));
+        parameters.put(EvaluableConstants.ENCOUNTER_FETCH_SIZE, 1);
+        EncounterWithRestrictionRule encounterWithRestrictionRule = new EncounterWithStringRestrictionRule();
+        Result encounterResults = encounterWithRestrictionRule.eval(context, patientId, parameters);
+        if (!encounterResults.isEmpty()) {
+            Result encounterResult = encounterResults.get(0);
+            Encounter encounter = (Encounter) encounterResult.getResultObject();
 
-        parameters.put(EvaluableConstants.OBS_FETCH_SIZE, 1);
-        Result obsResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-        if (!obsResults.isEmpty()) {
-            result = new Result(Boolean.TRUE);
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.YEAR, 2014);
+            calendar.set(Calendar.MONTH, Calendar.APRIL);
+            calendar.set(Calendar.DATE, 11);
+
+            if (encounter.getEncounterDatetime().before(calendar.getTime())) {
+                result = new Result(Boolean.TRUE);
+            }
         }
         return result;
     }

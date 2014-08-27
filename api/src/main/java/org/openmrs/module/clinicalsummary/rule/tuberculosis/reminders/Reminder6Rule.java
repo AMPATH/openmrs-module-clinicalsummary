@@ -22,6 +22,7 @@ import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element6BRul
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element6CRule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element6DRule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.element.Element6ERule;
+import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion1BRule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion1CRule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion2ARule;
 import org.openmrs.module.clinicalsummary.rule.tuberculosis.exclusion.Exclusion2BRule;
@@ -66,13 +67,12 @@ public class Reminder6Rule extends EvaluableRule {
 //            return result;
 //        }
 //
-//        Exclusion1BRule exclusion1BRule = new Exclusion1BRule();
-//        Result exclusion1BResult = exclusion1BRule.eval(context, patientId, new HashMap<String, Object>());
-//        if (exclusion1BResult.toBoolean()) {
-//            result.add(new Result("Reminder 6 excluded by Ex1B"));
-//            return result;
-//        }
-//
+        Exclusion1BRule exclusion1BRule = new Exclusion1BRule();
+        Result exclusion1BResult = exclusion1BRule.eval(context, patientId, new HashMap<String, Object>());
+        if (exclusion1BResult.toBoolean()) {
+            return result;
+        }
+
         Exclusion1CRule exclusion1CRule = new Exclusion1CRule();
         Result exclusion1CResult = exclusion1CRule.eval(context, patientId, new HashMap<String, Object>());
         if (exclusion1CResult.toBoolean()) {
