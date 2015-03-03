@@ -4,7 +4,7 @@
 
 	<groupId>org.openmrs.module.clinicalsummary</groupId>
 	<artifactId>clinicalsummary</artifactId>
-	<version>4.0.7-SNAPSHOT</version>
+	<version>4.0.8-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Summary Module</name>
 	<description>Parent project for Summary Module</description>
@@ -90,13 +90,6 @@
 				<type>jar</type>
 				<scope>provided</scope>
 			</dependency>
-			<dependency>
-				<groupId>org.apache.tomcat</groupId>
-				<artifactId>catalina</artifactId>
-				<version>6.0.32</version>
-				<type>jar</type>
-				<scope>provided</scope>
-			</dependency>
             <dependency>
                 <groupId>org.apache.pdfbox</groupId>
                 <artifactId>pdfbox</artifactId>
@@ -107,7 +100,7 @@
 	</dependencyManagement>
 
 	<properties>
-		<openMRSVersion>1.8.3</openMRSVersion>
+		<openMRSVersion>1.9.7</openMRSVersion>
 	</properties>
 
 	<build>
