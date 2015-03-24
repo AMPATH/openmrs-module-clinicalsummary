@@ -16,16 +16,22 @@ package org.openmrs.module.clinicalsummary.rule.reminder.adult.baseline;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Encounter;
 import org.openmrs.logic.LogicContext;
 import org.openmrs.logic.LogicException;
 import org.openmrs.logic.result.Result;
+import org.openmrs.module.clinicalsummary.enumeration.FetchOrdering;
 import org.openmrs.module.clinicalsummary.rule.EvaluableConstants;
 import org.openmrs.module.clinicalsummary.rule.EvaluableNameConstants;
 import org.openmrs.module.clinicalsummary.rule.EvaluableRule;
+import org.openmrs.module.clinicalsummary.rule.encounter.EncounterWithRestrictionRule;
+import org.openmrs.module.clinicalsummary.rule.encounter.EncounterWithStringRestrictionRule;
 import org.openmrs.module.clinicalsummary.rule.observation.ObsWithStringRestrictionRule;
 import org.openmrs.module.clinicalsummary.rule.reminder.adult.BaselineReminderRule;
 
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
 
 public class AdultCXRReminderRule extends EvaluableRule {
@@ -41,6 +47,28 @@ public class AdultCXRReminderRule extends EvaluableRule {
 	protected Result evaluate(final LogicContext context, final Integer patientId, final Map<String, Object> parameters) throws LogicException {
 
 		BaselineReminderRule baselineReminderRule = new BaselineReminderRule();
+
+        parameters.put(EvaluableConstants.ENCOUNTER_TYPE,
+                Arrays.asList(EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_INITIAL,
+                        EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_RETURN));
+        parameters.put(EvaluableConstants.ENCOUNTER_FETCH_ORDER, FetchOrdering.ORDER_DESCENDING);
+        parameters.put(EvaluableConstants.ENCOUNTER_FETCH_SIZE, 1);
+        EncounterWithRestrictionRule encounterWithRestrictionRule = new EncounterWithStringRestrictionRule();
+        Result encounterResults = encounterWithRestrictionRule.eval(context, patientId, parameters);
+        if (!encounterResults.isEmpty()) {
+            Result encounterResult = encounterResults.get(0);
+            Encounter encounter = (Encounter) encounterResult.getResultObject();
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.YEAR, -3);
+            Date threeYearsAgo = calendar.getTime();
+
+            if (encounter.getEncounterDatetime().before(threeYearsAgo)) {
+                return new Result();
+            }
+        }
+        parameters.remove(EvaluableConstants.ENCOUNTER_FETCH_ORDER);
+        parameters.remove(EvaluableConstants.ENCOUNTER_FETCH_SIZE);
 
 		parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(EvaluableNameConstants.CXR));
 		parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList(EvaluableNameConstants.CXR));

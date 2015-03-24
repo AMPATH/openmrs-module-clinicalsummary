@@ -72,7 +72,7 @@ public class StopIzoniazidReminderRule extends EvaluableRule {
 			}
 
 			Calendar calendar = Calendar.getInstance();
-			calendar.add(Calendar.MONTH, -9);
+			calendar.add(Calendar.MONTH, -6);
 			Date nineMonthsAgo = calendar.getTime();
 
 			if (OpenmrsUtil.compareWithNullAsLatest(stopDrugDate, startDrugDate) == 1

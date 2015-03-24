@@ -28,6 +28,8 @@ import org.openmrs.module.clinicalsummary.rule.observation.ObsWithStringRestrict
 import org.openmrs.module.clinicalsummary.rule.reminder.ReminderParameters;
 
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
 
 public class FallingWeightReminderRule extends EvaluableRule {
@@ -54,7 +56,12 @@ public class FallingWeightReminderRule extends EvaluableRule {
 			Result secondWeightResult = weightResults.get(1);
 			Double weightDrop = secondWeightResult.toNumber() - firstWeightResult.toNumber();
 			Double weightDropPercentage = weightDrop / secondWeightResult.toNumber();
-			if (weightDropPercentage > 0.1 || weightDrop >= 5)
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(firstWeightResult.getResultDate());
+            calendar.add(Calendar.MONTH, -6);
+            Date sixMonthsBefore = calendar.getTime();
+			if (weightDropPercentage > 0.1 && secondWeightResult.getResultDate().after(sixMonthsBefore))
 				result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
 		}
 

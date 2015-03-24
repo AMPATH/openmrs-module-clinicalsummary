@@ -46,12 +46,13 @@ public class Over300CD4ExpressCareReminderRule extends EvaluableRule {
 	protected Result evaluate(final LogicContext context, final Integer patientId, final Map<String, Object> parameters) throws LogicException {
 		Result result = new Result();
 		ObsWithRestrictionRule obsWithRestrictionRule = new ObsWithStringRestrictionRule();
-		parameters.put(EvaluableConstants.OBS_FETCH_SIZE, 1);
-		parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(EvaluableNameConstants.CD4_COUNT));
+		parameters.put(EvaluableConstants.OBS_FETCH_SIZE, 2);
+		parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(EvaluableNameConstants.HIV_VIRAL_LOAD_QUANTITATIVE));
 		Result obsClusterResults = obsWithRestrictionRule.eval(context, patientId, parameters);
 		if (CollectionUtils.isNotEmpty(obsClusterResults)) {
-			Result latestClusterResult = obsClusterResults.latest();
-			if (latestClusterResult.toNumber() > 300) {
+			Result latestClusterResult = obsClusterResults.get(0);
+            Result prevLatestClusterResult = obsClusterResults.get(1);
+			if (latestClusterResult.toNumber() < 1000) {
 				parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(EvaluableNameConstants.REFERRALS_ORDERED));
 				parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList(EvaluableNameConstants.EXPRESS_CARE_PROGRAM,
 						EvaluableNameConstants.LOW_RISK_EXPRESS_CARE_PROGRAM));

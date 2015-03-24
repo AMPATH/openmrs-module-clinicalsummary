@@ -55,7 +55,7 @@ public class Over500CD4NoARVReminderRule extends EvaluableRule {
 			Result latestClusterResult = obsClusterResults.latest();
 
 			Calendar calendar = Calendar.getInstance();
-			calendar.add(Calendar.MONTH, -12);
+			calendar.add(Calendar.MONTH, -6);
 			if (latestClusterResult.toNumber() > 500 && latestClusterResult.getResultDate().before(calendar.getTime())) {
 
 				// get the latest test ordered

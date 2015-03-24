@@ -244,7 +244,7 @@
 		</reminder>
 		#end
 
-		#set($params = {"reminder": "Please check Chest X-Ray. No Chest X-Ray result in system."})
+		#set($params = {"reminder": "Please check Chest X-Ray. No Chest X-Ray result in system. If CXR results found in chart please enter results again on today’s encounter form."})
 		#set($reminder = $fn.evaluate($patient, "Adult CXR Reminder", $params))
 		#foreach($element in $reminder)
 		<reminder>
@@ -254,7 +254,7 @@
 		</reminder>
 		#end
 
-		#set($params = {"reminder": "Consider starting ARV Medications. CD4 count < 250."})
+		#set($params = {"reminder": "Antiretroviral medications should be considered in every adult HIV+ patient with CD4 equal to or less than 500.  Obviously, other considerations come into play in this decision (e.g. whether pt is actively infected with TB)."})
 		#set($reminder = $fn.evaluate($patient, "Anti Retro Viral Reminder", $params))
 		#foreach($element in $reminder)
 		<reminder>
@@ -264,22 +264,12 @@
 		</reminder>
 		#end
 
-		#set($params = {"reminder": "Consider high risk EC referral (if available).  New Pt, CD4 < 100 with no high risk EC referral."})
+		#set($params = {"reminder": "Consider high risk express care referral for all patients with CD4 < 100 who are not on antiretroviral medications. These patients will likely be started on ARVs."})
 		#set($reminder = $fn.evaluate($patient, "Adult High Risk Express Care Referral Reminder", $params))
 		#foreach($element in $reminder)
 		<reminder>
 			<id>26</id>
 			<token>Adult High Risk Express Care Referral Reminder</token>
-			<value>$!{fn.format($element)}</value>
-		</reminder>
-		#end
-
-		#set($params = {"reminder": "Consider starting Iron. Last MCV below 75."})
-		#set($reminder = $fn.evaluate($patient, "Low Corpuscular Volume Reminder", $params))
-		#foreach($element in $reminder)
-		<reminder>
-			<id>27</id>
-			<token>Low Corpuscular Volume Reminder</token>
 			<value>$!{fn.format($element)}</value>
 		</reminder>
 		#end
@@ -294,27 +284,7 @@
 		</reminder>
 		#end
 
-		#set($params = {"reminder": "Over 10% or 5 kg wt loss. Look closer for cause."})
-		#set($reminder = $fn.evaluate($patient, "Falling Weight Reminder", $params))
-		#foreach($element in $reminder)
-		<reminder>
-			<id>30</id>
-			<token>Falling Weight Reminder</token>
-			<value>$!{fn.format($element)}</value>
-		</reminder>
-		#end
-
-		#set($params = {"reminder": "Please repeat CXR. Last CXR abnl in pt started on ARVs."})
-		#set($reminder = $fn.evaluate($patient, "Abnormal CXR On Anti Retro Viral Reminder", $params))
-		#foreach($element in $reminder)
-		<reminder>
-			<id>32</id>
-			<token>Abnormal CXR On Anti Retro Viral Reminder</token>
-			<value>$!{fn.format($element)}</value>
-		</reminder>
-		#end
-
-		#set($params = {"reminder": "Consider stopping INH prophylaxis.  INH started over 9 months ago."})
+		#set($params = {"reminder": "Consider stopping INH prophylaxis.  INH started over 6 months ago."})
 		#set($reminder = $fn.evaluate($patient, "Stop Izoniazid Reminder", $params))
 		#foreach($element in $reminder)
 		<reminder>
@@ -324,7 +294,7 @@
 		</reminder>
 		#end
 
-		#set($params = {"reminder": "Nevirapine and Rifampin (Rifampicin) not to be used together. Consider regimen change."})
+		#set($params = {"reminder": "Do not use Rifampin with Nevirapine (Protease Inhibitors) together. This combination increases the risk of liver injury (hepatotoxicity)."})
 		#set($reminder = $fn.evaluate($patient, "Rifampin Nevirapine Contraindication Reminder", $params))
 		#foreach($element in $reminder)
 		<reminder>
@@ -334,7 +304,7 @@
 		</reminder>
 		#end
 
-		#set($params = {"reminder": "Aluvia (Ritonavir / Lopinavir) and Rifampin (Rifampicin) not to be used together. Consider regimen change."})
+		#set($params = {"reminder": "Do not use Rifampin with Aluvia (Ritonavir / Lopinavir - Protease Inhibitors) together.  This combination increases the risk of liver injury (hepatotoxicity). Main concern is sub-therapeutic levels of Aluvia due to CYP3A induction by rifampacin."})
 		#set($reminder = $fn.evaluate($patient, "Rifampin Aluvia Contraindication Reminder", $params))
 		#foreach($element in $reminder)
 		<reminder>
@@ -344,22 +314,12 @@
 		</reminder>
 		#end
 
-		#set($params = {"reminder": "Please order CD4 panel. Last CD4 (> 500) over 1 yr ago in pt NOT on ARVs."})
+		#set($params = {"reminder": "Please order CD4 panel. Last CD4 (> 500) over 6 mo ago in pt NOT on ARVs."})
 		#set($reminder = $fn.evaluate($patient, "Over 500 CD4 No Anti Retro Viral Reminder", $params))
 		#foreach($element in $reminder)
 		<reminder>
 			<id>39</id>
 			<token>Over 500 CD4 No Anti Retro Viral Reminder</token>
-			<value>$!{fn.format($element)}</value>
-		</reminder>
-		#end
-
-		#set($params = {"reminder": "Consider Low risk (Stable) EC referral (if available). CD4 > 300 on ARVs."})
-		#set($reminder = $fn.evaluate($patient, "Over 300 CD4 Express Care Referral Reminder", $params))
-		#foreach($element in $reminder)
-		<reminder>
-			<id>42</id>
-			<token>Over 300 CD4 Express Care Referral Reminder</token>
 			<value>$!{fn.format($element)}</value>
 		</reminder>
 		#end

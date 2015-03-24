@@ -42,7 +42,7 @@ public class AntiRetroViralReminderRule extends EvaluableRule {
 
 	private static final Log log = LogFactory.getLog(AntiRetroViralReminderRule.class);
 
-	private static final Integer MINIMUM_RESULT_VALUE = 350;
+	private static final Integer MINIMUM_RESULT_VALUE = 500;
 
 	public static final String TOKEN = "Anti Retro Viral Reminder";
 

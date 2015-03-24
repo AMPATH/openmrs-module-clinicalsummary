@@ -57,11 +57,7 @@ public class AbnormalCXRReminderRule extends EvaluableRule {
 		Result cxrResults = obsWithRestrictionRule.eval(context, patientId, parameters);
 		if (CollectionUtils.isNotEmpty(cxrResults)) {
 			Result cxrResult = cxrResults.latest();
-			List<Concept> concepts = Arrays.asList(CacheUtils.getConcept(EvaluableNameConstants.CXR_PULMONARY_EFFUSION),
-					CacheUtils.getConcept(EvaluableNameConstants.CXR_MILIARY_CHANGES),
-					CacheUtils.getConcept(EvaluableNameConstants.CXR_INFILTRATE),
-					CacheUtils.getConcept(EvaluableNameConstants.CXR_DIFFUSE_NON_MILIARY_CHANGES),
-					CacheUtils.getConcept(EvaluableNameConstants.CXR_CAVITARY_LESION));
+			List<Concept> concepts = Arrays.asList(CacheUtils.getConcept(EvaluableNameConstants.CXR_INFILTRATE));
 			// check the date of the latest result
 			Calendar calendar = Calendar.getInstance();
 			calendar.add(Calendar.MONTH, -1);
