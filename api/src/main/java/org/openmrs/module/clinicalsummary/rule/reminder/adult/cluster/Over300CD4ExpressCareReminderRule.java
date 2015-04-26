@@ -31,6 +31,8 @@ import org.openmrs.module.clinicalsummary.rule.observation.ObsWithStringRestrict
 import org.openmrs.module.clinicalsummary.rule.reminder.ReminderParameters;
 
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
 
 public class Over300CD4ExpressCareReminderRule extends EvaluableRule {
@@ -46,13 +48,19 @@ public class Over300CD4ExpressCareReminderRule extends EvaluableRule {
 	protected Result evaluate(final LogicContext context, final Integer patientId, final Map<String, Object> parameters) throws LogicException {
 		Result result = new Result();
 		ObsWithRestrictionRule obsWithRestrictionRule = new ObsWithStringRestrictionRule();
-		parameters.put(EvaluableConstants.OBS_FETCH_SIZE, 2);
 		parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(EvaluableNameConstants.HIV_VIRAL_LOAD_QUANTITATIVE));
+		parameters.put(EvaluableConstants.ENCOUNTER_FETCH_SIZE, 2);
 		Result obsClusterResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-		if (CollectionUtils.isNotEmpty(obsClusterResults)) {
+		if (CollectionUtils.size(obsClusterResults) > 1) {
 			Result latestClusterResult = obsClusterResults.get(0);
-            Result prevLatestClusterResult = obsClusterResults.get(1);
-			if (latestClusterResult.toNumber() < 1000) {
+			Result previousClusterResult = obsClusterResults.get(1);
+
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(latestClusterResult.getResultDate());
+			calendar.add(Calendar.MONTH, -6);
+			Date sixMonthsBefore = calendar.getTime();
+
+			if (latestClusterResult.toNumber() < 1000 && previousClusterResult.toNumber() < 1000 && previousClusterResult.getResultDate().before(sixMonthsBefore)) {
 				parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(EvaluableNameConstants.REFERRALS_ORDERED));
 				parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList(EvaluableNameConstants.EXPRESS_CARE_PROGRAM,
 						EvaluableNameConstants.LOW_RISK_EXPRESS_CARE_PROGRAM));

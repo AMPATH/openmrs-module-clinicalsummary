@@ -274,6 +274,16 @@
 		</reminder>
 		#end
 
+		#set($params = {"reminder": "Consider starting Iron. Last MCV below 75."})
+		#set($reminder = $fn.evaluate($patient, "Low Corpuscular Volume Reminder", $params))
+		#foreach($element in $reminder)
+          <reminder>
+            <id>27</id>
+            <token>Low Corpuscular Volume Reminder</token>
+            <value>$!{fn.format($element)}</value>
+          </reminder>
+		#end
+
 		#set($params = {"reminder": "Consider Consultant or MO referral for poor renal function (two Cr results > 200)."})
 		#set($reminder = $fn.evaluate($patient, "High Creatinine Referral Reminder", $params))
 		#foreach($element in $reminder)
@@ -283,6 +293,26 @@
 			<value>$!{fn.format($element)}</value>
 		</reminder>
 		#end
+
+		#set($params = {"reminder": "Over 10% or 5 kg wt loss. Look closer for cause."})
+		#set($reminder = $fn.evaluate($patient, "Falling Weight Reminder", $params))
+		#foreach($element in $reminder)
+          <reminder>
+            <id>30</id>
+            <token>Falling Weight Reminder</token>
+            <value>$!{fn.format($element)}</value>
+          </reminder>
+		#end
+
+        #set($params = {"reminder": "Please repeat CXR. Last CXR over 1 mo. ago, could not rule out TB."})
+        #set($reminder = $fn.evaluate($patient, "Abnormal CXR Reminder", $params))
+        #foreach($element in $reminder)
+            <reminder>
+                <id>31</id>
+                <token>Abnormal CXR Reminder</token>
+                <value>$!{fn.format($element)}</value>
+            </reminder>
+        #end
 
 		#set($params = {"reminder": "Consider stopping INH prophylaxis.  INH started over 6 months ago."})
 		#set($reminder = $fn.evaluate($patient, "Stop Izoniazid Reminder", $params))
@@ -322,6 +352,16 @@
 			<token>Over 500 CD4 No Anti Retro Viral Reminder</token>
 			<value>$!{fn.format($element)}</value>
 		</reminder>
+		#end
+
+		#set($params = {"reminder": "Consider Stable EC referral. Pt on ARVs with two successive viral loads <1,000."})
+		#set($reminder = $fn.evaluate($patient, "Over 300 CD4 Express Care Referral Reminder", $params))
+		#foreach($element in $reminder)
+          <reminder>
+            <id>42</id>
+            <token>Over 300 CD4 Express Care Referral Reminder</token>
+            <value>$!{fn.format($element)}</value>
+          </reminder>
 		#end
 
 	</reminders>

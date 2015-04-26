@@ -17,6 +17,7 @@ package org.openmrs.module.clinicalsummary.rule.reminder.adult.general;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.context.Context;
 import org.openmrs.logic.LogicContext;
 import org.openmrs.logic.LogicException;
 import org.openmrs.logic.result.Result;
@@ -61,8 +62,9 @@ public class FallingWeightReminderRule extends EvaluableRule {
             calendar.setTime(firstWeightResult.getResultDate());
             calendar.add(Calendar.MONTH, -6);
             Date sixMonthsBefore = calendar.getTime();
-			if (weightDropPercentage > 0.1 && secondWeightResult.getResultDate().after(sixMonthsBefore))
+			if (weightDropPercentage > 0.1 && secondWeightResult.getResultDate().after(sixMonthsBefore)) {
 				result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
+			}
 		}
 
 		return result;

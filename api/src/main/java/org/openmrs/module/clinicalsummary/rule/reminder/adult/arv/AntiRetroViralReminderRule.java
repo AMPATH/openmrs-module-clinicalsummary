@@ -70,7 +70,7 @@ public class AntiRetroViralReminderRule extends EvaluableRule {
 					EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_RETURN, EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_NONCLINICALMEDICATION));
 			Result arvResults = antiRetroViralRule.eval(context, patientId, parameters);
 			if (CollectionUtils.isNotEmpty(resultResults) && CollectionUtils.isEmpty(arvResults)) {
-				if (resultResults.toNumber() < MINIMUM_RESULT_VALUE)
+				if (resultResults.latest().toNumber() < MINIMUM_RESULT_VALUE)
 					result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
 			}
 		}

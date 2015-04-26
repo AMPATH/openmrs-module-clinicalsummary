@@ -16,6 +16,7 @@ package org.openmrs.module.clinicalsummary.rule.reminder.adult.general;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.logic.LogicContext;
@@ -59,29 +60,31 @@ public class LowCorpuscularVolumeReminderRule extends EvaluableRule {
 				if (CollectionUtils.isNotEmpty(hbResults)) {
 					Result latestHbResult = hbResults.latest();
 					if (latestHbResult.toNumber() < 10) {
-						parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(EvaluableNameConstants.MEDICATION_ADDED));
-						parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList(EvaluableNameConstants.IRON_SUPPLEMENT));
-						Result medicationResults = obsWithRestrictionRule.eval(context, patientId, parameters);
+						Boolean displayReminder = Boolean.TRUE;
+
+						Result medicationResults;
+						parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(EvaluableNameConstants.MEDICATION_ADDED,
+								"RECEIVED ANTENATAL CARE SERVICE THIS VISIT", "PATIENT REPORTED CURRENT ANTENATAL CARE TREATMENT",
+								"RECIEVED POSTNATAL CARE SERVICE THIS VISIT", "CURRENT MEDICATIONS"));
+						parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList(EvaluableNameConstants.IRON_SUPPLEMENT,
+								"FERROUS SULFATE", "FERROUS SULFATE AND FOLIC ACID"));
+						medicationResults = obsWithRestrictionRule.eval(context, patientId, parameters);
 						if (CollectionUtils.isEmpty(medicationResults)) {
-							Boolean displayReminder = Boolean.TRUE;
 							// see if any of the medication is after the low corpuscular volume
 							Integer counter = 0;
-							while (counter < CollectionUtils.size(medicationResults) && displayReminder) {
+							while (counter < CollectionUtils.size(medicationResults)) {
 								Result medicationResult = medicationResults.get(counter++);
-								if (medicationResult.getResultDate().after(latestCorpuscularResult.getResultDate()))
+								if (medicationResult.getResultDate().after(latestCorpuscularResult.getResultDate()) ||
+										DateUtils.isSameDay(medicationResult.getResultDate(), latestCorpuscularResult.getResultDate())) {
 									displayReminder = Boolean.FALSE;
+									break;
+								}
 							}
+						}
 
-							StringBuilder buffer = new StringBuilder();
-							buffer.append(" Last Hgb low and last MCV: ").append(latestCorpuscularResult.toNumber());
-
-							String resultDatetime = format(latestCorpuscularResult.getResultDate());
-							if (StringUtils.isNotEmpty(resultDatetime))
-								buffer.append(" on ").append(resultDatetime);
-
-							// no iron supplement found
-							if (displayReminder)
-								result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT)) + buffer.toString()));
+						// no iron supplement found
+						if (displayReminder) {
+							result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
 						}
 					}
 				}

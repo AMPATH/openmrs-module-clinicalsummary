@@ -51,7 +51,7 @@ public class AbnormalCXRReminderRule extends EvaluableRule {
 		Result result = new Result();
 
 		ObsWithRestrictionRule obsWithRestrictionRule = new ObsWithStringRestrictionRule();
-		parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(EvaluableNameConstants.CXR));
+		parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(EvaluableNameConstants.CXR, "CHEST XRAY, PRELIMINARY FINDINGS"));
 		parameters.put(EvaluableConstants.OBS_FETCH_SIZE, 1);
 
 		Result cxrResults = obsWithRestrictionRule.eval(context, patientId, parameters);
