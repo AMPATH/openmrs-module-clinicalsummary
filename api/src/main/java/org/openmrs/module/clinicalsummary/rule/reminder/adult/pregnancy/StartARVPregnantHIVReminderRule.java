@@ -37,7 +37,7 @@ import java.util.Map;
  */
 public class StartARVPregnantHIVReminderRule extends EvaluableRule {
 
-    public static final String TOKEN = "Adult:Start ARV Pregnant HIV Positive";
+    public static final String TOKEN = "Adult:Start ARV Pregnant HIV Positive Reminder";
 
     private static final String PREGNANCY_STATUS = "PREGNANCY STATUS";
 

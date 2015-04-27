@@ -364,6 +364,66 @@
           </reminder>
 		#end
 
+		#set($params = {"reminder": "Consider starting ARV Medications. Patient is pregnant."})
+		#set($reminder = $fn.evaluate($patient, "Adult:Start ARV Pregnant HIV Positive Reminder", $params))
+		#foreach($element in $reminder)
+          <reminder>
+            <id>72</id>
+            <token>Adult:Start ARV Pregnant HIV Positive Reminder</token>
+            <value>$!{fn.format($element)}</value>
+          </reminder>
+		#end
+
+		#set($params = {"reminder": "Consider starting ARV Medications. Patient is breastfeeding."})
+		#set($reminder = $fn.evaluate($patient, "Adult:Start ARV Breastfeeding HIV Positive Reminder", $params))
+		#foreach($element in $reminder)
+          <reminder>
+            <id>73</id>
+            <token>Adult:Start ARV Breastfeeding HIV Positive Reminder</token>
+            <value>$!{fn.format($element)}</value>
+          </reminder>
+		#end
+
+		#set($params = {"reminder": "Consider starting ARV Medications. Patient is in a discordant relationship."})
+		#set($reminder = $fn.evaluate($patient, "Adult:Start ARV Discordant HIV Positive Reminder", $params))
+		#foreach($element in $reminder)
+          <reminder>
+            <id>74</id>
+            <token>Adult:Start ARV Breastfeeding HIV Positive Reminder</token>
+            <value>$!{fn.format($element)}</value>
+          </reminder>
+		#end
+
+		#set($params = {"reminder": "Consider starting ARV Medications. Patient is in WHO stage 3 or 4."})
+		#set($reminder = $fn.evaluate($patient, "Adult:Start ARV WHO Stage HIV Positive Reminder", $params))
+		#foreach($element in $reminder)
+          <reminder>
+            <id>75</id>
+            <token>Adult:Start ARV WHO Stage HIV Positive Reminder</token>
+            <value>$!{fn.format($element)}</value>
+          </reminder>
+		#end
+
+		#set($params = {"reminder": "Please order Viral load for patient started on ARVs over 6 months ago."})
+		#set($reminder = $fn.evaluate($patient, "Adult:Initial Viral Load Reminder", $params))
+		#foreach($element in $reminder)
+          <reminder>
+            <id>76</id>
+            <token>Adult:Initial Viral Load Reminder</token>
+            <value>$!{fn.format($element)}</value>
+          </reminder>
+		#end
+
+		#set($params = {"reminder": "Repeat VL every 3 months AND intensify adherence counselling."})
+		#set($reminder = $fn.evaluate($patient, "Adult:Escalation Viral Load Reminder", $params))
+		#foreach($element in $reminder)
+          <reminder>
+            <id>79</id>
+            <token>Adult:Escalation Viral Load Reminder</token>
+            <value>$!{fn.format($element)}</value>
+          </reminder>
+		#end
+
 	</reminders>
 
     <tb-reminders displayText="true">

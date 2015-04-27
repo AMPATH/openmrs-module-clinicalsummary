@@ -36,9 +36,7 @@ import java.util.Map;
  */
 public class StartARVDiscordantHIVReminderRule extends EvaluableRule {
 
-    public static final String TOKEN = "Adult:Start ARV Discordant HIV Positive";
-
-    private static final String PREGNANCY_STATUS = "PREGNANCY STATUS";
+    public static final String TOKEN = "Adult:Start ARV Discordant HIV Positive Reminder";
 
     @Override
     protected Result evaluate(LogicContext context, Integer patientId, Map<String, Object> parameters) {

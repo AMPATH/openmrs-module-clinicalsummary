@@ -22,7 +22,6 @@ import org.openmrs.module.clinicalsummary.rule.EvaluableNameConstants;
 import org.openmrs.module.clinicalsummary.rule.EvaluableRule;
 import org.openmrs.module.clinicalsummary.rule.encounter.EncounterWithRestrictionRule;
 import org.openmrs.module.clinicalsummary.rule.encounter.EncounterWithStringRestrictionRule;
-import org.openmrs.module.clinicalsummary.rule.medication.AntiRetroViralRule;
 import org.openmrs.module.clinicalsummary.rule.observation.ObsWithRestrictionRule;
 import org.openmrs.module.clinicalsummary.rule.observation.ObsWithStringRestrictionRule;
 import org.openmrs.module.clinicalsummary.rule.reminder.ReminderParameters;
@@ -34,9 +33,9 @@ import java.util.Map;
 
 /**
  */
-public class StartARVStageHIVReminderRule extends EvaluableRule {
+public class EscalationViralLoadReminderRule extends EvaluableRule {
 
-    public static final String TOKEN = "Adult:Start ARV WHO Stage HIV Positive Reminder";
+    public static final String TOKEN = "Adult:Escalation Viral Load Reminder";
 
     @Override
     protected Result evaluate(LogicContext context, Integer patientId, Map<String, Object> parameters) {
@@ -51,32 +50,48 @@ public class StartARVStageHIVReminderRule extends EvaluableRule {
         if (CollectionUtils.isNotEmpty(encounterResults)) {
             Result encounterResult = encounterResults.latest();
 
-            AntiRetroViralRule antiRetroViralRule = new AntiRetroViralRule();
-            // prepare the encounter types
-            parameters.put(EvaluableConstants.ENCOUNTER_TYPE, Arrays.asList(EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_INITIAL,
-                    EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_RETURN, EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_NONCLINICALMEDICATION));
-            Result arvResults = antiRetroViralRule.eval(context, patientId, parameters);
-            if (CollectionUtils.isEmpty(arvResults)) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.MONTH, -6);
+            Date sixMonthsAgo = calendar.getTime();
 
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTime(encounterResult.getResultDate());
-                calendar.add(Calendar.WEEK_OF_YEAR, 42);
-                Date fortyTwoWeeksLater = calendar.getTime();
+            calendar.setTime(encounterResult.getResultDate());
+            calendar.add(Calendar.MONTH, 6);
+            Date sixMonthsLater = calendar.getTime();
 
-                ObsWithRestrictionRule obsWithRestrictionRule = new ObsWithStringRestrictionRule();
+            ObsWithRestrictionRule obsWithRestrictionRule = new ObsWithStringRestrictionRule();
 
-                parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("REASON ANTIRETROVIRALS STARTED",
-                        "CURRENT WHO HIV STAGE", "PATIENT REPORTED WHO STAGE PRIOR TO ENROLLMENT AT AMPATH, ADULT"));
-                parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList("WHO STAGE 3 ADULT",
-                        "WHO STAGE 4 ADULT", "ADULT WHO STAGE 3 WITH CD4 COUNT LESS THAN 350"));
+            parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("HIV VIRAL LOAD, QUANTITATIVE"));
+            Result viralLoadResults = obsWithRestrictionRule.eval(context, patientId, parameters);
 
-                Result whoStageResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-                if (CollectionUtils.isNotEmpty(whoStageResults)) {
-                    Result whoStageResult = whoStageResults.latest();
-                    if (whoStageResult.getResultDate().before(fortyTwoWeeksLater)) {
+            if (CollectionUtils.isNotEmpty(viralLoadResults) && viralLoadResults.latest().toNumber() > 1000) {
+                parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("ANTIRETROVIRAL PLAN"));
+                parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList("START DRUGS", "DRUG RESTART"));
+                Result antiretroviralPlanResults = obsWithRestrictionRule.eval(context, patientId, parameters);
+
+                parameters.put(EvaluableConstants.OBS_CONCEPT,
+                        Arrays.asList("CURRENT HIV ANTIRETROVIRAL DRUG USE TREATMENT CATEGORY",
+                                "HIV ANTIRETROVIRAL DRUG PLAN TREATMENT CATEGORY"));
+                parameters.put(EvaluableConstants.OBS_VALUE_CODED,
+                        Arrays.asList("FIRST LINE HIV ANTIRETROVIRAL DRUG TREATMENT"));
+                Result treatmentCategoryResults = obsWithRestrictionRule.eval(context, patientId, parameters);
+                if (CollectionUtils.isNotEmpty(antiretroviralPlanResults) && CollectionUtils.isNotEmpty(treatmentCategoryResults)) {
+                    Result treatmentCategoryResult = treatmentCategoryResults.latest();
+                    Result antiretroviralPlanResult = antiretroviralPlanResults.latest();
+
+                    if (treatmentCategoryResult.getResultDate().after(sixMonthsLater) || antiretroviralPlanResult.getResultDate().after(sixMonthsLater)) {
                         result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
                         return result;
                     }
+                }
+
+                parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("REASON ANTIRETROVIRALS STARTED"));
+                parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList("NONE"));
+                Result reasonStartedResults = obsWithRestrictionRule.eval(context, patientId, parameters);
+                if (CollectionUtils.isNotEmpty(reasonStartedResults)
+                        || (reasonStartedResults.latest().getResultDate().before(encounterResult.getResultDate())
+                            && reasonStartedResults.latest().getResultDate().before(sixMonthsAgo))) {
+                    result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
+                    return result;
                 }
             }
         }
