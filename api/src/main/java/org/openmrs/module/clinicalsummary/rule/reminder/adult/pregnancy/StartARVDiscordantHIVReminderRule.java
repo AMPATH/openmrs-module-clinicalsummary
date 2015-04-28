@@ -69,12 +69,10 @@ public class StartARVDiscordantHIVReminderRule extends EvaluableRule {
                 parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList("YES"));
 
                 Result discordantCoupleResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-                if (CollectionUtils.isNotEmpty(discordantCoupleResults)) {
-                    Result discordantCoupleResult = discordantCoupleResults.latest();
-                    if (discordantCoupleResult.getResultDate().before(fortyTwoWeeksLater)) {
-                        result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
-                        return result;
-                    }
+                if (CollectionUtils.isNotEmpty(discordantCoupleResults)
+                        && discordantCoupleResults.latest().getResultDate().before(fortyTwoWeeksLater)) {
+                    result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
+                    return result;
                 }
 
                 parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("REASON ANTIRETROVIRALS STARTED",
@@ -82,12 +80,10 @@ public class StartARVDiscordantHIVReminderRule extends EvaluableRule {
                 parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList("DISCORDANT COUPLE"));
 
                 Result discordantCoupleAnswerResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-                if (CollectionUtils.isNotEmpty(discordantCoupleAnswerResults)) {
-                    Result discordantCoupleAnswerResult = discordantCoupleAnswerResults.latest();
-                    if (discordantCoupleAnswerResult.getResultDate().before(fortyTwoWeeksLater)) {
-                        result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
-                        return result;
-                    }
+                if (CollectionUtils.isNotEmpty(discordantCoupleAnswerResults)
+                        && discordantCoupleAnswerResults.latest().getResultDate().before(fortyTwoWeeksLater)) {
+                    result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
+                    return result;
                 }
             }
         }

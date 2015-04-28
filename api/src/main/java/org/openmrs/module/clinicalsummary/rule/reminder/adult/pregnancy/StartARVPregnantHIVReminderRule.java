@@ -84,36 +84,30 @@ public class StartARVPregnantHIVReminderRule extends EvaluableRule {
                 parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList(EvaluableNameConstants.POSITIVE));
 
                 Result urinePregnancy = obsWithRestrictionRule.eval(context, patientId, parameters);
-                if (CollectionUtils.isNotEmpty(urinePregnancy)) {
-                    Result urinePregnancyResult = urinePregnancy.latest();
-                    if (urinePregnancyResult.getResultDate().before(fortyTwoWeeksLater)) {
-                        result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
-                        return result;
-                    }
+                if (CollectionUtils.isNotEmpty(urinePregnancy)
+                        && urinePregnancy.latest().getResultDate().before(fortyTwoWeeksLater)) {
+                    result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
+                    return result;
                 }
 
                 parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(EvaluableNameConstants.PROBLEM_ADDED));
                 parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList("PREGNANCY"));
 
                 Result problemAdded = obsWithRestrictionRule.eval(context, patientId, parameters);
-                if (CollectionUtils.isNotEmpty(problemAdded)) {
-                    Result problemAddedResult = problemAdded.latest();
-                    if (problemAddedResult.getResultDate().before(fortyTwoWeeksLater)) {
-                        result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
-                        return result;
-                    }
+                if (CollectionUtils.isNotEmpty(problemAdded)
+                        && problemAdded.latest().getResultDate().before(fortyTwoWeeksLater)) {
+                    result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
+                    return result;
                 }
 
                 parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("PREGNANCY STATUS, CODED"));
                 parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList(EvaluableNameConstants.YES));
 
                 Result pregnancyStatusCoded = obsWithRestrictionRule.eval(context, patientId, parameters);
-                if (CollectionUtils.isNotEmpty(pregnancyStatusCoded)) {
-                    Result pregnancyStatusCodedResult = pregnancyStatusCoded.latest();
-                    if (pregnancyStatusCodedResult.getResultDate().before(fortyTwoWeeksLater)) {
-                        result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
-                        return result;
-                    }
+                if (CollectionUtils.isNotEmpty(pregnancyStatusCoded)
+                        && pregnancyStatusCoded.latest().getResultDate().before(fortyTwoWeeksLater)) {
+                    result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
+                    return result;
                 }
 
                 parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(EvaluableNameConstants.NUMBER_OF_WEEKS_PREGNANT));

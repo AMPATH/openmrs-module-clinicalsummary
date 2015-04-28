@@ -71,12 +71,10 @@ public class StartARVStageHIVReminderRule extends EvaluableRule {
                         "WHO STAGE 4 ADULT", "ADULT WHO STAGE 3 WITH CD4 COUNT LESS THAN 350"));
 
                 Result whoStageResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-                if (CollectionUtils.isNotEmpty(whoStageResults)) {
-                    Result whoStageResult = whoStageResults.latest();
-                    if (whoStageResult.getResultDate().before(fortyTwoWeeksLater)) {
-                        result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
-                        return result;
-                    }
+                if (CollectionUtils.isNotEmpty(whoStageResults)
+                        && whoStageResults.latest().getResultDate().before(fortyTwoWeeksLater)) {
+                    result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
+                    return result;
                 }
             }
         }

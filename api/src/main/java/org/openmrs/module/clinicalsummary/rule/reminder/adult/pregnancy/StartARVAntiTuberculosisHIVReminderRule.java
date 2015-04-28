@@ -34,9 +34,9 @@ import java.util.Map;
 
 /**
  */
-public class StartARVBreastfeedingHIVReminderRule extends EvaluableRule {
+public class StartARVAntiTuberculosisHIVReminderRule extends EvaluableRule {
 
-    public static final String TOKEN = "Adult:Start ARV Breastfeeding HIV Positive Reminder";
+    public static final String TOKEN = "Adult:Start ARV Anti Tuberculosis HIV Positive Reminder";
 
     @Override
     protected Result evaluate(LogicContext context, Integer patientId, Map<String, Object> parameters) {
@@ -60,28 +60,17 @@ public class StartARVBreastfeedingHIVReminderRule extends EvaluableRule {
 
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(encounterResult.getResultDate());
-                calendar.add(Calendar.WEEK_OF_YEAR, 42);
-                Date fortyTwoWeeksLater = calendar.getTime();
+                calendar.add(Calendar.MONTH, 1);
+                Date oneMonthLater = calendar.getTime();
 
                 ObsWithRestrictionRule obsWithRestrictionRule = new ObsWithStringRestrictionRule();
 
-                parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("MOTHER CURRENTLY BREASTFEEDING"));
-                parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList("YES"));
+                parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("TUBERCULOSIS TREATMENT PLAN"));
+                parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList("START DRUGS", "DRUG RESTART"));
 
-                Result currentlyBreastfeedingResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-                if (CollectionUtils.isNotEmpty(currentlyBreastfeedingResults)
-                        && currentlyBreastfeedingResults.latest().getResultDate().before(fortyTwoWeeksLater)) {
-                    result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
-                    return result;
-                }
-
-                parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("INFANT FEEDING METHOD"));
-                parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList("BREASTFEEDING EXCLUSIVELY",
-                        "BREASTFEEDING PREDOMINATELY", "MIXED FEEDING"));
-
-                Result feedingMethodResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-                if (CollectionUtils.isNotEmpty(feedingMethodResults)
-                        && feedingMethodResults.latest().getResultDate().before(fortyTwoWeeksLater)) {
+                Result tuberculosisPlanResults = obsWithRestrictionRule.eval(context, patientId, parameters);
+                if (CollectionUtils.isNotEmpty(tuberculosisPlanResults)
+                        && tuberculosisPlanResults.latest().getResultDate().after(oneMonthLater)) {
                     result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
                     return result;
                 }
