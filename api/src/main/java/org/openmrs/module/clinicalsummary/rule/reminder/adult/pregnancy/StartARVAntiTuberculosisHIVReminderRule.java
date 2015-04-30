@@ -3,12 +3,12 @@
  * Version 1.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
  * http://license.openmrs.org
- *
+ * <p/>
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
  * License for the specific language governing rights and limitations
  * under the License.
- *
+ * <p/>
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
 
@@ -51,26 +51,34 @@ public class StartARVAntiTuberculosisHIVReminderRule extends EvaluableRule {
         if (CollectionUtils.isNotEmpty(encounterResults)) {
             Result encounterResult = encounterResults.latest();
 
-            AntiRetroViralRule antiRetroViralRule = new AntiRetroViralRule();
-            // prepare the encounter types
-            parameters.put(EvaluableConstants.ENCOUNTER_TYPE, Arrays.asList(EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_INITIAL,
-                    EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_RETURN, EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_NONCLINICALMEDICATION));
-            Result arvResults = antiRetroViralRule.eval(context, patientId, parameters);
-            if (CollectionUtils.isEmpty(arvResults)) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(encounterResult.getResultDate());
+            calendar.add(Calendar.MONTH, 1);
+            Date oneMonthLater = calendar.getTime();
 
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTime(encounterResult.getResultDate());
-                calendar.add(Calendar.MONTH, 1);
-                Date oneMonthLater = calendar.getTime();
+            ObsWithRestrictionRule obsWithRestrictionRule = new ObsWithStringRestrictionRule();
 
-                ObsWithRestrictionRule obsWithRestrictionRule = new ObsWithStringRestrictionRule();
+            parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("TUBERCULOSIS TREATMENT PLAN"));
+            parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList("START DRUGS", "DRUG RESTART"));
 
-                parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("TUBERCULOSIS TREATMENT PLAN"));
+            Result tuberculosisPlanResults = obsWithRestrictionRule.eval(context, patientId, parameters);
+            if (CollectionUtils.isNotEmpty(tuberculosisPlanResults)
+                    && tuberculosisPlanResults.latest().getResultDate().after(oneMonthLater)) {
+
+                parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("ANTIRETROVIRAL PLAN"));
                 parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList("START DRUGS", "DRUG RESTART"));
+                Result antiretroviralPlanResults = obsWithRestrictionRule.eval(context, patientId, parameters);
+                if (CollectionUtils.isEmpty(antiretroviralPlanResults)
+                        || antiretroviralPlanResults.latest().getResultDate().before(encounterResult.getResultDate())) {
+                    result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
+                    return result;
+                }
 
-                Result tuberculosisPlanResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-                if (CollectionUtils.isNotEmpty(tuberculosisPlanResults)
-                        && tuberculosisPlanResults.latest().getResultDate().after(oneMonthLater)) {
+                parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("REASON ANTIRETROVIRALS STARTED"));
+                parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList("NONE"));
+                Result reasonStartedResults = obsWithRestrictionRule.eval(context, patientId, parameters);
+                if (CollectionUtils.isNotEmpty(reasonStartedResults)
+                        && reasonStartedResults.latest().getResultDate().after(encounterResult.getResultDate())) {
                     result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
                     return result;
                 }
