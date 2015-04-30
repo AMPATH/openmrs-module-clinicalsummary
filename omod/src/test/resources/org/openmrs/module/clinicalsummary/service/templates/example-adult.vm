@@ -294,7 +294,7 @@
 		</reminder>
 		#end
 
-		#set($params = {"reminder": "Over 10% or 5 kg wt loss. Look closer for cause."})
+		#set($params = {"reminder": "Over 10% weight loss within the last 6 months. Look closer for cause."})
 		#set($reminder = $fn.evaluate($patient, "Falling Weight Reminder", $params))
 		#foreach($element in $reminder)
           <reminder>

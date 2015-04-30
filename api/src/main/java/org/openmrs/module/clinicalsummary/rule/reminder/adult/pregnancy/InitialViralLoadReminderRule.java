@@ -67,8 +67,7 @@ public class InitialViralLoadReminderRule extends EvaluableRule {
                     Arrays.asList("HIV VIRAL LOAD, QUALITATIVE", "HIV VIRAL LOAD, QUANTITATIVE"));
             Result viralLoadResults = obsWithRestrictionRule.eval(context, patientId, parameters);
 
-            if (CollectionUtils.isEmpty(viralLoadResults)
-                    || viralLoadResults.latest().getResultDate().before(encounterResult.getResultDate())) {
+            if (CollectionUtils.isEmpty(viralLoadResults)) {
 
                 parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("ANTIRETROVIRAL PLAN"));
                 parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList("START DRUGS", "DRUG RESTART"));

@@ -51,12 +51,12 @@ public class SecondViralLoadReminderRule extends EvaluableRule {
             Result encounterResult = encounterResults.latest();
 
             Calendar calendar = Calendar.getInstance();
-            calendar.add(Calendar.MONTH, -6);
-            Date sixMonthsAgo = calendar.getTime();
+            calendar.add(Calendar.MONTH, -12);
+            Date twelveMonthsAgo = calendar.getTime();
 
             calendar.setTime(encounterResult.getResultDate());
-            calendar.add(Calendar.MONTH, 6);
-            Date sixMonthsLater = calendar.getTime();
+            calendar.add(Calendar.MONTH, 12);
+            Date twelveMonthsLater = calendar.getTime();
 
             ObsWithRestrictionRule obsWithRestrictionRule = new ObsWithStringRestrictionRule();
 
@@ -77,21 +77,10 @@ public class SecondViralLoadReminderRule extends EvaluableRule {
                 parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("ANTIRETROVIRAL PLAN"));
                 parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList("START DRUGS", "DRUG RESTART"));
                 Result antiretroviralPlanResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-
-                parameters.put(EvaluableConstants.OBS_CONCEPT,
-                        Arrays.asList("CURRENT HIV ANTIRETROVIRAL DRUG USE TREATMENT CATEGORY",
-                                "HIV ANTIRETROVIRAL DRUG PLAN TREATMENT CATEGORY"));
-                parameters.put(EvaluableConstants.OBS_VALUE_CODED,
-                        Arrays.asList("FIRST LINE HIV ANTIRETROVIRAL DRUG TREATMENT"));
-                Result treatmentCategoryResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-                if (CollectionUtils.isNotEmpty(antiretroviralPlanResults) && CollectionUtils.isNotEmpty(treatmentCategoryResults)) {
-                    Result treatmentCategoryResult = treatmentCategoryResults.latest();
-                    Result antiretroviralPlanResult = antiretroviralPlanResults.latest();
-
-                    if (treatmentCategoryResult.getResultDate().after(sixMonthsLater) || antiretroviralPlanResult.getResultDate().after(sixMonthsLater)) {
-                        result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
-                        return result;
-                    }
+                if (CollectionUtils.isNotEmpty(antiretroviralPlanResults)
+                        && antiretroviralPlanResults.latest().getResultDate().after(twelveMonthsLater)) {
+                    result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
+                    return result;
                 }
 
                 parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("REASON ANTIRETROVIRALS STARTED"));
@@ -99,7 +88,7 @@ public class SecondViralLoadReminderRule extends EvaluableRule {
                 Result reasonStartedResults = obsWithRestrictionRule.eval(context, patientId, parameters);
                 if (CollectionUtils.isNotEmpty(reasonStartedResults)
                         || (reasonStartedResults.latest().getResultDate().before(encounterResult.getResultDate())
-                            && reasonStartedResults.latest().getResultDate().before(sixMonthsAgo))) {
+                            && reasonStartedResults.latest().getResultDate().before(twelveMonthsAgo))) {
                     result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
                     return result;
                 }

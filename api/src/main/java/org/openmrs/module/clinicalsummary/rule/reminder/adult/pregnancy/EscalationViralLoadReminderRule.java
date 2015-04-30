@@ -68,26 +68,16 @@ public class EscalationViralLoadReminderRule extends EvaluableRule {
                 parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList("START DRUGS", "DRUG RESTART"));
                 Result antiretroviralPlanResults = obsWithRestrictionRule.eval(context, patientId, parameters);
 
-                parameters.put(EvaluableConstants.OBS_CONCEPT,
-                        Arrays.asList("CURRENT HIV ANTIRETROVIRAL DRUG USE TREATMENT CATEGORY",
-                                "HIV ANTIRETROVIRAL DRUG PLAN TREATMENT CATEGORY"));
-                parameters.put(EvaluableConstants.OBS_VALUE_CODED,
-                        Arrays.asList("FIRST LINE HIV ANTIRETROVIRAL DRUG TREATMENT"));
-                Result treatmentCategoryResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-                if (CollectionUtils.isNotEmpty(antiretroviralPlanResults) && CollectionUtils.isNotEmpty(treatmentCategoryResults)) {
-                    Result treatmentCategoryResult = treatmentCategoryResults.latest();
-                    Result antiretroviralPlanResult = antiretroviralPlanResults.latest();
-
-                    if (treatmentCategoryResult.getResultDate().after(sixMonthsLater) || antiretroviralPlanResult.getResultDate().after(sixMonthsLater)) {
-                        result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
-                        return result;
-                    }
+                if (CollectionUtils.isNotEmpty(antiretroviralPlanResults)
+                        && antiretroviralPlanResults.latest().getResultDate().after(sixMonthsLater)) {
+                    result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
+                    return result;
                 }
 
                 parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("REASON ANTIRETROVIRALS STARTED"));
                 parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList("NONE"));
                 Result reasonStartedResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-                if (CollectionUtils.isNotEmpty(reasonStartedResults)
+                if (CollectionUtils.isEmpty(reasonStartedResults)
                         || (reasonStartedResults.latest().getResultDate().before(encounterResult.getResultDate())
                             && reasonStartedResults.latest().getResultDate().before(sixMonthsAgo))) {
                     result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
