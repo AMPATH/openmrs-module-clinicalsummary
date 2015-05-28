@@ -72,7 +72,7 @@ public class StartARVStageHIVReminderRule extends EvaluableRule {
 
                 Result whoStageResults = obsWithRestrictionRule.eval(context, patientId, parameters);
                 if (CollectionUtils.isNotEmpty(whoStageResults)
-                        && whoStageResults.latest().getResultDate().before(fortyTwoWeeksLater)) {
+                        && !whoStageResults.latest().getResultDate().after(fortyTwoWeeksLater)) {
                     result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
                     return result;
                 }

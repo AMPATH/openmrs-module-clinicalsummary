@@ -26,7 +26,9 @@ import org.openmrs.module.clinicalsummary.rule.EvaluableNameConstants;
 import org.openmrs.module.clinicalsummary.rule.EvaluableRule;
 import org.openmrs.module.clinicalsummary.rule.encounter.EncounterWithRestrictionRule;
 import org.openmrs.module.clinicalsummary.rule.encounter.EncounterWithStringRestrictionRule;
+import org.openmrs.module.clinicalsummary.rule.observation.ObsWithRestrictionRule;
 import org.openmrs.module.clinicalsummary.rule.observation.ObsWithStringRestrictionRule;
+import org.openmrs.module.clinicalsummary.rule.reminder.ReminderParameters;
 import org.openmrs.module.clinicalsummary.rule.reminder.adult.BaselineReminderRule;
 
 import java.util.Arrays;
@@ -45,8 +47,7 @@ public class AdultCXRReminderRule extends EvaluableRule {
 	 */
 	@Override
 	protected Result evaluate(final LogicContext context, final Integer patientId, final Map<String, Object> parameters) throws LogicException {
-
-		BaselineReminderRule baselineReminderRule = new BaselineReminderRule();
+		Result result = new Result();
 
         parameters.put(EvaluableConstants.ENCOUNTER_TYPE,
                 Arrays.asList(EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_INITIAL,
@@ -63,17 +64,20 @@ public class AdultCXRReminderRule extends EvaluableRule {
             calendar.add(Calendar.YEAR, -3);
             Date threeYearsAgo = calendar.getTime();
 
-            if (encounter.getEncounterDatetime().before(threeYearsAgo)) {
-                return new Result();
-            }
+            if (!encounter.getEncounterDatetime().before(threeYearsAgo)) {
+				parameters.remove(EvaluableConstants.ENCOUNTER_FETCH_ORDER);
+				parameters.remove(EvaluableConstants.ENCOUNTER_FETCH_SIZE);
+
+				ObsWithRestrictionRule obsWithRestrictionRule = new ObsWithStringRestrictionRule();
+				parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("X-RAY, CHEST, RADIOLOGY FINDINGS"));
+				Result cxrFindingsResults = obsWithRestrictionRule.eval(context, patientId, parameters);
+				if (cxrFindingsResults.isEmpty()) {
+					result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
+				}
+			}
         }
-        parameters.remove(EvaluableConstants.ENCOUNTER_FETCH_ORDER);
-        parameters.remove(EvaluableConstants.ENCOUNTER_FETCH_SIZE);
 
-		parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(EvaluableNameConstants.CXR));
-		parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList(EvaluableNameConstants.CXR));
-
-		return baselineReminderRule.eval(context, patientId, parameters);
+		return result;
 	}
 
 	/**

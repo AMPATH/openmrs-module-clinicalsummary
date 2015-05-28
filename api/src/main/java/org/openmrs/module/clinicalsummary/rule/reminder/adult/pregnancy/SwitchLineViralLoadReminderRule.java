@@ -33,9 +33,9 @@ import java.util.Map;
 
 /**
  */
-public class EscalationViralLoadReminderRule extends EvaluableRule {
+public class SwitchLineViralLoadReminderRule extends EvaluableRule {
 
-    public static final String TOKEN = "Adult:Escalation Viral Load Reminder";
+    public static final String TOKEN = "Adult:Switch Line Viral Load Reminder";
 
     @Override
     protected Result evaluate(LogicContext context, Integer patientId, Map<String, Object> parameters) {
@@ -52,36 +52,49 @@ public class EscalationViralLoadReminderRule extends EvaluableRule {
 
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(encounterResult.getResultDate());
-            calendar.add(Calendar.MONTH, 6);
-            Date sixMonthsLater = calendar.getTime();
+            calendar.add(Calendar.MONTH, 12);
+            Date twelveMonthsLater = calendar.getTime();
 
             ObsWithRestrictionRule obsWithRestrictionRule = new ObsWithStringRestrictionRule();
 
             parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("HIV VIRAL LOAD, QUANTITATIVE"));
+            parameters.put(EvaluableConstants.OBS_FETCH_SIZE, 2);
             Result viralLoadResults = obsWithRestrictionRule.eval(context, patientId, parameters);
 
-            if (CollectionUtils.isNotEmpty(viralLoadResults) && viralLoadResults.latest().toNumber() > 1000) {
-                parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("ANTIRETROVIRAL PLAN"));
-                parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList("START DRUGS", "DRUG RESTART"));
-                Result antiretroviralPlanResults = obsWithRestrictionRule.eval(context, patientId, parameters);
+            if (CollectionUtils.isNotEmpty(viralLoadResults) && CollectionUtils.size(viralLoadResults) == 2) {
 
-                if (CollectionUtils.isNotEmpty(antiretroviralPlanResults)
-                        && !antiretroviralPlanResults.latest().getResultDate().before(sixMonthsLater)) {
-                    result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
-                    return result;
-                }
+                Result latestViralLoadResult = viralLoadResults.get(0);
+                Result beforeLatestViralLoadResult = viralLoadResults.get(1);
 
-                parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("REASON ANTIRETROVIRALS STARTED"));
-                parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList("NONE"));
-                Result reasonStartedNoneResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-                if (CollectionUtils.isEmpty(reasonStartedNoneResults)
-                        || reasonStartedNoneResults.latest().getResultDate().before(encounterResult.getResultDate())) {
-                    parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("REASON ANTIRETROVIRALS STARTED"));
-                    Result reasonStartedResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-                    if (CollectionUtils.isNotEmpty(reasonStartedResults)
-                            && !reasonStartedResults.latest().getResultDate().before(sixMonthsLater)) {
+                calendar.setTime(latestViralLoadResult.getResultDate());
+                calendar.add(Calendar.MONTH, -3);
+                Date threeMonthsAgo = calendar.getTime();
+
+                if (beforeLatestViralLoadResult.getResultDate().before(threeMonthsAgo)
+                        && latestViralLoadResult.toNumber() > 1000
+                        && beforeLatestViralLoadResult.toNumber() > 1000) {
+                    parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("ANTIRETROVIRAL PLAN"));
+                    parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList("START DRUGS", "DRUG RESTART"));
+                    Result antiretroviralPlanResults = obsWithRestrictionRule.eval(context, patientId, parameters);
+
+                    if (CollectionUtils.isNotEmpty(antiretroviralPlanResults)
+                            && !antiretroviralPlanResults.latest().getResultDate().before(twelveMonthsLater)) {
                         result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
                         return result;
+                    }
+
+                    parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("REASON ANTIRETROVIRALS STARTED"));
+                    parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList("NONE"));
+                    Result reasonStartedNoneResults = obsWithRestrictionRule.eval(context, patientId, parameters);
+                    if (CollectionUtils.isEmpty(reasonStartedNoneResults)
+                            || reasonStartedNoneResults.latest().getResultDate().before(encounterResult.getResultDate())) {
+                        parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("REASON ANTIRETROVIRALS STARTED"));
+                        Result reasonStartedResults = obsWithRestrictionRule.eval(context, patientId, parameters);
+                        if (CollectionUtils.isNotEmpty(reasonStartedResults)
+                                && !reasonStartedResults.latest().getResultDate().before(twelveMonthsLater)) {
+                            result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
+                            return result;
+                        }
                     }
                 }
             }

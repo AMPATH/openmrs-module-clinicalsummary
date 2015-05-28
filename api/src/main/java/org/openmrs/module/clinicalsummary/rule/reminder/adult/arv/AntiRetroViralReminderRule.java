@@ -51,31 +51,26 @@ public class AntiRetroViralReminderRule extends EvaluableRule {
 	 */
 	@Override
 	protected Result evaluate(final LogicContext context, final Integer patientId, final Map<String, Object> parameters) throws LogicException {
-		Result result = new Result();
-		BaselineReminderRule baselineReminderRule = new BaselineReminderRule();
-        parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(EvaluableNameConstants.CD4_COUNT));
-        parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList(EvaluableNameConstants.CD4_PANEL));
-		Result baselineReminderResults = baselineReminderRule.eval(context, patientId, parameters);
+        Result result = new Result();
 
-		if (CollectionUtils.isNotEmpty(baselineReminderResults)) {
-			ObsWithRestrictionRule obsWithRestrictionRule = new ObsWithStringRestrictionRule();
-			// remove the coded values because we need to pull the values of the results
-			parameters.remove(EvaluableConstants.OBS_VALUE_CODED);
-			parameters.put(EvaluableConstants.OBS_FETCH_SIZE, 1);
-			Result resultResults = obsWithRestrictionRule.eval(context, patientId, parameters);
+        ObsWithRestrictionRule obsWithRestrictionRule = new ObsWithStringRestrictionRule();
+        // remove the coded values because we need to pull the values of the results
+        parameters.remove(EvaluableConstants.OBS_VALUE_CODED);
+        parameters.put(EvaluableConstants.OBS_FETCH_SIZE, 1);
+        Result resultResults = obsWithRestrictionRule.eval(context, patientId, parameters);
 
-			// get the anti retro viral medications
-			AntiRetroViralRule antiRetroViralRule = new AntiRetroViralRule();
-			parameters.put(EvaluableConstants.ENCOUNTER_TYPE, Arrays.asList(EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_INITIAL,
-					EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_RETURN, EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_NONCLINICALMEDICATION));
-			Result arvResults = antiRetroViralRule.eval(context, patientId, parameters);
-			if (CollectionUtils.isNotEmpty(resultResults) && CollectionUtils.isEmpty(arvResults)) {
-				if (resultResults.latest().toNumber() < MINIMUM_RESULT_VALUE)
-					result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
-			}
-		}
-		return result;
-	}
+        // get the anti retro viral medications
+        AntiRetroViralRule antiRetroViralRule = new AntiRetroViralRule();
+        parameters.put(EvaluableConstants.ENCOUNTER_TYPE, Arrays.asList(EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_INITIAL,
+                EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_RETURN, EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_NONCLINICALMEDICATION));
+        Result arvResults = antiRetroViralRule.eval(context, patientId, parameters);
+        if (CollectionUtils.isNotEmpty(resultResults)
+                && resultResults.latest().toNumber() < MINIMUM_RESULT_VALUE
+                && CollectionUtils.isEmpty(arvResults)) {
+            result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
+        }
+        return result;
+    }
 
 	/**
 	 * @see org.openmrs.logic.Rule#getDependencies()

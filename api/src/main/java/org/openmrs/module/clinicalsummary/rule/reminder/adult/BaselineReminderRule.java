@@ -70,8 +70,9 @@ public class BaselineReminderRule extends EvaluableRule {
 
 			Result testResults = obsWithRestrictionRule.eval(context, patientId, parameters);
 			// if no test or the test was ordered more than six months ago, then show the reminder
-			if (CollectionUtils.isEmpty(testResults) || testResults.getResultDate().before(sixMonths))
+			if (CollectionUtils.isEmpty(testResults) || testResults.getResultDate().before(sixMonths)) {
 				result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
+			}
 		}
 
 		return result;

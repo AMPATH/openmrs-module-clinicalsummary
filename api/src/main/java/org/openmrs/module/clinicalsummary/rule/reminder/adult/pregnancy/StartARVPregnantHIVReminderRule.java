@@ -74,7 +74,7 @@ public class StartARVPregnantHIVReminderRule extends EvaluableRule {
                 Result pregnancyStatus = obsWithRestrictionRule.eval(context, patientId, parameters);
                 if (CollectionUtils.isNotEmpty(pregnancyStatus)) {
                     Result pregnancyStatusResult = pregnancyStatus.latest();
-                    if (pregnancyStatusResult.toBoolean() && pregnancyStatusResult.getResultDate().before(fortyTwoWeeksLater)) {
+                    if (pregnancyStatusResult.toBoolean() && !pregnancyStatusResult.getResultDate().after(fortyTwoWeeksLater)) {
                         result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
                         return result;
                     }
@@ -85,7 +85,7 @@ public class StartARVPregnantHIVReminderRule extends EvaluableRule {
 
                 Result urinePregnancy = obsWithRestrictionRule.eval(context, patientId, parameters);
                 if (CollectionUtils.isNotEmpty(urinePregnancy)
-                        && urinePregnancy.latest().getResultDate().before(fortyTwoWeeksLater)) {
+                        && !urinePregnancy.latest().getResultDate().after(fortyTwoWeeksLater)) {
                     result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
                     return result;
                 }
@@ -95,7 +95,7 @@ public class StartARVPregnantHIVReminderRule extends EvaluableRule {
 
                 Result problemAdded = obsWithRestrictionRule.eval(context, patientId, parameters);
                 if (CollectionUtils.isNotEmpty(problemAdded)
-                        && problemAdded.latest().getResultDate().before(fortyTwoWeeksLater)) {
+                        && !problemAdded.latest().getResultDate().after(fortyTwoWeeksLater)) {
                     result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
                     return result;
                 }
@@ -105,7 +105,7 @@ public class StartARVPregnantHIVReminderRule extends EvaluableRule {
 
                 Result pregnancyStatusCoded = obsWithRestrictionRule.eval(context, patientId, parameters);
                 if (CollectionUtils.isNotEmpty(pregnancyStatusCoded)
-                        && pregnancyStatusCoded.latest().getResultDate().before(fortyTwoWeeksLater)) {
+                        && !pregnancyStatusCoded.latest().getResultDate().after(fortyTwoWeeksLater)) {
                     result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
                     return result;
                 }
@@ -114,7 +114,7 @@ public class StartARVPregnantHIVReminderRule extends EvaluableRule {
                 Result numberOfWeeksPregnant = obsWithRestrictionRule.eval(context, patientId, parameters);
                 if (CollectionUtils.isNotEmpty(numberOfWeeksPregnant)) {
                     Result numberOfWeeksPregnantResult = numberOfWeeksPregnant.latest();
-                    if (numberOfWeeksPregnant.toNumber() > 0 && numberOfWeeksPregnantResult.getResultDate().before(fortyTwoWeeksLater)) {
+                    if (numberOfWeeksPregnant.toNumber() > 0 && !numberOfWeeksPregnantResult.getResultDate().after(fortyTwoWeeksLater)) {
                         result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
                         return result;
                     }
@@ -133,7 +133,7 @@ public class StartARVPregnantHIVReminderRule extends EvaluableRule {
 
                     Result pregnancyProblemAdded = obsWithRestrictionRule.eval(context, patientId, parameters);
                     if ((CollectionUtils.isEmpty(pregnancyProblemAdded) || pregnancyProblemAdded.latest().getResultDate().before(encounterResult.getResultDate()))
-                            && ancEnrolledResult.getResultDate().before(fortyTwoWeeksLater)) {
+                            && !ancEnrolledResult.getResultDate().after(fortyTwoWeeksLater)) {
                         result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
                         return result;
                     }

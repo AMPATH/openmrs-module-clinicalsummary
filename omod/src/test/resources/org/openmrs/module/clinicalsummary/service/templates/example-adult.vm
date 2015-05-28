@@ -444,6 +444,16 @@
           </reminder>
 		#end
 
+		#set($params = {"reminder": "Consider switching to 2nd line ARVs. 2 high viral loads after 1 year."})
+		#set($reminder = $fn.evaluate($patient, "Adult:Switch Line Viral Load Reminder", $params))
+		#foreach($element in $reminder)
+          <reminder>
+            <id>81</id>
+            <token>Adult:Switch Line Viral Load Reminder</token>
+            <value>$!{fn.format($element)}</value>
+          </reminder>
+		#end
+
 	</reminders>
 
     <tb-reminders displayText="true">

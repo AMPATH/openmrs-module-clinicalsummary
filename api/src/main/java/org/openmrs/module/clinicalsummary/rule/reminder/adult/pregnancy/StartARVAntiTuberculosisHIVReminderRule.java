@@ -63,13 +63,13 @@ public class StartARVAntiTuberculosisHIVReminderRule extends EvaluableRule {
 
             Result tuberculosisPlanResults = obsWithRestrictionRule.eval(context, patientId, parameters);
             if (CollectionUtils.isNotEmpty(tuberculosisPlanResults)
-                    && tuberculosisPlanResults.latest().getResultDate().after(oneMonthLater)) {
+                    && !tuberculosisPlanResults.latest().getResultDate().before(oneMonthLater)) {
 
                 parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("ANTIRETROVIRAL PLAN"));
                 parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList("START DRUGS", "DRUG RESTART"));
                 Result antiretroviralPlanResults = obsWithRestrictionRule.eval(context, patientId, parameters);
                 if (CollectionUtils.isEmpty(antiretroviralPlanResults)
-                        || antiretroviralPlanResults.latest().getResultDate().before(encounterResult.getResultDate())) {
+                        || !antiretroviralPlanResults.latest().getResultDate().after(encounterResult.getResultDate())) {
                     result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
                     return result;
                 }
@@ -78,7 +78,7 @@ public class StartARVAntiTuberculosisHIVReminderRule extends EvaluableRule {
                 parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList("NONE"));
                 Result reasonStartedResults = obsWithRestrictionRule.eval(context, patientId, parameters);
                 if (CollectionUtils.isNotEmpty(reasonStartedResults)
-                        && reasonStartedResults.latest().getResultDate().after(encounterResult.getResultDate())) {
+                        && !reasonStartedResults.latest().getResultDate().before(encounterResult.getResultDate())) {
                     result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
                     return result;
                 }
