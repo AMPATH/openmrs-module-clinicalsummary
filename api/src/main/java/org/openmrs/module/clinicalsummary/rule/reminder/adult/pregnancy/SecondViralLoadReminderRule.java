@@ -52,14 +52,6 @@ public class SecondViralLoadReminderRule extends EvaluableRule {
 
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(encounterResult.getResultDate());
-            calendar.add(Calendar.MONTH, 3);
-            Date threeMonthsLater = calendar.getTime();
-
-            calendar.setTime(encounterResult.getResultDate());
-            calendar.add(Calendar.MONTH, 8);
-            Date eightMonthsLater = calendar.getTime();
-
-            calendar.setTime(encounterResult.getResultDate());
             calendar.add(Calendar.MONTH, 11);
             Date elevenMonthsLater = calendar.getTime();
 
@@ -74,21 +66,12 @@ public class SecondViralLoadReminderRule extends EvaluableRule {
             parameters.put(EvaluableConstants.OBS_VALUE_CODED,
                     Arrays.asList("HIV VIRAL LOAD, QUALITATIVE", "HIV VIRAL LOAD, QUANTITATIVE"));
             Result viralLoadOrderedResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-
-            for (Result viralLoadOrderedResult : viralLoadOrderedResults) {
-                System.out.println(TOKEN + ", viralLoadOrderedResult: " + viralLoadOrderedResult.toString());
-            }
-
             if (CollectionUtils.isEmpty(viralLoadOrderedResults)
                     || viralLoadOrderedResults.latest().getResultDate().before(encounterResult.getResultDate())) {
 
                 parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("ANTIRETROVIRAL PLAN"));
                 parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList("START DRUGS", "DRUG RESTART"));
                 Result antiretroviralPlanResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-
-                for (Result antiretroviralPlanResult : antiretroviralPlanResults) {
-                    System.out.println(TOKEN + ", antiretroviralPlanResult: " + antiretroviralPlanResult.toString());
-                }
                 if (CollectionUtils.isNotEmpty(antiretroviralPlanResults)
                         && antiretroviralPlanResults.latest().getResultDate().after(elevenMonthsLater)
                         && antiretroviralPlanResults.latest().getResultDate().before(thirteenMonthsLater)) {
@@ -104,11 +87,6 @@ public class SecondViralLoadReminderRule extends EvaluableRule {
                         "CD4 COUNT LESS THAN 350", "DISCORDANT COUPLE", "IMMUNOLOGIC FAILURE", "VIROLOGIC FAILURE",
                         "CD4 COUNT LESS THAN 500"));
                 Result reasonStartedResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-
-                for (Result reasonStartedResult : reasonStartedResults) {
-                    System.out.println(TOKEN + ", reasonStartedResult: " + reasonStartedResult.toString());
-                }
-
                 if (CollectionUtils.isEmpty(reasonStartedResults)) {
                     result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
                     return result;

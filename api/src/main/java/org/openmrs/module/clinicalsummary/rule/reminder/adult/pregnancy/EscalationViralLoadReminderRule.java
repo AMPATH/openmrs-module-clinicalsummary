@@ -62,16 +62,9 @@ public class EscalationViralLoadReminderRule extends EvaluableRule {
             Result viralLoadResults = obsWithRestrictionRule.eval(context, patientId, parameters);
 
             if (CollectionUtils.isNotEmpty(viralLoadResults) && viralLoadResults.latest().toNumber() > 1000) {
-                for (Result viralLoadResult : viralLoadResults) {
-                    System.out.println(TOKEN + ", viralLoadResult: " + viralLoadResult.toNumber());
-                }
                 parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("ANTIRETROVIRAL PLAN"));
                 parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList("START DRUGS", "DRUG RESTART"));
                 Result antiretroviralPlanResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-
-                for (Result antiretroviralPlanResult : antiretroviralPlanResults) {
-                    System.out.println(TOKEN + ", antiretroviralPlanResult: " + antiretroviralPlanResult.toString());
-                }
                 if (CollectionUtils.isNotEmpty(antiretroviralPlanResults)
                         && (antiretroviralPlanResults.latest().getResultDate().after(sixMonthsLater)
                         || DateUtils.isSameDay(antiretroviralPlanResults.latest().getResultDate(), sixMonthsLater))) {
@@ -87,11 +80,6 @@ public class EscalationViralLoadReminderRule extends EvaluableRule {
                         "CD4 COUNT LESS THAN 350", "DISCORDANT COUPLE", "IMMUNOLOGIC FAILURE", "VIROLOGIC FAILURE",
                         "CD4 COUNT LESS THAN 500"));
                 Result reasonStartedResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-
-                for (Result reasonStartedResult : reasonStartedResults) {
-                    System.out.println(TOKEN + ", reasonStartedResult: " + reasonStartedResult.toString());
-                }
-
                 if (CollectionUtils.isEmpty(reasonStartedResults)) {
                     result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
                     return result;

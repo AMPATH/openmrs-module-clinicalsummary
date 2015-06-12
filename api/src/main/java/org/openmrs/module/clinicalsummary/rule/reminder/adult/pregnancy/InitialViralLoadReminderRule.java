@@ -23,7 +23,6 @@ import org.openmrs.module.clinicalsummary.rule.EvaluableNameConstants;
 import org.openmrs.module.clinicalsummary.rule.EvaluableRule;
 import org.openmrs.module.clinicalsummary.rule.encounter.EncounterWithRestrictionRule;
 import org.openmrs.module.clinicalsummary.rule.encounter.EncounterWithStringRestrictionRule;
-import org.openmrs.module.clinicalsummary.rule.medication.AntiRetroViralRule;
 import org.openmrs.module.clinicalsummary.rule.observation.ObsWithRestrictionRule;
 import org.openmrs.module.clinicalsummary.rule.observation.ObsWithStringRestrictionRule;
 import org.openmrs.module.clinicalsummary.rule.reminder.ReminderParameters;
@@ -53,34 +52,21 @@ public class InitialViralLoadReminderRule extends EvaluableRule {
             Result encounterResult = encounterResults.latest();
 
             Calendar calendar = Calendar.getInstance();
-            calendar.add(Calendar.MONTH, -6);
-            Date sixMonthsAgo = calendar.getTime();
-
             calendar.setTime(encounterResult.getResultDate());
             calendar.add(Calendar.MONTH, 6);
             Date sixMonthsLater = calendar.getTime();
 
             ObsWithRestrictionRule obsWithRestrictionRule = new ObsWithStringRestrictionRule();
-
             parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("TESTS ORDERED", "TEST RESULT",
                     "LAB TESTS ORDERED FOR NEXT VISIT"));
             parameters.put(EvaluableConstants.OBS_VALUE_CODED,
                     Arrays.asList("HIV VIRAL LOAD, QUALITATIVE", "HIV VIRAL LOAD, QUANTITATIVE"));
             Result viralLoadResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-
-            for (Result viralLoadResult : viralLoadResults) {
-                System.out.println(TOKEN + ", viralLoadResult: " + viralLoadResult.toString());
-            }
-
             if (CollectionUtils.isEmpty(viralLoadResults)) {
 
                 parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("ANTIRETROVIRAL PLAN"));
                 parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList("START DRUGS", "DRUG RESTART"));
                 Result antiretroviralPlanResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-
-                for (Result antiretroviralPlanResult : antiretroviralPlanResults) {
-                    System.out.println(TOKEN + ", antiretroviralPlanResult: " + antiretroviralPlanResult.toString());
-                }
 
                 parameters.put(EvaluableConstants.OBS_CONCEPT,
                         Arrays.asList("CURRENT HIV ANTIRETROVIRAL DRUG USE TREATMENT CATEGORY",
@@ -88,11 +74,6 @@ public class InitialViralLoadReminderRule extends EvaluableRule {
                 parameters.put(EvaluableConstants.OBS_VALUE_CODED,
                         Arrays.asList("FIRST LINE HIV ANTIRETROVIRAL DRUG TREATMENT"));
                 Result treatmentCategoryResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-
-                for (Result treatmentCategoryResult : treatmentCategoryResults) {
-                    System.out.println(TOKEN + ", treatmentCategoryResult: " + treatmentCategoryResult.toString());
-                }
-
                 if (CollectionUtils.isNotEmpty(antiretroviralPlanResults) && CollectionUtils.isNotEmpty(treatmentCategoryResults)) {
                     Result treatmentCategoryResult = treatmentCategoryResults.latest();
                     Result antiretroviralPlanResult = antiretroviralPlanResults.latest();
@@ -114,11 +95,6 @@ public class InitialViralLoadReminderRule extends EvaluableRule {
                         "CD4 COUNT LESS THAN 350", "DISCORDANT COUPLE", "IMMUNOLOGIC FAILURE", "VIROLOGIC FAILURE",
                         "CD4 COUNT LESS THAN 500"));
                 Result reasonStartedResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-
-                for (Result reasonStartedResult : reasonStartedResults) {
-                    System.out.println(TOKEN + ", reasonStartedResult: " + reasonStartedResult.toString());
-                }
-
                 if (CollectionUtils.isEmpty(reasonStartedResults)) {
                     result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
                     return result;

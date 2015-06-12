@@ -29,7 +29,6 @@ import org.openmrs.module.clinicalsummary.rule.encounter.EncounterWithStringRest
 import org.openmrs.module.clinicalsummary.rule.observation.ObsWithRestrictionRule;
 import org.openmrs.module.clinicalsummary.rule.observation.ObsWithStringRestrictionRule;
 import org.openmrs.module.clinicalsummary.rule.reminder.ReminderParameters;
-import org.openmrs.module.clinicalsummary.rule.reminder.adult.BaselineReminderRule;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -69,7 +68,7 @@ public class AdultCXRReminderRule extends EvaluableRule {
 				parameters.remove(EvaluableConstants.ENCOUNTER_FETCH_SIZE);
 
 				ObsWithRestrictionRule obsWithRestrictionRule = new ObsWithStringRestrictionRule();
-				parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("X-RAY, CHEST, RADIOLOGY FINDINGS"));
+				parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("CXR", "X-RAY, CHEST, RADIOLOGY FINDINGS"));
 				Result cxrFindingsResults = obsWithRestrictionRule.eval(context, patientId, parameters);
 				if (cxrFindingsResults.isEmpty()) {
 					result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));

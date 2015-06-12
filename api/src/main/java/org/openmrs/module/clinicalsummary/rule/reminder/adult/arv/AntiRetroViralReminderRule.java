@@ -55,6 +55,8 @@ public class AntiRetroViralReminderRule extends EvaluableRule {
 
         ObsWithRestrictionRule obsWithRestrictionRule = new ObsWithStringRestrictionRule();
         // remove the coded values because we need to pull the values of the results
+        parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(EvaluableNameConstants.CD4_COUNT));
+        parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList(EvaluableNameConstants.CD4_PANEL));
         parameters.remove(EvaluableConstants.OBS_VALUE_CODED);
         parameters.put(EvaluableConstants.OBS_FETCH_SIZE, 1);
         Result resultResults = obsWithRestrictionRule.eval(context, patientId, parameters);

@@ -15,7 +15,6 @@
 package org.openmrs.module.clinicalsummary.rule.reminder.adult.pregnancy;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.openmrs.Obs;
 import org.openmrs.logic.LogicContext;
 import org.openmrs.logic.result.Result;
 import org.openmrs.module.clinicalsummary.rule.EvaluableConstants;
