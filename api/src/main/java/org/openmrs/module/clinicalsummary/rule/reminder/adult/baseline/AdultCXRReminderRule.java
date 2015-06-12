@@ -52,7 +52,7 @@ public class AdultCXRReminderRule extends EvaluableRule {
         parameters.put(EvaluableConstants.ENCOUNTER_TYPE,
                 Arrays.asList(EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_INITIAL,
                         EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_RETURN));
-        parameters.put(EvaluableConstants.ENCOUNTER_FETCH_ORDER, FetchOrdering.ORDER_DESCENDING);
+        parameters.put(EvaluableConstants.ENCOUNTER_FETCH_ORDER, FetchOrdering.ORDER_DESCENDING.getValue());
         parameters.put(EvaluableConstants.ENCOUNTER_FETCH_SIZE, 1);
         EncounterWithRestrictionRule encounterWithRestrictionRule = new EncounterWithStringRestrictionRule();
         Result encounterResults = encounterWithRestrictionRule.eval(context, patientId, parameters);

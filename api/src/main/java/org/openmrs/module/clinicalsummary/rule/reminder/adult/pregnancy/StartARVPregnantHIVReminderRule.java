@@ -100,7 +100,7 @@ public class StartARVPregnantHIVReminderRule extends EvaluableRule {
                     return result;
                 }
 
-                parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("PREGNANCY STATUS, CODED"));
+                parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("PREGNANCY STATUS, CODED "));
                 parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList(EvaluableNameConstants.YES));
 
                 Result pregnancyStatusCoded = obsWithRestrictionRule.eval(context, patientId, parameters);

@@ -15,6 +15,7 @@
 package org.openmrs.module.clinicalsummary.rule.reminder.adult.pregnancy;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.openmrs.logic.LogicContext;
 import org.openmrs.logic.result.Result;
 import org.openmrs.module.clinicalsummary.rule.EvaluableConstants;
@@ -62,12 +63,23 @@ public class StartARVAntiTuberculosisHIVReminderRule extends EvaluableRule {
             parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList("START DRUGS", "DRUG RESTART"));
 
             Result tuberculosisPlanResults = obsWithRestrictionRule.eval(context, patientId, parameters);
+
+            for (Result tuberculosisPlanResult : tuberculosisPlanResults) {
+                System.out.println(TOKEN + ", tuberculosisPlanResult: " + tuberculosisPlanResult.toString());
+            }
+
             if (CollectionUtils.isNotEmpty(tuberculosisPlanResults)
-                    && !tuberculosisPlanResults.latest().getResultDate().before(oneMonthLater)) {
+                    && (tuberculosisPlanResults.latest().getResultDate().after(oneMonthLater)
+                    || DateUtils.isSameDay(tuberculosisPlanResults.latest().getResultDate(), oneMonthLater))) {
 
                 parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("ANTIRETROVIRAL PLAN"));
                 parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList("START DRUGS", "DRUG RESTART"));
                 Result antiretroviralPlanResults = obsWithRestrictionRule.eval(context, patientId, parameters);
+
+                for (Result antiretroviralPlanResult : antiretroviralPlanResults) {
+                    System.out.println(TOKEN + ", antiretroviralPlanResult: " + antiretroviralPlanResult.toString());
+                }
+
                 if (CollectionUtils.isEmpty(antiretroviralPlanResults)
                         || !antiretroviralPlanResults.latest().getResultDate().after(encounterResult.getResultDate())) {
                     result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
@@ -77,8 +89,14 @@ public class StartARVAntiTuberculosisHIVReminderRule extends EvaluableRule {
                 parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("REASON ANTIRETROVIRALS STARTED"));
                 parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList("NONE"));
                 Result reasonStartedResults = obsWithRestrictionRule.eval(context, patientId, parameters);
+
+                for (Result reasonStartedResult : reasonStartedResults) {
+                    System.out.println(TOKEN + ", reasonStartedResult: " + reasonStartedResult.toString());
+                }
+
                 if (CollectionUtils.isNotEmpty(reasonStartedResults)
-                        && !reasonStartedResults.latest().getResultDate().before(encounterResult.getResultDate())) {
+                        && (reasonStartedResults.latest().getResultDate().after(encounterResult.getResultDate())
+                        || DateUtils.isSameDay(reasonStartedResults.latest().getResultDate(), encounterResult.getResultDate()))) {
                     result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
                     return result;
                 }

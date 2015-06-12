@@ -15,6 +15,7 @@
 package org.openmrs.module.clinicalsummary.rule.reminder.adult.pregnancy;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.openmrs.logic.LogicContext;
 import org.openmrs.logic.result.Result;
 import org.openmrs.module.clinicalsummary.rule.EvaluableConstants;
@@ -61,25 +62,43 @@ public class EscalationViralLoadReminderRule extends EvaluableRule {
             Result viralLoadResults = obsWithRestrictionRule.eval(context, patientId, parameters);
 
             if (CollectionUtils.isNotEmpty(viralLoadResults) && viralLoadResults.latest().toNumber() > 1000) {
+                for (Result viralLoadResult : viralLoadResults) {
+                    System.out.println(TOKEN + ", viralLoadResult: " + viralLoadResult.toNumber());
+                }
                 parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("ANTIRETROVIRAL PLAN"));
                 parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList("START DRUGS", "DRUG RESTART"));
                 Result antiretroviralPlanResults = obsWithRestrictionRule.eval(context, patientId, parameters);
 
+                for (Result antiretroviralPlanResult : antiretroviralPlanResults) {
+                    System.out.println(TOKEN + ", antiretroviralPlanResult: " + antiretroviralPlanResult.toString());
+                }
                 if (CollectionUtils.isNotEmpty(antiretroviralPlanResults)
-                        && !antiretroviralPlanResults.latest().getResultDate().before(sixMonthsLater)) {
+                        && (antiretroviralPlanResults.latest().getResultDate().after(sixMonthsLater)
+                        || DateUtils.isSameDay(antiretroviralPlanResults.latest().getResultDate(), sixMonthsLater))) {
                     result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
                     return result;
                 }
 
                 parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("REASON ANTIRETROVIRALS STARTED"));
-                parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList("NONE"));
-                Result reasonStartedNoneResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-                if (CollectionUtils.isEmpty(reasonStartedNoneResults)
-                        || reasonStartedNoneResults.latest().getResultDate().before(encounterResult.getResultDate())) {
-                    parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("REASON ANTIRETROVIRALS STARTED"));
-                    Result reasonStartedResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-                    if (CollectionUtils.isNotEmpty(reasonStartedResults)
-                            && !reasonStartedResults.latest().getResultDate().before(sixMonthsLater)) {
+                parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList("POST EXPOSURE PROPHYLAXIS",
+                        "TREATMENT", "TOTAL MATERNAL TO CHILD TRANSMISSION PROPHYLAXIS", "CLINICAL DISEASE",
+                        "PREVENTION OF MOTHER-TO-CHILD TRANSMISSION OF HIV", "UNKNOWN",
+                        "ADULT WHO STAGE 3 WITH CD4 COUNT LESS THAN 350", "WHO STAGE 3 ADULT", "WHO STAGE 4 ADULT",
+                        "CD4 COUNT LESS THAN 350", "DISCORDANT COUPLE", "IMMUNOLOGIC FAILURE", "VIROLOGIC FAILURE",
+                        "CD4 COUNT LESS THAN 500"));
+                Result reasonStartedResults = obsWithRestrictionRule.eval(context, patientId, parameters);
+
+                for (Result reasonStartedResult : reasonStartedResults) {
+                    System.out.println(TOKEN + ", reasonStartedResult: " + reasonStartedResult.toString());
+                }
+
+                if (CollectionUtils.isEmpty(reasonStartedResults)) {
+                    result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
+                    return result;
+                } else {
+                    Result reasonStartedResult = reasonStartedResults.latest();
+                    if (reasonStartedResult.getResultDate().after(sixMonthsLater)
+                            || DateUtils.isSameDay(reasonStartedResult.getResultDate(), sixMonthsLater)) {
                         result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
                         return result;
                     }

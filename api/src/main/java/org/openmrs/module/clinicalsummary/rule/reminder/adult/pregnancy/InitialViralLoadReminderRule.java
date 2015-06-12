@@ -15,6 +15,7 @@
 package org.openmrs.module.clinicalsummary.rule.reminder.adult.pregnancy;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.openmrs.logic.LogicContext;
 import org.openmrs.logic.result.Result;
 import org.openmrs.module.clinicalsummary.rule.EvaluableConstants;
@@ -67,11 +68,19 @@ public class InitialViralLoadReminderRule extends EvaluableRule {
                     Arrays.asList("HIV VIRAL LOAD, QUALITATIVE", "HIV VIRAL LOAD, QUANTITATIVE"));
             Result viralLoadResults = obsWithRestrictionRule.eval(context, patientId, parameters);
 
+            for (Result viralLoadResult : viralLoadResults) {
+                System.out.println(TOKEN + ", viralLoadResult: " + viralLoadResult.toString());
+            }
+
             if (CollectionUtils.isEmpty(viralLoadResults)) {
 
                 parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("ANTIRETROVIRAL PLAN"));
                 parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList("START DRUGS", "DRUG RESTART"));
                 Result antiretroviralPlanResults = obsWithRestrictionRule.eval(context, patientId, parameters);
+
+                for (Result antiretroviralPlanResult : antiretroviralPlanResults) {
+                    System.out.println(TOKEN + ", antiretroviralPlanResult: " + antiretroviralPlanResult.toString());
+                }
 
                 parameters.put(EvaluableConstants.OBS_CONCEPT,
                         Arrays.asList("CURRENT HIV ANTIRETROVIRAL DRUG USE TREATMENT CATEGORY",
@@ -79,24 +88,46 @@ public class InitialViralLoadReminderRule extends EvaluableRule {
                 parameters.put(EvaluableConstants.OBS_VALUE_CODED,
                         Arrays.asList("FIRST LINE HIV ANTIRETROVIRAL DRUG TREATMENT"));
                 Result treatmentCategoryResults = obsWithRestrictionRule.eval(context, patientId, parameters);
+
+                for (Result treatmentCategoryResult : treatmentCategoryResults) {
+                    System.out.println(TOKEN + ", treatmentCategoryResult: " + treatmentCategoryResult.toString());
+                }
+
                 if (CollectionUtils.isNotEmpty(antiretroviralPlanResults) && CollectionUtils.isNotEmpty(treatmentCategoryResults)) {
                     Result treatmentCategoryResult = treatmentCategoryResults.latest();
                     Result antiretroviralPlanResult = antiretroviralPlanResults.latest();
 
-                    if (treatmentCategoryResult.getResultDate().after(sixMonthsLater) || antiretroviralPlanResult.getResultDate().after(sixMonthsLater)) {
+                    if (DateUtils.isSameDay(sixMonthsLater, treatmentCategoryResult.getResultDate())
+                            || treatmentCategoryResult.getResultDate().after(sixMonthsLater)
+                            || DateUtils.isSameDay(sixMonthsLater, antiretroviralPlanResult.getResultDate())
+                            || antiretroviralPlanResult.getResultDate().after(sixMonthsLater)) {
                         result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
                         return result;
                     }
                 }
 
                 parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("REASON ANTIRETROVIRALS STARTED"));
-                parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList("NONE"));
+                parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList("POST EXPOSURE PROPHYLAXIS",
+                        "TREATMENT", "TOTAL MATERNAL TO CHILD TRANSMISSION PROPHYLAXIS", "CLINICAL DISEASE",
+                        "PREVENTION OF MOTHER-TO-CHILD TRANSMISSION OF HIV", "UNKNOWN",
+                        "ADULT WHO STAGE 3 WITH CD4 COUNT LESS THAN 350", "WHO STAGE 3 ADULT", "WHO STAGE 4 ADULT",
+                        "CD4 COUNT LESS THAN 350", "DISCORDANT COUPLE", "IMMUNOLOGIC FAILURE", "VIROLOGIC FAILURE",
+                        "CD4 COUNT LESS THAN 500"));
                 Result reasonStartedResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-                if (CollectionUtils.isNotEmpty(reasonStartedResults)
-                        || (reasonStartedResults.latest().getResultDate().before(encounterResult.getResultDate())
-                            && reasonStartedResults.latest().getResultDate().before(sixMonthsAgo))) {
+
+                for (Result reasonStartedResult : reasonStartedResults) {
+                    System.out.println(TOKEN + ", reasonStartedResult: " + reasonStartedResult.toString());
+                }
+
+                if (CollectionUtils.isEmpty(reasonStartedResults)) {
                     result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
                     return result;
+                } else {
+                    Result reasonStartedResult = reasonStartedResults.latest();
+                    if (reasonStartedResult.getResultDate().before(sixMonthsLater)) {
+                        result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
+                        return result;
+                    }
                 }
             }
         }

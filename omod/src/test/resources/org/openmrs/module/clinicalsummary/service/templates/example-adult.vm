@@ -254,7 +254,7 @@
 		</reminder>
 		#end
 
-		#set($params = {"reminder": "Antiretroviral medications should be considered in every adult HIV+ patient with CD4 equal to or less than 500.  Obviously, other considerations come into play in this decision (e.g. whether pt is actively infected with TB)."})
+		#set($params = {"reminder": "Consider starting ARV Medications. CD4 count < 500."})
 		#set($reminder = $fn.evaluate($patient, "Anti Retro Viral Reminder", $params))
 		#foreach($element in $reminder)
 		<reminder>
@@ -324,7 +324,7 @@
 		</reminder>
 		#end
 
-		#set($params = {"reminder": "Do not use Rifampin with Nevirapine (Protease Inhibitors) together. This combination increases the risk of liver injury (hepatotoxicity)."})
+		#set($params = {"reminder": "Nevirapine and Rifampin not to be used together. Consider regimen change."})
 		#set($reminder = $fn.evaluate($patient, "Rifampin Nevirapine Contraindication Reminder", $params))
 		#foreach($element in $reminder)
 		<reminder>
@@ -334,7 +334,7 @@
 		</reminder>
 		#end
 
-		#set($params = {"reminder": "Do not use Rifampin with Aluvia (Ritonavir / Lopinavir - Protease Inhibitors) together.  This combination increases the risk of liver injury (hepatotoxicity). Main concern is sub-therapeutic levels of Aluvia due to CYP3A induction by rifampacin."})
+		#set($params = {"reminder": "Aluvia (Ritonavir / Lopinavir) and Rifampin not to be used together. Consider regimen change."})
 		#set($reminder = $fn.evaluate($patient, "Rifampin Aluvia Contraindication Reminder", $params))
 		#foreach($element in $reminder)
 		<reminder>
