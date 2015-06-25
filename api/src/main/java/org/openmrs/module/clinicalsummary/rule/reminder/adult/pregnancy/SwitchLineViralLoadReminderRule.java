@@ -62,7 +62,14 @@ public class SwitchLineViralLoadReminderRule extends EvaluableRule {
             parameters.put(EvaluableConstants.OBS_FETCH_SIZE, 2);
             Result viralLoadResults = obsWithRestrictionRule.eval(context, patientId, parameters);
 
-            if (CollectionUtils.isNotEmpty(viralLoadResults) && CollectionUtils.size(viralLoadResults) == 2) {
+            parameters.put(EvaluableConstants.OBS_CONCEPT,
+                    Arrays.asList("CURRENT HIV ANTIRETROVIRAL DRUG USE TREATMENT CATEGORY",
+                            "HIV ANTIRETROVIRAL DRUG PLAN TREATMENT CATEGORY"));
+            parameters.put(EvaluableConstants.OBS_VALUE_CODED,
+                    Arrays.asList("FIRST LINE HIV ANTIRETROVIRAL DRUG TREATMENT"));
+            Result treatmentCategoryResults = obsWithRestrictionRule.eval(context, patientId, parameters);
+            if (CollectionUtils.isNotEmpty(treatmentCategoryResults) &&
+                    CollectionUtils.isNotEmpty(viralLoadResults) && CollectionUtils.size(viralLoadResults) == 2) {
 
                 Result latestViralLoadResult = viralLoadResults.get(0);
                 Result beforeLatestViralLoadResult = viralLoadResults.get(1);
@@ -93,10 +100,7 @@ public class SwitchLineViralLoadReminderRule extends EvaluableRule {
                             "CD4 COUNT LESS THAN 350", "DISCORDANT COUPLE", "IMMUNOLOGIC FAILURE", "VIROLOGIC FAILURE",
                             "CD4 COUNT LESS THAN 500"));
                     Result reasonStartedResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-                    if (CollectionUtils.isEmpty(reasonStartedResults)) {
-                        result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
-                        return result;
-                    } else {
+                    if (CollectionUtils.isNotEmpty(reasonStartedResults)) {
                         Result reasonStartedResult = reasonStartedResults.latest();
                         if (reasonStartedResult.getResultDate().after(twelveMonthsLater)
                                 || DateUtils.isSameDay(reasonStartedResult.getResultDate(), twelveMonthsLater)) {

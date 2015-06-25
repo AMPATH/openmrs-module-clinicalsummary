@@ -33,9 +33,9 @@ import java.util.Map;
 
 /**
  */
-public class SecondViralLoadReminderRule extends EvaluableRule {
+public class AnnualViralLoadReminderRule extends EvaluableRule {
 
-    public static final String TOKEN = "Adult:Second Viral Load Reminder";
+    public static final String TOKEN = "Adult:Annual Viral Load Reminder";
 
     @Override
     protected Result evaluate(LogicContext context, Integer patientId, Map<String, Object> parameters) {
@@ -52,12 +52,8 @@ public class SecondViralLoadReminderRule extends EvaluableRule {
 
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(encounterResult.getResultDate());
-            calendar.add(Calendar.MONTH, 11);
-            Date elevenMonthsLater = calendar.getTime();
-
-            calendar.setTime(encounterResult.getResultDate());
-            calendar.add(Calendar.MONTH, 13);
-            Date thirteenMonthsLater = calendar.getTime();
+            calendar.add(Calendar.MONTH, 12);
+            Date twelveMonthsLater = calendar.getTime();
 
             ObsWithRestrictionRule obsWithRestrictionRule = new ObsWithStringRestrictionRule();
 
@@ -66,33 +62,38 @@ public class SecondViralLoadReminderRule extends EvaluableRule {
             parameters.put(EvaluableConstants.OBS_VALUE_CODED,
                     Arrays.asList("HIV VIRAL LOAD, QUALITATIVE", "HIV VIRAL LOAD, QUANTITATIVE"));
             Result viralLoadOrderedResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-            if (CollectionUtils.isEmpty(viralLoadOrderedResults)
-                    || !viralLoadOrderedResults.latest().getResultDate().before(encounterResult.getResultDate())) {
 
-                parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("ANTIRETROVIRAL PLAN"));
-                parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList("START DRUGS", "DRUG RESTART"));
-                Result antiretroviralPlanResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-                if (CollectionUtils.isNotEmpty(antiretroviralPlanResults)
-                        && antiretroviralPlanResults.latest().getResultDate().after(elevenMonthsLater)
-                        && antiretroviralPlanResults.latest().getResultDate().before(thirteenMonthsLater)) {
-                    result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
-                    return result;
-                }
+            parameters.remove(EvaluableConstants.OBS_VALUE_CODED);
+            parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("HIV VIRAL LOAD, QUANTITATIVE"));
+            Result viralLoadQuantitativeResults = obsWithRestrictionRule.eval(context, patientId, parameters);
 
-                parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("REASON ANTIRETROVIRALS STARTED"));
-                parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList("POST EXPOSURE PROPHYLAXIS",
-                        "TREATMENT", "TOTAL MATERNAL TO CHILD TRANSMISSION PROPHYLAXIS", "CLINICAL DISEASE",
-                        "PREVENTION OF MOTHER-TO-CHILD TRANSMISSION OF HIV", "UNKNOWN",
-                        "ADULT WHO STAGE 3 WITH CD4 COUNT LESS THAN 350", "WHO STAGE 3 ADULT", "WHO STAGE 4 ADULT",
-                        "CD4 COUNT LESS THAN 350", "DISCORDANT COUPLE", "IMMUNOLOGIC FAILURE", "VIROLOGIC FAILURE",
-                        "CD4 COUNT LESS THAN 500"));
-                Result reasonStartedResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-                if (CollectionUtils.isNotEmpty(reasonStartedResults)) {
-                    Result reasonStartedResult = reasonStartedResults.latest();
-                    if (reasonStartedResult.getResultDate().after(elevenMonthsLater)
-                            && reasonStartedResult.getResultDate().before(thirteenMonthsLater)) {
+            if (CollectionUtils.isEmpty(viralLoadOrderedResults) && CollectionUtils.isNotEmpty(viralLoadQuantitativeResults)) {
+                Result viralLoadQuantitativeResult = viralLoadQuantitativeResults.latest();
+                if (viralLoadQuantitativeResult.toNumber() < 1000
+                        && viralLoadQuantitativeResult.getResultDate().after(twelveMonthsLater)) {
+                    parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("ANTIRETROVIRAL PLAN"));
+                    parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList("START DRUGS", "DRUG RESTART"));
+                    Result antiretroviralPlanResults = obsWithRestrictionRule.eval(context, patientId, parameters);
+                    if (CollectionUtils.isNotEmpty(antiretroviralPlanResults)
+                            && antiretroviralPlanResults.latest().getResultDate().after(twelveMonthsLater)) {
                         result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
                         return result;
+                    }
+
+                    parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("REASON ANTIRETROVIRALS STARTED"));
+                    parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList("POST EXPOSURE PROPHYLAXIS",
+                            "TREATMENT", "TOTAL MATERNAL TO CHILD TRANSMISSION PROPHYLAXIS", "CLINICAL DISEASE",
+                            "PREVENTION OF MOTHER-TO-CHILD TRANSMISSION OF HIV", "UNKNOWN",
+                            "ADULT WHO STAGE 3 WITH CD4 COUNT LESS THAN 350", "WHO STAGE 3 ADULT", "WHO STAGE 4 ADULT",
+                            "CD4 COUNT LESS THAN 350", "DISCORDANT COUPLE", "IMMUNOLOGIC FAILURE", "VIROLOGIC FAILURE",
+                            "CD4 COUNT LESS THAN 500"));
+                    Result reasonStartedResults = obsWithRestrictionRule.eval(context, patientId, parameters);
+                    if (CollectionUtils.isNotEmpty(reasonStartedResults)) {
+                        Result reasonStartedResult = reasonStartedResults.latest();
+                        if (reasonStartedResult.getResultDate().after(twelveMonthsLater)) {
+                            result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
+                            return result;
+                        }
                     }
                 }
             }

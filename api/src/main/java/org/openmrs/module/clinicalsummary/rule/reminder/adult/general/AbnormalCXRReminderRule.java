@@ -52,12 +52,12 @@ public class AbnormalCXRReminderRule extends EvaluableRule {
 
 		ObsWithRestrictionRule obsWithRestrictionRule = new ObsWithStringRestrictionRule();
 		parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(EvaluableNameConstants.CXR, "CHEST XRAY, PRELIMINARY FINDINGS"));
-		parameters.put(EvaluableConstants.OBS_FETCH_SIZE, 1);
+		parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList(EvaluableNameConstants.CXR_INFILTRATE));
 
 		Result cxrResults = obsWithRestrictionRule.eval(context, patientId, parameters);
 		if (CollectionUtils.isNotEmpty(cxrResults)) {
 			Result cxrResult = cxrResults.latest();
-			List<Concept> concepts = Arrays.asList(CacheUtils.getConcept(EvaluableNameConstants.CXR_INFILTRATE));
+
 			// check the date of the latest result
 			Calendar calendar = Calendar.getInstance();
 			calendar.add(Calendar.MONTH, -1);
@@ -67,43 +67,14 @@ public class AbnormalCXRReminderRule extends EvaluableRule {
 			calendar.add(Calendar.MONTH, -12);
 			Date oneYearAgo = calendar.getTime();
 
-			// if the result is more than 1 month ago, then check the test to see if any was ordered before
-			if (concepts.contains(cxrResult.toConcept())
-					&& cxrResult.getResultDate().before(oneMonthAgo) && cxrResult.getResultDate().after(oneYearAgo)) {
+			if (cxrResult.getResultDate().before(oneMonthAgo) && cxrResult.getResultDate().after(oneYearAgo)) {
+				parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("TUBERCULOSIS TREATMENT PLAN"));
+				parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList("NONE"));
 
-                // TODO: check every encounter after the last abnormal chest xray for any tbmeds,
-                // TODO: if there's tb meds, then the reminder shouldn't be triggered
-
-				Boolean displayReminder = Boolean.TRUE;
-
-				parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(EvaluableNameConstants.TESTS_ORDERED));
-				parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList(EvaluableNameConstants.CXR));
-				Result testOrderedResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-				if (CollectionUtils.isNotEmpty(testOrderedResults)) {
-					Result testOrderedResult = testOrderedResults.latest();
-					// check the test ordered date
-					calendar = Calendar.getInstance();
-					calendar.add(Calendar.MONTH, -6);
-					// test ordered after 6 months ago and comes after the latest cxr result
-					if (testOrderedResult.getResultDate().after(calendar.getTime())
-							&& testOrderedResult.getResultDate().after(cxrResult.getResultDate()))
-						displayReminder = Boolean.FALSE;
-				}
-
-				parameters.put(EvaluableConstants.ENCOUNTER_TYPE, Arrays.asList(EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_INITIAL,
-						EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_RETURN, EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_NONCLINICALMEDICATION));
-				TuberculosisRule tuberculosisRule = new TuberculosisRule();
-				Result tuberculosisMedicationResults = tuberculosisRule.eval(context, patientId, parameters);
-
-				parameters.put(EvaluableConstants.ENCOUNTER_TYPE, Arrays.asList(EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_INITIAL,
-						EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_RETURN, EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_NONCLINICALMEDICATION));
-				TuberculosisTreatmentRule tuberculosisTreatmentRule = new TuberculosisTreatmentRule();
-				Result tbTreatmentResults = tuberculosisTreatmentRule.eval(context, patientId, parameters);
-				if (CollectionUtils.isNotEmpty(tuberculosisMedicationResults) || CollectionUtils.isNotEmpty(tbTreatmentResults))
-					displayReminder = Boolean.FALSE;
-
-				if (displayReminder)
+				Result tbTreatmentPlanResults = obsWithRestrictionRule.eval(context, patientId, parameters);
+				if (CollectionUtils.isNotEmpty(tbTreatmentPlanResults)) {
 					result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
+				}
 			}
 		}
 

@@ -3,12 +3,12 @@
  * Version 1.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
  * http://license.openmrs.org
- *
+ * <p/>
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
  * License for the specific language governing rights and limitations
  * under the License.
- *
+ * <p/>
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
 
@@ -56,6 +56,10 @@ public class InitialViralLoadReminderRule extends EvaluableRule {
             calendar.add(Calendar.MONTH, 6);
             Date sixMonthsLater = calendar.getTime();
 
+            calendar.setTime(encounterResult.getResultDate());
+            calendar.add(Calendar.MONTH, 12);
+            Date twelveMonthsLater = calendar.getTime();
+
             ObsWithRestrictionRule obsWithRestrictionRule = new ObsWithStringRestrictionRule();
             parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("TESTS ORDERED", "TEST RESULT",
                     "LAB TESTS ORDERED FOR NEXT VISIT"));
@@ -67,21 +71,15 @@ public class InitialViralLoadReminderRule extends EvaluableRule {
                 parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("ANTIRETROVIRAL PLAN"));
                 parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList("START DRUGS", "DRUG RESTART"));
                 Result antiretroviralPlanResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-
-                parameters.put(EvaluableConstants.OBS_CONCEPT,
-                        Arrays.asList("CURRENT HIV ANTIRETROVIRAL DRUG USE TREATMENT CATEGORY",
-                                "HIV ANTIRETROVIRAL DRUG PLAN TREATMENT CATEGORY"));
-                parameters.put(EvaluableConstants.OBS_VALUE_CODED,
-                        Arrays.asList("FIRST LINE HIV ANTIRETROVIRAL DRUG TREATMENT"));
-                Result treatmentCategoryResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-                if (CollectionUtils.isNotEmpty(antiretroviralPlanResults) && CollectionUtils.isNotEmpty(treatmentCategoryResults)) {
-                    Result treatmentCategoryResult = treatmentCategoryResults.latest();
+                if (CollectionUtils.isNotEmpty(antiretroviralPlanResults) ) {
                     Result antiretroviralPlanResult = antiretroviralPlanResults.latest();
 
-                    if (DateUtils.isSameDay(sixMonthsLater, treatmentCategoryResult.getResultDate())
-                            || treatmentCategoryResult.getResultDate().after(sixMonthsLater)
-                            || DateUtils.isSameDay(sixMonthsLater, antiretroviralPlanResult.getResultDate())
-                            || antiretroviralPlanResult.getResultDate().after(sixMonthsLater)) {
+                    boolean planAfterSixMonths = DateUtils.isSameDay(sixMonthsLater, antiretroviralPlanResult.getResultDate())
+                            || antiretroviralPlanResult.getResultDate().after(sixMonthsLater);
+                    boolean planBeforeTwelveMonths = DateUtils.isSameDay(twelveMonthsLater, antiretroviralPlanResult.getResultDate())
+                            || antiretroviralPlanResult.getResultDate().after(twelveMonthsLater);
+
+                    if ((planAfterSixMonths && planBeforeTwelveMonths)) {
                         result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
                         return result;
                     }
@@ -95,12 +93,10 @@ public class InitialViralLoadReminderRule extends EvaluableRule {
                         "CD4 COUNT LESS THAN 350", "DISCORDANT COUPLE", "IMMUNOLOGIC FAILURE", "VIROLOGIC FAILURE",
                         "CD4 COUNT LESS THAN 500"));
                 Result reasonStartedResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-                if (CollectionUtils.isEmpty(reasonStartedResults)) {
-                    result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
-                    return result;
-                } else {
+                if (CollectionUtils.isNotEmpty(reasonStartedResults)) {
                     Result reasonStartedResult = reasonStartedResults.latest();
-                    if (reasonStartedResult.getResultDate().before(sixMonthsLater)) {
+                    if (reasonStartedResult.getResultDate().after(sixMonthsLater)
+                            && reasonStartedResult.getResultDate().before(twelveMonthsLater)) {
                         result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
                         return result;
                     }

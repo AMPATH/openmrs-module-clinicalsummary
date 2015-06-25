@@ -221,7 +221,7 @@
 		#end
 	</medications>
 
-	#set($params = {"concept": ["CXR"],
+	#set($params = {"concept": ["CHEST XRAY, PRELIMINARY FINDINGS"],
 	                "obs.size": 2})
 	#set($cxr = $fn.evaluate($patient, "Obs String Restrictions", $params))
 	<cxrs>
@@ -244,7 +244,7 @@
 		</reminder>
 		#end
 
-		#set($params = {"reminder": "Please check Chest X-Ray. No Chest X-Ray result in system. If CXR results found in chart please enter results again on today’s encounter form."})
+		#set($params = {"reminder": "Patient needs baseline Chest X Ray. No results in system."})
 		#set($reminder = $fn.evaluate($patient, "Adult CXR Reminder", $params))
 		#foreach($element in $reminder)
 		<reminder>
@@ -424,6 +424,16 @@
           </reminder>
 		#end
 
+		#set($params = {"reminder": "Please order annual Viral load for patient on ARVs."})
+		#set($reminder = $fn.evaluate($patient, "Adult:Annual Viral Load Reminder", $params))
+		#foreach($element in $reminder)
+          <reminder>
+            <id>78</id>
+            <token>Adult:Annual Viral Load Reminder</token>
+            <value>$!{fn.format($element)}</value>
+          </reminder>
+		#end
+
 		#set($params = {"reminder": "Repeat VL every 3 months AND intensify adherence counselling."})
 		#set($reminder = $fn.evaluate($patient, "Adult:Escalation Viral Load Reminder", $params))
 		#foreach($element in $reminder)
@@ -450,6 +460,16 @@
           <reminder>
             <id>81</id>
             <token>Adult:Switch Line Viral Load Reminder</token>
+            <value>$!{fn.format($element)}</value>
+          </reminder>
+		#end
+
+		#set($params = {"reminder": "Consider resistance testing and consultant review. 2 high viral loads > 1,000."})
+		#set($reminder = $fn.evaluate($patient, "Adult:Second Line Viral Load Reminder", $params))
+		#foreach($element in $reminder)
+          <reminder>
+            <id>82</id>
+            <token>Adult:Second Line Viral Load Reminder</token>
             <value>$!{fn.format($element)}</value>
           </reminder>
 		#end

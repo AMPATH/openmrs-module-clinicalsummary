@@ -14,9 +14,11 @@
 
 package org.openmrs.module.clinicalsummary.rule.reminder.adult.baseline;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
+import org.openmrs.Obs;
 import org.openmrs.logic.LogicContext;
 import org.openmrs.logic.LogicException;
 import org.openmrs.logic.result.Result;
@@ -48,34 +50,42 @@ public class AdultCXRReminderRule extends EvaluableRule {
 	protected Result evaluate(final LogicContext context, final Integer patientId, final Map<String, Object> parameters) throws LogicException {
 		Result result = new Result();
 
-        parameters.put(EvaluableConstants.ENCOUNTER_TYPE,
-                Arrays.asList(EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_INITIAL,
-                        EvaluableNameConstants.ENCOUNTER_TYPE_ADULT_RETURN));
-        parameters.put(EvaluableConstants.ENCOUNTER_FETCH_ORDER, FetchOrdering.ORDER_DESCENDING.getValue());
-        parameters.put(EvaluableConstants.ENCOUNTER_FETCH_SIZE, 1);
-        EncounterWithRestrictionRule encounterWithRestrictionRule = new EncounterWithStringRestrictionRule();
-        Result encounterResults = encounterWithRestrictionRule.eval(context, patientId, parameters);
-        if (!encounterResults.isEmpty()) {
-            Result encounterResult = encounterResults.get(0);
-            Encounter encounter = (Encounter) encounterResult.getResultObject();
+		parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("DATE HIV CARE PROGRAM ENROLLED"));
+		parameters.remove(EvaluableConstants.OBS_VALUE_CODED);
+		ObsWithRestrictionRule obsWithRestrictionRule = new ObsWithStringRestrictionRule();
+		Result dateEnrolledResults = obsWithRestrictionRule.eval(context, patientId, parameters);
+		if (CollectionUtils.isNotEmpty(dateEnrolledResults)) {
+			Result dateEnrolledResult = dateEnrolledResults.get(0);
+			Obs dateEnrolledObs = (Obs) dateEnrolledResult.getResultObject();
+			Date valueDatetime = dateEnrolledObs.getValueDatetime();
+			if (valueDatetime != null) {
+				Calendar calendar = Calendar.getInstance();
+				calendar.setTime(valueDatetime);
+				calendar.add(Calendar.YEAR, 3);
+				Date threeYearsLater = calendar.getTime();
+				if (threeYearsLater.after(new Date())) {
+					parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("CXR", "X-RAY, CHEST, RADIOLOGY FINDINGS"));
+					Result cxrFindingsResults = obsWithRestrictionRule.eval(context, patientId, parameters);
+					if (cxrFindingsResults.isEmpty()) {
+						parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("HIV CARE PROGRAM ENROLLED"));
+						Result programEnrolledResults = obsWithRestrictionRule.eval(context, patientId, parameters);
+						if (CollectionUtils.isNotEmpty(programEnrolledResults)) {
+							result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
+							return result;
+						}
 
-            Calendar calendar = Calendar.getInstance();
-            calendar.add(Calendar.YEAR, -3);
-            Date threeYearsAgo = calendar.getTime();
-
-            if (!encounter.getEncounterDatetime().before(threeYearsAgo)) {
-				parameters.remove(EvaluableConstants.ENCOUNTER_FETCH_ORDER);
-				parameters.remove(EvaluableConstants.ENCOUNTER_FETCH_SIZE);
-
-				ObsWithRestrictionRule obsWithRestrictionRule = new ObsWithStringRestrictionRule();
-				parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList("CXR", "X-RAY, CHEST, RADIOLOGY FINDINGS"));
-				Result cxrFindingsResults = obsWithRestrictionRule.eval(context, patientId, parameters);
-				if (cxrFindingsResults.isEmpty()) {
-					result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
+						parameters.put(EvaluableConstants.OBS_CONCEPT,
+								Arrays.asList("HIV POSITIVE HIV CARE PROGRAM ENROLLMENT STATUS", "ENROLLED IN AMPATH"));
+						parameters.put(EvaluableConstants.OBS_VALUE_CODED, Arrays.asList("YES"));
+						Result enrolledResults = obsWithRestrictionRule.eval(context, patientId, parameters);
+						if (CollectionUtils.isNotEmpty(enrolledResults)) {
+							result.add(new Result(String.valueOf(parameters.get(ReminderParameters.DISPLAYED_REMINDER_TEXT))));
+							return result;
+						}
+					}
 				}
 			}
-        }
-
+		}
 		return result;
 	}
 
