@@ -102,26 +102,39 @@ public class AboveAgeRangeReminderRule extends EvaluableRule {
 						parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(EvaluableNameConstants.CD4_PERCENT));
 						Result percentageResults = obsWithRestrictionRule.eval(context, patientId, parameters);
 
+						parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(EvaluableNameConstants.CD4_COUNT));
+						Result countResults = obsWithRestrictionRule.eval(context, patientId, parameters);
+
 						parameters.put(EvaluableConstants.OBS_CONCEPT, Arrays.asList(EvaluableNameConstants.PEDS_WHO_CATEGORY_QUERY));
 						Result pedsStageResults = obsWithRestrictionRule.eval(context, patientId, parameters);
 
-						if (CollectionUtils.isNotEmpty(percentageResults) || CollectionUtils.isNotEmpty(pedsStageResults)) {
+						if (CollectionUtils.isNotEmpty(percentageResults) || CollectionUtils.isNotEmpty(countResults)
+								|| CollectionUtils.isNotEmpty(pedsStageResults)) {
 
 							List<String> reminderFragments = new ArrayList<String>();
-							if (CollectionUtils.isNotEmpty(validPolymeraseResults))
+							if (CollectionUtils.isNotEmpty(validPolymeraseResults)) {
 								reminderFragments.add("positive PCR");
+							}
 
-							if (CollectionUtils.isNotEmpty(validElisaResults))
+							if (CollectionUtils.isNotEmpty(validElisaResults)) {
 								reminderFragments.add("positive Elisa");
+							}
 
-							if (CollectionUtils.isNotEmpty(validRapidElisaResults))
+							if (CollectionUtils.isNotEmpty(validRapidElisaResults)) {
 								reminderFragments.add("positive Rapid Elisa");
+							}
 
-							if (CollectionUtils.isNotEmpty(percentageResults) && percentageResults.toNumber() < 25)
+							if (CollectionUtils.isNotEmpty(percentageResults) && percentageResults.toNumber() < 25) {
 								reminderFragments.add("CD4 Percent &lt 25");
+							}
 
-							if (CollectionUtils.isNotEmpty(pedsStageResults) && NumberUtils.toInt(ResultUtils.stripToDigit(pedsStageResults.toString())) > 2)
+							if (CollectionUtils.isNotEmpty(countResults) && countResults.toNumber() < 500) {
+								reminderFragments.add("CD4 &lt 500");
+							}
+
+							if (CollectionUtils.isNotEmpty(pedsStageResults) && NumberUtils.toInt(ResultUtils.stripToDigit(pedsStageResults.toString())) > 2) {
 								reminderFragments.add(pedsStageResults.toString());
+							}
 
 							String reminder = "Consider starting ARV Meds. Pt above 5 yrs with " + StringUtils.join(reminderFragments, ", ");
 							result.add(new Result(reminder));

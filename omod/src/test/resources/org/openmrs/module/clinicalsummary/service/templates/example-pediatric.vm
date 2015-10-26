@@ -347,36 +347,6 @@
 			</reminder>
 		#end
 
-		#set($params = {"reminder": "Please check SGPT. Positive PCR or ELISA but no SGPT."})
-		#set($reminder = $fn.evaluate($patient, "Pediatric SGPT Reminder", $params))
-		#foreach($element in $reminder)
-			<reminder>
-				<id>3</id>
-				<token>Pediatric SGPT Reminder</token>
-				<value>$!{fn.format($element)}</value>
-			</reminder>
-		#end
-
-		#set($params = {"reminder": "Please check Creatinine. Positive PCR or ELISA but no Creatinine."})
-		#set($reminder = $fn.evaluate($patient, "Pediatric Creatinine Reminder", $params))
-		#foreach($element in $reminder)
-			<reminder>
-				<id>4</id>
-				<token>Pediatric Creatinine Reminder</token>
-				<value>$!{fn.format($element)}</value>
-			</reminder>
-		#end
-
-		#set($params = {"reminder": "Please check Hemoglobin. Positive PCR or ELISA but no Hemoglobin."})
-		#set($reminder = $fn.evaluate($patient, "Pediatric Hemoglobin Reminder", $params))
-		#foreach($element in $reminder)
-			<reminder>
-				<id>5</id>
-				<token>Pediatric Hemoglobin Reminder</token>
-				<value>$!{fn.format($element)}</value>
-			</reminder>
-		#end
-
 		#set($params = {"reminder": "Please check Chest X-Ray. Positive PCR or ELISA but no Chest X-Ray."})
 		#set($reminder = $fn.evaluate($patient, "Pediatric CXR Reminder", $params))
 		#foreach($element in $reminder)
@@ -447,7 +417,7 @@
 			</reminder>
 		#end
 
-		#set($params = {"reminder": "Consider starting ARV Medications. Pt with positive HIV PCR."})
+		#set($params = {"reminder": "Consider starting ARV Medications. Pt with positive HIV PCR. Do not wait for CD4"})
 		#set($reminder = $fn.evaluate($patient, "Under Age Range ARV Reminder", $params))
 		#foreach($element in $reminder)
 			<reminder>

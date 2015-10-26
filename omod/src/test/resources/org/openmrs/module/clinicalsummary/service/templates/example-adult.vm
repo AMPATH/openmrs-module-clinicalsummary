@@ -304,16 +304,6 @@
           </reminder>
 		#end
 
-        #set($params = {"reminder": "Please repeat CXR. Last CXR over 1 mo. ago, could not rule out TB."})
-        #set($reminder = $fn.evaluate($patient, "Abnormal CXR Reminder", $params))
-        #foreach($element in $reminder)
-            <reminder>
-                <id>31</id>
-                <token>Abnormal CXR Reminder</token>
-                <value>$!{fn.format($element)}</value>
-            </reminder>
-        #end
-
 		#set($params = {"reminder": "Consider stopping INH prophylaxis.  INH started over 6 months ago."})
 		#set($reminder = $fn.evaluate($patient, "Stop Izoniazid Reminder", $params))
 		#foreach($element in $reminder)

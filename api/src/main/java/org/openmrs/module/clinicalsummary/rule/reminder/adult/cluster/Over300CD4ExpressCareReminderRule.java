@@ -57,7 +57,7 @@ public class Over300CD4ExpressCareReminderRule extends EvaluableRule {
 
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime(latestClusterResult.getResultDate());
-			calendar.add(Calendar.MONTH, -6);
+			calendar.add(Calendar.MONTH, -12);
 			Date sixMonthsBefore = calendar.getTime();
 
 			if (latestClusterResult.toNumber() < 1000 && previousClusterResult.toNumber() < 1000 && previousClusterResult.getResultDate().before(sixMonthsBefore)) {

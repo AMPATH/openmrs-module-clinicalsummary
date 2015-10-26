@@ -57,7 +57,7 @@ public class UnderAgeRangeReminderRule extends EvaluableRule {
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime(patient.getBirthdate());
 
-			calendar.add(Calendar.MONTH, 18);
+			calendar.add(Calendar.YEAR, 5);
 
 			if (calendar.getTime().after(new Date())) {
 
