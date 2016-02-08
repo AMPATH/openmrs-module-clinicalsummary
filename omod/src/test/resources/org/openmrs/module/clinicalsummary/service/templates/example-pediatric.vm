@@ -457,6 +457,36 @@
 			</reminder>
 		#end
 
+		#set($params = {"reminder": "Please order Viral load for patient started on ARVs over 6 months ago."})
+		#set($reminder = $fn.evaluate($patient, "Adult:Initial Viral Load Reminder", $params))
+		#foreach($element in $reminder)
+          <reminder>
+            <id>76</id>
+            <token>Adult:Initial Viral Load Reminder</token>
+            <value>$!{fn.format($element)}</value>
+          </reminder>
+		#end
+
+		#set($params = {"reminder": "Please order Viral load for patient started on ARVs over 12 months ago."})
+		#set($reminder = $fn.evaluate($patient, "Adult:Second Viral Load Reminder", $params))
+		#foreach($element in $reminder)
+          <reminder>
+            <id>77</id>
+            <token>Adult:Second Viral Load Reminder</token>
+            <value>$!{fn.format($element)}</value>
+          </reminder>
+		#end
+
+		#set($params = {"reminder": "Please order annual Viral load for patient on ARVs."})
+		#set($reminder = $fn.evaluate($patient, "Adult:Annual Viral Load Reminder", $params))
+		#foreach($element in $reminder)
+          <reminder>
+            <id>78</id>
+            <token>Adult:Annual Viral Load Reminder</token>
+            <value>$!{fn.format($element)}</value>
+          </reminder>
+		#end
+
 	</reminders>
 
 </clinicalSummary>
